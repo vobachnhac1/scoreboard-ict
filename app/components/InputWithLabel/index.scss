@@ -1,0 +1,19 @@
+.input_label_group {
+  gap: 8px;
+  .ant-select {
+    width: 100%;
+    flex: 1;
+  }
+  .ant-select-selector {
+    border: 1px solid #6b7280 !important;
+    min-height: 40px;
+  }
+}
+.input_with_label {
+  border: 1px solid #6b7280;
+  width: 100%;
+  flex: 1;
+  &:focus {
+    outline: none;
+  }
+}

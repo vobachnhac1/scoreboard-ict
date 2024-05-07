@@ -1,0 +1,65 @@
+.versus__background {
+  // width: 100%;
+  background-size: cover;
+  height: 100vh;
+  overflow: hidden;
+  max-height: 100vh;
+
+  position: relative;
+  background: linear-gradient(100deg, #ae0001 0%, #db0100 50%, #0b57d7 50%, #0241de);
+
+  .versus__background-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    padding: 64px;
+
+    .versus__background-text {
+      font-size: 10rem;
+      color: white;
+      text-shadow: 6px 2px black;
+    }
+  }
+
+  .pattern-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 15px,
+      rgba(255, 255, 255, 0.05) 10px,
+      rgba(255, 255, 255, 0.05) 20px
+    );
+  }
+}
+
+.versus__introduction {
+  color: white;
+  width: 100%;
+  text-align: center;
+
+  .versus__introduction-title {
+    font-weight: bold;
+    font-size: 2rem;
+  }
+
+  .versus__introduction-sub {
+    font-weight: 600;
+    font-size: 1.8rem;
+  }
+}
+
+.versus__player {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  justify-content: space-between;
+  align-items: center;
+  padding: 120px;
+  margin-top: -120px;
+}

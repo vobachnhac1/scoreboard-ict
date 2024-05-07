@@ -1,0 +1,17 @@
+.player__card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+
+  img {
+    width: 200px;
+    height: 100%;
+  }
+
+  .player__card-info {
+    padding: 4px;
+    text-align: center;
+  }
+}

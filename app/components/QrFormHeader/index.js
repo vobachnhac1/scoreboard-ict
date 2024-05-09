@@ -72,7 +72,7 @@ const QrFormHeader = ({
   };
 
   return (
-    <form onSubmit={() => (isEdit ? handleEdit : handleEnter)} className="flex justify-between items-center px-12">
+    <form onSubmit={() => (isEdit ? handleEdit : handleEnter)} className="flex justify-between items-center">
       <InputWithLabel
         inputRef={inputRef}
         inputData={inputData}
@@ -81,7 +81,7 @@ const QrFormHeader = ({
         name={'column'}
         placeholder={'Nhập thông tin'}
       />
-      <div className="flex w-1/5 justify-between items-center">
+      <div className="flex w-1/5 items-center gap-1">
         <button
           onClick={isEdit ? handleEdit : handleEnter}
           className="ml-4 py-1.5 px-4 bg-blue-500 rounded text-white focus:outline-none whitespace-nowrap"
@@ -91,7 +91,7 @@ const QrFormHeader = ({
         {isEdit && (
           <button
             onClick={handleCancelEdit}
-            className="ml-4 py-1.5 px-4 bg-red-500 rounded text-white focus:outline-none whitespace-nowrap"
+            className="py-1.5 px-4 bg-red-500 rounded text-white focus:outline-none whitespace-nowrap"
           >
             Hủy
           </button>

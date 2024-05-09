@@ -10,6 +10,7 @@ import ReadExcel from './ReadExcel';
 import writeXlsxFile from 'write-excel-file';
 
 import { exportSchema } from '../../shared/qrDataSchema';
+import Excel from '../../components/Icons/Excel';
 
 const Home = () => {
   const template = ['index', 'fullname', 'birthdate', 'sex', 'level', 'desc', 'unit', 'cardCode', 'cardDate', 'note'];
@@ -108,49 +109,59 @@ const Home = () => {
   };
 
   return (
-    <div className="qr__generator bg-gray-400">
-      <div className="qr__generator-form bg-white">
-        <div className="form-section form-header">
-          <QrFormHeader
-            tableData={tableData}
-            setTableData={setTableData}
-            setIndexAdd={setIndexAdd}
-            indexAdd={indexAdd}
-            isEdit={isEdit}
-            setIsEdit={setIsEdit}
-            editId={editId}
-            setEditId={setEditId}
-            inputRef={inputRef}
-            inputData={inputData}
-            setInputData={setInputData}
-            refreshData={refreshData}
-            isLoading={isLoading}
-          />
-        </div>
-        <div className="form-section form-display">
-          <div className="flex justify-end w-full mb-4">
-            <button onClick={() => handleExportExcel()} className="custom-file-upload">
-              Xuất excel
-            </button>
+    <div className="bg-gray-400">
+      <div className="qr__generator ">
+        <div className="qr__generator-form bg-white shadow-xl">
+          <div className="text-start pl-4 pt-2 w-full text-blue-600 text-xl">Màn hình tạo mã thông tin</div>
+          <div className="form-section form-header">
+            <div className="mt-4 mb-4 font-semibold">Nhập thông tin: </div>
+            <QrFormHeader
+              tableData={tableData}
+              setTableData={setTableData}
+              setIndexAdd={setIndexAdd}
+              indexAdd={indexAdd}
+              isEdit={isEdit}
+              setIsEdit={setIsEdit}
+              editId={editId}
+              setEditId={setEditId}
+              inputRef={inputRef}
+              inputData={inputData}
+              setInputData={setInputData}
+              refreshData={refreshData}
+              isLoading={isLoading}
+            />
           </div>
-          <TableDisplay
-            tableData={tableData}
-            dragItem={dragItem}
-            draggedOverItem={draggedOverItem}
-            handleSort={handleSort}
-            enableEdit={enableEdit}
-            handleDelete={handleDelete}
-            isDragging={isDragging}
-            setIsDragging={setIsDragging}
-          />
-        </div>
-        <div className="form-section form-input-file">
-          <ReadExcel
-            dataTable={dataTable}
-            setDataTable={setDataTable}
-            selectedFile={selectedFile}
-            setSelectedFile={setSelectedFile}
-          />
+
+          {tableData.length && tableData[0].label && (
+            <>
+              <div className="form-section form-display relative">
+                <div className="excel_button">
+                  <button onClick={() => handleExportExcel()} className="custom-file-export bg-transparent">
+                    <Excel className="w-6 h-6" />
+                  </button>
+                </div>
+                <TableDisplay
+                  tableData={tableData}
+                  dragItem={dragItem}
+                  draggedOverItem={draggedOverItem}
+                  handleSort={handleSort}
+                  enableEdit={enableEdit}
+                  handleDelete={handleDelete}
+                  isDragging={isDragging}
+                  setIsDragging={setIsDragging}
+                />
+              </div>
+            </>
+          )}
+
+          <div className="form-section form-input-file">
+            <ReadExcel
+              dataTable={dataTable}
+              setDataTable={setDataTable}
+              selectedFile={selectedFile}
+              setSelectedFile={setSelectedFile}
+            />
+          </div>
         </div>
       </div>
     </div>

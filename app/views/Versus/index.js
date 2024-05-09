@@ -6,7 +6,6 @@ const Versus = () => {
   return (
     <>
       <div className="versus__background">
-        {/* <div class="radial-lines"></div> */}
         <div className="pattern-overlay"></div>
         <div className="versus__background-circle">
           <div className="versus__background-text">

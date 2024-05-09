@@ -10,12 +10,17 @@
   align-items: center;
 
   padding: 2% 5%;
+
+  background-color: #9acaf5;
+  background-image: linear-gradient(62deg, #9acaf5 0%, #9a9aff 100%);
 }
 
 .qr__generator-form {
   width: 100%;
-  border: 2px solid black;
-  flex: 1;
+  min-height: 400px;
+  background: white;
+
+  border-radius: 24px;
 
   display: flex;
   flex-direction: column;
@@ -23,12 +28,12 @@
   align-items: center;
 
   padding: 1%;
-  gap: 8px;
 
   .form-section {
     width: 100%;
-    border: 2px solid black;
-    padding: 2%;
+    // border: 1px solid rgba(128, 128, 128, 0.3);
+    border-radius: 10px;
+    padding: 8px 2%;
   }
 }
 
@@ -86,6 +91,12 @@
   }
 }
 
+.table_no_data {
+  height: 200px;
+  width: 100%;
+  border-style: dashed;
+}
+
 .table-wrapper {
   overflow-x: auto; /* Cho phép cuộn ngang khi cần */
   max-width: 100%; /* Đảm bảo bảng không bị tràn ra khỏi màn hình */
@@ -94,11 +105,32 @@
 .custom-file-upload {
   border: 1px solid #ccc;
   display: inline-block;
-  padding: 6px 20px;
+  padding: 8px 20px;
   cursor: pointer;
-  background-color: #f9f9f9;
+  border-radius: 8px;
+  color: white;
+
+  &:hover {
+    opacity: 0.8;
+  }
 }
 
-.custom-file-upload:hover {
-  background-color: #e9e9e9;
+.excel_button {
+  position: absolute;
+  top: 2%;
+  right: 0;
+
+  .custom-file-export {
+    border: 1px solid rgba(34, 197, 94, 0.8);
+    display: inline-block;
+    padding: 8px 20px;
+    cursor: pointer;
+    border-radius: 8px;
+    color: white;
+
+    &:hover {
+      background-color: rgba(34, 197, 94, 0.8);
+      opacity: 0.8;
+    }
+  }
 }

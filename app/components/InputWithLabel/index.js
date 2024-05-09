@@ -5,9 +5,9 @@ import React from 'react';
 const InputWithLabel = ({ label, type = 'text', name, placeholder = '', setInputData, inputRef, inputData }) => {
   return (
     <div className="input_label_group flex items-center w-4/5">
-      <label htmlFor={name} className="whitespace-nowrap block text-lg font-medium leading-6 text-gray-900">
+      {/* <label htmlFor={name} className="whitespace-nowrap block leading-6 text-gray-900">
         {label}:
-      </label>
+      </label> */}
       <div className="w-full">
         <input
           type={type}

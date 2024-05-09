@@ -3251,6 +3251,27 @@ video {
   border-width: 1px;
 }
 
+.border-x {
+  border-left-width: 1px;
+  border-right-width: 1px;
+}
+
+.min-h-72 {
+  min-height: 18rem /* 288px */;
+}
+
+.pl-28 {
+  padding-left: 7rem /* 112px */;
+}
+
+.text-sky-500 {
+  color: rgba(14, 165, 233, 1);
+}
+
+.text-start {
+  text-align: start;
+}
+
 .border-t-0 {
   border-top-width: 0;
 }
@@ -9724,6 +9745,10 @@ video {
 
 .resize {
   resize: both;
+}
+
+.gap-1 {
+  gap: 0.25rem;
 }
 
 .shadow {

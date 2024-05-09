@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import readXlsxFile from 'read-excel-file';
+import readXlsxFile, { readSheetNames } from 'read-excel-file';
 
 import { qrDataSchema } from '../../shared/qrDataSchema';
 import { Button } from 'antd';
@@ -12,14 +12,26 @@ import QRCode from 'qrcode';
 const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) => {
   const [headers, setHeaders] = useState([]);
 
+  const [sheetOptions, setSheetOptions] = useState([]);
+  const [selectedSheet, setSelectedSheet] = useState(0);
+
   useEffect(() => {
     if (selectedFile !== null) {
-      readXlsxFile(selectedFile).then((rows) => {
+      readSheetNames(selectedFile).then((sheetNames) => {
+        console.log(sheetNames);
+        setSheetOptions(sheetNames);
+      });
+    }
+  }, [selectedFile]);
+
+  useEffect(() => {
+    if (selectedSheet !== 0 && selectedFile !== null) {
+      readXlsxFile(selectedFile, { sheet: selectedSheet }).then((rows) => {
         setHeaders(rows[0]);
         setDataTable(rows.slice(1));
       });
     }
-  }, [selectedFile]);
+  }, [selectedSheet]);
 
   const handleChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -66,16 +78,31 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
   };
 
   return (
-    <div>
+    <div className="mt-4">
+      <div className="mb-2 font-semibold">Xem thông tin: </div>
       <div className="flex justify-between items-center">
         <div>
-          <label htmlFor="file-upload" className="custom-file-upload">
+          <label htmlFor="file-upload" className="custom-file-upload bg-blue-500">
             <input id="file-upload" type="file" onChange={handleChange} className="hidden" />
-            Upload File
+            Tải file lên
           </label>
+          {sheetOptions.length > 0 &&
+            sheetOptions.map((sheet, index) => (
+              <button
+                key={`${sheet}_${index}`}
+                onClick={() => {
+                  setSelectedSheet(index + 1);
+                  setSheetOptions([]);
+                }}
+                className="custom-file-upload bg-green-500 ml-4"
+              >
+                {sheet}
+              </button>
+            ))}
         </div>
+
         {dataTable.length ? (
-          <div className="custom-file-upload" onClick={handleDownloadAll}>
+          <div className="custom-file-upload bg-blue-500" onClick={handleDownloadAll}>
             Tải hết QR Code
           </div>
         ) : (
@@ -90,25 +117,10 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
                 {headers.map((header, index) => (
                   <th key={index}>{header}</th>
                 ))}
-                <td className="font-semibold">QR Code</td>
+                <th className="font-semibold">QR Code</th>
               </tr>
             </thead>
             <tbody>
-              {/* {dataTable.map((item, index) => (
-                <tr key={index} className="border">
-                  <td>{item.index}</td>
-                  <td>{item.fullname}</td>
-                  <td>{item.birthdate}</td>
-                  <td>{item.sex}</td>
-                  <td>{item.level}</td>
-                  <td>{item.desc}</td>
-                  <td>{item.unit}</td>
-                  <td>{item.cardCode}</td>
-                  <td>{item.cardDate}</td>
-                  <td>{item.note}</td>
-                  
-                </tr>
-              ))} */}
               {dataTable.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {row.map((cell, cellIndex) => (
@@ -124,7 +136,13 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
             </tbody>
           </table>
         ) : (
-          <div></div>
+          <table className="mt-4 border border-gray-400 table_no_data">
+            <tbody>
+              <tr>
+                <td className="text-center">Chưa có file được chọn</td>
+              </tr>
+            </tbody>
+          </table>
         )}
       </div>
     </div>

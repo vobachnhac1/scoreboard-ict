@@ -1,8 +1,6 @@
 import './index.scss';
 
 import React, { useRef, useState } from 'react';
-import QrFormHeader from '../../components/QrFormHeader';
-import { Button } from 'antd';
 
 import TableDisplay from './TableDisplay';
 import ReadExcel from './ReadExcel';
@@ -12,6 +10,7 @@ import writeXlsxFile from 'write-excel-file';
 import { exportSchema } from '../../shared/qrDataSchema';
 import Excel from '../../components/Icons/Excel';
 import { useTranslation } from 'react-i18next';
+import InputHeader from './InputHeader';
 
 const Home = () => {
   const { t } = useTranslation();
@@ -117,7 +116,7 @@ const Home = () => {
           <div className="text-start pl-4 pt-2 w-full text-blue-600 text-xl">Màn hình tạo mã thông tin</div>
           <div className="form-section form-header">
             <div className="mt-4 mb-4 font-semibold">Nhập thông tin: </div>
-            <QrFormHeader
+            <InputHeader
               tableData={tableData}
               setTableData={setTableData}
               setIndexAdd={setIndexAdd}

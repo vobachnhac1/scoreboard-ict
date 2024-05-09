@@ -12,17 +12,11 @@ import QRCode from 'qrcode';
 const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) => {
   const [headers, setHeaders] = useState([]);
 
-  console.log(dataTable);
-
   useEffect(() => {
     if (selectedFile !== null) {
-      readXlsxFile(selectedFile, {
-        schema: qrDataSchema
-      }).then(({ rows, errors }) => {
-        const keysArray = Object.entries(qrDataSchema).map(([label, { prop }]) => ({ label, key: prop }));
-
-        setHeaders(keysArray);
-        setDataTable(rows);
+      readXlsxFile(selectedFile).then((rows) => {
+        setHeaders(rows[0]);
+        setDataTable(rows.slice(1));
       });
     }
   }, [selectedFile]);
@@ -31,11 +25,11 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
     setSelectedFile(e.target.files[0]);
   };
 
-  const handleDownloadQr = async (item) => {
+  const handleDownloadQr = async (item, index) => {
     let templateString = '';
 
     for (let i = 0; i < headers.length; i++) {
-      templateString += `${headers[i].label}: ${item[headers[i].key]} \n`;
+      templateString += `${headers[i]}: ${item[i]} \n`;
     }
 
     templateString += '///////  DHT-NHACVB ///////';
@@ -44,7 +38,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
 
     let aEl = document.createElement('a');
     aEl.href = qrCodeURL;
-    aEl.download = `${item.index}_${item.fullname}.png`;
+    aEl.download = `${index + 1}.png`;
     document.body.appendChild(aEl);
     aEl.click();
     document.body.removeChild(aEl);
@@ -58,17 +52,17 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
       let templateString = '';
 
       for (let j = 0; j < headers.length; j++) {
-        templateString += `${headers[j].label}: ${item[headers[j].key]} \n`;
+        templateString += `${headers[j]}: ${item[j]} \n`;
       }
 
       templateString += '///////  DHT-NHACVB ///////';
 
       const qrDataURL = await QRCode.toDataURL(templateString, { errorCorrectionLevel: 'H' });
-      zip.file(`${dataTable[i].index}_${dataTable[i].fullname}.png`, qrDataURL.split('base64,')[1], { base64: true });
+      zip.file(`${i + 1}.png`, qrDataURL.split('base64,')[1], { base64: true });
     }
 
     const content = await zip.generateAsync({ type: 'blob' });
-    saveAs(content, 'qrcodes.zip');
+    saveAs(content, 'danh_sach_qrcodes.zip');
   };
 
   return (
@@ -93,16 +87,14 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
           <table className="mt-4 border border-black table_show_data">
             <thead>
               <tr>
-                {headers.map((item, index) => (
-                  <td key={item.key} className="font-semibold">
-                    {item.label}
-                  </td>
+                {headers.map((header, index) => (
+                  <th key={index}>{header}</th>
                 ))}
                 <td className="font-semibold">QR Code</td>
               </tr>
             </thead>
             <tbody>
-              {dataTable.map((item, index) => (
+              {/* {dataTable.map((item, index) => (
                 <tr key={index} className="border">
                   <td>{item.index}</td>
                   <td>{item.fullname}</td>
@@ -114,8 +106,16 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
                   <td>{item.cardCode}</td>
                   <td>{item.cardDate}</td>
                   <td>{item.note}</td>
+                  
+                </tr>
+              ))} */}
+              {dataTable.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  {row.map((cell, cellIndex) => (
+                    <td key={cellIndex}>{cell}</td>
+                  ))}
                   <td>
-                    <Button type="" onClick={() => handleDownloadQr(item)}>
+                    <Button type="" onClick={() => handleDownloadQr(row, rowIndex)}>
                       Download QR
                     </Button>
                   </td>

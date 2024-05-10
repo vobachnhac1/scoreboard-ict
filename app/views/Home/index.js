@@ -9,11 +9,9 @@ import writeXlsxFile from 'write-excel-file';
 
 import { exportSchema } from '../../shared/qrDataSchema';
 import Excel from '../../components/Icons/Excel';
-import { useTranslation } from 'react-i18next';
 import InputHeader from './InputHeader';
 
 const Home = () => {
-  const { t } = useTranslation();
   const template = ['index', 'fullname', 'birthdate', 'sex', 'level', 'desc', 'unit', 'cardCode', 'cardDate', 'note'];
 
   const [tableData, setTableData] = useState(

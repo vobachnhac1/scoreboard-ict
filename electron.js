@@ -52,9 +52,9 @@ app.whenReady().then(() => {
     .then((name) => console.log(`Added Extension:  ${name}`))
     .catch((err) => console.log('An error occurred: ', err));
 
-  globalShortcut.register('F2', () => {
-    mainWindow.loadURL('http://localhost:7777/#/versus');
-  });
+  // globalShortcut.register('F2', () => {
+  //   mainWindow.loadURL('http://localhost:7777/#/versus');
+  // });
 });
 
 // Quit when all windows are closed.

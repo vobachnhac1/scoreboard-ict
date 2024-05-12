@@ -7,6 +7,7 @@ import { createBrowserHistory } from 'history';
 // import About from '../views/about';
 // import OverViewPage from '../views/overview';
 import Home from '../views/Home';
+import ScoreBoard from '../views/ScoreBoard';
 
 // Config Socket.IO
 import SocketClient from './socket/SocketClient';
@@ -27,6 +28,7 @@ const Routers = () => {
       {/* <Navbar /> */}
       <Route path="/" element={<Home />} />
       <Route path="/versus" element={<Versus />} />
+      <Route path="/scoreboard" element={<ScoreBoard />} />
       {/* <Route path="about" component={About} /> */} 
       {/* <Footer /> */}
       {/* </div> */}

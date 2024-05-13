@@ -2,28 +2,69 @@ const express = require('express');
 const { createServer } =  require('http');
 const { Server } =  require('socket.io');
 const logger = require('morgan');
+const cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser');
-
 const app = express();
+
+const testRouter = require('./server/routes/caidat.ts')
 /**
  *  SERVER-SIDE
  */
+// const app = express();
+// // we imported config
+// // we imported router
+// // we imported mongoose
+// // we imported cors
+// // we imported express and set up a new express 
+// // instance const app = express().
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+// set route in middleware
+// app.use(router);
+app.use('/api', testRouter);
 
-app.get('/test', (req, res) => {
-    res.send('Welcome to your express API');
+// allow cors
+app.use(cors());
+
+// Error handlers
+
+// Catch 404 and forward to error handler
+app.use(function (req, res, next) {
+    const error = new Error('Not Found');
+    error.status = 404;
+    next(error);
 });
 
-// app.listen(7777, () => console.log('App running on port 7777 🔥'));
+// Development error handler
+// Will print stacktrace
+if (app.get('env') !== 'development') {
+    app.use(function (error, req, res, next) {
+        res.status(error.status || 500);
+        res.send({
+            message: error.message,
+            error: error
+        });
+    });
+}
 
+// Production error handler
+// No stacktraces leaked to user
+app.use(function (error, req, res, next) {
+    res.status(error.status || 500);
+    res.send({
+        message: error.message,
+        error: error
+    });
+});
 
+app.listen(7778, () => console.log('API running on port 7778 🔥'));
+
+//-----------------------------------------------------------------------------------------------//
 /**
  * SOCKET.IO 
  */
@@ -74,6 +115,6 @@ app.get('/users', (req, res) => {
 });
 
 httpServer.listen(port, () => {
-    console.log(`listening on *:${port}`);
+    console.log(`Socket listening on *:${port}`);
 });
 

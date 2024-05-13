@@ -1,0 +1,148 @@
+.text-center {
+  text-align: center;
+}
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgba(255, 255, 255, var(--tw-text-opacity));
+}
+.text-red-600 {
+  --tw-text-opacity: 1;
+  color: rgba(220, 38, 38, var(--tw-text-opacity));
+}
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+.text-2xl {
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem; /* 32px */
+}
+.text-9xl {
+  font-size: 8rem; /* 128px */
+  line-height: 1;
+}
+.uppercase {
+  text-transform: uppercase;
+}
+.px-8 {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+.py-5 {
+  padding: 1.25rem; /* 20px */
+}
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+.mt-7 {
+  margin: 1.75rem;
+}
+
+.bg-red-700 {
+  background-color: rgb(254 0 0);
+}
+.bg-green-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(47 79 78);
+}
+.flex {
+  display: flex;
+}
+.justify-center {
+  justify-content: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
+
+.items-center {
+  align-items: center;
+}
+.px-32 {
+  padding-left: 8rem; /* 128px */
+  padding-right: 8rem; /* 128px */
+}
+.h-screen {
+  height: 100vh;
+}
+
+.w-35 {
+  width: 37%;
+}
+.w-4-5 {
+  width: 80%;
+}
+.h-fit {
+  height: fit-content;
+}
+.flex-grow {
+  flex-grow: 1;
+}
+.flex-col {
+  flex-direction: column;
+}
+.w-1-5 {
+  width: 20%;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.bg-yellow-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 255 0);
+}
+.bg-yellow-custom {
+  background-color: rgb(239 229 140);
+}
+.text-5xl {
+  font-size: 3rem;
+  line-height: 1;
+}
+.max-h {
+  max-height: 50%;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.p-2 {
+  padding: 0.5rem;
+}
+
+.mt-20 {
+  margin-top: 5rem;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+.mb-2
+{margin-bottom: 0.5rem;}

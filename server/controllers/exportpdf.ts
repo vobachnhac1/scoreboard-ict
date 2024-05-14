@@ -212,7 +212,7 @@ function base64_encode(file) {
 }
 
 // Tạo file excel mẫu
-const thongtin_excel_mau = async (soluong, noidung, uutien, danhsach)=>{
+const thongtin_excel_mau = async (res,soluong, noidung, uutien, danhsach)=>{
     let uu_tien =uutien
     if(!soluong ||  soluong < 3 || soluong >32){
         return
@@ -1635,6 +1635,82 @@ const thongtin_excel_mau = async (soluong, noidung, uutien, danhsach)=>{
                     ws.cell(i*2 -1 + vi_tri_bd, 3).style(styleBottom) 
                 }
             }
+            // vào vòng 1
+            if([13,14].includes(i)){
+                if([13].includes(i)){
+                    ws.cell(i*2 + vi_tri_bd, 4).style(styleBottom) 
+                }
+            }else{
+                ws.cell(i*2 -1 + vi_tri_bd, 4).style(styleBottom) 
+            }
+
+            // vào vòng 2
+            if(i%2 == 1 && i < 13){
+                ws.cell(i*2 + vi_tri_bd, 5).style(styleBottom) 
+            }else if (i%2 == 1 && i > 15){
+                ws.cell(i*2-2 + vi_tri_bd, 5).style(styleBottom) 
+
+            }else if([14].includes(i)){
+                ws.cell(i*2 -1 + vi_tri_bd, 5).style(styleBottom) 
+            }
+            
+            // vòng 3
+            if([2,6,10].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 6).style(styleBottom) 
+            }else if ([15].includes(i)){
+                ws.cell(i*2-1 + vi_tri_bd, 6).style(styleBottom) 
+            }
+
+            // bán kết
+            ws.cell(13, 7).style(styleBottom) 
+            ws.cell(30, 7).style(styleBottom) 
+            //chung kết
+            ws.cell(21, 8).style(styleBottom) 
+
+            // border
+            //cấp 3
+            if([13].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 3).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 3).style(styleRight) 
+            }
+
+            //cấp 4
+            if(i%2 == 1 && ![13,15,17].includes(i) || [16].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+            }
+            if([13].includes(i)){
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +2+ vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2+3 + vi_tri_bd, 4).style(styleRight) 
+            }
+
+
+            // cấp 5
+            if([2,6,10].includes(i)){
+                const _j=i*2-1+vi_tri_bd
+                const _lenght=_j + 4
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            }else if ([14].includes(i)){
+                const _j=i*2+ vi_tri_bd  
+                const _lenght=_j + 5
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            }
+            //cấp 6
+
+            for(let j =10 ; j <18;j++){
+                ws.cell(j, 6).style(styleRight) 
+            }
+            for(let j =26 ; j <35 ;j++){
+                ws.cell(j, 6).style(styleRight) 
+            }
+            for(let j =14 ; j <31;j++){
+                ws.cell(j, 7).style(styleRight) 
+            }
 
         } else if ( soluong == 18){
             //khỏi tạo tên - đơn vị :
@@ -2007,44 +2083,44 @@ const thongtin_excel_mau = async (soluong, noidung, uutien, danhsach)=>{
     }
     // xuất file excel
     const linkExcel = './exports/'+removeVietnameseTones(noidung) +'.xlsx'
-    await wb.write(linkExcel);
-    let listImage =[]
-    try {
-        // Excel to PNG in Nodejs 
-        var aspose = aspose || {};
-        aspose.cells = require("aspose.cells");
-        // Create a workbook object and load the source file 
-        var workbook = new aspose.cells.Workbook(linkExcel);
-        // Instantiate an instance of the ImageOrPrintOptions class to access additional image creation options 
-        var imgOptions = new aspose.cells.ImageOrPrintOptions();
-        // Set Horizontal Resolution
-        imgOptions.HorizontalResolution = 300;
+    wb.write(linkExcel)
+    wb.write(linkExcel, res)
+    // let listImage =[]
+    // try {
+    //     // // Excel to PNG in Nodejs 
+    //     // var aspose = aspose || {};
+    //     // aspose.cells = require("aspose.cells");
+    //     // // Create a workbook object and load the source file 
+    //     // var workbook = new aspose.cells.Workbook(linkExcel);
+    //     // // Instantiate an instance of the ImageOrPrintOptions class to access additional image creation options 
+    //     // var imgOptions = new aspose.cells.ImageOrPrintOptions();
+    //     // // Set Horizontal Resolution
+    //     // imgOptions.HorizontalResolution = 300;
 
-        // Set Vertical Resolution
-        imgOptions.VerticalResolution = 300;
-        // Set the image type by calling setImageType method  
-        imgOptions.setImageType(aspose.cells.ImageType.PNG);
-        // Invoke the get(index) method to get the first worksheet. 
-        var sheet = workbook.getWorksheets().get(0);
-        // Create a SheetRender object for the target sheet  
-        var sr = new aspose.cells.SheetRender(sheet, imgOptions);
-        for (var j = 0; j < sr.getPageCount(); j++) {
-            // Invoke the toImage method to generate an image for the worksheet 
-            let linkfile = "./exports/" + removeVietnameseTones(noidung)  + ".png"
-            // let filename = "./exports/" + removeVietnameseTones(noidung)  + ".png"
-            await sr.toImage(j, linkfile);
-            const base64 = base64_encode(linkfile)
-            listImage.push({
-                filename: removeVietnameseTones(noidung) + ".png",
-                base64: base64  
-            })
-        } 
-        return listImage
-    } catch (error) {
-        console.log('error: ', error);
-        return []
-    }
-
+    //     // // Set Vertical Resolution
+    //     // imgOptions.VerticalResolution = 300;
+    //     // // Set the image type by calling setImageType method  
+    //     // imgOptions.setImageType(aspose.cells.ImageType.PNG);
+    //     // // Invoke the get(index) method to get the first worksheet. 
+    //     // var sheet = workbook.getWorksheets().get(0);
+    //     // // Create a SheetRender object for the target sheet  
+    //     // var sr = new aspose.cells.SheetRender(sheet, imgOptions);
+    //     // for (var j = 0; j < sr.getPageCount(); j++) {
+    //     //     // Invoke the toImage method to generate an image for the worksheet 
+    //     //     let linkfile = "./exports/" + removeVietnameseTones(noidung)  + ".png"
+    //     //     // let filename = "./exports/" + removeVietnameseTones(noidung)  + ".png"
+    //     //     await sr.toImage(j, linkfile);
+    //     //     const base64 = base64_encode(linkfile)
+    //     //     listImage.push({
+    //     //         filename: removeVietnameseTones(noidung) + ".png",
+    //     //         base64: base64  
+    //     //     })
+    //     // } 
+    //     return []
+    // } catch (error) {
+    //     console.log('error: ', error);
+    //     return []
+    // }
 }
 
 // di chuyển vào service
@@ -2069,7 +2145,6 @@ const caidat_thongso = {
             '1': 1,// được miễn
             '2': 2
         },
-        
     },
     '4': {
         so_tran:3,

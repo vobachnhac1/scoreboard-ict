@@ -12,8 +12,8 @@ caidatRouter.get('/caidat', async (req,res)=>{
 caidatRouter.post('/boctham-mau', async (req,res)=>{
     console.log("/boctham-mau");
     const {soluong, noidung, uutien, danhsach} = req.body 
-    const rs = await exportPDFController.thongtin_excel_mau(soluong, noidung, uutien, danhsach)
-    res.send(rs);
+    const rs = await exportPDFController.thongtin_excel_mau(res, soluong, noidung, uutien, danhsach)
+    // res.send(rs);
 })
 
 

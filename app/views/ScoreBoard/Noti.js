@@ -3,7 +3,7 @@ import "./index.scss";
 
 const Noti = () => {
   return (
-    <div className="grid-container">
+    <div className="grid-container text-xs">
       <div className="col1">
         <div className="text-right">
           <button className="bg-yellow-custom px-2 mb-2">0</button>

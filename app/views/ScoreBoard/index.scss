@@ -17,6 +17,10 @@
   font-size: 1.5rem; /* 24px */
   line-height: 2rem; /* 32px */
 }
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
 .text-9xl {
   font-size: 8rem; /* 128px */
   line-height: 1;
@@ -146,4 +150,63 @@
 }
 .mb-2 {
   margin-bottom: 0.5rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.mb-10 {
+  margin-bottom: 10%;
+}
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+.items-end {
+  align-items: flex-end;
+}
+.p-3 {
+  padding: 0.75rem;
+}
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
+}
+.rounded-full {
+  border-radius: 50%;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.shape {
+  border-radius: 50px / 100px;
+  clip-path: inset(0 round 100px / 200px);
+}
+
+.px-11 {
+  padding-left: 2.75rem;
+  padding-right: 2.75rem;
+}
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
 }

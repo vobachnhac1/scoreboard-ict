@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import readXlsxFile, { readSheetNames } from 'read-excel-file';
 
-import { qrDataSchema } from '../../shared/qrDataSchema';
 import { Button } from 'antd';
 
 import JSZip from 'jszip';

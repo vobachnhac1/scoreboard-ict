@@ -13,6 +13,7 @@ import ScoreBoard from '../views/ScoreBoard';
 import SocketClient from './socket/SocketClient';
 import Versus from '../views/Versus';
 import { useHotkeys } from 'react-hotkeys-hook';
+import PlayerList from '../views/PlayerList';
 
 export const socketClient = new SocketClient();
 
@@ -22,6 +23,7 @@ const Routers = () => {
   useHotkeys('F1', () => navigate('/versus'));
   useHotkeys('esc', () => navigate('/'));
   useHotkeys('F2', () => navigate('/scoreboard'));
+  useHotkeys('F3', () => navigate('/player-list'));
   return (
     <Routes>
       {/* <div style={{ flex: 1, width:'100%', height:'100%', backgroundColor:'white ' }}> */}
@@ -29,7 +31,8 @@ const Routers = () => {
       <Route path="/" element={<Home />} />
       <Route path="/versus" element={<Versus />} />
       <Route path="/scoreboard" element={<ScoreBoard />} />
-      {/* <Route path="about" component={About} /> */} 
+      <Route path="/player-list" element={<PlayerList />} />
+      {/* <Route path="about" component={About} /> */}
       {/* <Footer /> */}
       {/* </div> */}
     </Routes>

@@ -103,3 +103,46 @@ export const exportSchema = [
     value: (item) => item.note
   }
 ];
+
+export const playerListSchema = {
+  ID: {
+    prop: 'id',
+    type: String,
+    required: true
+  },
+  TT: {
+    prop: 'stt',
+    type: String,
+    required: true
+  },
+  'HỌ TÊN': {
+    prop: 'hoten',
+    type: String,
+    required: true
+  },
+  'ĐƠN VỊ': {
+    prop: 'donvi',
+    type: String,
+    required: true
+  },
+  'NĂM SINH': {
+    prop: 'namsinh',
+    type: String,
+    required: true
+  },
+  'CÂN NẶNG': {
+    prop: 'cannang',
+    type: String,
+    required: true
+  },
+  'GHI CHÚ': {
+    prop: 'ghichu',
+    type: String,
+    required: true
+  },
+  'KẾT QUẢ BỐC THĂM': {
+    prop: 'ketquaboctham',
+    type: String,
+    required: true
+  }
+};

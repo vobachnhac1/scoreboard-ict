@@ -14,6 +14,7 @@ import SocketClient from './socket/SocketClient';
 import Versus from '../views/Versus';
 import { useHotkeys } from 'react-hotkeys-hook';
 import PlayerList from '../views/PlayerList';
+import Bracket from '../views/Bracket';
 
 export const socketClient = new SocketClient();
 
@@ -24,6 +25,7 @@ const Routers = () => {
   useHotkeys('esc', () => navigate('/'));
   useHotkeys('F2', () => navigate('/scoreboard'));
   useHotkeys('F3', () => navigate('/player-list'));
+  useHotkeys('F4', () => navigate('/bracket'));
   return (
     <Routes>
       {/* <div style={{ flex: 1, width:'100%', height:'100%', backgroundColor:'white ' }}> */}
@@ -32,6 +34,7 @@ const Routers = () => {
       <Route path="/versus" element={<Versus />} />
       <Route path="/scoreboard" element={<ScoreBoard />} />
       <Route path="/player-list" element={<PlayerList />} />
+      <Route path="/bracket" element={<Bracket />} />
       {/* <Route path="about" component={About} /> */}
       {/* <Footer /> */}
       {/* </div> */}

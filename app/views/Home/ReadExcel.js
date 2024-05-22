@@ -14,12 +14,16 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
   const [sheetOptions, setSheetOptions] = useState([]);
   const [selectedSheet, setSelectedSheet] = useState(0);
 
+  const [inputKey, setInputKey] = useState(Date.now());
+
   useEffect(() => {
     if (selectedFile !== null) {
       readSheetNames(selectedFile).then((sheetNames) => {
-        console.log(sheetNames);
         setSheetOptions(sheetNames);
       });
+    } else {
+      setSheetOptions([]);
+      setSelectedSheet(NaN);
     }
   }, [selectedFile]);
 
@@ -33,7 +37,9 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
   }, [selectedSheet]);
 
   const handleChange = (e) => {
+    if (!e.target.files[0]) return;
     setSelectedFile(e.target.files[0]);
+    setInputKey(Date.now());
   };
 
   const handleDownloadQr = async (item, index) => {
@@ -81,11 +87,12 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
       <div className="mb-2 font-semibold">Xem thông tin: </div>
       <div className="flex justify-between items-center">
         <div>
-          <label htmlFor="file-upload" className="custom-file-upload bg-blue-500">
-            <input id="file-upload" type="file" onChange={handleChange} className="hidden" />
+          <label className="custom-file-upload bg-blue-500">
+            <input type="file" onChange={handleChange} className="hidden" key={inputKey} />
             Tải file lên
           </label>
-          {sheetOptions.length > 0 &&
+          {selectedFile &&
+            sheetOptions.length > 0 &&
             sheetOptions.map((sheet, index) => (
               <button
                 key={`${sheet}_${index}`}

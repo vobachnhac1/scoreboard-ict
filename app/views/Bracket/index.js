@@ -1,62 +1,95 @@
-import React, { useRef, useState, useEffect } from "react";
-import Match from "./Match";
-import readXlsxFile from "read-excel-file";
-import Player from "./Player";
-import {
-  Bracket,
-  RoundProps,
-  Seed,
-  SeedItem,
-  SeedTeam,
-  RenderSeedProps,
-} from "react-brackets";
-
-const CustomSeed = ({ seed, breakpoint, roundIndex, seedIndex }) => {
-  console.log(seed);
-
-  return (
-    <Seed>
-      <SeedItem>
-        <div>
-          <SeedTeam style={{ color: "red" }}>{seed.teams[0]?.name}</SeedTeam>
-          <SeedTeam>{seed.teams[1]?.name}</SeedTeam>
-        </div>
-      </SeedItem>
-    </Seed>
-  );
-};
+import React, { useRef, useState, useEffect } from 'react';
+import readXlsxFile from 'read-excel-file';
+import { Bracket } from 'react-brackets';
+import InputHeader from './InputHeader';
+import PlayerList from './PlayerList';
 
 const BracketTest = () => {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [headers, setHeaders] = useState({});
-
   const [playerList, setPlayerList] = useState([]);
-
-  const data = [
-    ["1.", "Nguyễn Văn A1'", "Quận 1"],
-    ["2.", "Nguyễn Văn A2'", "Quận 1"],
-    ["3.", "Nguyễn Văn A3'", "Quận 1"],
-    ["4.", "Nguyễn Văn A3'", "Nguyễn Văn A3'"],
-    ["5.", "Nguyễn Văn A3'", "Nguyễn Văn A3'"],
-    ["6.", "Nguyễn Văn A6'", "Quận 1"],
-    ["7.", "Nguyễn Văn A7'", "Quận 1"],
-    ["8.", "Nguyễn Văn A3'", "Nguyễn Văn A3'"],
-    ["9.", "Nguyễn Văn A3'", "Nguyễn Văn A3'"],
-    ["10.", "Nguyễn Văn A3'", "Nguyễn Văn A3'"],
-    ["11.", "Nguyễn Văn A3'", "Nguyễn Văn A3'"],
-    ["12.", "Nguyễn Văn A12'", "Quận 1"],
-  ];
+  const [seeds, setSeeds] = useState([
+    {
+      id: 1,
+      teams: []
+    },
+    {
+      id: 2,
+      teams: []
+    },
+    {
+      id: 3,
+      teams: []
+    },
+    {
+      id: 4,
+      teams: []
+    },
+    {
+      id: 5,
+      teams: []
+    },
+    {
+      id: 6,
+      teams: []
+    },
+    {
+      id: 7,
+      teams: []
+    },
+    {
+      id: 8,
+      teams: []
+    }
+  ]);
 
   useEffect(() => {
     if (selectedFile !== null) {
       readXlsxFile(selectedFile).then((rows) => {
-        const filteredData = rows.filter((row) =>
-          row.some((item) => item !== null)
-        );
-
+        const filteredData = rows.filter((row) => row.some((item) => item !== null));
         setPlayerList(filteredData);
+        // const transformData = (data) => {
+        //   const result = [];
+        //   const mapping = {
+        //     1: [0],
+        //     2: [1, 2],
+        //     3: [3, 4],
+        //     4: [5],
+        //     5: [6],
+        //     6: [7, 8],
+        //     7: [9, 10],
+        //     8: [11]
+        //   };
 
-        console.log(filteredData);
+        //   for (const [id, indices] of Object.entries(mapping)) {
+        //     const teams = indices.map((index) => {
+        //       const name = data[index][1].replace("'", '') + (index === 11 ? '' : ' - ' + data[index][2]);
+        //       return { name };
+        //     });
+        //     result.push({ id: parseInt(id), teams });
+        //   }
+
+        //   return result;
+        // };
+        // const transformedData = transformData(filteredData);
+
+        // setSeeds(transformedData);
+
+        const result = filteredData.reduce((acc, curr, index) => {
+          const id = Math.floor(index / 2) + 1;
+          const team = { name: `${curr[1]} - ${curr[2]}` };
+
+          const existingTeam = acc.find((item) => item.id === id);
+
+          if (existingTeam) {
+            existingTeam.teams.push(team);
+          } else {
+            acc.push({ id, teams: [team] });
+          }
+
+          return acc;
+        }, []);
+
+        setSeeds(result);
       });
     }
   }, [selectedFile]);
@@ -65,96 +98,72 @@ const BracketTest = () => {
     setSelectedFile(e.target.files[0]);
   };
 
-//   const rounds = [
-//     {
-//       seeds: [
-//         {
-//           id: 1,
-//           teams: [{ name: "Team A" }, { name: "Team B" }],
-//         },
-//         {
-//           id: 2,
-//           teams: [{ name: "Team C" }, { name: "Team D" }],
-//         },
-//         {
-//           id: 3,
-//           teams: [{ name: "Team Ah" }],
-//         },
-//         {
-//           id: 4,
-//           teams: [{ name: "Team Cq" }, { name: "Team Dq" }],
-//         },
-//       ],
-//     },
-//     {
-//       seeds: [
-//         {
-//           id: 3,
-//           teams: [{ name: "Team A" }, { name: "Team C" }],
-//         },
-//       ],
-//     },
-//   ];
-
-
-const createRounds = (data) => {
-    // Initialize an empty array for the rounds
-    const rounds = []
-
-    // Create a map to keep track of the seeds by their ids
-    const seedsMap = {}
-
-    // Iterate over the data array
-    data.forEach((item, index) => {
-        console.log(index)
-        const id = index + 1;
-        const name = item[1];
-
-        // If the name is not null, add the team to the corresponding seed
-        if (name) {
-            if (!seedsMap[id]) {
-                seedsMap[id] = { id, teams: [] };
-            }
-            seedsMap[id].teams.push({ name });
+  const rounds = [
+    {
+      title: 'Vòng loại',
+      seeds: seeds
+    },
+    {
+      title: 'Tứ kết',
+      seeds: [
+        {
+          id: 9,
+          teams: []
+        },
+        {
+          id: 10,
+          teams: []
+        },
+        {
+          id: 11,
+          teams: []
+        },
+        {
+          id: 12,
+          teams: []
         }
-    });
-
-    // Convert the seeds map to an array and add it to the rounds
-    rounds.push({ seeds: Object.values(seedsMap) });
-
-    return rounds;
-}
-
-const newRounds = createRounds(data);
-console.log(JSON.stringify(newRounds, null, 2));
-
+      ]
+    },
+    {
+      title: 'Bán kết',
+      seeds: [
+        {
+          id: 13,
+          teams: []
+        },
+        {
+          id: 14,
+          teams: []
+        }
+      ]
+    },
+    {
+      title: 'Chung kết',
+      seeds: [
+        {
+          id: 15,
+          teams: []
+        }
+      ]
+    }
+  ];
 
   return (
-    <>
-      {/* <div className="">
-        <label
-          htmlFor="playerListUpload"
-          className="custom-file-upload bg-indigo-500"
-        >
-          <input
-            id="playerListUpload"
-            type="file"
-            onChange={handleChange}
-            className="hidden"
-          />
-          Tải file lên
-        </label>
-
-        <div>
-          {data.map((item) => (
-            <div key={item[0]} className='mb-3'>
-              <Player item={item} />
+    <div className="w-full h-full">
+      <div className="min-h-screen bg-gradient-to-r from-blue-600 to-violet-600">
+        <div className="flex flex-col justify-center items-center p-16 px-28 gap-8">
+          <InputHeader handleChange={handleChange} />
+          <div className="w-full flex gap-4 min-h-[600px]">
+            <div className="w-1/3 bg-white shadow-xl rounded-xl">
+              <PlayerList playerList={playerList} />
             </div>
-          ))}{" "}
+            <div className="w-2/3 bg-white shadow-xl rounded-xl p-4">
+              <Bracket rounds={rounds} bracketClassName="w-full justify-between" />
+            </div>
+          </div>
         </div>
-      </div> */}
-      <Bracket rounds={newRounds} renderSeedComponent={CustomSeed} />
-    </>
+      </div>
+    </div>
   );
 };
 

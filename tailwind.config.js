@@ -1,13 +1,12 @@
-/** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    './pages/**/*.{html,js,jsx,ts,tsx}',
-    './components/**/*.{html,js,jsx,ts,tsx}',
-    './app/**/*.{html,js,jsx,ts,tsx}',
-    './src/**/*.{html,js,jsx,ts,tsx}'
-  ],
+  purge: ['./app/**/*.{js,jsx,ts,tsx}', './public/index.html'],
+  content: ['./app/**/*.{js,jsx,ts,tsx}', './public/index.html'],
+  darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {}
   },
-  plugins: []
+  variants: {
+    extend: {}
+  },
+  plugins: [require('@tailwindcss/forms')]
 };

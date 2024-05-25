@@ -21,11 +21,11 @@ export const socketClient = new SocketClient();
 // Tạo component App
 const Routers = () => {
   const navigate = useNavigate();
-  useHotkeys('F1', () => navigate('/versus'));
+  // useHotkeys('F4', () => navigate('/versus'));
   useHotkeys('esc', () => navigate('/'));
-  useHotkeys('F2', () => navigate('/scoreboard'));
-  useHotkeys('F3', () => navigate('/player-list'));
-  useHotkeys('F4', () => navigate('/bracket'));
+  // useHotkeys('F2', () => navigate('/scoreboard'));
+  // useHotkeys('F3', () => navigate('/player-list'));
+  useHotkeys('F1', () => navigate('/bracket'));
   return (
     <Routes>
       {/* <div style={{ flex: 1, width:'100%', height:'100%', backgroundColor:'white ' }}> */}

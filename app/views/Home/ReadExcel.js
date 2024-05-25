@@ -7,12 +7,19 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
 import QRCode from 'qrcode';
+import SelectNavite from '../../components/SelectBox';
 
 const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) => {
   const [headers, setHeaders] = useState([]);
 
   const [sheetOptions, setSheetOptions] = useState([]);
   const [selectedSheet, setSelectedSheet] = useState(0);
+
+  const [inputKey, setInputKey] = useState(Date.now());
+
+  const [isQrLink, setIsQrLink] = useState(false);
+
+  const options = ['Thông tin', 'Link'];
 
   useEffect(() => {
     if (selectedFile !== null) {
@@ -33,14 +40,20 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
   }, [selectedSheet]);
 
   const handleChange = (e) => {
+    if (!e.target.files[0]) return;
     setSelectedFile(e.target.files[0]);
+    setInputKey(Date.now());
   };
 
   const handleDownloadQr = async (item, index) => {
     let templateString = '';
 
-    for (let i = 0; i < headers.length; i++) {
-      templateString += `${headers[i]}: ${item[i]} \n`;
+    if (isQrLink) {
+      templateString = `${item[2]} \n`;
+    } else {
+      for (let i = 0; i < headers.length; i++) {
+        templateString += `${headers[i]}: ${item[i]} \n`;
+      }
     }
 
     templateString += '///////  DHT-NHACVB ///////';
@@ -62,8 +75,12 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
       const item = dataTable[i];
       let templateString = '';
 
-      for (let j = 0; j < headers.length; j++) {
-        templateString += `${headers[j]}: ${item[j]} \n`;
+      if (isQrLink) {
+        templateString = `${item[2]} \n`;
+      } else {
+        for (let j = 0; j < headers.length; j++) {
+          templateString += `${headers[j]}: ${item[j]} \n`;
+        }
       }
 
       templateString += '///////  DHT-NHACVB ///////';
@@ -76,16 +93,26 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
     saveAs(content, 'danh_sach_qrcodes.zip');
   };
 
+  const handleChangeQrType = (e) => {
+    console.log(e.target.value);
+    if (e.target.value === '1') {
+      setIsQrLink(true);
+    } else {
+      setIsQrLink(false);
+    }
+  };
+
   return (
     <div className="mt-4">
       <div className="mb-2 font-semibold">Xem thông tin: </div>
       <div className="flex justify-between items-center">
         <div>
           <label htmlFor="file-upload" className="custom-file-upload bg-blue-500">
-            <input id="file-upload" type="file" onChange={handleChange} className="hidden" />
+            <input id="file-upload" type="file" onChange={handleChange} className="hidden" key={inputKey} />
             Tải file lên
           </label>
-          {sheetOptions.length > 0 &&
+          {selectedFile &&
+            sheetOptions.length > 0 &&
             sheetOptions.map((sheet, index) => (
               <button
                 key={`${sheet}_${index}`}
@@ -100,13 +127,29 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
             ))}
         </div>
 
-        {dataTable.length ? (
+        {/* {dataTable.length ? ( */}
+        <div className="flex gap-4">
           <div className="custom-file-upload bg-blue-500" onClick={handleDownloadAll}>
             Tải hết QR Code
           </div>
-        ) : (
+          <div>
+            <select
+              name="select"
+              className="custom-file-upload pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              defaultValue="0"
+              onChange={handleChangeQrType}
+            >
+              {options.map((option, index) => (
+                <option key={index} value={index}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        {/* ) : (
           <div></div>
-        )}
+        )} */}
       </div>
       <div className="table-wrapper">
         {dataTable.length ? (

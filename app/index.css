@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.sc-gEvEer,
+.sc-aXZVg {
+  display: none;
+}

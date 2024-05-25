@@ -1,11 +1,12 @@
 import { Empty } from 'antd';
 import React from 'react';
 
-const PlayerList = ({ playerList }) => {
+const PlayerList = ({ playerList, isFull }) => {
   console.log(playerList);
   return (
-    <div className="p-4">
-      <table className="w-full border table_show_data">
+    <div className="flex w-full justify-center p-4 flex-col items-center gap-4">
+      <h2 className="font-semibold text-xl text-center">Bảng thông tin tuyển thủ</h2>
+      <table className={`${isFull <= 18 ? ' w-full' : 'w-1/2'} border table_show_data`}>
         <thead>
           <tr>
             <th>STT</th>

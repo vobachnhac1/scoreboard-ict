@@ -1,164 +1,134 @@
-import React, { useRef, useState, useEffect } from 'react';
-import readXlsxFile from 'read-excel-file';
-import { Bracket } from 'react-brackets';
-import InputHeader from './InputHeader';
+import React, { useState, useEffect } from 'react';
 import PlayerList from './PlayerList';
+import InputHeader from './InputHeader';
+import readXlsxFile from 'read-excel-file';
+
+import axios from 'axios';
+import { tempData } from '../../shared/tempData';
+import { SingleEliminationBracket, Match, createTheme } from 'react-tournament-brackets';
+import {
+  generateNextMatchIds,
+  makeMatchesEven,
+  sortMatchesAndUpdateIds,
+  splitParticipants,
+  updateWalkOverStatus
+} from '../../helpers/matches';
+
+const WhiteTheme = createTheme({
+  textColor: { main: '#000000', highlighted: '#07090D', dark: '#3E414D' },
+  matchBackground: { wonColor: '#daebf9', lostColor: '#96c6da' },
+  score: {
+    background: { wonColor: '#87b2c4', lostColor: '#87b2c4' },
+    text: { highlightedWonColor: '#7BF59D', highlightedLostColor: '#FB7E94' }
+  },
+  border: {
+    color: '#CED1F2',
+    highlightedColor: '#da96c6'
+  },
+  roundHeader: { backgroundColor: '#da96c6', fontColor: '#fff' },
+  connectorColor: '#CED1F2',
+  connectorColorHighlight: '#da96c6',
+  svgBackground: '#FAFAFA'
+});
 
 const BracketTest = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [playerList, setPlayerList] = useState([]);
-  const [seeds, setSeeds] = useState([
-    {
-      id: 1,
-      teams: []
-    },
-    {
-      id: 2,
-      teams: []
-    },
-    {
-      id: 3,
-      teams: []
-    },
-    {
-      id: 4,
-      teams: []
-    },
-    {
-      id: 5,
-      teams: []
-    },
-    {
-      id: 6,
-      teams: []
-    },
-    {
-      id: 7,
-      teams: []
-    },
-    {
-      id: 8,
-      teams: []
-    }
-  ]);
+
+  const [matches, setMatches] = useState([]);
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   useEffect(() => {
     if (selectedFile !== null) {
       readXlsxFile(selectedFile).then((rows) => {
         const filteredData = rows.filter((row) => row.some((item) => item !== null));
         setPlayerList(filteredData);
-        // const transformData = (data) => {
-        //   const result = [];
-        //   const mapping = {
-        //     1: [0],
-        //     2: [1, 2],
-        //     3: [3, 4],
-        //     4: [5],
-        //     5: [6],
-        //     6: [7, 8],
-        //     7: [9, 10],
-        //     8: [11]
-        //   };
-
-        //   for (const [id, indices] of Object.entries(mapping)) {
-        //     const teams = indices.map((index) => {
-        //       const name = data[index][1].replace("'", '') + (index === 11 ? '' : ' - ' + data[index][2]);
-        //       return { name };
-        //     });
-        //     result.push({ id: parseInt(id), teams });
-        //   }
-
-        //   return result;
-        // };
-        // const transformedData = transformData(filteredData);
-
-        // setSeeds(transformedData);
-
-        const result = filteredData.reduce((acc, curr, index) => {
-          const id = Math.floor(index / 2) + 1;
-          const team = { name: `${curr[1]} - ${curr[2]}` };
-
-          const existingTeam = acc.find((item) => item.id === id);
-
-          if (existingTeam) {
-            existingTeam.teams.push(team);
-          } else {
-            acc.push({ id, teams: [team] });
-          }
-
-          return acc;
-        }, []);
-
-        setSeeds(result);
       });
     }
   }, [selectedFile]);
+
+  const getData = async () => {
+    await axios
+      .post('http://localhost:7778/api/boctham-mau', tempData, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        responseType: 'blob'
+      })
+      .then((res) => {
+        // const url = window.URL.createObjectURL(new Blob([res.data]));
+        // const link = document.createElement('a');
+        // link.href = url;
+        // link.setAttribute('download', 'file.xlsx'); // or any other extension
+        // document.body.appendChild(link);
+        // link.click();
+
+        readXlsxFile(res.data).then((rows) => {
+          const filteredData = rows.filter((row) => row.some((item) => item !== null));
+
+          const tempMatches = splitParticipants(filteredData);
+
+          const sortedMatches = sortMatchesAndUpdateIds(tempMatches);
+
+          const insertedMatches = makeMatchesEven(sortedMatches);
+
+          const walkOverMatches = updateWalkOverStatus(insertedMatches);
+
+          const allMatchesIds = generateNextMatchIds(walkOverMatches);
+          setMatches(allMatchesIds);
+        });
+      });
+  };
+
+  useEffect(() => {
+    if (selectedFile !== null) {
+      readXlsxFile(selectedFile).then((rows) => {
+        const filteredData = rows.filter((row) => row.some((item) => item !== null));
+        setPlayerList(filteredData);
+        // const tempMatches = splitParticipants(filteredData);
+        // const sortedMatches = sortMatchesAndUpdateIds(tempMatches);
+        // const insertedMatches = makeMatchesEven(sortedMatches);
+        // const allMatchesIds = generateNextMatchIds(insertedMatches);
+        // setMatches(allMatchesIds);
+      });
+    }
+  }, []);
 
   const handleChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
-  const rounds = [
-    {
-      title: 'Vòng loại',
-      seeds: seeds
-    },
-    {
-      title: 'Tứ kết',
-      seeds: [
-        {
-          id: 9,
-          teams: []
-        },
-        {
-          id: 10,
-          teams: []
-        },
-        {
-          id: 11,
-          teams: []
-        },
-        {
-          id: 12,
-          teams: []
-        }
-      ]
-    },
-    {
-      title: 'Bán kết',
-      seeds: [
-        {
-          id: 13,
-          teams: []
-        },
-        {
-          id: 14,
-          teams: []
-        }
-      ]
-    },
-    {
-      title: 'Chung kết',
-      seeds: [
-        {
-          id: 15,
-          teams: []
-        }
-      ]
-    }
-  ];
-
   return (
     <div className="w-full h-full">
       <div className="min-h-screen bg-gradient-to-r from-blue-600 to-violet-600">
-        <div className="flex flex-col justify-center items-center p-16 px-28 gap-8">
+        <div className="flex flex-col justify-center items-center p-16 gap-8">
           <InputHeader handleChange={handleChange} />
-          <div className="w-full flex gap-4 min-h-[600px]">
-            <div className="w-1/3 bg-white shadow-xl rounded-xl">
-              <PlayerList playerList={playerList} />
+          <div className={`w-full min-h-[600px] ${matches.length <= 18 ? 'flex gap-4' : ''}`}>
+            <div className={`bg-white shadow-xl rounded-xl ${matches.length <= 18 ? 'w-1/5' : 'w-full'}`}>
+              {<PlayerList playerList={playerList} isFull={matches.length} />}
             </div>
-            <div className="w-2/3 bg-white shadow-xl rounded-xl p-4">
-              <Bracket rounds={rounds} bracketClassName="w-full justify-between" />
+            <div className={`${matches.length <= 18 ? 'w-4/5' : 'w-full mt-4'} bg-white shadow-xl rounded-xl p-4 py-0`}>
+              {/* <PlayerListTemp /> */}
+              {matches.length > 0 && (
+                <SingleEliminationBracket
+                  matches={matches}
+                  matchComponent={Match}
+                  theme={WhiteTheme}
+                  options={{
+                    style: {
+                      roundHeader: {
+                        backgroundColor: WhiteTheme.roundHeader.backgroundColor,
+                        fontColor: WhiteTheme.roundHeader.fontColor
+                      },
+                      connectorColor: WhiteTheme.connectorColor,
+                      connectorColorHighlight: WhiteTheme.connectorColorHighlight
+                    }
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>

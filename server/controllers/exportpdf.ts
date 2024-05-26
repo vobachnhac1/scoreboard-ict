@@ -211,16 +211,41 @@ function base64_encode(file) {
     return new Buffer(bitmap).toString('base64');
 }
 
+
+// tính toán render 
+const caculatorRound =(soluong)=>{
+    let sovong = 0;
+    let sonhanh = Math.floor(soluong/4);
+    let spthanhvien  = soluong % 4;
+    console.log('spthanhvien: ', spthanhvien);
+    console.log('sonhanh: ', sonhanh)
+    if(sonhanh%2 ==0){
+
+    }
+
+    // console.log('so_nhanh: ', b);
+    // console.log('soluong_vdv_nhanh: ', soluong_vdv_nhanh);
+    // if(soluong_vdv_nhanh == 0){
+
+    // }
+}
+
+const render2 =(start, end, wb, type) =>{
+    // type: 1: là trên, 0 là dưới
+    
+}
+
 // Tạo file excel mẫu
 const thongtin_excel_mau = async (res,soluong, noidung, uutien, danhsach)=>{
+    
     let uu_tien =uutien
-    if(!soluong ||  soluong < 3 || soluong >32){
-        return
-    }
+    // if(!soluong ||  soluong < 3 || soluong >32){
+    //     return
+    // }
     if(!uu_tien ||  uu_tien < 0 || uu_tien >1){
         uu_tien = 0;
     }
-    const caidat_bul = thongtin_caidat(soluong)
+    // const caidat_bul = thongtin_caidat(soluong)
     // caidat_bul.vong_loai | caidat_bul.vong_trong
 
     // tạo file
@@ -306,14 +331,16 @@ const thongtin_excel_mau = async (res,soluong, noidung, uutien, danhsach)=>{
             },
         }
     });
+    caculatorRound(soluong)
 
+    if(soluong > 0) return 
     const vi_tri_bd = 5;
     for(let i = 1; i <= soluong; i++){
         // khai báo bề ngang cột
         ws.column(1).setWidth(5);
         ws.column(2).setWidth(30);
         ws.column(3).setWidth(30);
-
+   
         if(soluong == 3){
             //  danh sách > 2 và <= 4: 3 cấp
             //  danh sách > 4 và <= 8 : 4 cấp bậc
@@ -1700,8 +1727,8 @@ const thongtin_excel_mau = async (res,soluong, noidung, uutien, danhsach)=>{
                     ws.cell(j, 5).style(styleRight) 
                 }
             }
-            //cấp 6
 
+            //cấp 6
             for(let j =10 ; j <18;j++){
                 ws.cell(j, 6).style(styleRight) 
             }
@@ -1737,6 +1764,97 @@ const thongtin_excel_mau = async (res,soluong, noidung, uutien, danhsach)=>{
                 }
             }
 
+            // vào vòng 1
+            if([7,8,16,17].includes(i)){
+                if([7,16].includes(i)){
+                    ws.cell(i*2 + vi_tri_bd, 4).style(styleBottom) 
+                }
+            }else{
+                ws.cell(i*2 -1 + vi_tri_bd, 4).style(styleBottom) 
+            }
+
+            // // vào vòng 2
+            if(i%2 == 1 && i < 7  ){
+                ws.cell(i*2 + vi_tri_bd, 5).style(styleBottom) 
+            }
+            else if (i%2 == 1 && i>9 &&  i<17){
+                ws.cell(i*2-2 + vi_tri_bd, 5).style(styleBottom) 
+
+            }
+            else if([8,17].includes(i)){
+                ws.cell(i*2 -1 + vi_tri_bd, 5).style(styleBottom) 
+            }
+            
+            // vòng 3
+            if([2,6].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 6).style(styleBottom) 
+            }else if ([11, 15].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 6).style(styleBottom) 
+            }
+
+            // bán kết
+            ws.cell(13, 7).style(styleBottom) 
+            ws.cell(31, 7).style(styleBottom) 
+            //chung kết
+            ws.cell(22, 8).style(styleBottom) 
+
+            // border
+            //cấp 3
+            if([7,16].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 3).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 3).style(styleRight) 
+            }
+ 
+            //cấp 4
+            if(i%2 == 1 && i < 7 ){
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+            }
+            if(i%2 == 0 && i > 9 &&  i<15){
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+            }
+            if([7,16].includes(i)){
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +2+ vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2+3 + vi_tri_bd, 4).style(styleRight) 
+            }
+
+
+            // // cấp 5
+            if([2,11].includes(i)){
+                const _j=i*2-1+vi_tri_bd
+                const _lenght=_j + 4
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            }else if ([5].includes(i)){
+                // lùi trên
+                const _j=i*2+1+ vi_tri_bd  
+                const _lenght=_j + 5
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                } 
+            }else if ([15].includes(i)){
+                // lùi dưới
+                const _j=i*2 -1+ vi_tri_bd  
+                const _lenght=_j + 5
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            }
+
+            //cấp 6
+            for(let j =10 ; j <18;j++){
+                ws.cell(j, 6).style(styleRight) 
+            }
+            for(let j =28 ; j <36 ;j++){
+                ws.cell(j, 6).style(styleRight) 
+            }
+            for(let j =14 ; j <32;j++){
+                ws.cell(j, 7).style(styleRight) 
+            }
+
         } else if ( soluong == 19){
             //khỏi tạo tên - đơn vị :
             const item = danhsach[i-1] 
@@ -1761,6 +1879,101 @@ const thongtin_excel_mau = async (res,soluong, noidung, uutien, danhsach)=>{
                     ws.cell(i*2 -1 + vi_tri_bd, 3).style(styleBottom) 
                 }
             }
+            // vào vòng 1
+            if([7,8,13,14,17,18].includes(i)){
+                if([7,13,17].includes(i)){
+                    ws.cell(i*2 + vi_tri_bd, 4).style(styleBottom) 
+                }
+            }else{
+                ws.cell(i*2 -1 + vi_tri_bd, 4).style(styleBottom) 
+            }
+
+            // // vào vòng 2
+            if(i%2 == 1 && i < 7 || [10,15].includes(i)   ){
+                ws.cell(i*2 + vi_tri_bd, 5).style(styleBottom) 
+            }
+            // else if (i%2 == 1 && [11,12].includes(i)  ){
+            //     ws.cell(i*2-2 + vi_tri_bd, 5).style(styleBottom) 
+            // }
+            else if([8,13,18].includes(i)){
+                ws.cell(i*2 -1 + vi_tri_bd, 5).style(styleBottom) 
+            }
+
+            // // vòng 3
+            if([2,6].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 6).style(styleBottom) 
+            }else if ([11, 16].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 6).style(styleBottom) 
+            }
+
+            // bán kết
+            ws.cell(13, 7).style(styleBottom) 
+            ws.cell(32, 7).style(styleBottom) 
+            //chung kết
+            ws.cell(22, 8).style(styleBottom) 
+
+            // border
+            //cấp 3
+            if([7,13,17].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 3).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 3).style(styleRight) 
+            }
+
+            //cấp 4
+            if(i%2 == 1 && i < 7 ){
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+            }
+            if([10,15].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+            }
+            if([7,17].includes(i)){
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +2+ vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2+3 + vi_tri_bd, 4).style(styleRight) 
+            }
+            if([12].includes(i)){
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +2+ vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+            }
+
+
+            // cấp 5
+            if([2].includes(i)){
+                const _j=i*2-1+vi_tri_bd
+                const _lenght=_j + 4
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            }else if ([5,10, 15].includes(i)){
+                // lùi trên
+                const _j=i*2+1+ vi_tri_bd  
+                const _lenght=_j + 5
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            }
+            // else if ([15].includes(i)){
+            //     // lùi dưới
+            //     const _j=i*2 + vi_tri_bd  
+            //     const _lenght=_j + 5
+            //     for(let j =_j ; j <_lenght;j++){
+            //         ws.cell(j, 5).style(styleRight) 
+            //     }
+            // }
+
+            //cấp 6
+            for(let j =10 ; j <18;j++){
+                ws.cell(j, 6).style(styleRight) 
+            }
+            for(let j =28 ; j <38 ;j++){
+                ws.cell(j, 6).style(styleRight) 
+            }
+            for(let j =14 ; j <33;j++){
+                ws.cell(j, 7).style(styleRight) 
+            }
 
         } else if ( soluong == 20){
             //khỏi tạo tên - đơn vị :
@@ -1780,12 +1993,98 @@ const thongtin_excel_mau = async (res,soluong, noidung, uutien, danhsach)=>{
                     ws.cell(i + vi_tri_bd, 3).style(styleBottom) 
                     ws.cell(i + vi_tri_bd, 2).style(styleBottom) 
                     ws.cell(i + vi_tri_bd, 1).string(i+".")
-                } else{
+                } else{ 
                     ws.cell(i*2 -1 + vi_tri_bd, 1).string(i+".")
                     ws.cell(i*2 -1 + vi_tri_bd, 2).style(styleBottom) 
                     ws.cell(i*2 -1 + vi_tri_bd, 3).style(styleBottom) 
                 }
             }
+
+            // vào vòng 1
+            if([4,5,8,9,14,15,18,19].includes(i)){
+                if([4,8,14,18].includes(i)){
+                    ws.cell(i*2 + vi_tri_bd, 4).style(styleBottom) 
+                }
+            }else{
+                ws.cell(i*2 -1 + vi_tri_bd, 4).style(styleBottom) 
+            }
+
+            // // vào vòng 2
+            if([1,3,6,11,13,16].includes(i) ){
+                ws.cell(i*2 + vi_tri_bd, 5).style(styleBottom) 
+            }
+            // else if (i%2 == 1 && [11,12].includes(i)  ){
+            //     ws.cell(i*2-2 + vi_tri_bd, 5).style(styleBottom) 
+            // }
+            else if([9,19].includes(i)){
+                ws.cell(i*2 -1 + vi_tri_bd, 5).style(styleBottom) 
+            }
+
+            // // vòng 3
+            if([2,12].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 6).style(styleBottom) 
+            }else if ([6, 16].includes(i)){
+                ws.cell(i*2 +2+ vi_tri_bd, 6).style(styleBottom) 
+            }
+
+            // bán kết
+            ws.cell(14, 7).style(styleBottom) 
+            ws.cell(34, 7).style(styleBottom) 
+            //chung kết
+            ws.cell(23, 8).style(styleBottom) 
+
+            // border
+            //cấp 3
+            if([4,8,14,18].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 3).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 3).style(styleRight)  
+            }
+
+            //cấp 4
+            // if(i%2 == 1 && i < 7 ){
+            //     ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+            //     ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+            // }
+            if([1,6, 11,16].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+            }
+            if([8,18].includes(i)){
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +2+ vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2+3 + vi_tri_bd, 4).style(styleRight) 
+            }
+            if([3,13].includes(i)){
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +2+ vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+            }
+            // cấp 5
+            if([2,12].includes(i)){
+                const _j=i*2-1+vi_tri_bd
+                const _lenght=_j + 4
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            }else if ([6,16].includes(i)){
+                // lùi trên
+                const _j=i*2+1+ vi_tri_bd  
+                const _lenght=_j + 5
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            }
+            //cấp 6
+            for(let j =10 ; j <20;j++){
+                ws.cell(j, 6).style(styleRight) 
+            }
+            for(let j =30 ; j <40 ;j++){
+                ws.cell(j, 6).style(styleRight) 
+            }
+            for(let j =15 ; j <35;j++){
+                ws.cell(j, 7).style(styleRight) 
+            }
+             
 
         } else if ( soluong == 21){
             //khỏi tạo tên - đơn vị :
@@ -1810,6 +2109,106 @@ const thongtin_excel_mau = async (res,soluong, noidung, uutien, danhsach)=>{
                     ws.cell(i*2 -1 + vi_tri_bd, 2).style(styleBottom) 
                     ws.cell(i*2 -1 + vi_tri_bd, 3).style(styleBottom) 
                 }
+            }
+
+            // vào vòng 1
+            if([4,5,8,9,14,15,18,19,20,21].includes(i)){
+                if([4,8,14,18,20].includes(i)){
+                    ws.cell(i*2 + vi_tri_bd, 4).style(styleBottom) 
+                }
+            }else{
+                ws.cell(i*2 -1 + vi_tri_bd, 4).style(styleBottom) 
+            }
+            // // vào vòng 2
+            if([1,3,6,11,13 ,16, 19].includes(i) ){
+                ws.cell(i*2 + vi_tri_bd, 5).style(styleBottom) 
+            }
+            // else if ([19].includes(i)  ){
+            //     ws.cell(i*2 + vi_tri_bd, 5).style(styleBottom) 
+            // }
+            else if([9].includes(i)){
+                ws.cell(i*2 -1 + vi_tri_bd, 5).style(styleBottom) 
+            }
+
+             // // vòng 3
+             if([2,12].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 6).style(styleBottom) 
+            }else if ([6, 16].includes(i)){
+                ws.cell(i*2 +2+ vi_tri_bd, 6).style(styleBottom) 
+            }
+
+            // bán kết
+            ws.cell(14, 7).style(styleBottom) 
+            ws.cell(34, 7).style(styleBottom) 
+            //chung kết
+            ws.cell(23, 8).style(styleBottom) 
+ 
+            // border
+            //cấp 3
+            if([4,8,14,18,20].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 3).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 3).style(styleRight) 
+            }
+
+            //cấp 4
+            // if(i%2 == 1 && i < 7 ){
+            //     ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+            //     ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+            // }
+            if([1,6,11,16].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+            }
+            if([8].includes(i)){
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +2+ vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2+3 + vi_tri_bd, 4).style(styleRight) 
+            }
+            if([3,13].includes(i)){
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +2+ vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+            }
+            // 5 ô
+            if([18].includes(i)){
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +2+ vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +3+ vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +4 + vi_tri_bd, 4).style(styleRight) 
+            }
+
+            // cấp 5
+            if([2,12].includes(i)){
+                const _j=i*2-1+vi_tri_bd
+                const _lenght=_j + 4
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            }else if ([6].includes(i)){
+                // lùi trên
+                const _j=i*2+1+ vi_tri_bd  
+                const _lenght=_j + 5
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            }else if ([16].includes(i)){
+                // lùi trên
+                const _j=i*2+1+ vi_tri_bd  
+                const _lenght=_j + 6
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            } 
+
+            //cấp 6
+            for(let j =10 ; j <20;j++){
+                ws.cell(j, 6).style(styleRight) 
+            }
+            for(let j =30 ; j <40 ;j++){
+                ws.cell(j, 6).style(styleRight) 
+            }
+            for(let j =15 ; j <35;j++){
+                ws.cell(j, 7).style(styleRight) 
             }
 
         } else if ( soluong == 22){
@@ -1837,6 +2236,109 @@ const thongtin_excel_mau = async (res,soluong, noidung, uutien, danhsach)=>{
                 }
             }
 
+            // vào vòng 1
+            if([4,5,8,9,10,11,15,16,19,20,21,22].includes(i)){
+                if([4,8,10,15,19,21].includes(i)){
+                    ws.cell(i*2 + vi_tri_bd, 4).style(styleBottom) 
+                }
+            }else{
+                ws.cell(i*2 -1 + vi_tri_bd, 4).style(styleBottom) 
+            }
+            // vào vòng 2
+            if([1,3,6,9,12,14,17,20].includes(i) ){
+                ws.cell(i*2 + vi_tri_bd, 5).style(styleBottom) 
+            }
+            // else if ([3].includes(i)  ){
+            //     ws.cell(i*2 + vi_tri_bd, 5).style(styleBottom) 
+            // }
+            // else if([20].includes(i)){
+            //     ws.cell(i*2 -1 + vi_tri_bd, 5).style(styleBottom) 
+            // }
+
+            // vòng 3
+             if([2,13].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 6).style(styleBottom) 
+            }else if ([7, 18].includes(i)){
+                ws.cell(i*2 +1+ vi_tri_bd, 6).style(styleBottom) 
+            }
+
+
+            // bán kết
+            ws.cell(14, 7).style(styleBottom) 
+            ws.cell(36, 7).style(styleBottom) 
+            //chung kết
+            ws.cell(25, 8).style(styleBottom) 
+ 
+            // border
+            //cấp 3
+            if([4,8,10,15,19,21].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 3).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 3).style(styleRight) 
+            }
+
+            //cấp 4 
+            // if(i%2 == 1 && i < 7 ){
+            //     ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+            //     ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+            // }
+            if([1,6,12,17].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+            }
+            // if([8,19].includes(i)){
+            //     ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+            //     ws.cell(i*2 +2+ vi_tri_bd, 4).style(styleRight) 
+            //     ws.cell(i*2+3 + vi_tri_bd, 4).style(styleRight) 
+            // }
+            if([3,14].includes(i)){
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +2+ vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+            }
+            // 5 ô
+            if([8,19].includes(i)){
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +2+ vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +3+ vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +4 + vi_tri_bd, 4).style(styleRight) 
+            }
+
+
+            // cấp 5
+            if([2,13].includes(i)){
+                const _j=i*2-1+vi_tri_bd
+                const _lenght=_j + 4
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            }
+            // else if ([6].includes(i)){
+            //     // lùi trên
+            //     const _j=i*2+1+ vi_tri_bd  
+            //     const _lenght=_j + 5
+            //     for(let j =_j ; j <_lenght;j++){
+            //         ws.cell(j, 5).style(styleRight) 
+            //     }
+            // }
+            else if ([6,17].includes(i)){
+                // lùi trên
+                const _j=i*2+1+ vi_tri_bd  
+                const _lenght=_j + 6
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            } 
+            //cấp 6
+            for(let j =10 ; j <21;j++){
+                ws.cell(j, 6).style(styleRight) 
+            }
+            for(let j =32 ; j <43 ;j++){
+                ws.cell(j, 6).style(styleRight) 
+            }
+            for(let j =15 ; j <37;j++){
+                ws.cell(j, 7).style(styleRight) 
+            }
+
         } else if ( soluong == 23){
             //khỏi tạo tên - đơn vị :
             const item = danhsach[i-1] 
@@ -1862,6 +2364,90 @@ const thongtin_excel_mau = async (res,soluong, noidung, uutien, danhsach)=>{
                 }
             }
 
+            // vào vòng 1
+            if([4,5,7,8,9,10,13,14,15,16,19,20,21,22].includes(i)){
+                if([4,7,9,13,15,19,21].includes(i)){
+                    ws.cell(i*2 + vi_tri_bd, 4).style(styleBottom) 
+                }
+            }else{
+                ws.cell(i*2 -1 + vi_tri_bd, 4).style(styleBottom) 
+            }
+            // vào vòng 2
+            if([1,3,6,10,12,16,18,22].includes(i) ){
+                ws.cell(i*2 + vi_tri_bd, 5).style(styleBottom) 
+            }
+            // else if ([3].includes(i)  ){
+            //     ws.cell(i*2 + vi_tri_bd, 5).style(styleBottom) 
+            // }
+            // else if([20].includes(i)){
+            //     ws.cell(i*2 -1 + vi_tri_bd, 5).style(styleBottom) 
+            // }
+
+            // vòng 3
+            if([2,8,14,20].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 6).style(styleBottom) 
+            }
+            // else if ([7, 18].includes(i)){
+            //     ws.cell(i*2 +1+ vi_tri_bd, 6).style(styleBottom) 
+            // }
+            // bán kết
+            ws.cell(15, 7).style(styleBottom) 
+            ws.cell(39, 7).style(styleBottom) 
+            //chung kết
+            ws.cell(27, 8).style(styleBottom) 
+
+            // border
+            //cấp 3
+            if([4,7,9,13,15,19,21].includes(i)){
+                ws.cell(i*2 + vi_tri_bd, 3).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 3).style(styleRight) 
+            }
+
+            //cấp 4 
+            if([1].includes(i)){ 
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+            }
+            if([3,6,12,18].includes(i)){ // miễn nhánh trên
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 +2+ vi_tri_bd, 4).style(styleRight) 
+            }   
+            if([22,16,10].includes(i)){ // miễn nhánh trên
+                ws.cell(i*2+1 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 + vi_tri_bd, 4).style(styleRight) 
+                ws.cell(i*2 -1+ vi_tri_bd, 4).style(styleRight) 
+            } 
+
+
+             // cấp 5
+            if([2].includes(i)){
+                const _j=i*2-1+vi_tri_bd
+                const _lenght=_j + 4
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            }
+            else if ([6,12,18].includes(i)){
+                // lùi trên
+                const _j=i*2+1+ vi_tri_bd  
+                const _lenght=_j + 8
+                for(let j =_j ; j <_lenght;j++){
+                    ws.cell(j, 5).style(styleRight) 
+                }
+            } 
+
+            //cấp 6
+            for(let j =10 ; j <22;j++){
+                ws.cell(j, 6).style(styleRight) 
+            }
+            for(let j =34 ; j <46 ;j++){
+                ws.cell(j, 6).style(styleRight) 
+            }
+            for(let j =16 ; j <40;j++){
+                ws.cell(j, 7).style(styleRight) 
+            }
+
         } else if ( soluong == 24){
             //khỏi tạo tên - đơn vị :
             const item = danhsach[i-1] 
@@ -1885,6 +2471,14 @@ const thongtin_excel_mau = async (res,soluong, noidung, uutien, danhsach)=>{
                     ws.cell(i*2 -1 + vi_tri_bd, 2).style(styleBottom) 
                     ws.cell(i*2 -1 + vi_tri_bd, 3).style(styleBottom) 
                 }
+            }
+            // vào vòng 1
+            if([2,3,4,5,8,9,10,11,14,15,16, 17,20,21,22,23].includes(i)){
+                if([2,4,8,10,14,16,20,22].includes(i)){
+                    ws.cell(i*2 + vi_tri_bd, 4).style(styleBottom) 
+                }
+            }else{
+                ws.cell(i*2 -1 + vi_tri_bd, 4).style(styleBottom) 
             }
 
         } else if ( soluong == 25){
@@ -2084,7 +2678,7 @@ const thongtin_excel_mau = async (res,soluong, noidung, uutien, danhsach)=>{
     // xuất file excel
     const linkExcel = './exports/'+removeVietnameseTones(noidung) +'.xlsx'
     wb.write(linkExcel)
-    wb.write(linkExcel, res)
+    // wb.write(linkExcel, res)
     // let listImage =[]
     // try {
     //     // // Excel to PNG in Nodejs 

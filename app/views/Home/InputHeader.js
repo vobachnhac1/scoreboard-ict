@@ -1,4 +1,4 @@
-import { Button, Spin } from 'antd';
+import { Spin } from 'antd';
 import InputWithLabel from '../../components/InputWithLabel';
 import './index.scss';
 import React from 'react';

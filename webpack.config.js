@@ -24,7 +24,19 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader', 'postcss-loader']
+        include: path.resolve(__dirname, 'app'),
+        use: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [require('tailwindcss'), require('autoprefixer')]
+              }
+            }
+          }
+        ]
       },
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
@@ -61,5 +73,8 @@ module.exports = {
       patterns: [{ from: './app/favicon.ico' }, { from: './app/assets', to: 'assets' }]
     })
   ],
+  resolve: {
+    extensions: ['.js', '.jsx']
+  },
   devtool: 'eval'
 };

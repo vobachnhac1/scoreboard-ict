@@ -1,5 +1,5 @@
 const { app, globalShortcut, BrowserWindow, ipcMain } = require('electron');
-// const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-assembler');
+const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-assembler');
 
 const server = require('./app');
 
@@ -14,14 +14,14 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 0,
-    height: 0,
+    width: 1280,
+    height: 768,
     webPreferences: {
       nodeIntegration: true
     }
   });
 
-  // mainWindow.loadURL('http://localhost:7777/');
+  mainWindow.loadURL('http://localhost:7777/');
   // mainWindow.loadURL(url.format({
   //     pathname: path.join(__dirname, 'index.html'),
   //     protocol: 'file:',
@@ -29,7 +29,7 @@ function createWindow() {
   // }));
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   // Register
 
@@ -48,9 +48,9 @@ function createWindow() {
 app.on('ready', createWindow);
 
 app.whenReady().then(() => {
-  // installExtension(REACT_DEVELOPER_TOOLS)
-  //   .then((name) => console.log(`Added Extension:  ${name}`))
-  //   .catch((err) => console.log('An error occurred: ', err));
+  installExtension(REACT_DEVELOPER_TOOLS)
+    .then((name) => console.log(`Added Extension:  ${name}`))
+    .catch((err) => console.log('An error occurred: ', err));
 
   // globalShortcut.register('F2', () => {
   //   mainWindow.loadURL('http://localhost:7777/#/versus');
@@ -66,13 +66,13 @@ app.on('window-all-closed', function () {
   }
 });
 
-// app.on('activate', function () {
-//   // On OS X it's common to re-create a window in the app when the
-//   // dock icon is clicked and there are no other windows open.
-//   if (mainWindow === null) {
-//     createWindow();
-//   }
-// });
+app.on('activate', function () {
+  // On OS X it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (mainWindow === null) {
+    createWindow();
+  }
+});
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.

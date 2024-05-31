@@ -6,3 +6,7 @@
 .sc-aXZVg {
   display: none;
 }
+
+.custom-bg {
+  min-height: calc(100% - 4rem);
+}

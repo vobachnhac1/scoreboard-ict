@@ -103,33 +103,31 @@ const BracketTest = () => {
 
   return (
     <div className="w-full h-full">
-      <div className="min-h-screen bg-gradient-to-r from-blue-600 to-violet-600">
-        <div className="flex flex-col justify-center items-center p-16 gap-8">
-          <InputHeader handleChange={handleChange} />
-          <div className={`w-full min-h-[600px] ${matches.length <= 18 ? 'flex gap-4' : ''}`}>
-            <div className={`bg-white shadow-xl rounded-xl ${matches.length <= 18 ? 'w-1/5' : 'w-full'}`}>
-              {<PlayerList playerList={playerList} isFull={matches.length} />}
-            </div>
-            <div className={`${matches.length <= 18 ? 'w-4/5' : 'w-full mt-4'} bg-white shadow-xl rounded-xl p-4 py-0`}>
-              {/* <PlayerListTemp /> */}
-              {matches.length > 0 && (
-                <SingleEliminationBracket
-                  matches={matches}
-                  matchComponent={Match}
-                  theme={WhiteTheme}
-                  options={{
-                    style: {
-                      roundHeader: {
-                        backgroundColor: WhiteTheme.roundHeader.backgroundColor,
-                        fontColor: WhiteTheme.roundHeader.fontColor
-                      },
-                      connectorColor: WhiteTheme.connectorColor,
-                      connectorColorHighlight: WhiteTheme.connectorColorHighlight
-                    }
-                  }}
-                />
-              )}
-            </div>
+      <div className="flex flex-col justify-center items-center p-16 gap-8">
+        <InputHeader handleChange={handleChange} />
+        <div className={`w-full min-h-[600px] ${matches.length <= 18 ? 'flex gap-4' : ''}`}>
+          <div className={`bg-white shadow-xl rounded-xl ${matches.length <= 18 ? 'w-1/5' : 'w-full'}`}>
+            {<PlayerList playerList={playerList} isFull={matches.length} />}
+          </div>
+          <div className={`${matches.length <= 18 ? 'w-4/5' : 'w-full mt-4'} bg-white shadow-xl rounded-xl p-4 py-0`}>
+            {/* <PlayerListTemp /> */}
+            {matches.length > 0 && (
+              <SingleEliminationBracket
+                matches={matches}
+                matchComponent={Match}
+                theme={WhiteTheme}
+                options={{
+                  style: {
+                    roundHeader: {
+                      backgroundColor: WhiteTheme.roundHeader.backgroundColor,
+                      fontColor: WhiteTheme.roundHeader.fontColor
+                    },
+                    connectorColor: WhiteTheme.connectorColor,
+                    connectorColorHighlight: WhiteTheme.connectorColorHighlight
+                  }
+                }}
+              />
+            )}
           </div>
         </div>
       </div>

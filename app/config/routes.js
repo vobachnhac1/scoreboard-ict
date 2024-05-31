@@ -1,12 +1,5 @@
 import React from 'react';
-import { Routes, Route, HashRouter, useNavigate } from 'react-router-dom';
-import { createBrowserHistory } from 'history';
-// import Navbar from '../components/navbar';
-// import Footer from '../components/footer';
-// import Home from '../views/home';
-// import About from '../views/about';
-// import OverViewPage from '../views/overview';
-import Home from '../views/Home';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import ScoreBoard from '../views/ScoreBoard';
 
 // Config Socket.IO
@@ -15,6 +8,9 @@ import Versus from '../views/Versus';
 import { useHotkeys } from 'react-hotkeys-hook';
 import PlayerList from '../views/PlayerList';
 import Bracket from '../views/Bracket';
+import QrViews from '../views/QrViews';
+import SidebarLayout from '../components/Layout/SidebarLayout';
+import UserManagement from '../views/UserManagement';
 
 export const socketClient = new SocketClient();
 
@@ -26,18 +22,21 @@ const Routers = () => {
   useHotkeys('F2', () => navigate('/scoreboard'));
   useHotkeys('F3', () => navigate('/player-list'));
   useHotkeys('F4', () => navigate('/bracket'));
+
+  const routes = [
+    { path: '/', element: <QrViews /> },
+    { path: '/versus', element: <Versus /> },
+    { path: '/scoreboard', element: <ScoreBoard /> },
+    { path: '/player-list', element: <PlayerList /> },
+    { path: '/bracket', element: <Bracket /> },
+    { path: '/user-management', element: <UserManagement /> }
+  ];
+
   return (
     <Routes>
-      {/* <div style={{ flex: 1, width:'100%', height:'100%', backgroundColor:'white ' }}> */}
-      {/* <Navbar /> */}
-      <Route path="/" element={<Home />} />
-      <Route path="/versus" element={<Versus />} />
-      <Route path="/scoreboard" element={<ScoreBoard />} />
-      <Route path="/player-list" element={<PlayerList />} />
-      <Route path="/bracket" element={<Bracket />} />
-      {/* <Route path="about" component={About} /> */}
-      {/* <Footer /> */}
-      {/* </div> */}
+      {routes.map((route, index) => (
+        <Route path={route.path} key={index} element={<SidebarLayout>{route.element}</SidebarLayout>} />
+      ))}
     </Routes>
   );
 };

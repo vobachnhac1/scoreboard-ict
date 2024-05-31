@@ -1,65 +1,66 @@
 import React, { useEffect, useState } from 'react';
 import readXlsxFile from 'read-excel-file';
 import { playerListSchema } from '../../shared/qrDataSchema';
+import axios from 'axios';
+import { tempData } from '../../shared/tempData';
+import { SingleEliminationBracket, Match, SVGViewer } from 'react-tournament-brackets';
+import {
+  generateNextMatchIds,
+  makeMatchesEven,
+  sortMatchesAndUpdateIds,
+  splitParticipants
+} from '../../helpers/matches';
 
-const PlayerList = () => {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [headers, setHeaders] = useState({});
+const PlayerListTemp = () => {
+  const [matches, setMatches] = useState([]);
 
-  const [playerList, setPlayerList] = useState([]);
   useEffect(() => {
-    if (selectedFile !== null) {
-      readXlsxFile(selectedFile, {
-        schema: playerListSchema,
-        transformData(data) {
-          // Add a missing header row.
-          return [
-            ['ID', 'TT', 'HỌ TÊN', 'ĐƠN VỊ', 'NĂM SINH', 'GIỚI TÍNH', 'CÂN NẶNG', 'GHI CHÚ', 'KẾT QUẢ BỐC THĂM']
-          ].concat(data);
-        }
-      }).then(({ rows }) => {
-        setHeaders(rows[0]);
-        let content = rows.slice(1);
+    getData();
+  }, []);
 
-        const result = content.reduce((acc, item) => {
-          if (item.id) {
-            acc.push({
-              id: item.id,
-              tenNoiDung: item.stt,
-              danhSach: []
-            });
-          } else {
-            const lastCategory = acc[acc.length - 1];
-            lastCategory.danhSach.push({
-              hoten: item.hoten,
-              donvi: item.donvi,
-              namsinh: item.namsinh,
-              cannang: item.cannang,
-              ghichu: item.ghichu,
-              ketquaboctham: item.ketquaboctham
-            });
-          }
-          return acc;
-        }, []);
+  const getData = async () => {
+    await axios
+      .post('http://localhost:7778/api/boctham-mau', tempData, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        responseType: 'blob'
+      })
+      .then((res) => {
+        // const url = window.URL.createObjectURL(new Blob([res.data]));
+        // const link = document.createElement('a');
+        // link.href = url;
+        // link.setAttribute('download', 'file.xlsx'); // or any other extension
+        // document.body.appendChild(link);
+        // link.click();
 
-        setPlayerList(result);
+        readXlsxFile(res.data).then((rows) => {
+          const filteredData = rows.filter((row) => row.some((item) => item !== null));
+          console.log({ filteredData });
+
+          const tempMatches = splitParticipants(filteredData);
+
+          const sortedMatches = sortMatchesAndUpdateIds(tempMatches);
+
+          const insertedMatches = makeMatchesEven(sortedMatches);
+
+          const allMatchesIds = generateNextMatchIds(insertedMatches);
+          setMatches(allMatchesIds);
+        });
       });
-    }
-  }, [selectedFile]);
-
-  console.log(playerList);
-
-  const handleChange = (e) => {
-    setSelectedFile(e.target.files[0]);
   };
   return (
-    <div className="bg-gray-400 w-full h-full">
-      <label htmlFor="playerListUpload" className="custom-file-upload bg-indigo-500">
-        <input id="playerListUpload" type="file" onChange={handleChange} className="hidden" />
-        Tải file lên
-      </label>
-    </div>
+    matches.length > 0 && (
+      <SingleEliminationBracket
+        matches={matches}
+        matchComponent={Match}
+        options={{
+          style: {
+            roundHeader: 'none'
+          }
+        }}
+      />
+    )
   );
 };
-
-export default PlayerList;
+export default PlayerListTemp;

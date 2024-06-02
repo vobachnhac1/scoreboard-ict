@@ -1,3 +1,12 @@
 {
-  "hello": "Xin chào"
+  "detail": "Chi tiết",
+  "common_delete": "Xóa",
+  "common_edit": "Chỉnh sửa",
+  "fullname": "Họ tên",
+  "unit": "Đơn vị",
+  "actions": "Hành động",
+  "area": "Khu vực",
+  "school": "Trường lớp",
+  "user_management": "Quản lý người dùng",
+  "add_user": "Thêm người dùng"
 }

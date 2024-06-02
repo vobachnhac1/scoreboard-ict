@@ -11,6 +11,7 @@ import Bracket from '../views/Bracket';
 import QrViews from '../views/QrViews';
 import SidebarLayout from '../components/Layout/SidebarLayout';
 import UserManagement from '../views/UserManagement';
+import UserInfo from '../views/UserInfo';
 
 export const socketClient = new SocketClient();
 
@@ -29,7 +30,8 @@ const Routers = () => {
     { path: '/scoreboard', element: <ScoreBoard /> },
     { path: '/player-list', element: <PlayerList /> },
     { path: '/bracket', element: <Bracket /> },
-    { path: '/user-management', element: <UserManagement /> }
+    { path: '/user-management', element: <UserManagement /> },
+    { path: '/user-info', element: <UserInfo /> }
   ];
 
   return (

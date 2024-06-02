@@ -33,7 +33,8 @@ const SidebarLayout = ({ children }) => {
     { name: 'Projects', href: '#', icon: FolderIcon, current: false },
     { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
     { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
-    { name: 'Reports', href: '#', icon: ChartPieIcon, current: false }
+    { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
+    { name: 'Thông tin người dùng', href: '/user-info', icon: ChartPieIcon, current: false },
   ]);
 
   const handleLinkClick = (clickedLink) => {

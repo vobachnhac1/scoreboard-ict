@@ -12,6 +12,7 @@ import QrViews from '../views/QrViews';
 import SidebarLayout from '../components/Layout/SidebarLayout';
 import UserManagement from '../views/UserManagement';
 import UserInfo from '../views/UserInfo';
+import Login from "../views/Login";
 
 export const socketClient = new SocketClient();
 
@@ -31,13 +32,25 @@ const Routers = () => {
     { path: '/player-list', element: <PlayerList /> },
     { path: '/bracket', element: <Bracket /> },
     { path: '/user-management', element: <UserManagement /> },
-    { path: '/user-info', element: <UserInfo /> }
+    { path: '/user-info', element: <UserInfo /> },
+    { path: '/login', element: <Login /> },
   ];
+
+  const renderElement = (path, element) => {
+    if (path === "/login") {
+      return <Login />;
+    }
+    return <SidebarLayout>{element}</SidebarLayout>;
+  };
 
   return (
     <Routes>
       {routes.map((route, index) => (
-        <Route path={route.path} key={index} element={<SidebarLayout>{route.element}</SidebarLayout>} />
+        <Route
+          path={route.path}
+          key={index}
+          element={renderElement(route.path, route.element)}
+        />
       ))}
     </Routes>
   );

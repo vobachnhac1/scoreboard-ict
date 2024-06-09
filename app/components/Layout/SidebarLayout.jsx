@@ -28,13 +28,13 @@ const SidebarLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [navigation, setNavigation] = useState([
-    { name: 'Quản lý thông tin hệ thống', href: '/', icon: HomeIcon, current: true },
+    { name: 'Bảng tin', href: '/feed', icon: FolderIcon, current: true },
+    { name: 'Quản lý thông tin hệ thống', href: '/', icon: HomeIcon, current: false },
     { name: 'Quản lý thông tin tài khoản', href: '/user-management', icon: UsersIcon, current: false },
-    { name: 'Projects', href: '#', icon: FolderIcon, current: false },
     { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
     { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
     { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
-    { name: 'Thông tin người dùng', href: '/user-info', icon: ChartPieIcon, current: false },
+    { name: 'Thông tin người dùng', href: '/user-info', icon: ChartPieIcon, current: false }
   ]);
 
   const handleLinkClick = (clickedLink) => {

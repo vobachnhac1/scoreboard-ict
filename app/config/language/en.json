@@ -8,5 +8,18 @@
   "area": "Area",
   "school": "School",
   "user_management": "User Management",
-  "add_user": "Add User"
+  "add_user": "Add User",
+  "subject": "Subject",
+  "status": "Status",
+  "class_type": "Class type",
+  "check_in": "Check in",
+  "add_student": "Add student",
+  "report": "Report",
+  "notification": "Notification",
+  "check_out": "Check out",
+  "common_check_in": "Check in",
+  "gender": "Gender",
+  "birth_year": "Birth year",
+  "note": "Note",
+  "send": "Send"
 }

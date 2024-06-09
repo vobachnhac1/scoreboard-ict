@@ -1,25 +1,29 @@
 import React, { useState } from 'react';
 
 import { Button, Dropdown, Modal } from 'antd';
-import { DeleteOutlined, EditOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { BellOutlined, EditOutlined, EllipsisOutlined, FileTextOutlined, UserAddOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import CheckInModal from './CheckInModal';
+import NotificationModal from './NotificationModal';
+import { use } from 'i18next';
 
 const UsersTable = () => {
   const { t } = useTranslation();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCheckinModal, setIsheckinModal] = useState(false);
   const [userSelected, setUserSelected] = useState({});
+  const [isNotifModal, setIsNotifModal] = useState(false);
 
   const showModal = (person) => {
     setUserSelected(person);
-    setIsModalOpen(true);
+    setIsheckinModal(true);
   };
 
   const handleOk = () => {
-    setIsModalOpen(false);
+    setIsheckinModal(false);
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false);
+    setIsheckinModal(false);
   };
 
   const people = [
@@ -43,16 +47,16 @@ const UsersTable = () => {
         <thead>
           <tr>
             <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
-              {t('fullname')}
-            </th>
-            <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-              {t('unit')}
-            </th>
-            <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-              {t('area')}
+              {t('subject')}
             </th>
             <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
               {t('school')}
+            </th>
+            <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+              {t('status')}
+            </th>
+            <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+              {t('class_type')}
             </th>
             <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
               {t('actions')}
@@ -75,26 +79,47 @@ const UsersTable = () => {
                       {
                         key: '1',
                         label: (
-                          <Button type="text" className="w-full text-start" onClick={() => showModal(person)}>
-                            {t('detail')}
+                          <Button type="text" className="w-full text-start flex items-center">
+                            <UserAddOutlined />
+                            {t('add_student')}
                           </Button>
                         )
                       },
                       {
                         key: '2',
                         label: (
-                          <Button type="text" className="w-full text-start">
+                          <Button
+                            type="text"
+                            className=" w-full text-start flex items-center"
+                            onClick={() => showModal(person)}
+                          >
                             <EditOutlined />
-                            {t('common_edit')}
+                            {t('check_in')}
                           </Button>
                         )
                       },
                       {
                         key: '3',
                         label: (
-                          <Button type="text" className="text-red-500 w-full text-start">
-                            <DeleteOutlined />
-                            {t('common_delete')}
+                          <Button type="text" className=" w-full text-start flex items-center">
+                            <FileTextOutlined />
+                            {t('report')}
+                          </Button>
+                        )
+                      },
+                      {
+                        key: '4',
+                        label: (
+                          <Button
+                            type="text"
+                            className=" w-full text-start flex items-center"
+                            onClick={() => {
+                              setIsNotifModal(true);
+                              setUserSelected(person);
+                            }}
+                          >
+                            <BellOutlined />
+                            {t('notification')}
                           </Button>
                         )
                       }
@@ -113,11 +138,8 @@ const UsersTable = () => {
         </tbody>
       </table>
 
-      <Modal title="Basic Modal" open={isModalOpen} footer={false} onCancel={handleCancel}>
-        <p>{userSelected.name}</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-      </Modal>
+      <CheckInModal isCheckinModal={isCheckinModal} handleCancel={handleCancel} people={people} />
+      <NotificationModal isNotifModal={isNotifModal} setIsNotifModal={setIsNotifModal} userSelected={userSelected} />
     </>
   );
 };

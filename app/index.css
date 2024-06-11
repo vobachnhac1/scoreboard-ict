@@ -7,6 +7,12 @@
   display: none;
 }
 
-.custom-bg {
-  min-height: calc(100% - 4rem);
+.custom-textarea {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.custom-textarea:focus {
+  border: none;
+  outline: none;
+  border-bottom: 1px solid #3182ce;
 }

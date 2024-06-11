@@ -28,13 +28,13 @@ const SidebarLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [navigation, setNavigation] = useState([
-    { name: 'Quản lý thông tin hệ thống', href: '/', icon: HomeIcon, current: true },
+    { name: 'Bảng tin', href: '/feed', icon: FolderIcon, current: true },
+    { name: 'Quản lý thông tin hệ thống', href: '/', icon: HomeIcon, current: false },
     { name: 'Quản lý thông tin tài khoản', href: '/user-management', icon: UsersIcon, current: false },
-    { name: 'Projects', href: '#', icon: FolderIcon, current: false },
     { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
     { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
     { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
-    { name: 'Thông tin người dùng', href: '/user-info', icon: ChartPieIcon, current: false },
+    { name: 'Thông tin người dùng', href: '/user-info', icon: ChartPieIcon, current: false }
   ]);
 
   const handleLinkClick = (clickedLink) => {
@@ -251,7 +251,7 @@ const SidebarLayout = ({ children }) => {
         </div>
       </div>
 
-      <div className="lg:pl-72 w-full h-full">
+      <div className="lg:pl-72 w-full h-full bg-gray-100">
         {/* <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
           <button type="button" className="-m-2.5 p-2.5 text-gray-700 lg:hidden" onClick={() => setSidebarOpen(true)}>
             <span className="sr-only">Open sidebar</span>
@@ -289,7 +289,7 @@ const SidebarLayout = ({ children }) => {
           </div>
         </div> */}
 
-        <main className="custom-bg bg-gray-100">
+        <main className="h-full">
           <div className="px-4 sm:px-6 lg:px-8 py-8">{children}</div>
         </main>
       </div>

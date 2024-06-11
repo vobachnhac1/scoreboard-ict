@@ -21,5 +21,6 @@
   "gender": "Giới tính",
   "birth_year": "Năm sinh",
   "note": "Ghi chú",
-  "send": "Gửi"
+  "send": "Gửi",
+  "login": "Đăng nhập"
 }

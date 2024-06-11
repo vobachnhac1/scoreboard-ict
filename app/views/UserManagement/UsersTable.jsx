@@ -6,12 +6,15 @@ import { useTranslation } from 'react-i18next';
 import CheckInModal from './CheckInModal';
 import NotificationModal from './NotificationModal';
 import { use } from 'i18next';
+import EditInfoModal from './EditInfoModal';
 
 const UsersTable = () => {
   const { t } = useTranslation();
   const [isCheckinModal, setIsheckinModal] = useState(false);
   const [userSelected, setUserSelected] = useState({});
   const [isNotifModal, setIsNotifModal] = useState(false);
+
+  const [isEditInfoModal, setIsEditInfoModal] = useState(false);
 
   const showModal = (person) => {
     setUserSelected(person);
@@ -79,7 +82,11 @@ const UsersTable = () => {
                       {
                         key: '1',
                         label: (
-                          <Button type="text" className="w-full text-start flex items-center">
+                          <Button
+                            type="text"
+                            className="w-full text-start flex items-center"
+                            onClick={() => setIsEditInfoModal(true)}
+                          >
                             <UserAddOutlined />
                             {t('add_student')}
                           </Button>
@@ -140,6 +147,7 @@ const UsersTable = () => {
 
       <CheckInModal isCheckinModal={isCheckinModal} handleCancel={handleCancel} people={people} />
       <NotificationModal isNotifModal={isNotifModal} setIsNotifModal={setIsNotifModal} userSelected={userSelected} />
+      <EditInfoModal isEditInfoModal={isEditInfoModal} setIsEditInfoModal={setIsEditInfoModal} user={userSelected} />
     </>
   );
 };

@@ -14,6 +14,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const userNavigation = [
   { name: 'Your profile', href: '#' },
@@ -25,6 +27,10 @@ function classNames(...classes) {
 }
 
 const SidebarLayout = ({ children }) => {
+  const dispatch = useDispatch();
+
+  const { language } = useSelector((state) => state.language);
+  const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [navigation, setNavigation] = useState([
@@ -47,6 +53,14 @@ const SidebarLayout = ({ children }) => {
         }
       })
     );
+  };
+
+  const handleChangeLanguage = () => {
+    if (language === 'EN') {
+      dispatch({ type: 'SET_LANGUAGE', payload: 'VI' }); // to set the language to E
+    } else {
+      dispatch({ type: 'SET_LANGUAGE', payload: 'EN' }); // to set the language to E
+    }
   };
 
   return (
@@ -227,21 +241,37 @@ const SidebarLayout = ({ children }) => {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 bottom-9 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                      {userNavigation.map((item) => (
+                      {/* {userNavigation.map((item) => (
                         <Menu.Item key={item.name}>
                           {({ active }) => (
-                            <a
-                              href={item.href}
+                            <Link
+                              to={item.href}
                               className={classNames(
                                 active ? 'bg-gray-50' : '',
                                 'block px-3 py-1 text-sm leading-6 text-gray-900'
                               )}
                             >
                               {item.name}
-                            </a>
+                            </Link>
                           )}
                         </Menu.Item>
-                      ))}
+                      ))} */}
+                      <Menu.Item>
+                        <button
+                          onClick={() => handleChangeLanguage()}
+                          className={classNames('block px-3 py-1 text-sm leading-6 text-gray-900 whitespace-nowrap')}
+                        >
+                          Change language
+                        </button>
+                      </Menu.Item>
+                      <Menu.Item>
+                        <Link
+                          to="/login"
+                          className={classNames('block px-3 py-1 text-sm leading-6 text-gray-900 whitespace-nowrap')}
+                        >
+                          {t('login')}
+                        </Link>
+                      </Menu.Item>
                     </Menu.Items>
                   </Transition>
                 </Menu>

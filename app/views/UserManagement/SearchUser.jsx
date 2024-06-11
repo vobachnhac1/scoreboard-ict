@@ -1,8 +1,10 @@
 import React from 'react';
 
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 
 const SearchUser = () => {
+  const { t } = useTranslation();
   return (
     <div className="flex justify-between my-4 items-center">
       <div className="w-1/3">
@@ -27,7 +29,7 @@ const SearchUser = () => {
       <div className="flex gap-4">
         <div>
           <label htmlFor="select_school" className="block text-sm font-medium leading-6 text-gray-900">
-            Trường
+            {t('school')}
           </label>
           <select
             id="select_school"
@@ -43,7 +45,7 @@ const SearchUser = () => {
 
         <div>
           <label htmlFor="class_type" className="block text-sm font-medium leading-6 text-gray-900">
-            Dạng lớp
+            {t('class_type')}
           </label>
           <select
             id="class_type"

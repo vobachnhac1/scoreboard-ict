@@ -22,7 +22,7 @@ const Routers = () => {
   const navigate = useNavigate();
   useHotkeys('F1', () => navigate('/versus'));
   useHotkeys('esc', () => navigate('/'));
-  useHotkeys('F2', () => navigate('/scoreboard'));
+  useHotkeys('F2', () => navigate('/login'));
   useHotkeys('F3', () => navigate('/player-list'));
   useHotkeys('F4', () => navigate('/bracket'));
 

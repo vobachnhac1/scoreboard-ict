@@ -21,5 +21,6 @@
   "gender": "Gender",
   "birth_year": "Birth year",
   "note": "Note",
-  "send": "Send"
+  "send": "Send",
+  "login": "Login"
 }

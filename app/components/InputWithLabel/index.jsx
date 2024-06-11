@@ -2,7 +2,16 @@ import { Select } from 'antd';
 import './index.scss';
 import React from 'react';
 
-const InputWithLabel = ({ label, type = 'text', name, placeholder = '', setInputData, inputRef, inputData }) => {
+const InputWithLabel = ({
+  label,
+  type = 'text',
+  name,
+  placeholder = '',
+  setInputData,
+  inputRef,
+  inputData,
+  readOnly = false
+}) => {
   return (
     <div className="input_label_group flex items-center w-4/5">
       <label htmlFor={name} className="whitespace-nowrap block leading-6 text-gray-900">
@@ -17,6 +26,7 @@ const InputWithLabel = ({ label, type = 'text', name, placeholder = '', setInput
           onChange={(e) => setInputData(e.target.value)}
           value={inputData}
           ref={inputRef}
+          readOnly={readOnly}
         />
       </div>
     </div>

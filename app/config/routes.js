@@ -24,6 +24,7 @@ const Routers = () => {
   useHotkeys('F2', () => navigate('/scoreboard'));
   useHotkeys('F3', () => navigate('/player-list'));
   useHotkeys('F4', () => navigate('/bracket'));
+  useHotkeys('F5', () => navigate('/login'));
 
   const routes = [
     { path: '/', element: <QrViews /> },

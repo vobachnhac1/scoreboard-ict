@@ -45,7 +45,7 @@ const UserInfo = () => {
           {Object.keys(userInfo).map((key) => {
             const value = userInfo[key];
             if (key !== "additionalInfo") {
-              return <InputWithLabel label={key} inputData={value} readOnly={true}/>;
+              return <InputWithLabel label={key} inputData={value} />;
             }
             return null;
           })}
@@ -62,7 +62,7 @@ const UserInfo = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
           {Object.keys(userInfo.additionalInfo).map((k) => {
             const val = userInfo.additionalInfo[k];
-            return <InputWithLabel label={k} inputData={val} readOnly={true}/>;
+            return <InputWithLabel label={k} inputData={val} />;
           })}
         </div>
       </div>

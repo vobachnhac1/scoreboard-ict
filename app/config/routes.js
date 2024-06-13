@@ -12,7 +12,10 @@ import QrViews from '../views/QrViews';
 import SidebarLayout from '../components/Layout/SidebarLayout';
 import UserManagement from '../views/UserManagement';
 import UserInfo from '../views/UserInfo';
-import Login from "../views/Login";
+import Login from '../views/Login';
+import NewsFeed from '../views/NewsFeed';
+import { Empty } from 'antd';
+import SystemManagement from '../views/SystemManagement';
 
 export const socketClient = new SocketClient();
 
@@ -21,13 +24,14 @@ const Routers = () => {
   const navigate = useNavigate();
   useHotkeys('F1', () => navigate('/versus'));
   useHotkeys('esc', () => navigate('/'));
-  useHotkeys('F2', () => navigate('/scoreboard'));
+  useHotkeys('F2', () => navigate('/login'));
   useHotkeys('F3', () => navigate('/player-list'));
   useHotkeys('F4', () => navigate('/bracket'));
   useHotkeys('F5', () => navigate('/login'));
 
   const routes = [
-    { path: '/', element: <QrViews /> },
+    { path: '/', element: <NewsFeed /> },
+    { path: '/qr-views', element: <QrViews /> },
     { path: '/versus', element: <Versus /> },
     { path: '/scoreboard', element: <ScoreBoard /> },
     { path: '/player-list', element: <PlayerList /> },
@@ -35,10 +39,11 @@ const Routers = () => {
     { path: '/user-management', element: <UserManagement /> },
     { path: '/user-info', element: <UserInfo /> },
     { path: '/login', element: <Login /> },
+    { path: '/system-management', element: <SystemManagement /> }
   ];
 
   const renderElement = (path, element) => {
-    if (path === "/login") {
+    if (path === '/login') {
       return <Login />;
     }
     return <SidebarLayout>{element}</SidebarLayout>;
@@ -47,12 +52,17 @@ const Routers = () => {
   return (
     <Routes>
       {routes.map((route, index) => (
-        <Route
-          path={route.path}
-          key={index}
-          element={renderElement(route.path, route.element)}
-        />
+        <Route path={route.path} key={index} element={renderElement(route.path, route.element)} />
       ))}
+      <Route
+        path="*"
+        element={
+          <div className="w-full h-full flex justify-center items-center flex-col">
+            <Empty />
+          </div>
+        }
+      />{' '}
+      {/* 404 */}
     </Routes>
   );
 };

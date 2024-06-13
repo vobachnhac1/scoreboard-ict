@@ -5,17 +5,20 @@ import english from './config/language/en.json';
 import vietnamese from './config/language/vi.json';
 
 const resources = {
-  en: { translation: english },
-  vi: { translation: vietnamese }
+  EN: { translation: english },
+  VI: { translation: vietnamese }
 };
 
-i18n.use(initReactI18next).init({
-  resources,
-  lng: 'vi', // default language
-  debug: true,
-  interpolation: {
-    escapeValue: false // react already safes from xss
-  }
-});
+export function initI18n(lng = 'VI') {
+  i18n.use(initReactI18next).init({
+    resources,
+    lng,
+    debug: true,
+    interpolation: {
+      escapeValue: false // react already safes from xss
+    }
+  });
+}
+initI18n(); // Initialize i18n with the default language
 
 export default i18n;

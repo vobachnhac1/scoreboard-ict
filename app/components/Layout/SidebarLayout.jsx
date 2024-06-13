@@ -1,10 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { Dialog, DialogPanel, Menu, Transition, TransitionChild } from '@headlessui/react';
 import {
-  Bars3Icon,
-  BellIcon,
-  CalendarIcon,
-  ChartPieIcon,
+  AcademicCapIcon,
   Cog6ToothIcon,
   DocumentDuplicateIcon,
   FolderIcon,
@@ -12,29 +9,29 @@ import {
   UsersIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
-import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { Link } from 'react-router-dom';
-
-const userNavigation = [
-  { name: 'Your profile', href: '#' },
-  { name: 'Sign out', href: '#' }
-];
+import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import English from '../Icons/English';
+import Vietnamese from '../Icons/Vietnam';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
 const SidebarLayout = ({ children }) => {
+  const dispatch = useDispatch();
+
+  const { language } = useSelector((state) => state.language);
+  const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [navigation, setNavigation] = useState([
-    { name: 'Quản lý thông tin hệ thống', href: '/', icon: HomeIcon, current: true },
+    { name: 'Bảng tin', href: '/', icon: FolderIcon, current: true },
+    { name: 'Xuất QR', href: '/qr-views', icon: HomeIcon, current: false },
+    { name: 'Quản lý thông tin hệ thống', href: '/system-management', icon: AcademicCapIcon, current: false },
     { name: 'Quản lý thông tin tài khoản', href: '/user-management', icon: UsersIcon, current: false },
-    { name: 'Projects', href: '#', icon: FolderIcon, current: false },
-    { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
-    { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
-    { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
-    { name: 'Thông tin người dùng', href: '/user-info', icon: ChartPieIcon, current: false },
+    { name: 'Thông tin người dùng', href: '/user-info', icon: DocumentDuplicateIcon, current: false }
   ]);
 
   const handleLinkClick = (clickedLink) => {
@@ -47,6 +44,14 @@ const SidebarLayout = ({ children }) => {
         }
       })
     );
+  };
+
+  const handleChangeLanguage = () => {
+    if (language === 'EN') {
+      dispatch({ type: 'SET_LANGUAGE', payload: 'VI' }); // to set the language to E
+    } else {
+      dispatch({ type: 'SET_LANGUAGE', payload: 'EN' }); // to set the language to E
+    }
   };
 
   return (
@@ -101,6 +106,9 @@ const SidebarLayout = ({ children }) => {
                       alt="Your Company"
                     />
                   </div>
+
+                  <English className={'w-6 h-6'} />
+
                   <nav className="flex flex-1 flex-col">
                     <ul className="flex flex-1 flex-col gap-y-7">
                       <li>
@@ -154,13 +162,25 @@ const SidebarLayout = ({ children }) => {
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col shadow-xl">
         {/* Sidebar component, swap this element with another sidebar if you like */}
         <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
-          <div className="flex h-16 shrink-0 items-center">
+          <div className="flex h-16 shrink-0 items-center justify-between">
             <img
               className="h-8 w-auto"
               src="https://tailwindui.com/img/logos/mark.svg?color=blue&shade=600"
               alt="Your Company"
             />
+
+            <div className="flex gap-2 items-center">
+              <English
+                className={'w-7 h-7 cursor-pointer'}
+                onClick={() => dispatch({ type: 'SET_LANGUAGE', payload: 'EN' })}
+              />
+              <Vietnamese
+                className={'w-7 h-7 cursor-pointer'}
+                onClick={() => dispatch({ type: 'SET_LANGUAGE', payload: 'VI' })}
+              />
+            </div>
           </div>
+
           <nav className="flex flex-1 flex-col">
             <ul className="flex flex-1 flex-col gap-y-7">
               <li>
@@ -190,17 +210,39 @@ const SidebarLayout = ({ children }) => {
                   ))}
                 </ul>
               </li>
-              <li className="mt-auto">
-                <Link
-                  to="/"
-                  className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-sky-600"
-                >
-                  <Cog6ToothIcon
-                    className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-sky-600"
-                    aria-hidden="true"
-                  />
-                  Settings
-                </Link>
+              <li className="mt-auto w-full">
+                <Menu as="div" className="relative">
+                  <Menu.Button className="-m-1.5 flex items-center p-1.5 w-full">
+                    <span className="sr-only">Open settings</span>
+                    <div className="flex gap-2">
+                      <Cog6ToothIcon
+                        className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-sky-600"
+                        aria-hidden="true"
+                      />
+                      Settings
+                    </div>
+                  </Menu.Button>
+                  {/* <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items className="absolute left-0 bottom-9 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                      <Menu.Item>
+                        <button
+                          onClick={() => handleChangeLanguage()}
+                          className={classNames('block px-3 py-1 text-sm leading-6 text-gray-900 whitespace-nowrap')}
+                        >
+                          {language === 'VI' ? 'Vietnamese' : 'English'}
+                        </button>
+                      </Menu.Item>
+                    </Menu.Items>
+                  </Transition> */}
+                </Menu>
               </li>
               <li>
                 <Menu as="div" className="relative">
@@ -227,21 +269,29 @@ const SidebarLayout = ({ children }) => {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 bottom-9 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                      {userNavigation.map((item) => (
+                      {/* {userNavigation.map((item) => (
                         <Menu.Item key={item.name}>
                           {({ active }) => (
-                            <a
-                              href={item.href}
+                            <Link
+                              to={item.href}
                               className={classNames(
                                 active ? 'bg-gray-50' : '',
                                 'block px-3 py-1 text-sm leading-6 text-gray-900'
                               )}
                             >
                               {item.name}
-                            </a>
+                            </Link>
                           )}
                         </Menu.Item>
-                      ))}
+                      ))} */}
+                      <Menu.Item>
+                        <Link
+                          to="/login"
+                          className={classNames('block px-3 py-1 text-sm leading-6 text-gray-900 whitespace-nowrap')}
+                        >
+                          {t('login')}
+                        </Link>
+                      </Menu.Item>
                     </Menu.Items>
                   </Transition>
                 </Menu>
@@ -251,7 +301,7 @@ const SidebarLayout = ({ children }) => {
         </div>
       </div>
 
-      <div className="lg:pl-72 w-full h-full">
+      <div className="lg:pl-72 w-full h-full bg-gray-100">
         {/* <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
           <button type="button" className="-m-2.5 p-2.5 text-gray-700 lg:hidden" onClick={() => setSidebarOpen(true)}>
             <span className="sr-only">Open sidebar</span>
@@ -289,7 +339,7 @@ const SidebarLayout = ({ children }) => {
           </div>
         </div> */}
 
-        <main className="custom-bg bg-gray-100">
+        <main className="h-full">
           <div className="px-4 sm:px-6 lg:px-8 py-8">{children}</div>
         </main>
       </div>

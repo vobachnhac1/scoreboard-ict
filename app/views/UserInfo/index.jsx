@@ -1,5 +1,6 @@
 import React from 'react';
 import InputWithLabel from '../../components/InputWithLabel';
+import { useForm } from 'react-hook-form';
 
 const UserInfo = () => {
   const userInfo = {
@@ -22,8 +23,16 @@ const UserInfo = () => {
     }
   };
 
+  const { handleSubmit, register } = useForm({
+    defaultValues: { ...userInfo, ...userInfo.additionalInfo }
+  });
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
   return (
-    <div className="">
+    <form onSubmit={handleSubmit(onSubmit)} className="">
       {/* Player Information */}
       <div className="bg-white border-dotted border-2 border-slate-400 p-5 rounded-md">
         {/* Header */}
@@ -42,9 +51,8 @@ const UserInfo = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
           {Object.keys(userInfo).map((key) => {
-            const value = userInfo[key];
             if (key !== 'additionalInfo') {
-              return <InputWithLabel label={key} inputData={value} />;
+              return <InputWithLabel key={key} label={key} fieldKey={key} register={register} />;
             }
             return null;
           })}
@@ -59,15 +67,12 @@ const UserInfo = () => {
         </div>
         {/* Player Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
-          {Object.keys(userInfo.additionalInfo).map((k) => {
-            const val = userInfo.additionalInfo[k];
-            return <InputWithLabel label={k} inputData={val} />;
+          {Object.keys(userInfo.additionalInfo).map((k, index) => {
+            return <InputWithLabel key={index} label={k} fieldKey={k} register={register} />;
           })}
-
-          <InputWithLabel label={'Tên'} />
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 

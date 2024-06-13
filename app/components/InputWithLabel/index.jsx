@@ -1,5 +1,5 @@
-import './index.scss';
 import React from 'react';
+import './index.scss';
 
 const InputWithLabel = ({
   label,
@@ -11,7 +11,9 @@ const InputWithLabel = ({
   flex = false,
   className,
   fieldKey,
-  register
+  register = (_) => {
+    return;
+  }
 }) => {
   return (
     <div className={`${flex ? 'flex' : ''} w-full input_label_group items-center`}>

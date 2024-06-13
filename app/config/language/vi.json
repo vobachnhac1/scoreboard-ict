@@ -22,5 +22,8 @@
   "birth_year": "Năm sinh",
   "note": "Ghi chú",
   "send": "Gửi",
-  "login": "Đăng nhập"
+  "login": "Đăng nhập",
+  "additional_information": "Thông tin thêm",
+  "user_info": "Thông tin học viên",
+  "edit_info": "Chỉnh sửa thông tin"
 }

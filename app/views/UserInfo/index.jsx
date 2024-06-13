@@ -1,8 +1,10 @@
 import React from "react";
-import Input from "./input";
 import InputWithLabel from "../../components/InputWithLabel";
+import { useTranslation } from 'react-i18next';
 
 const UserInfo = () => {
+  const { t } = useTranslation();
+
   const userInfo = {
     userName: "Hien",
     bornYear: "2001",
@@ -29,8 +31,8 @@ const UserInfo = () => {
       <div className="bg-white border-dotted border-2 border-slate-400 p-5 rounded-md">
         {/* Header */}
         <div className="flex justify-between items-center mb-3">
-          <h2 className="text-4xl">User Info</h2>
-          <button className="p-3 border-2 rounded-md">Edit Info</button>
+          <h2 className="text-4xl">{t("user_info")}</h2>
+          <button className="p-3 border-2 rounded-md">{t("edit_info")}</button>
         </div>
         {/* Avatar */}
         <div>
@@ -56,7 +58,7 @@ const UserInfo = () => {
       <div className="bg-white border-dotted border-2 border-slate-400 p-5 rounded-md mt-3">
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl">Additional Information</h2>
+          <h2 className="text-2xl">{t('additional_information')}</h2>
         </div>
         {/* Player Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">

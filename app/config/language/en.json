@@ -22,5 +22,8 @@
   "birth_year": "Birth year",
   "note": "Note",
   "send": "Send",
-  "login": "Login"
+  "login": "Login",
+  "additional_information": "Additional Information",
+  "user_info": "User Info",
+  "edit_info": "Edit Info"
 }

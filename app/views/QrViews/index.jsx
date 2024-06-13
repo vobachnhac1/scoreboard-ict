@@ -73,7 +73,7 @@ const QrViews = () => {
     setIsEdit(true);
     setEditId(item.key);
     setInputData(item.label);
-    inputRef.current.focus();
+    // inputRef.current.focus();
   };
 
   const handleExportExcel = async () => {

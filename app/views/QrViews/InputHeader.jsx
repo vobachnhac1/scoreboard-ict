@@ -4,6 +4,7 @@ import './index.scss';
 import React, { useEffect, useRef, useState } from 'react';
 import Refresh from '../../components/Icons/Refresh';
 import { LoadingOutlined } from '@ant-design/icons';
+import { useForm } from 'react-hook-form';
 
 const InputHeader = ({
   inputRef,
@@ -19,71 +20,87 @@ const InputHeader = ({
   refreshData,
   isLoading
 }) => {
-  const handleEnter = (e) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    setFocus,
+    formState: { errors, isSubmitting }
+  } = useForm();
 
-    if (!inputData.trim()) return;
+  useEffect(() => {
+    setValue('column', inputData);
+    setFocus('column');
+  }, [inputData]);
 
-    let temp = [...tableData];
-
-    if (temp.length >= 10 && temp[temp.length - 1].label) {
-      console.error('Đã đủ trường cần nhập');
+  const onSubmit = (data) => {
+    setInputData(data.column);
+    if (isEdit) {
+      if (!data.column.trim()) return;
+      let temp = [...tableData];
+      temp[editId]['label'] = data.column;
+      setTableData(temp);
       setInputData('');
-      return;
+      reset();
+      setIsEdit(false);
+    } else {
+      // handleEnter();
+      if (!data.column.trim()) return;
+      let temp = [...tableData];
+
+      if (temp.length >= 10 && temp[temp.length - 1].label) {
+        console.error('Đã đủ trường cần nhập', temp.length, temp);
+        reset({ column: '' });
+        setInputData('');
+        return;
+      }
+
+      const newData = {
+        key: indexAdd,
+        label: data.column
+      };
+
+      temp[indexAdd] = {
+        ...temp[indexAdd],
+        ...newData
+      };
+
+      setTableData(temp);
+
+      setInputData('');
+      setIndexAdd(indexAdd + 1);
+
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+
+      reset({ column: '' });
     }
-
-    const newData = {
-      key: indexAdd,
-      label: inputData
-    };
-
-    temp[indexAdd] = {
-      ...temp[indexAdd],
-      ...newData
-    };
-
-    setTableData(temp);
-
-    setInputData('');
-    setIndexAdd(indexAdd + 1);
-
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  };
-
-  const handleEdit = (e) => {
-    e.preventDefault();
-
-    if (!inputData.trim()) return;
-
-    let temp = [...tableData];
-    temp[editId]['label'] = inputData;
-
-    setTableData(temp);
-
-    setInputData('');
-    setIsEdit(false);
   };
 
   const handleCancelEdit = () => {
     setIsEdit(false);
     setInputData('');
+    reset();
   };
 
   return (
-    <form onSubmit={() => (isEdit ? handleEdit : handleEnter)} className="flex justify-between items-center">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex justify-between items-center">
       <InputWithLabel
         inputRef={inputRef}
-        inputData={inputData}
-        setInputData={setInputData}
         label={'Tên cột'}
+        flex
         name={'column'}
         placeholder={'Nhập thông tin'}
+        className="w-4/5"
+        fieldKey={'column'}
+        register={register}
       />
       <div className="flex w-1/5 items-center gap-1">
         <button
-          onClick={isEdit ? handleEdit : handleEnter}
+          type="submit"
+          disabled={isSubmitting}
           className="ml-4 py-1.5 px-4 bg-blue-500 rounded text-white focus:outline-none whitespace-nowrap"
         >
           {isEdit ? 'Cập nhật' : 'Thêm'}

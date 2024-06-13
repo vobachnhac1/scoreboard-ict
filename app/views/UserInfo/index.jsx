@@ -1,27 +1,27 @@
-import React from "react";
-import Input from "./input";
+import React from 'react';
+import Input from './input';
+import InputWithLabel from '../../components/InputWithLabel';
 
 const UserInfo = () => {
   const userInfo = {
-    userName: "Hien",
-    bornYear: "2001",
-    hvPhoneNum: "00000000",
-    parentPhoneNum: "Smith",
+    userName: 'Hien',
+    bornYear: '2001',
+    hvPhoneNum: '00000000',
+    parentPhoneNum: 'Smith',
     address: 28,
-    email: "emily.johnson@x.dummyjson.com",
-    social: "emily.johnson@x.dummyjson.com",
+    email: 'emily.johnson@x.dummyjson.com',
+    social: 'emily.johnson@x.dummyjson.com',
     additionalInfo: {
-      phone: "+81 965-431-3024",
+      phone: '+81 965-431-3024',
       height: 193.24,
       weight: 63.16,
-      school: "Green",
+      school: 'Green'
       //   parentInfo: {
       //     parentName: "Brown",
       //     phoneNum: "+81 965-431-3024",
       //   },
-    },
+    }
   };
-
 
   return (
     <div className="">
@@ -38,13 +38,13 @@ const UserInfo = () => {
             className="h-40 w-40 object-cover object-[center_top] rounded-full border-2 border-slate-50"
             src="https://tailwindui.com/img/logos/mark.svg?color=blue&shade=600"
             alt="Player"
-          />{" "}
+          />{' '}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
           {Object.keys(userInfo).map((key) => {
             const value = userInfo[key];
-            if (key !== "additionalInfo") {
+            if (key !== 'additionalInfo') {
               return <Input key={key} label={key} value={value} />;
             }
             return null;
@@ -64,6 +64,8 @@ const UserInfo = () => {
             const val = userInfo.additionalInfo[k];
             return <Input key={k} label={k} value={val} />;
           })}
+
+          <InputWithLabel label={'Tên'} />
         </div>
       </div>
     </div>

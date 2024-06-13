@@ -1,4 +1,3 @@
-import { Select } from 'antd';
 import './index.scss';
 import React from 'react';
 
@@ -7,13 +6,15 @@ const InputWithLabel = ({
   type = 'text',
   name,
   placeholder = '',
-  setInputData,
   inputRef,
-  inputData,
-  readOnly = false
+  readOnly = false,
+  flex = false,
+  className,
+  fieldKey,
+  register
 }) => {
   return (
-    <div className="input_label_group flex items-center w-4/5">
+    <div className={`${flex ? 'flex' : ''} w-full input_label_group items-center`}>
       <label htmlFor={name} className="whitespace-nowrap block leading-6 text-gray-900">
         {label}:
       </label>
@@ -21,12 +22,11 @@ const InputWithLabel = ({
         <input
           type={type}
           name={name}
-          className="input_with_label px-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400"
+          className={`input_with_label custom_input ${className}`}
           placeholder={placeholder}
-          onChange={(e) => setInputData(e.target.value)}
-          value={inputData}
           ref={inputRef}
           readOnly={readOnly}
+          {...register(fieldKey)}
         />
       </div>
     </div>

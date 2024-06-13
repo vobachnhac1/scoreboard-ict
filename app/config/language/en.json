@@ -26,5 +26,9 @@
   "level": "Level",
   "add_subject": "Add subject",
   "subjects_management": "Subjects management",
-  "index": "No."
+  "index": "No.",
+  "remember_me":"Remember me",
+  "forgot_password":"Forgot Password",
+  "create_acc": "Create an account",
+  "not_hav_acc": "Don't have an account"
 }

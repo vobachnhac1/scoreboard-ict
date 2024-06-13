@@ -26,5 +26,9 @@
   "level": "Cấp bậc",
   "add_subject": "Thêm môn học",
   "subjects_management": "Quản lý môn học",
-  "index": "STT"
+  "index": "STT",
+  "remember_me":"Ghi nhớ tôi",
+  "forgot_password":"Quên mật khẩu",
+  "create_acc": "Tạo tài khoản mới",
+  "not_hav_acc": "Chưa có tài khoản"
 }

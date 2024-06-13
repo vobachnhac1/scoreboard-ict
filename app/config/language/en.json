@@ -22,5 +22,9 @@
   "birth_year": "Birth year",
   "note": "Note",
   "send": "Send",
-  "login": "Login"
+  "login": "Login",
+  "level": "Level",
+  "add_subject": "Add subject",
+  "subjects_management": "Subjects management",
+  "index": "No."
 }

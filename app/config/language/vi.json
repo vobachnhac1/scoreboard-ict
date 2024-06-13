@@ -22,5 +22,9 @@
   "birth_year": "Năm sinh",
   "note": "Ghi chú",
   "send": "Gửi",
-  "login": "Đăng nhập"
+  "login": "Đăng nhập",
+  "level": "Cấp bậc",
+  "add_subject": "Thêm môn học",
+  "subjects_management": "Quản lý môn học",
+  "index": "STT"
 }

@@ -1,5 +1,6 @@
 import { Button } from 'antd';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const TableDisplay = ({
   tableData,
@@ -11,6 +12,7 @@ const TableDisplay = ({
   handleDelete,
   setIsDragging
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="form-table w-full h-full border-gray-300">
       {tableData.map((item, index) => (
@@ -39,10 +41,10 @@ const TableDisplay = ({
               {item.label && (
                 <div className="flex w-full justify-center items-center">
                   <Button type="primary mr-2 bg-blue-500" onClick={() => enableEdit(item)}>
-                    Sửa
+                    {t('edit')}
                   </Button>
                   <Button type="primary" danger onClick={() => handleDelete(item.key)}>
-                    Xóa
+                    {t('delete')}
                   </Button>
                 </div>
               )}

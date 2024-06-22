@@ -27,11 +27,11 @@ const SidebarLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [navigation, setNavigation] = useState([
-    { name: 'Bảng tin', href: '/', icon: FolderIcon, current: true },
-    { name: 'Xuất QR', href: '/qr-views', icon: HomeIcon, current: false },
-    { name: 'Quản lý thông tin hệ thống', href: '/system-management', icon: AcademicCapIcon, current: false },
-    { name: 'Quản lý thông tin tài khoản', href: '/user-management', icon: UsersIcon, current: false },
-    { name: 'Thông tin người dùng', href: '/user-info', icon: DocumentDuplicateIcon, current: false }
+    { name: 'newsfeed', href: '/', icon: FolderIcon, current: true },
+    { name: 'qr_export', href: '/qr-views', icon: HomeIcon, current: false },
+    { name: 'subjects_management', href: '/system-management', icon: AcademicCapIcon, current: false },
+    { name: 'school_management', href: '/user-management', icon: UsersIcon, current: false },
+    { name: 'user_info', href: '/user-info', icon: DocumentDuplicateIcon, current: false }
   ]);
 
   const handleLinkClick = (clickedLink) => {
@@ -132,7 +132,7 @@ const SidebarLayout = ({ children }) => {
                                   )}
                                   aria-hidden="true"
                                 />
-                                {item.name}
+                                {t(item.name)}
                               </Link>
                             </li>
                           ))}
@@ -204,7 +204,7 @@ const SidebarLayout = ({ children }) => {
                           )}
                           aria-hidden="true"
                         />
-                        {item.name}
+                        {t(item.name)}
                       </Link>
                     </li>
                   ))}

@@ -1,8 +1,10 @@
 import { CommentOutlined, LikeFilled, LikeOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Divider } from 'antd';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const Post = () => {
+  const { t } = useTranslation();
   return (
     <div className="shadow-md bg-white p-8 pb-2 rounded-lg w-[800px]">
       <div className="flex">
@@ -18,11 +20,11 @@ const Post = () => {
       {/* Reactions & stat */}
       <div className="mt-4 flex justify-between w-full items-center">
         <div>
-          <LikeFilled className="mr-2 text-sky-500" /> 3 likes
+          <LikeFilled className="mr-2 text-sky-500" /> 3 {t('likes')}
         </div>
         <div className="flex gap-8">
-          <div>5 comments</div>
-          <div>8 share</div>
+          <div>5 {t('comments')}</div>
+          <div>8 {t('shares')}</div>
         </div>
       </div>
       <Divider className="my-3" />
@@ -31,12 +33,12 @@ const Post = () => {
       <div className="mt-4 flex justify-between w-full items-center">
         <button className="text-lg hover:bg-gray-300 w-1/2 rounded-lg py-1">
           <LikeOutlined className="mr-4" />
-          Like
+          {t('like')}
         </button>
 
         <button className="text-lg hover:bg-gray-300 w-1/2 rounded-lg py-1">
           <CommentOutlined className="mr-4" />
-          Comment
+          {t('comment')}
         </button>
       </div>
       <Divider className="my-3" />

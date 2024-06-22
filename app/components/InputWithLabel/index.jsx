@@ -13,7 +13,8 @@ const InputWithLabel = ({
   fieldKey,
   register = (_) => {
     return;
-  }
+  },
+  ...props
 }) => {
   return (
     <div className={`${flex ? 'flex' : ''} w-full input_label_group items-center`}>
@@ -29,6 +30,7 @@ const InputWithLabel = ({
           ref={inputRef}
           readOnly={readOnly}
           {...register(fieldKey)}
+          {...props}
         />
       </div>
     </div>

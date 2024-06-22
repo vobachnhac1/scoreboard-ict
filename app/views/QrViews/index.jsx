@@ -11,8 +11,10 @@ import { exportSchema } from '../../shared/qrDataSchema';
 import Excel from '../../components/Icons/Excel';
 import InputHeader from './InputHeader';
 import { Alert, Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 const QrViews = () => {
+  const { t } = useTranslation();
   const template = ['index', 'fullname', 'birthdate', 'sex', 'level', 'desc', 'unit', 'cardCode', 'cardDate', 'note'];
 
   const [tableData, setTableData] = useState(
@@ -131,9 +133,9 @@ const QrViews = () => {
       <div className="w-full h-full">
         <div className="qr__generator ">
           <div className="qr__generator-form bg-white shadow-xl">
-            <div className="text-start pl-4 pt-2 w-full text-blue-600 text-xl">Màn hình tạo mã thông tin</div>
+            <div className="text-start pl-4 pt-2 w-full text-blue-600 text-xl">{t('qr_export_screen')}</div>
             <div className="form-section form-header">
-              <div className="mt-4 mb-4 font-semibold">Nhập thông tin: </div>
+              <div className="mt-4 mb-4 font-semibold">{t('input_infor')} </div>
               <InputHeader
                 tableData={tableData}
                 setTableData={setTableData}
@@ -186,11 +188,7 @@ const QrViews = () => {
       </div>
 
       <Modal open={isErrorExport} onCancel={() => setIsErrorExport(false)} footer={false}>
-        <Alert
-          description="Chưa nhập đủ thông tin cần thiết để xuất file excel. Vui lòng kiểm tra lại!"
-          type="error"
-          className="mt-8 text-lg"
-        />
+        <Alert description={t('excel_missing_infor')} type="error" className="mt-8 text-lg" />
       </Modal>
     </>
   );

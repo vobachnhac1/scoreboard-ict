@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 
-import { Button, Dropdown, Modal } from 'antd';
+import { Button, Dropdown } from 'antd';
 import { BellOutlined, EditOutlined, EllipsisOutlined, FileTextOutlined, UserAddOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import CheckInModal from './CheckInModal';
 import NotificationModal from './NotificationModal';
-import { use } from 'i18next';
-import EditInfoModal from './EditInfoModal';
+import AddStudentModal from './EditInfoModal';
+import MonthView from './MonthView';
 
 const UsersTable = () => {
   const { t } = useTranslation();
@@ -14,7 +14,8 @@ const UsersTable = () => {
   const [userSelected, setUserSelected] = useState({});
   const [isNotifModal, setIsNotifModal] = useState(false);
 
-  const [isEditInfoModal, setIsEditInfoModal] = useState(false);
+  const [isAddStudentModal, setIsAddStudentModal] = useState(false);
+  const [isOpenMonth, setIsOpenMonth] = useState(false);
 
   const showModal = (person) => {
     setUserSelected(person);
@@ -85,7 +86,7 @@ const UsersTable = () => {
                           <Button
                             type="text"
                             className="w-full text-start flex items-center"
-                            onClick={() => setIsEditInfoModal(true)}
+                            onClick={() => setIsAddStudentModal(true)}
                           >
                             <UserAddOutlined />
                             {t('add_student')}
@@ -108,7 +109,13 @@ const UsersTable = () => {
                       {
                         key: '3',
                         label: (
-                          <Button type="text" className=" w-full text-start flex items-center">
+                          <Button
+                            type="text"
+                            className=" w-full text-start flex items-center"
+                            onClick={() => {
+                              setIsOpenMonth(true);
+                            }}
+                          >
                             <FileTextOutlined />
                             {t('report')}
                           </Button>
@@ -147,7 +154,12 @@ const UsersTable = () => {
 
       <CheckInModal isCheckinModal={isCheckinModal} handleCancel={handleCancel} people={people} />
       <NotificationModal isNotifModal={isNotifModal} setIsNotifModal={setIsNotifModal} userSelected={userSelected} />
-      <EditInfoModal isEditInfoModal={isEditInfoModal} setIsEditInfoModal={setIsEditInfoModal} user={userSelected} />
+      <AddStudentModal
+        isAddStudentModal={isAddStudentModal}
+        setIsAddStudentModal={setIsAddStudentModal}
+        userInfo={userSelected}
+      />
+      <MonthView isOpenMonth={isOpenMonth} setIsOpenMonth={setIsOpenMonth} />
     </>
   );
 };

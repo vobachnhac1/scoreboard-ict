@@ -8,8 +8,10 @@ import { saveAs } from 'file-saver';
 
 import QRCode from 'qrcode';
 import SelectNavite from '../../components/SelectBox';
+import { useTranslation } from 'react-i18next';
 
 const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) => {
+  const { t } = useTranslation();
   const [headers, setHeaders] = useState([]);
 
   const [sheetOptions, setSheetOptions] = useState([]);
@@ -19,7 +21,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
 
   const [isQrLink, setIsQrLink] = useState(false);
 
-  const options = ['Thông tin', 'Link'];
+  const options = ['information', 'link'];
 
   useEffect(() => {
     if (selectedFile !== null) {
@@ -106,12 +108,12 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
 
   return (
     <div className="mt-4">
-      <div className="mb-2 font-semibold">Xem thông tin: </div>
+      <div className="mb-2 font-semibold">{t('infor_view')} </div>
       <div className="flex justify-between items-center">
         <div>
           <label htmlFor="file-upload" className="custom-file-upload bg-blue-500">
             <input id="file-upload" type="file" onChange={handleChange} className="hidden" key={inputKey} />
-            Tải file lên
+            {t('upload_file')}
           </label>
           {selectedFile &&
             sheetOptions.length > 0 &&
@@ -132,7 +134,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
         {/* {dataTable.length ? ( */}
         <div className="flex gap-4">
           <div className="custom-file-upload bg-blue-500" onClick={handleDownloadAll}>
-            Tải hết QR Code
+            {t('qr_download_all')}
           </div>
           <div>
             <select
@@ -143,7 +145,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
             >
               {options.map((option, index) => (
                 <option key={index} value={index}>
-                  {option}
+                  {t(option)}
                 </option>
               ))}
             </select>
@@ -161,7 +163,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
                 {headers.map((header, index) => (
                   <th key={index}>{header}</th>
                 ))}
-                <th className="font-semibold">QR Code</th>
+                <th className="font-semibold">{t('qr_code')}</th>
               </tr>
             </thead>
             <tbody>
@@ -172,7 +174,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
                   ))}
                   <td>
                     <Button type="" onClick={() => handleDownloadQr(row, rowIndex)}>
-                      Download QR
+                      {t('qr_download')}
                     </Button>
                   </td>
                 </tr>
@@ -183,7 +185,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
           <table className="mt-4 border border-gray-400 table_no_data">
             <tbody>
               <tr>
-                <td className="text-center">Chưa có file được chọn</td>
+                <td className="text-center">{t('no_file_selected')}</td>
               </tr>
             </tbody>
           </table>

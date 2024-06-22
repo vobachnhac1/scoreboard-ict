@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Refresh from '../../components/Icons/Refresh';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 const InputHeader = ({
   inputRef,
@@ -20,6 +21,7 @@ const InputHeader = ({
   refreshData,
   isLoading
 }) => {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -89,10 +91,10 @@ const InputHeader = ({
     <form onSubmit={handleSubmit(onSubmit)} className="flex justify-between items-center">
       <InputWithLabel
         inputRef={inputRef}
-        label={'Tên cột'}
+        label={t('column_name')}
         flex
         name={'column'}
-        placeholder={'Nhập thông tin'}
+        placeholder={t('input_infor')}
         className="w-4/5"
         fieldKey={'column'}
         register={register}
@@ -103,14 +105,14 @@ const InputHeader = ({
           disabled={isSubmitting}
           className="ml-4 py-1.5 px-4 bg-blue-500 rounded text-white focus:outline-none whitespace-nowrap"
         >
-          {isEdit ? 'Cập nhật' : 'Thêm'}
+          {isEdit ? t('update') : t('add')}
         </button>
         {isEdit && (
           <button
             onClick={handleCancelEdit}
             className="py-1.5 px-4 bg-red-500 rounded text-white focus:outline-none whitespace-nowrap"
           >
-            Hủy
+            {t('cancel')}
           </button>
         )}
         <button

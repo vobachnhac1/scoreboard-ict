@@ -10,7 +10,7 @@ const SearchUser = () => {
       <div className="w-1/3">
         <form className="relative flex flex-1" onSubmit={(e) => e.preventDefault()}>
           <label htmlFor="search-field" className="sr-only">
-            Search
+            {t('search')}
           </label>
           <MagnifyingGlassIcon
             className="pointer-events-none absolute inset-y-0 left-2 h-full w-5 text-gray-400"
@@ -19,7 +19,7 @@ const SearchUser = () => {
           <input
             id="search-field"
             className="block p-4 pl-8 h-full w-full border border-gray-200 rounded-lg text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm "
-            placeholder="Tìm kiếm môn học"
+            placeholder={t('search_subject')}
             type="search"
             name="search"
           />

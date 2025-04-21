@@ -58,7 +58,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
       }
     }
 
-    templateString += '///////  DHT-NHACVB ///////';
+    // templateString += '///////  DHT-NHACVB ///////';
 
     const qrCodeURL = await QRCode.toDataURL(templateString, { errorCorrectionLevel: 'H' });
 
@@ -85,7 +85,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
         }
       }
 
-      templateString += '///////  DHT-NHACVB ///////';
+      // templateString += '///////  DHT-NHACVB ///////';
 
       const qrDataURL = await QRCode.toDataURL(templateString, { errorCorrectionLevel: 'H' });
       zip.file(`${i + 1}.png`, qrDataURL.split('base64,')[1], { base64: true });

@@ -1,7 +1,7 @@
 export const tempData = {
   uutien: 1,
   noidung: 'Hạng Cân 45kg',
-  soluong: 16,
+  soluong: 19,
   danhsach: [
     {
       id: 1,

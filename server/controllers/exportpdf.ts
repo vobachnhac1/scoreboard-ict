@@ -1,225 +1,214 @@
-const DS_THI = [
-  {
-    id: 1,
-    name: 'Nguyễn Văn A1',
-    donvi: 'Quận 1'
-  },
-  {
-    id: 2,
-    name: 'Nguyễn Văn A2',
-    donvi: 'Quận 2'
-  },
-  {
-    id: 3,
-    name: 'Nguyễn Văn A3',
-    donvi: 'Quận 3'
-  }
-];
+
+const DS_THI =[
+    {
+        id: 1,
+        name:'Nguyễn Văn A1',
+        donvi: 'Quận 1'
+    }, {
+        id: 2,
+        name:'Nguyễn Văn A2',
+        donvi: 'Quận 2'
+    }, {
+        id: 3,
+        name:'Nguyễn Văn A3',
+        donvi: 'Quận 3'
+    }
+]
 
 // Require library
 const xl = require('excel4node');
 const fs = require('fs');
 
-const exportExcel = async (req, res) => {
-  const { body } = req;
-  console.log('body: ', body);
-  // const param ={
-  //     uu_tien: 0, // 0: là trên 1:là dưới
-  //     noi_dung_thi: "Hạng Cân 45kg",
-  //     gioi_tinh: "Nữ",
-  //     danh_sach_thi: [
-  //         {
-  //             id: 1,
-  //             name:'Nguyễn Văn A1',
-  //             donvi: 'Quận 1',
-  //             namsinh: '2000',
-  //             gioitinh: 'Nữ',
-  //             ghichu: 'Tiểu học',
-  //             hangcan: '45Kg',
-  //             vong_loai: 0,
-  //             vong_trong: 0
-
-  //         },{
-  //             id: 2,
-  //             name:'Nguyễn Văn A1',
-  //             donvi: 'Quận 1',
-  //             namsinh: '2000',
-  //             gioitinh: 'Nữ',
-  //             ghichu: 'Tiểu học',
-  //             hangcan: '45Kg',
-  //             vong_loai: 0,
-  //             vong_trong: 0
-  //         },{
-  //             id: 3,
-  //             name:'Nguyễn Văn A1',
-  //             donvi: 'Quận 1',
-  //             namsinh: '2000',
-  //             gioitinh: 'Nữ',
-  //             ghichu: 'Tiểu học',
-  //             hangcan: '45Kg',
-  //             vong_loai: 0,
-  //             vong_trong: 0
-  //         },
-  //     ]
-  // }
-  const param = body;
-  const caidat_bull = thongtin_caidat(body.danh_sach_thi.length);
-  // caidat_bul.vong_loai | caidat_bul.vong_trong
-  // Create a new instance of a Workbook class
-  var wb = new xl.Workbook({
-    defaultFont: {
-      size: 12,
-      name: 'Times New Roman',
-      color: 'FFFFFFFF'
-    }
-  });
-  // Add Worksheets to the workbook
-  var ws = wb.addWorksheet('Sheet 1');
-
-  // Create a reusable style
-  var styleBottom = wb.createStyle({
-    font: {
-      bold: true,
-      color: '#000000',
-      size: 12
-    },
-    alignment: {
-      wrapText: true,
-      horizontal: 'center'
-    },
-    border: {
-      bottom: {
-        style: 'thick',
-        color: 'black'
-      }
-    }
-  });
-  var styleRight = wb.createStyle({
-    font: {
-      color: '#000000',
-      bold: true,
-      size: 12
-    },
-    alignment: {
-      wrapText: true,
-      horizontal: 'center'
-    },
-    border: {
-      right: {
-        style: 'thick',
-        color: 'black'
-      }
-    }
-  });
-  var styleBottomRight = wb.createStyle({
-    font: {
-      color: '#000000',
-      bold: true,
-      size: 12
-    },
-    alignment: {
-      wrapText: true,
-      horizontal: 'center'
-    },
-    border: {
-      right: {
-        style: 'thick',
-        color: 'black'
-      },
-      bottom: {
-        style: 'thick',
-        color: 'black'
-      }
-    }
-  });
-  // Set value of cell A1 to 100 as a number type styled with paramaters of style
-  for (let i = 0; i < DS_THI.length; i++) {
-    // khai báo bề ngang cột
-    ws.column(1).setWidth(30);
-    ws.column(2).setWidth(30);
-    // ws.column(3).setWidth(20);
-    // ws.column(4).setWidth(20);
-
-    if (DS_THI.length == 3) {
-      //  danh sách >2 và <= 4: 3 cấp
-      //  danh sách > 4 và <= 8 : 4 cấp bậc
-      //  danh sách > 8 <= 16 : 5 cấp bậc
-      //  danh sách > 16 <= 32 : 6 cấp bậc
-
-      if (i == 0) {
-        ws.cell(i * 2 + 3, 1)
-          .string(DS_THI[i].name)
-          .style(styleBottom);
-        ws.cell(i * 2 + 3, 2)
-          .string(DS_THI[i].donvi)
-          .style(styleBottom);
-        ws.cell(i * 2 + 3, 3).style(styleBottom);
-        ws.cell(i * 2 + 1 + 3, 3).style(styleRight);
-      } else if (i == 1) {
-        ws.cell(i * 2 + 4, 1)
-          .string(DS_THI[i].name)
-          .style(styleBottom);
-        ws.cell(i * 2 + 4, 2)
-          .string(DS_THI[i].donvi)
-          .style(styleBottom);
-        ws.cell(i * 2 + 1 + 4, 2).style(styleRight);
-        ws.cell(i * 2 + 3, 3).style(styleRight);
-        ws.cell(i * 2 + 3, 4).style(styleBottom); // chung kết
-        ws.cell(i * 2 + 4, 3).style(styleRight);
-        ws.cell(i * 2 + 1 + 4, 3).style(styleBottomRight);
-      } else {
-        ws.cell(i * 2 + 4, 1)
-          .string(DS_THI[i].name)
-          .style(styleBottom);
-        ws.cell(i * 2 + 4, 2)
-          .string(DS_THI[i].donvi)
-          .style(styleBottomRight);
-      }
-    }
-  }
-  // xuất file excel
-  wb.write('./exports/Excel.xlsx');
-  let listImage = [];
-  try {
-    // // Excel to PNG in Nodejs
-    // var aspose = aspose || {};
-    // aspose.cells = require('aspose.cells');
-    // // Create a workbook object and load the source file
-    // var workbook = new aspose.cells.Workbook('./exports/Excel.xlsx');
-    // // Instantiate an instance of the ImageOrPrintOptions class to access additional image creation options
-    // var imgOptions = new aspose.cells.ImageOrPrintOptions();
-    // // Set the image type by calling setImageType method
-    // imgOptions.setImageType(aspose.cells.ImageType.PNG);
-    // // Invoke the get(index) method to get the first worksheet.
-    // var sheet = workbook.getWorksheets().get(0);
-    // // Create a SheetRender object for the target sheet
-    // var sr = new aspose.cells.SheetRender(sheet, imgOptions);
-    // for (var j = 0; j < sr.getPageCount(); j++) {
-    //   // Invoke the toImage method to generate an image for the worksheet
-    //   let linkfile = './exports/WToImage-out' + j + '.png';
-    //   let filename = './exports/WToImage-out' + j + '.png';
-    //   await sr.toImage(j, linkfile);
-    //   const base64 = base64_encode(linkfile);
-    //   listImage.push({
-    //     name: body.noi_dung_thi + '.png',
-    //     base64: base64
-    //   });
+const exportExcel =async (req, res)=>{
+    const {body} = req
+    console.log('body: ', body);
+    // const param ={
+    //     uu_tien: 0, // 0: là trên 1:là dưới
+    //     noi_dung_thi: "Hạng Cân 45kg",
+    //     gioi_tinh: "Nữ",
+    //     danh_sach_thi: [
+    //         {
+    //             id: 1,
+    //             name:'Nguyễn Văn A1',
+    //             donvi: 'Quận 1',
+    //             namsinh: '2000',
+    //             gioitinh: 'Nữ',
+    //             ghichu: 'Tiểu học',
+    //             hangcan: '45Kg',
+    //             vong_loai: 0,
+    //             vong_trong: 0
+        
+    //         },{
+    //             id: 2,
+    //             name:'Nguyễn Văn A1',
+    //             donvi: 'Quận 1',
+    //             namsinh: '2000',
+    //             gioitinh: 'Nữ',
+    //             ghichu: 'Tiểu học',
+    //             hangcan: '45Kg',
+    //             vong_loai: 0,
+    //             vong_trong: 0
+    //         },{
+    //             id: 3,
+    //             name:'Nguyễn Văn A1',
+    //             donvi: 'Quận 1',
+    //             namsinh: '2000',
+    //             gioitinh: 'Nữ',
+    //             ghichu: 'Tiểu học',
+    //             hangcan: '45Kg',
+    //             vong_loai: 0,
+    //             vong_trong: 0
+    //         },
+    //     ]
     // }
-    return [];
-  } catch (error) {
-    console.log('error: ', error);
-    return [];
-  }
-};
+    const param = body
+    const caidat_bull = thongtin_caidat(body.danh_sach_thi.length)
+    // caidat_bul.vong_loai | caidat_bul.vong_trong
+    // Create a new instance of a Workbook class
+    var wb = new xl.Workbook({
+        defaultFont: {
+            size: 12,
+            name: 'Times New Roman',
+            color: 'FFFFFFFF',
+          },
+    });
+    // Add Worksheets to the workbook
+    var ws = wb.addWorksheet('Sheet 1');
+
+    // Create a reusable style
+    var styleBottom = wb.createStyle({
+        font: {
+            bold: true,
+            color: '#000000',
+            size: 12,
+        },
+        alignment: {
+            wrapText: true,
+            horizontal: 'center',
+        },
+        border:{
+            bottom: {
+                style: 'thick',
+                color: 'black'
+            },
+        }
+    });
+    var styleRight = wb.createStyle({
+        font: {
+            color: '#000000',
+            bold: true,
+            size: 12,
+        },
+        alignment: {
+            wrapText: true,
+            horizontal: 'center',
+        },
+        border:{
+            right: {
+                style: 'thick',
+                color: 'black'
+            },
+        }
+    });
+    var styleBottomRight = wb.createStyle({
+        font: {
+            color: '#000000',
+            bold: true,
+            size: 12,
+        },
+        alignment: {
+            wrapText: true,
+            horizontal: 'center',
+        },
+        border:{
+            right: {
+                style: 'thick',
+                color: 'black'
+            },
+            bottom: {
+                style: 'thick',
+                color: 'black'
+            },
+        }
+    });
+    // Set value of cell A1 to 100 as a number type styled with paramaters of style
+    for(let i = 0; i < DS_THI.length; i++){
+        // khai báo bề ngang cột
+        ws.column(1).setWidth(30);
+        ws.column(2).setWidth(30);
+        // ws.column(3).setWidth(20);
+        // ws.column(4).setWidth(20);
+
+        if(DS_THI.length == 3){
+            //  danh sách >2 và <= 4: 3 cấp
+            //  danh sách > 4 và <= 8 : 4 cấp bậc
+            //  danh sách > 8 <= 16 : 5 cấp bậc
+            //  danh sách > 16 <= 32 : 6 cấp bậc
+
+
+            if(i==0){
+                ws.cell(i*2 + 3, 1).string(DS_THI[i].name).style(styleBottom)
+                ws.cell(i*2 + 3, 2).string(DS_THI[i].donvi).style(styleBottom)
+                ws.cell(i*2 + 3, 3).style(styleBottom)
+                ws.cell(i*2+1 + 3, 3).style(styleRight)
+            }else  if(i == 1){ 
+                ws.cell(i*2 + 4, 1).string(DS_THI[i].name).style(styleBottom)
+                ws.cell(i*2 + 4, 2).string(DS_THI[i].donvi).style(styleBottom)
+                ws.cell(i*2 + 1 + 4, 2).style(styleRight)
+                ws.cell(i*2 + 3, 3).style(styleRight)
+                ws.cell(i*2 + 3, 4).style(styleBottom) // chung kết
+                ws.cell(i*2 + 4, 3).style(styleRight)
+                ws.cell(i*2+1 + 4, 3).style(styleBottomRight)
+            }else{
+                ws.cell(i*2 + 4, 1).string(DS_THI[i].name).style(styleBottom)
+                ws.cell(i*2 + 4, 2).string(DS_THI[i].donvi).style(styleBottomRight)
+            }
+        }
+    }
+    // xuất file excel
+    wb.write('./exports/Excel.xlsx');
+    let listImage =[]
+    try {
+        // Excel to PNG in Nodejs 
+        var aspose = aspose || {};
+        aspose.cells = require("aspose.cells");
+        // Create a workbook object and load the source file 
+        var workbook = new aspose.cells.Workbook("./exports/Excel.xlsx");
+        // Instantiate an instance of the ImageOrPrintOptions class to access additional image creation options 
+        var imgOptions = new aspose.cells.ImageOrPrintOptions();
+        // Set the image type by calling setImageType method  
+        imgOptions.setImageType(aspose.cells.ImageType.PNG);
+        // Invoke the get(index) method to get the first worksheet. 
+        var sheet = workbook.getWorksheets().get(0);
+        // Create a SheetRender object for the target sheet  
+        var sr = new aspose.cells.SheetRender(sheet, imgOptions);
+        for (var j = 0; j < sr.getPageCount(); j++) {
+            // Invoke the toImage method to generate an image for the worksheet 
+            let linkfile = "./exports/WToImage-out" + j + ".png"
+            let filename = "./exports/WToImage-out" + j + ".png"
+            await sr.toImage(j, linkfile);
+            const base64 = base64_encode(linkfile)
+            listImage.push({ 
+                name: body.noi_dung_thi + ".png",
+                base64: base64
+            })
+        } 
+        return listImage
+    } catch (error) {
+        console.log('error: ', error);
+        return []
+    }
+}
 
 // lấy hình ảnh sheet theo hạng cân
 
+
 // function to encode file data to base64 encoded string
 function base64_encode(file) {
-  // read binary data
-  var bitmap = fs.readFileSync(file);
-  // convert binary data to base64 encoded string
-  return new Buffer(bitmap).toString('base64');
+    // read binary data
+    var bitmap = fs.readFileSync(file);
+    // convert binary data to base64 encoded string
+    return new Buffer(bitmap).toString('base64');
 }
 
 
@@ -259,141 +248,87 @@ const thongtin_excel_mau = async (res,soluong, noidung, uutien, danhsach)=>{
     // const caidat_bul = thongtin_caidat(soluong)
     // caidat_bul.vong_loai | caidat_bul.vong_trong
 
-  // tạo file
-  let filename = 'noidung_' + soluong;
-  if (filename) {
-    filename = noidung + '_' + soluong;
-  }
-  // tạo file excel
-  let wb = new xl.Workbook({
-    defaultFont: {
-      size: 12,
-      name: 'Times New Roman',
-      color: 'black'
+    // tạo file
+    let filename = "noidung_"+soluong
+    if(filename){
+        filename = noidung + "_" + soluong 
     }
-  });
-  let ws = wb.addWorksheet(filename);
-  // Create a reusable style
-  let styleText = wb.createStyle({
-    font: {
-      bold: true,
-      color: '#000000',
-      size: 12
-    },
-    alignment: {
-      wrapText: true,
-      horizontal: 'center'
-    }
-  });
-  let styleBottom = wb.createStyle({
-    font: {
-      bold: true,
-      color: '#000000',
-      size: 12
-    },
-    alignment: {
-      wrapText: true,
-      horizontal: 'center'
-    },
-    border: {
-      bottom: {
-        style: 'thick',
-        color: 'black'
-      }
-    }
-  });
-
-  let styleRight = wb.createStyle({
-    font: {
-      color: '#000000',
-      bold: true,
-      size: 12
-    },
-    alignment: {
-      wrapText: true,
-      horizontal: 'center'
-    },
-    border: {
-      right: {
-        style: 'thick',
-        color: 'black'
-      }
-    }
-  });
-
-  let styleBottomRight = wb.createStyle({
-    font: {
-      color: '#000000',
-      bold: true,
-      size: 12
-    },
-    alignment: {
-      wrapText: true,
-      horizontal: 'center'
-    },
-    border: {
-      right: {
-        style: 'thick',
-        color: 'black'
-      },
-      bottom: {
-        style: 'thick',
-        color: 'black'
-      }
-    }
-  });
-
-  const vi_tri_bd = 5;
-  for (let i = 1; i <= soluong; i++) {
-    // khai báo bề ngang cột
-    ws.column(1).setWidth(5);
-    ws.column(2).setWidth(30);
-    ws.column(3).setWidth(30);
-
-    if (soluong == 3) {
-      //  danh sách > 2 và <= 4: 3 cấp
-      //  danh sách > 4 và <= 8 : 4 cấp bậc
-      //  danh sách > 8 <= 16 : 5 cấp bậc
-      //  danh sách > 16 <= 32 : 6 cấp bậc
-      const item = danhsach[i - 1];
-      if (item) {
-        if (i == 1) {
-          ws.cell(i + vi_tri_bd, 3)
-            .string(item.donvi)
-            .style(styleBottom);
-          ws.cell(i + vi_tri_bd, 2)
-            .string(item.hoten)
-            .style(styleBottom);
-          ws.cell(i + vi_tri_bd, 1).string(i + '.');
-        } else {
-          ws.cell(i * 2 - 1 + vi_tri_bd, 1).string(i + '.');
-          ws.cell(i * 2 - 1 + vi_tri_bd, 2)
-            .string(item.hoten)
-            .style(styleBottom);
-          ws.cell(i * 2 - 1 + vi_tri_bd, 3)
-            .string(item.donvi)
-            .style(styleBottom);
+    // tạo file excel
+    let wb = new xl.Workbook({
+        defaultFont: {
+            size: 12,
+            name: 'Times New Roman',
+            color: 'black',
+          },
+    });
+    let ws = wb.addWorksheet(filename);
+    // Create a reusable style
+    let styleText = wb.createStyle({
+        font: {
+            bold: true,
+            color: '#000000',
+            size: 12,
+        },
+        alignment: {
+            wrapText: true,
+            horizontal: 'center',
+        },
+    });
+    let styleBottom = wb.createStyle({
+        font: {
+            bold: true,
+            color: '#000000',
+            size: 12,
+        },
+        alignment: {
+            wrapText: true,
+            horizontal: 'center',
+        },
+        border:{
+            bottom: {
+                style: 'thick',
+                color: 'black'
+            },
         }
-      } else {
-        if (i == 1) {
-          ws.cell(i + vi_tri_bd, 3).style(styleBottom);
-          ws.cell(i + vi_tri_bd, 2).style(styleBottom);
-          ws.cell(i + vi_tri_bd, 1).string(i + '.');
-        } else {
-          ws.cell(i * 2 - 1 + vi_tri_bd, 1).string(i + '.');
-          ws.cell(i * 2 - 1 + vi_tri_bd, 2).style(styleBottom);
-          ws.cell(i * 2 - 1 + vi_tri_bd, 3).style(styleBottom);
+    });
+
+    let styleRight = wb.createStyle({
+        font: {
+            color: '#000000',
+            bold: true,
+            size: 12,
+        },
+        alignment: {
+            wrapText: true,
+            horizontal: 'center',
+        },
+        border:{
+            right: {
+                style: 'thick',
+                color: 'black'
+            },
         }
-      }
-      if (uutien == 0) {
-        ws.cell(6, 4).style(styleBottom);
-        ws.cell(9, 4).style(styleBottom);
-        ws.cell(8, 5).style(styleBottom);
-        // border
-        ws.cell(9, 3).style(styleRight);
-        ws.cell(10, 3).style(styleRight);
-        for (let j = 7; j < 10; j++) {
-          ws.cell(j, 4).style(styleRight);
+    });
+
+    let styleBottomRight = wb.createStyle({
+        font: {
+            color: '#000000',
+            bold: true,
+            size: 12,
+        },
+        alignment: {
+            wrapText: true,
+            horizontal: 'center',
+        },
+        border:{
+            right: {
+                style: 'thick',
+                color: 'black'
+            },
+            bottom: {
+                style: 'thick',
+                color: 'black'
+            },
         }
     });
     caculatorRound(soluong)
@@ -2783,18 +2718,18 @@ const thongtin_excel_mau = async (res,soluong, noidung, uutien, danhsach)=>{
 }
 
 // di chuyển vào service
-const thongtin_caidat = (soluong) => {
-  // input số lượng thành viên 1 nội dung
-  // 1: là miễn vòng loại
-  // 2: là thi đấu vòng loại
-  if (!soluong || soluong <= 0) return null;
-  const ketqua = caidat_thongso[`${soluong}`];
-  return {
-    vong_loai: ketqua.level[`${2}`],
-    vong_trong: ketqua.level[`${1}`],
-    so_tran: ketqua.so_tran
-  };
-};
+const thongtin_caidat =(soluong)=>{
+    // input số lượng thành viên 1 nội dung
+    // 1: là miễn vòng loại
+    // 2: là thi đấu vòng loại
+    if(!soluong||soluong <= 0) return null
+    const ketqua = caidat_thongso[`${soluong}`]
+    return {
+        vong_loai: ketqua.level[`${2}`],
+        vong_trong: ketqua.level[`${1}`],
+        so_tran: ketqua.so_tran,
+    }
+}
 
 // không quá 32 trân
 const caidat_thongso = {
@@ -3005,267 +2940,38 @@ const caidat_thongso = {
             '2': 28,
         }
     }
-  },
-  '4': {
-    so_tran: 3,
-    level: {
-      '1': 4,
-      '2': 0
-    }
-  },
-  '5': {
-    // 4 cấp
-    so_tran: 4,
-    level: {
-      '1': 3,
-      '2': 2
-    }
-  },
-  '6': {
-    // 4 cấp
-    so_tran: 4,
-    level: {
-      '1': 2,
-      '2': 4
-    }
-  },
-  '7': {
-    // 4 cấp
-    so_tran: 4,
-    level: {
-      '1': 1,
-      '2': 6
-    }
-  },
-  '8': {
-    // 4 cấp
-    so_tran: 4,
-    level: {
-      '1': 4,
-      '2': 0
-    }
-  },
-  '9': {
-    // 5 cấp
-    level: {
-      '1': 7,
-      '2': 2
-    }
-  },
-  '10': {
-    // 5 cấp
-    so_tran: 5,
-    level: {
-      '1': 6,
-      '2': 4
-    }
-  },
-  '11': {
-    // 5 cấp
-    so_tran: 5,
-    level: {
-      '1': 5,
-      '2': 6
-    }
-  },
-  '12': {
-    // 5 cấp
-    so_tran: 5,
-    level: {
-      '1': 4,
-      '2': 8
-    }
-  },
-  '13': {
-    // 5 cấp
-    so_tran: 5,
-    level: {
-      '1': 3,
-      '2': 10
-    }
-  },
-  '14': {
-    // 5 cấp
-    so_tran: 5,
-    level: {
-      '1': 2,
-      '2': 12
-    }
-  },
-  '15': {
-    // 5 cấp
-    so_tran: 5,
-    level: {
-      '1': 1,
-      '2': 14
-    }
-  },
-  '16': {
-    // 5 cấp
-    so_tran: 5,
-    level: {
-      '1': 16,
-      '2': 0
-    }
-  },
-  '17': {
-    // 5 cấp
-    so_tran: 6,
-    level: {
-      '1': 15,
-      '2': 2
-    }
-  },
-  '18': {
-    // 5 cấp
-    so_tran: 6,
-    level: {
-      '1': 14,
-      '2': 4
-    }
-  },
-  '19': {
-    // 5 cấp
-    so_tran: 6,
-    level: {
-      '1': 13,
-      '2': 6
-    }
-  },
-  '20': {
-    // 5 cấp
-    so_tran: 6,
-    level: {
-      '1': 12,
-      '2': 8
-    }
-  },
-  '21': {
-    // 5 cấp
-    level: {
-      '1': 11,
-      '2': 10
-    }
-  },
-  '22': {
-    // 5 cấp
-    so_tran: 6,
-    level: {
-      '1': 10,
-      '2': 12
-    }
-  },
-  '23': {
-    // 5 cấp
-    level: {
-      '1': 9,
-      '2': 14
-    }
-  },
-  '24': {
-    // 5 cấp
-    so_tran: 6,
-    level: {
-      '1': 8,
-      '2': 16
-    }
-  },
-  '25': {
-    // 5 cấp
-    so_tran: 6,
-    level: {
-      '1': 7,
-      '2': 18
-    }
-  },
-  '26': {
-    // 5 cấp
-    so_tran: 6,
-    level: {
-      '1': 6,
-      '2': 20
-    }
-  },
-  '27': {
-    // 5 cấp
-    so_tran: 6,
-    level: {
-      '1': 5,
-      '2': 22
-    }
-  },
-  '28': {
-    // 5 cấp
-    so_tran: 6,
-    level: {
-      '1': 4,
-      '2': 24
-    }
-  },
-  '29': {
-    // 5 cấp
-    so_tran: 6,
-    level: {
-      '1': 3,
-      '2': 26
-    }
-  },
-  '30': {
-    // 5 cấp
-    so_tran: 6,
-    level: {
-      '1': 2,
-      '2': 28
-    }
-  },
-  '31': {
-    // 5 cấp
-    so_tran: 6,
-    level: {
-      '1': 1,
-      '2': 30
-    }
-  },
-  '32': {
-    // 5 cấp
-    so_tran: 6,
-    level: {
-      '1': 32,
-      '2': 28
-    }
-  }
-};
+}
 
 // chuyển tiếng việt không đấu
-const removeVietnameseTones = (str) => {
-  str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a');
-  str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, 'e');
-  str = str.replace(/ì|í|ị|ỉ|ĩ/g, 'i');
-  str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, 'o');
-  str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, 'u');
-  str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, 'y');
-  str = str.replace(/đ/g, 'd');
-  str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, 'A');
-  str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, 'E');
-  str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, 'I');
-  str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, 'O');
-  str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, 'U');
-  str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, 'Y');
-  str = str.replace(/Đ/g, 'D');
-  // Some system encode vietnamese combining accent as individual utf-8 characters
-  // Một vài bộ encode coi các dấu mũ, dấu chữ như một kí tự riêng biệt nên thêm hai dòng này
-  str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ''); // ̀ ́ ̃ ̉ ̣  huyền, sắc, ngã, hỏi, nặng
-  str = str.replace(/\u02C6|\u0306|\u031B/g, ''); // ˆ ̆ ̛  Â, Ê, Ă, Ơ, Ư
-  // Remove extra spaces
-  // Bỏ các khoảng trắng liền nhau
-  str = str.replace(/ + /g, ' ');
-  str = str.trim();
-  // Remove punctuations
-  // Bỏ dấu câu, kí tự đặc biệt
-  str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, ' ');
-  return str;
-};
+const removeVietnameseTones=(str) =>{
+    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); 
+    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); 
+    str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); 
+    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); 
+    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); 
+    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); 
+    str = str.replace(/đ/g,"d");
+    str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+    str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+    str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+    str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+    str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+    str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+    str = str.replace(/Đ/g, "D");
+    // Some system encode vietnamese combining accent as individual utf-8 characters
+    // Một vài bộ encode coi các dấu mũ, dấu chữ như một kí tự riêng biệt nên thêm hai dòng này
+    str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); // ̀ ́ ̃ ̉ ̣  huyền, sắc, ngã, hỏi, nặng
+    str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // ˆ ̆ ̛  Â, Ê, Ă, Ơ, Ư
+    // Remove extra spaces
+    // Bỏ các khoảng trắng liền nhau
+    str = str.replace(/ + /g," ");
+    str = str.trim();
+    // Remove punctuations
+    // Bỏ dấu câu, kí tự đặc biệt
+    str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g," ");
+    return str;
+}
 module.exports = {
-  exportExcel,
-  thongtin_excel_mau
+    exportExcel,
+    thongtin_excel_mau
 };

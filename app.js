@@ -61,7 +61,7 @@ app.use(function (error, req, res, next) {
   });
 });
 
-app.listen(7778, () => console.log('API running on port 7778 🔥'));
+// app.listen(7778, () => console.log('API running on port 7778 🔥'));
 
 //-----------------------------------------------------------------------------------------------//
 /**

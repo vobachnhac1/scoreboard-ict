@@ -25,17 +25,16 @@ const Routers = () => {
   useHotkeys('esc', () => navigate('/'));
   // useHotkeys('F2', () => navigate('/scoreboard'));
   // useHotkeys('F3', () => navigate('/player-list'));
-  useHotkeys('F1', () => navigate('/bracket'));
+  // useHotkeys('F1', () => navigate('/bracket'));
   return (
     <Routes>
       {/* <div style={{ flex: 1, width:'100%', height:'100%', backgroundColor:'white ' }}> */}
       {/* <Navbar /> */}
       <Route path="/" element={<Home />} />
-      <Route path="/versus" element={<Versus />} />
+      {/* <Route path="/versus" element={<Versus />} />
       <Route path="/scoreboard" element={<ScoreBoard />} />
       <Route path="/player-list" element={<PlayerList />} />
-      <Route path="/bracket" element={<Bracket />} />
-      {/* <Route path="about" component={About} /> */}
+      <Route path="/bracket" element={<Bracket />} /> */}
       {/* <Footer /> */}
       {/* </div> */}
     </Routes>

@@ -1,5 +1,5 @@
 const { app, globalShortcut, BrowserWindow, ipcMain } = require('electron');
-const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-assembler');
+// const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-assembler');
 
 const server = require('./app');
 
@@ -29,7 +29,7 @@ function createWindow() {
   // }));
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // Register
 

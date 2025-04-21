@@ -24,7 +24,7 @@
   "scripts": {
     "start": "electron .",
     "dev": "concurrently \"webpack --watch\" \"electron .\"",
-    "build": "rimraf ./public && mkdir public && webpack --progress -p",
+    "build": "rimraf ./public && mkdir public && webpack --progress && webpack --mode production --env production", 
     "dist:win": "electron-builder --win=portable",
     "dist:mac": "electron-builder --mac --universal",
     "fix-install": "./node_modules/.bin/electron-rebuild && node node_modules/java/postInstall.js"

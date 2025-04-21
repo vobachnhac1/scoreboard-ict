@@ -1,4 +1,4 @@
-# Vvn Scoreboard V2
+# Phần mềm chấm điểm Scoreboard 
 
 
 

@@ -1,5 +1,11 @@
-import React, { Fragment, useState } from 'react';
-import { Dialog, DialogPanel, Menu, Transition, TransitionChild } from '@headlessui/react';
+import React, { Fragment, useState } from "react";
+import {
+  Dialog,
+  DialogPanel,
+  Menu,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 import {
   AcademicCapIcon,
   Cog6ToothIcon,
@@ -7,16 +13,16 @@ import {
   FolderIcon,
   HomeIcon,
   UsersIcon,
-  XMarkIcon
-} from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import English from '../Icons/English';
-import Vietnamese from '../Icons/Vietnam';
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import English from "../Icons/English";
+import Vietnamese from "../Icons/Vietnam";
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 const SidebarLayout = ({ children }) => {
@@ -27,14 +33,46 @@ const SidebarLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [navigation, setNavigation] = useState([
-    { name: 'newsfeed', href: '/', icon: FolderIcon, current: true },
-    { name: 'qr_export', href: '/qr-views', icon: HomeIcon, current: false },
-    { name: 'subjects_management', href: '/system-management', icon: AcademicCapIcon, current: false },
-    { name: 'school_management', href: '/user-management', icon: UsersIcon, current: false },
-    { name: 'user_info', href: '/user-info', icon: DocumentDuplicateIcon, current: false }
+    { name: "newsfeed", href: "/", icon: FolderIcon, current: true },
+    { name: "qr_export", href: "/qr-views", icon: HomeIcon, current: false },
+    {
+      name: "subjects_management",
+      href: "/system-management",
+      icon: AcademicCapIcon,
+      current: false,
+    },
+    {
+      name: "school_management",
+      href: "/user-management",
+      icon: UsersIcon,
+      current: false,
+    },
+    {
+      name: "user_info",
+      href: "/user-info",
+      icon: DocumentDuplicateIcon,
+      current: false,
+    },
+    {
+      name: "general_settings_management",
+      href: "/sport-general-settings",
+      icon: DocumentDuplicateIcon,
+      current: false,
+      children: [
+        { name: "tournament_sport", href: "/sport-tournament", current: false },
+        { name: "antagonism_sport", href: "/sport-antagonism", current: false },
+        { name: "shadow_box_sport", href: "/sport-shadow-box", current: false },
+      ],
+    },
   ]);
 
-  const handleLinkClick = (clickedLink) => {
+  const handleLinkClick = async (clickedLink) => {
+    const locationHash = location.hash.slice(1);
+
+    if (locationHash == clickedLink.href) {
+      return;
+    }
+
     setNavigation(
       navigation.map((link) => {
         if (link.name === clickedLink.name) {
@@ -46,18 +84,45 @@ const SidebarLayout = ({ children }) => {
     );
   };
 
+  const handleLinkChildrenClick = (parentLink, clickedChildrenLink) => {
+    let targetName = clickedChildrenLink.name;
+    const updatedArray = navigation.map((item) => {
+      if (item.children) {
+        const foundChild = item.children.some(
+          (child) => child.name === targetName
+        );
+        if (foundChild && !item.current) {
+          return { ...item, current: true };
+        }
+        const updatedChildren = item.children.map((child) =>
+          child.name === targetName
+            ? { ...child, current: true }
+            : { ...child, current: false }
+        );
+        return { ...item, children: updatedChildren };
+      }
+      return item;
+    });
+  
+    setNavigation(updatedArray);
+  };
+
   const handleChangeLanguage = () => {
-    if (language === 'EN') {
-      dispatch({ type: 'SET_LANGUAGE', payload: 'VI' }); // to set the language to E
+    if (language === "EN") {
+      dispatch({ type: "SET_LANGUAGE", payload: "VI" }); // to set the language to E
     } else {
-      dispatch({ type: 'SET_LANGUAGE', payload: 'EN' }); // to set the language to E
+      dispatch({ type: "SET_LANGUAGE", payload: "EN" }); // to set the language to E
     }
   };
 
   return (
     <div className="w-full h-full">
       <Transition show={sidebarOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-50 lg:hidden" onClose={setSidebarOpen}>
+        <Dialog
+          as="div"
+          className="relative z-50 lg:hidden"
+          onClose={setSidebarOpen}
+        >
           <TransitionChild
             as={Fragment}
             enter="transition-opacity ease-linear duration-300"
@@ -91,9 +156,16 @@ const SidebarLayout = ({ children }) => {
                   leaveTo="opacity-0"
                 >
                   <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
-                    <button type="button" className="-m-2.5 p-2.5" onClick={() => setSidebarOpen(false)}>
+                    <button
+                      type="button"
+                      className="-m-2.5 p-2.5"
+                      onClick={() => setSidebarOpen(false)}
+                    >
                       <span className="sr-only">Close sidebar</span>
-                      <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                      <XMarkIcon
+                        className="h-6 w-6 text-white"
+                        aria-hidden="true"
+                      />
                     </button>
                   </div>
                 </TransitionChild>
@@ -107,7 +179,7 @@ const SidebarLayout = ({ children }) => {
                     />
                   </div>
 
-                  <English className={'w-6 h-6'} />
+                  <English className={"w-6 h-6"} />
 
                   <nav className="flex flex-1 flex-col">
                     <ul className="flex flex-1 flex-col gap-y-7">
@@ -119,16 +191,18 @@ const SidebarLayout = ({ children }) => {
                                 to={item.href}
                                 className={classNames(
                                   item.current
-                                    ? 'bg-gray-50 text-sky-600'
-                                    : 'text-gray-700 hover:text-sky-600 hover:bg-gray-50',
-                                  'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                                    ? "bg-gray-50 text-sky-600"
+                                    : "text-gray-700 hover:text-sky-600 hover:bg-gray-50",
+                                  "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                 )}
                                 onClick={() => handleLinkClick(item)}
                               >
                                 <item.icon
                                   className={classNames(
-                                    item.current ? 'text-sky-600' : 'text-gray-400 group-hover:text-sky-600',
-                                    'h-6 w-6 shrink-0'
+                                    item.current
+                                      ? "text-sky-600"
+                                      : "text-gray-400 group-hover:text-sky-600",
+                                    "h-6 w-6 shrink-0"
                                   )}
                                   aria-hidden="true"
                                 />
@@ -171,12 +245,16 @@ const SidebarLayout = ({ children }) => {
 
             <div className="flex gap-2 items-center">
               <English
-                className={'w-7 h-7 cursor-pointer'}
-                onClick={() => dispatch({ type: 'SET_LANGUAGE', payload: 'EN' })}
+                className={"w-7 h-7 cursor-pointer"}
+                onClick={() =>
+                  dispatch({ type: "SET_LANGUAGE", payload: "EN" })
+                }
               />
               <Vietnamese
-                className={'w-7 h-7 cursor-pointer'}
-                onClick={() => dispatch({ type: 'SET_LANGUAGE', payload: 'VI' })}
+                className={"w-7 h-7 cursor-pointer"}
+                onClick={() =>
+                  dispatch({ type: "SET_LANGUAGE", payload: "VI" })
+                }
               />
             </div>
           </div>
@@ -186,27 +264,90 @@ const SidebarLayout = ({ children }) => {
               <li>
                 <ul className="-mx-2 space-y-1">
                   {navigation.map((item) => (
-                    <li key={item.name}>
-                      <Link
-                        to={item.href}
-                        onClick={() => handleLinkClick(item)}
-                        className={classNames(
-                          item.current
-                            ? 'bg-gray-50 text-sky-600'
-                            : 'text-gray-700 hover:text-sky-600 hover:bg-gray-50',
-                          'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                        )}
-                      >
-                        <item.icon
-                          className={classNames(
-                            item.current ? 'text-sky-600' : 'text-gray-400 group-hover:text-sky-600',
-                            'h-6 w-6 shrink-0'
-                          )}
-                          aria-hidden="true"
-                        />
-                        {t(item.name)}
-                      </Link>
-                    </li>
+                    <>
+                      {item?.children?.length == 0 || !item?.children ? (
+                        <li key={item.name}>
+                          {/* menu sigle item */}
+                          <Link
+                            to={item.href}
+                            onClick={() => handleLinkClick(item)}
+                            className={classNames(
+                              item.current
+                                ? "bg-gray-50 text-sky-600"
+                                : "text-gray-700 hover:text-sky-600 hover:bg-gray-50",
+                              "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                            )}
+                          >
+                            <item.icon
+                              className={classNames(
+                                item.current
+                                  ? "text-sky-600"
+                                  : "text-gray-400 group-hover:text-sky-600",
+                                "h-6 w-6 shrink-0"
+                              )}
+                              aria-hidden="true"
+                            />
+                            {t(item.name)}
+                          </Link>
+                          {/* end menu sigle item */}
+                        </li>
+                      ) : (
+                        <li>
+                          {/* menu multilple item */}
+                          <Menu as="div" className="relative">
+                            <Menu.Button
+                              as="button"
+                              className={classNames(
+                                item.current
+                                  ? "bg-gray-50 text-sky-600"
+                                  : "text-gray-700 hover:text-sky-600 hover:bg-gray-50",
+                                "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                              )}
+                              onClick={() => handleLinkClick(item)}
+                            >
+                              {" "}
+                              <item.icon
+                                className={classNames(
+                                  item.current
+                                    ? "text-sky-600"
+                                    : "text-gray-400 group-hover:text-sky-600",
+                                  "h-6 w-6 shrink-0"
+                                )}
+                                aria-hidden="true"
+                              />
+                              {t(item.name)}
+                            </Menu.Button>
+
+                            <Menu.Items
+                              as="ul"
+                              className="right-0 w-56 p-4 ml-10 mt-2 space-y-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                            >
+                              {item?.children.map((child) => (
+                                <>
+                                  <Menu.Item className="pt-2 first:pt-0">
+                                    <button
+                                      className={classNames(
+                                        child?.current
+                                          ? "text-start bg-gray-50 text-sky-600"
+                                          : "text-start text-gray-700 hover:text-sky-600 hover:bg-gray-50",
+                                        "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                                      )}
+                                      onClick={() => {
+                                        handleLinkChildrenClick(item, child);
+                                      }}
+                                    >
+                                      {t(child?.name)}
+                                      {/* {item?.children} */}
+                                    </button>
+                                  </Menu.Item>
+                                </>
+                              ))}
+                            </Menu.Items>
+                          </Menu>
+                          {/* end menu multilple item */}
+                        </li>
+                      )}
+                    </>
                   ))}
                 </ul>
               </li>
@@ -254,7 +395,10 @@ const SidebarLayout = ({ children }) => {
                       alt=""
                     />
                     <span className="hidden lg:flex lg:items-center">
-                      <span className="ml-4 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
+                      <span
+                        className="ml-4 text-sm font-semibold leading-6 text-gray-900"
+                        aria-hidden="true"
+                      >
                         Tom Cook
                       </span>
                     </span>
@@ -287,9 +431,11 @@ const SidebarLayout = ({ children }) => {
                       <Menu.Item>
                         <Link
                           to="/login"
-                          className={classNames('block px-3 py-1 text-sm leading-6 text-gray-900 whitespace-nowrap')}
+                          className={classNames(
+                            "block px-3 py-1 text-sm leading-6 text-gray-900 whitespace-nowrap"
+                          )}
                         >
-                          {t('login')}
+                          {t("login")}
                         </Link>
                       </Menu.Item>
                     </Menu.Items>

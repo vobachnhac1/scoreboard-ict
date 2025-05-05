@@ -67,5 +67,9 @@
   "search": "Tìm kiếm",
   "phone": "Số điện thoại",
   "height": "Chiều cao",
-  "weight": "Cân nặng"
+  "weight": "Cân nặng",
+  "general_settings_management": "Quản lý cài đặt chung",
+  "tournament_sport":"Giải đấu",
+  "antagonism_sport":"Đối kháng",
+  "shadow_box_sport":"Thi quyền"
 }

@@ -17,6 +17,8 @@ import NewsFeed from '../views/NewsFeed';
 import { Empty } from 'antd';
 import SystemManagement from '../views/SystemManagement';
 
+import TournamentSport from '../views/GeneralSettingsManagement/TournamentSport';
+
 export const socketClient = new SocketClient();
 
 // Tạo component App
@@ -38,7 +40,8 @@ const Routers = () => {
     { path: '/user-management', element: <UserManagement /> },
     { path: '/user-info', element: <UserInfo /> },
     { path: '/login', element: <Login /> },
-    { path: '/system-management', element: <SystemManagement /> }
+    { path: '/system-management', element: <SystemManagement /> },
+    { path: '/tournament-sport', element: <TournamentSport /> }
   ];
 
   const renderElement = (path, element) => {

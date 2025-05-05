@@ -67,5 +67,9 @@
   "search": "Search",
   "phone": "Phone number",
   "height": "Height",
-  "weight": "Weight"
+  "weight": "Weight",
+  "general_settings_management": "General settings management",
+  "tournament_sport":"Tournament sport",
+  "antagonism_sport":"Antagonism sport",
+  "shadow_box_sport":"Shadow_box_sport"
 }

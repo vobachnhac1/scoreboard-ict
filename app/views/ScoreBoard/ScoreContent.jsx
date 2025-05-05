@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
-import "./index.scss";
-import PlayerScore from "./PlayerScore";
-import MatchList from "./MatchList";
+import React, { useEffect, useRef, useState } from 'react';
+import './index.scss';
+import PlayerScore from './PlayerScore';
+import MatchList from './MatchList';
 
-const ScoreContent = () => {
+const ScoreContent = ({ type = 'vovinam' }) => {
   return (
-    <div className="w-35">
-      <PlayerScore />
-      <MatchList />
+    <div className="w-full">
+      <PlayerScore type={type} />
+      {/* <MatchList /> */}
     </div>
   );
 };

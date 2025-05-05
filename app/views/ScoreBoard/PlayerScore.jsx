@@ -1,19 +1,26 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './index.scss';
 
-const PlayerScore = () => {
+const PlayerScore = ({ type = 'vovinam' }) => {
+  const viewHeight = useMemo(() => {
+    if (type === 'vovinam') return 'min-h-[50vh]';
+    if (type === 'pencak') return 'min-h-[65vh]';
+  }, [type]);
+
   return (
-    <div className="bg-red-700 text-white shape">
-      <div className="text-9xl text-center">
-        <span className="">0</span>
+    <div className={`bg-red-400 text-white p-4 px-8 flex flex-col gap-12 items-center justify-center ${viewHeight}`}>
+      <div className="text-8xl text-center">
+        <span className="">10</span>
       </div>
-      <div className="flex py-3 px-11 items-end">
-        <div className="w-4-5">
-          <div className="mb-1">Nguyễn Cao Duy Khôi</div>
-          <div>TH Bình Trị Động</div>
+
+      <div className="w-full flex justify-center items-center gap-4">
+        <div className="">
+          <img className="w-40 h-40 object-cover" src={'../../assets/avatar.jpg'} />
         </div>
-        <div className="w-1-5">
-          <img className="max-h" src={'../../assets/avatar.jpg'} />
+
+        <div className="">
+          <div className="text-2xl py-2">Dang Huu Nam</div>
+          <div className="text-2xl py-2">Dang Huu Nam</div>
         </div>
       </div>
     </div>

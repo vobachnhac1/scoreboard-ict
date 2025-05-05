@@ -1,4 +1,4 @@
-const { app, globalShortcut, BrowserWindow, ipcMain } = require('electron');
+const { app, globalShortcut, BrowserWindow, ipcMain, dialog } = require('electron');
 const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-assembler');
 
 const server = require('./app');
@@ -12,12 +12,38 @@ try {
 
 let mainWindow;
 
+ipcMain.handle('dialog:openFolder', async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openDirectory']
+  });
+
+  if (!result.canceled) {
+    return result.filePaths[0];
+  }
+  return null;
+});
+
+ipcMain.handle('folder:getFiles', async (event, folderPath) => {
+  try {
+    const files = await fs.readdir(folderPath);
+    return files;
+  } catch (error) {
+    console.error('Error reading folder:', error);
+    return [];
+  }
+});
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 768,
+    // webPreferences: {
+    //   nodeIntegration: true
+    // },
     webPreferences: {
-      nodeIntegration: true
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true
     }
   });
 

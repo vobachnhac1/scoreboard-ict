@@ -173,9 +173,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
                     <td key={cellIndex}>{cell}</td>
                   ))}
                   <td>
-                    <Button type="" onClick={() => handleDownloadQr(row, rowIndex)}>
-                      {t('qr_download')}
-                    </Button>
+                    <Button onClick={() => handleDownloadQr(row, rowIndex)}>{t('qr_download')}</Button>
                   </td>
                 </tr>
               ))}

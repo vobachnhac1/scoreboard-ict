@@ -27,7 +27,8 @@ const SidebarLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [navigation, setNavigation] = useState([
-    { name: 'newsfeed', href: '/', icon: FolderIcon, current: true },
+    { name: 'home_page', href: '/', icon: HomeIcon, current: true },
+    { name: 'newsfeed', href: '/feed', icon: FolderIcon, current: false },
     { name: 'qr_export', href: '/qr-views', icon: HomeIcon, current: false },
     { name: 'subjects_management', href: '/system-management', icon: AcademicCapIcon, current: false },
     { name: 'school_management', href: '/user-management', icon: UsersIcon, current: false },

@@ -1,35 +1,28 @@
-import React, { useRef, useState } from "react";
-import "./index.scss";
-import ScoreHeader from "./ScoreHeader";
-import PlayerScore from "./PlayerScore";
-import Timer from "./Timer";
-import ScoreContent from "./ScoreContent";
-import ButtonList from "./ButtonList";
-import Noti from "./Noti";
+import React, { useRef, useState } from 'react';
+import './index.scss';
+import ScoreHeader from './ScoreHeader';
+import PlayerScore from './PlayerScore';
+import Timer from './Timer';
+import ScoreContent from './ScoreContent';
+import ButtonList from './ButtonList';
+import Noti from './Noti';
+import Vovinam from './Vovinam';
+import Pencak from './Pencak';
+import KickBoxing from './KickBoxing';
 
 const ScoreBoard = () => {
-  return (
-    <div className="py-5 px-32 h-screen bg-green-900 ">
-      <ScoreHeader />
-      <div>
-        <div className="mt-7 text-center text-white text-2xl">
-          <div>Trận số: <span className='ml-2'>1</span></div>
-          <div>VL-Nam-32Kg-Cấp 1</div>
-        </div>
-        <div className="flex justify-between">
-          <ScoreContent />
-          <Timer />
-          <ScoreContent />
-        </div>
+  const [type, setType] = useState('vovinam');
 
-        <div className="flex justify-between mt-20">
-          <ButtonList />
-          <Noti />
-          <ButtonList />
-        </div>
-      </div>
-    </div>
-  );
+  switch (type) {
+    case 'vovinam':
+      return <Vovinam />;
+    case 'pencak':
+      return <Pencak />;
+    case 'kickboxing':
+      return <KickBoxing />;
+    default:
+      return <Vovinam />;
+  }
 };
 
 export default ScoreBoard;

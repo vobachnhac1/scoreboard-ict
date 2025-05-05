@@ -16,20 +16,23 @@ import Login from '../views/Login';
 import NewsFeed from '../views/NewsFeed';
 import { Empty } from 'antd';
 import SystemManagement from '../views/SystemManagement';
+import Home from '../views/Home';
+import History from '../views/History';
 
 export const socketClient = new SocketClient();
 
 // Tạo component App
 const Routers = () => {
   const navigate = useNavigate();
-  useHotkeys('F1', () => navigate('/versus'));
+  useHotkeys('F1', () => navigate('/'));
   useHotkeys('esc', () => navigate('/'));
-  useHotkeys('F2', () => navigate('/login'));
+  useHotkeys('F2', () => navigate('/scoreboard'));
   useHotkeys('F3', () => navigate('/player-list'));
-  useHotkeys('F4', () => navigate('/bracket'));
+  useHotkeys('F4', () => navigate('/history'));
 
   const routes = [
-    { path: '/', element: <NewsFeed /> },
+    { path: '/', element: <Home />, sidebar: false },
+    { path: '/feeds', element: <NewsFeed /> },
     { path: '/qr-views', element: <QrViews /> },
     { path: '/versus', element: <Versus /> },
     { path: '/scoreboard', element: <ScoreBoard /> },
@@ -38,20 +41,26 @@ const Routers = () => {
     { path: '/user-management', element: <UserManagement /> },
     { path: '/user-info', element: <UserInfo /> },
     { path: '/login', element: <Login /> },
-    { path: '/system-management', element: <SystemManagement /> }
+    { path: '/system-management', element: <SystemManagement /> },
+    { path: '/history', element: <History /> }
   ];
 
-  const renderElement = (path, element) => {
-    if (path === '/login') {
+  const renderElement = (route) => {
+    if (route.path === '/login') {
       return <Login />;
     }
-    return <SidebarLayout>{element}</SidebarLayout>;
+
+    if (route.sidebar === false) {
+      return route.element;
+    }
+
+    return <>{route.element}</>;
   };
 
   return (
     <Routes>
       {routes.map((route, index) => (
-        <Route path={route.path} key={index} element={renderElement(route.path, route.element)} />
+        <Route path={route.path} key={index} element={renderElement(route)} />
       ))}
       <Route
         path="*"

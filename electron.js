@@ -47,7 +47,7 @@ function createWindow() {
     }
   });
 
-  mainWindow.loadURL('http://localhost:7777/');
+  mainWindow.loadURL('http://localhost:6789/');
   // mainWindow.loadURL(url.format({
   //     pathname: path.join(__dirname, 'index.html'),
   //     protocol: 'file:',
@@ -79,7 +79,7 @@ app.whenReady().then(() => {
     .catch((err) => console.log('An error occurred: ', err));
 
   // globalShortcut.register('F2', () => {
-  //   mainWindow.loadURL('http://localhost:7777/#/versus');
+  //   mainWindow.loadURL('http://localhost:6789/#/versus');
   // });
 });
 

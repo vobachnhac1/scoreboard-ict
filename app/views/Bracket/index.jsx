@@ -52,7 +52,7 @@ const BracketTest = () => {
 
   const getData = async () => {
     await axios
-      .post('http://localhost:7778/api/boctham-mau', tempData, {
+      .post('http://localhost:6789/api/boctham-mau', tempData, {
         headers: {
           'Content-Type': 'application/json'
         },

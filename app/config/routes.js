@@ -18,6 +18,8 @@ import { Empty } from 'antd';
 import SystemManagement from '../views/SystemManagement';
 import Home from '../views/Home';
 import History from '../views/History';
+import AdminLayout from '../components/Layout/AdminLayout';
+import { Connect, GeneralSetting } from '../views/Management';
 
 export const socketClient = new SocketClient();
 
@@ -32,6 +34,8 @@ const Routers = () => {
 
   const routes = [
     { path: '/', element: <Home />, sidebar: false },
+    { path: '/management/connect', element: <AdminLayout><Connect /></AdminLayout> },
+    { path: '/management/general-setting', element: <AdminLayout><GeneralSetting /></AdminLayout> },
     { path: '/feeds', element: <NewsFeed /> },
     { path: '/qr-views', element: <QrViews /> },
     { path: '/versus', element: <Versus /> },

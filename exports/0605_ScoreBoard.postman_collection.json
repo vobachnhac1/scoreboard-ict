@@ -2,10 +2,10 @@
 	"info": {
 		"_postman_id": "7d8c84ae-64d7-4dc2-9cca-2bba5d7749f5",
 		"name": "ScoreBoard",
-		"description": "\\------------------------------------------------------------------------------------------------------------------------I. Tạo bảng Giải Đấu : champ \\~ tournamentII. Tạo bảng Nhóm tuổi : champ_grp \\~ champion_groupIII. Tạo bảng Hình thức : champ_catetoryIV. Tạo bảng Nội dung thi : champ_event + champ_catetory_id  \n| ---- Quản lý nội dung thi giải đấu ---- |V. Tạo bảng Nội dung thi + theo giới tính : champ_event_gender  \n\\------------------------------------------------------------------------------------------------------------------------  \ndb_commons: quản lý tập trung Giới tính | loại thi đấu quyền |  \n\\------------------------------------------------------------------------------------------------------------------------I. Tạo file: - db_champion : Giải đấu | done- db_champion_group : Nhóm thi | done- db_champion_category : Hình thức | done- db_champion_event : Nội dung chung theo hình thức | done- db_champion_event_gender : Nội dung thi theo giới tính | done- db_champion_official : Nội dung thi giải đấu |------------------------------------------------------------------------------------------------------------------------II. Xuất tập tin excel:1. Chọn giải đấu 2. Lấy danh sách nhóm tuổi3. Lấy danh sách Nội dung theo\n\nIII. Quản lý code:1. Giải đấu: a. router b. controller c. services d. model",
+		"description": "1. MÀN HÌNH GIẢI ĐẤU\n    \n2. MÀN HÌNH NHÓM THI -> TẠO NHÓM THI THÌ PHẢI CÓ GIẢI ĐẤU (Mục 1)\n    \n3. MÀN HÌNH HÌNH THỨC:\n    \n4. MÀN HÌNH NỘI DUNG THI:\n    \n    1. TAB 1: NỘI DUNG THI THEO HÌNH THỨC -THÊM/SỬA/XOÁ/LẤY : DẠNG DATA COMMON (ĐIỀU KIỆN PHẢI MAP VỚI MỤC 3.)\n        \n    2. TAB 2: NỘI DUNG THI THEO NHÓM THI - THÊM/SỬA/XOÁ/LẤY Dữ liệu lấy từ mục 4 Tab 1\n        \n5. MÀN HÌNH QUẢN LÝ THI ĐẤU:\n    \n    1. VĐV: upload theo file + thêm tay có ID 1. 2. 4.tab1\n        \n    2. GIÁM ĐỊNH: upload từ file và thêm bằng tay. (Phải có giải đấu 1.)\n        \n    3. ĐƠN VỊ: upload từ file và thêm bằng tay. (Phải có giải đấu 1.)\n        \n    4. SƠ ĐỒ THI ĐẤU:\n        \n    5. TRẬN ĐẤU: tự động tạo",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "23418020",
-		"_collection_link": "https://crimson-crater-935411.postman.co/workspace/ScoreBoard~3ab25aec-e4d9-4199-b1c0-57c2d9d1efe2/collection/23418020-7d8c84ae-64d7-4dc2-9cca-2bba5d7749f5?action=share&source=collection_link&creator=23418020"
+		"_collection_link": "https://crimson-crater-935411.postman.co/workspace/3ab25aec-e4d9-4199-b1c0-57c2d9d1efe2/collection/23418020-7d8c84ae-64d7-4dc2-9cca-2bba5d7749f5?action=share&source=collection_link&creator=23418020"
 	},
 	"item": [
 		{
@@ -31,7 +31,73 @@
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{hostname}}/api/config/get-information",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"config",
+												"get-information"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "333"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"14d-TwhtKRg5Ey+8HqOh87OfR8VQjVU\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 05 May 2025 04:09:17 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": {\n        \"mac_address\": \"ac:de:48:00:11:22\",\n        \"uuid_desktop\": \"CO2GJ74NMD6M\",\n        \"key_license\": \"\",\n        \"total_device_desktop\": 0,\n        \"total_device_app\": 0,\n        \"use_desktop\": 0,\n        \"use_app\": 0,\n        \"expired_date\": \"20251231\",\n        \"active_date\": \"20250101\",\n        \"promotion_code\": \"FREE\",\n        \"room_code\": \"SEC26BIN3Z\",\n        \"active\": true\n    }\n}"
+								}
+							]
 						},
 						{
 							"name": "2. Kiểm tra hạn license",
@@ -69,7 +135,73 @@
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{hostname}}/api/config/get-config-system",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"config",
+												"get-config-system"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "516"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"204-z9ucgxmfqMapE+gu7pYaBNKNNco\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 05 May 2025 04:09:33 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": {\n        \"mon_thi\": 1,\n        \"so_giam_dinh\": 3,\n        \"so_hiep\": 2,\n        \"so_hiep_phu\": 1,\n        \"he_diem\": 1,\n        \"cau_hinh_doi_khang_diem_thap\": 1,\n        \"cau_hinh_quyen_tinh_tong\": 0,\n        \"cau_hinh_y_te\": 1,\n        \"cau_hinh_xoa_nhac_nho\": 1,\n        \"cau_hinh_xoa_canh_cao\": 1,\n        \"cau_hinh_tinh_diem_tuyet_doi\": 1,\n        \"cau_hinh_hinh_thuc_quyen\": 1,\n        \"cau_hinh_hinh_thuc_doikhang\": 1,\n        \"thoi_gian_tinh_diem\": 1000,\n        \"thoi_gian_thi_dau\": 90,\n        \"thoi_gian_nghi\": 30,\n        \"thoi_gian_hiep_phu\": 60,\n        \"thoi_gian_y_te\": 120,\n        \"khoang_diem_tuyet_toi\": 10,\n        \"che_do_app\": 0\n    }\n}"
+								}
+							]
 						},
 						{
 							"name": "4. Cập nhật Cấu hình hệ thống",
@@ -97,7 +229,82 @@
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"mon_thi\": 1\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{hostname}}/api/config/update-config-system",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"config",
+												"update-config-system"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "67"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"43-sqfrMDjhptkfGd8+EQq2YZvf8lo\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 05 May 2025 04:09:51 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": true\n}"
+								}
+							]
 						},
 						{
 							"name": "5. Lấy QR kích hoạt + kết nối",
@@ -243,7 +450,73 @@
 											]
 										}
 									},
-									"response": []
+									"response": [
+										{
+											"name": "Thành công",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{hostname}}/api/config/get-qr-active",
+													"host": [
+														"{{hostname}}"
+													],
+													"path": [
+														"api",
+														"config",
+														"get-qr-active"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "X-Powered-By",
+													"value": "Express"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "*"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Origin, X-Requested-With, Content-Type, Accept"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Content-Length",
+													"value": "6393"
+												},
+												{
+													"key": "ETag",
+													"value": "W/\"18f9-wa+GIyUW/ZVoQNt+nI3d+YiCAUI\""
+												},
+												{
+													"key": "Date",
+													"value": "Mon, 05 May 2025 04:10:21 GMT"
+												},
+												{
+													"key": "Connection",
+													"value": "keep-alive"
+												},
+												{
+													"key": "Keep-Alive",
+													"value": "timeout=5"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": {\n        \"base64QR\": \"data:image/png;base64,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\",\n        \"expire\": 300\n    }\n}"
+										}
+									]
 								},
 								{
 									"name": "2.2. Lấy QR đăng ký giám định/trọng tài",
@@ -262,7 +535,73 @@
 											]
 										}
 									},
-									"response": []
+									"response": [
+										{
+											"name": "Thành công",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{hostname}}/api/config/get-qr-register",
+													"host": [
+														"{{hostname}}"
+													],
+													"path": [
+														"api",
+														"config",
+														"get-qr-register"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "X-Powered-By",
+													"value": "Express"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "*"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Origin, X-Requested-With, Content-Type, Accept"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Content-Length",
+													"value": "7285"
+												},
+												{
+													"key": "ETag",
+													"value": "W/\"1c75-4RMA9RFxI1NmAkVCGJz2+Yz4oug\""
+												},
+												{
+													"key": "Date",
+													"value": "Mon, 05 May 2025 04:10:31 GMT"
+												},
+												{
+													"key": "Connection",
+													"value": "keep-alive"
+												},
+												{
+													"key": "Keep-Alive",
+													"value": "timeout=5"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": {\n        \"base64QR\": \"data:image/png;base64,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\",\n        \"expire\": 300\n    }\n}"
+										}
+									]
 								}
 							],
 							"description": "1. Gọi Admin gửi topic \"ADMIN_FETCH_CONN\" =>listener \"RES_ROOM_ADMIN\" list_connect= \\[\\]\n    \n2. Gọi API 2.1 tạo QR kích hoạt thiết bị điện thoại (Hiệu lực 3 phút) (chỉ hoạt động khi có internet)\n    \n3. Gọi API 2.2 tạo QR đăng ký giám định/ trọng tài (Hiệu lực 3 phút)"
@@ -608,7 +947,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"tournament_name\": \"Giải Vô Địch TDTT TP. Hồ Chí Minh\",\n  \"start_date\": \"2025-06-01\",\n  \"end_date\": \"2025-06-05\",\n  \"location\": \"Hanoi\",\n  \"num_judges\": 5,\n  \"num_athletes\": 50,\n  \"status\": \"NEW\"\n}",
+							"raw": "{\n  \"tournament_name\": \"Giải Vô Địch TDTT TP. Hồ Chí Minh câp\",\n  \"start_date\": \"2025-06-01\",\n  \"end_date\": \"2025-06-05\",\n  \"location\": \"Hanoi\",\n  \"num_judges\": 5,\n  \"num_athletes\": 50,\n  \"status\": \"NEW\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -734,7 +1073,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "3"
+									"value": "4"
 								}
 							]
 						}
@@ -940,14 +1279,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{hostname}}/api/champion-grp/:?id=1",
+							"raw": "{{hostname}}/api/champion-grp/detail?id=1",
 							"host": [
 								"{{hostname}}"
 							],
 							"path": [
 								"api",
 								"champion-grp",
-								":"
+								"detail"
 							],
 							"query": [
 								{
@@ -1496,7 +1835,17 @@
 					"name": "a. lấy danh sách",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{hostname}}/api/champion-category",
+							"host": [
+								"{{hostname}}"
+							],
+							"path": [
+								"api",
+								"champion-category"
+							]
+						}
 					},
 					"response": [
 						{
@@ -1896,7 +2245,17 @@
 					"name": "a1. Lấy danh sách nội dung thi",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{hostname}}/api/champion-event",
+							"host": [
+								"{{hostname}}"
+							],
+							"path": [
+								"api",
+								"champion-event"
+							]
+						}
 					},
 					"response": [
 						{
@@ -2875,6 +3234,103 @@
 							"body": "{\n    \"success\": true,\n    \"message\": \"Cập nhập nội dung thi thành công.\",\n    \"data\": {\n        \"changes\": 1\n    }\n}"
 						}
 					]
+				},
+				{
+					"name": "6. Lấy danh sách key chung",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{hostname}}/api/common/category?category_key=gender",
+							"host": [
+								"{{hostname}}"
+							],
+							"path": [
+								"api",
+								"common",
+								"category"
+							],
+							"query": [
+								{
+									"key": "category_key",
+									"value": "gender"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Thành công",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{hostname}}/api/common/category?category_key=gender",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"common",
+										"category"
+									],
+									"query": [
+										{
+											"key": "category_key",
+											"value": "gender"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Origin, X-Requested-With, Content-Type, Accept"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, PUT, DELETE"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "373"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"175-tRIUVLXw7njVvQY0TVzLXkqFS1E\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 May 2025 08:41:08 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"category_type\": \"gender\",\n            \"key\": \"M\",\n            \"value\": \"Nam\",\n            \"description\": \"Giới tính\",\n            \"num_member\": 0\n        },\n        {\n            \"id\": 2,\n            \"category_type\": \"gender\",\n            \"key\": \"F\",\n            \"value\": \"Nữ\",\n            \"description\": \"Giới tính\",\n            \"num_member\": 0\n        },\n        {\n            \"id\": 3,\n            \"category_type\": \"gender\",\n            \"key\": \"O\",\n            \"value\": \"Khác\",\n            \"description\": \"Giới tính\",\n            \"num_member\": 0\n        }\n    ]\n}"
+						}
+					]
 				}
 			]
 		},
@@ -3007,7 +3463,7 @@
 								{
 									"key": "vhd_mau_01",
 									"type": "file",
-									"src": "/Users/feliz/Downloads/vhd_mau_1.xlsx"
+									"src": "/Users/feliz/Downloads/vhd_mau_11.xlsx"
 								},
 								{
 									"key": "champ_id",
@@ -3028,45 +3484,36 @@
 							]
 						}
 					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "I. Chế độ Nhanh",
-			"item": [
-				{
-					"name": "1.1. Cấu hình hệ thống",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{hostname}}/api/config/get-config-system",
-							"host": [
-								"{{hostname}}"
-							],
-							"path": [
-								"api",
-								"config",
-								"get-config-system"
-							]
-						}
-					},
 					"response": [
 						{
 							"name": "Thành công",
 							"originalRequest": {
 								"method": "POST",
 								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "vhd_mau_01",
+											"type": "file",
+											"src": "/Users/feliz/Downloads/vhd_mau_11.xlsx"
+										},
+										{
+											"key": "champ_id",
+											"value": "1",
+											"type": "text"
+										}
+									]
+								},
 								"url": {
-									"raw": "{{hostname}}/api/config/get-config-system",
+									"raw": "{{hostname}}/api/champion/import",
 									"host": [
 										"{{hostname}}"
 									],
 									"path": [
 										"api",
-										"config",
-										"get-config-system"
+										"champion",
+										"import"
 									]
 								}
 							},
@@ -3096,15 +3543,15 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "516"
+									"value": "22918"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"204-du24dMgc5ZRjGVOc/nRjoyaZd9Y\""
+									"value": "W/\"5986-nQweh49Gef6GboMlIhe5uv3bD08\""
 								},
 								{
 									"key": "Date",
-									"value": "Thu, 01 May 2025 18:48:32 GMT"
+									"value": "Mon, 05 May 2025 11:29:14 GMT"
 								},
 								{
 									"key": "Connection",
@@ -3116,37 +3563,9 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": {\n        \"mon_thi\": 3,\n        \"so_giam_dinh\": 3,\n        \"so_hiep\": 2,\n        \"so_hiep_phu\": 1,\n        \"he_diem\": 1,\n        \"cau_hinh_doi_khang_diem_thap\": 1,\n        \"cau_hinh_quyen_tinh_tong\": 0,\n        \"cau_hinh_y_te\": 1,\n        \"cau_hinh_xoa_nhac_nho\": 1,\n        \"cau_hinh_xoa_canh_cao\": 1,\n        \"cau_hinh_tinh_diem_tuyet_doi\": 1,\n        \"cau_hinh_hinh_thuc_quyen\": 1,\n        \"cau_hinh_hinh_thuc_doikhang\": 1,\n        \"thoi_gian_tinh_diem\": 1000,\n        \"thoi_gian_thi_dau\": 90,\n        \"thoi_gian_nghi\": 30,\n        \"thoi_gian_hiep_phu\": 60,\n        \"thoi_gian_y_te\": 120,\n        \"khoang_diem_tuyet_toi\": 10,\n        \"che_do_app\": 0\n    }\n}"
+							"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": [\n        {\n            \"id_sheet\": \"QU001M\",\n            \"ls_vdv\": [\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0036\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0036\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 3,\n                            \"fullname\": \"Nguyễn Văn 001M0036\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 4,\n                            \"fullname\": \"Nguyễn Văn 001M0036\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0036\",\n                    \"event_name\": \"Đa Luyện Vũ Khí\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0036\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0036\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 3,\n                            \"fullname\": \"Nguyễn Văn 001M0036\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 4,\n                            \"fullname\": \"Nguyễn Văn 001M0036\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0036\",\n                    \"event_name\": \"Đa Luyện Vũ Khí\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0036\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0036\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 3,\n                            \"fullname\": \"Nguyễn Văn 001M0036\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 4,\n                            \"fullname\": \"Nguyễn Văn 001M0036\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0036\",\n                    \"event_name\": \"Đa Luyện Vũ Khí\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0035\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0035\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 3,\n                            \"fullname\": \"Nguyễn Văn 001M0035\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 4,\n                            \"fullname\": \"Nguyễn Văn 001M0035\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0035\",\n                    \"event_name\": \"Đa Luyện Tay Không\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0035\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0035\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 3,\n                            \"fullname\": \"Nguyễn Văn 001M0035\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 4,\n                            \"fullname\": \"Nguyễn Văn 001M0035\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0035\",\n                    \"event_name\": \"Đa Luyện Tay Không\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0035\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0035\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 3,\n                            \"fullname\": \"Nguyễn Văn 001M0035\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 4,\n                            \"fullname\": \"Nguyễn Văn 001M0035\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0035\",\n                    \"event_name\": \"Đa Luyện Tay Không\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0034\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0034\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0034\",\n                    \"event_name\": \"Tự vệ nữ\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0034\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0034\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0034\",\n                    \"event_name\": \"Tự vệ nữ\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0034\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0034\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0034\",\n                    \"event_name\": \"Tự vệ nữ\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0033\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0033\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0033\",\n                    \"event_name\": \"Song Luyện Vật 2\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0033\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0033\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0033\",\n                    \"event_name\": \"Song Luyện Vật 2\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0033\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0033\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0033\",\n                    \"event_name\": \"Song Luyện Vật 2\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0032\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0032\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0032\",\n                    \"event_name\": \"Song Luyện 3\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0032\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0032\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0032\",\n                    \"event_name\": \"Song Luyện 3\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0032\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0032\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0032\",\n                    \"event_name\": \"Song Luyện 3\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0031\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0031\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0031\",\n                    \"event_name\": \"Song Luyện 1\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0031\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0031\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0031\",\n                    \"event_name\": \"Song Luyện 1\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0031\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001M0031\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0031\",\n                    \"event_name\": \"Song Luyện 1\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0030\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0030\",\n                    \"event_name\": \"Tứ Tượng Côn Pháp\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0030\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0030\",\n                    \"event_name\": \"Tứ Tượng Côn Pháp\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0030\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0030\",\n                    \"event_name\": \"Tứ Tượng Côn Pháp\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0029\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0029\",\n                    \"event_name\": \"Song Dao Pháp\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0029\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0029\",\n                    \"event_name\": \"Song Dao Pháp\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0029\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0029\",\n                    \"event_name\": \"Song Dao Pháp\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0028\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0028\",\n                    \"event_name\": \"Tinh Hoa Lưỡng Nghi Kiếm\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0028\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0028\",\n                    \"event_name\": \"Tinh Hoa Lưỡng Nghi Kiếm\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0028\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0028\",\n                    \"event_name\": \"Tinh Hoa Lưỡng Nghi Kiếm\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0027\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0027\",\n                    \"event_name\": \"Ngũ Môn Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0027\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0027\",\n                    \"event_name\": \"Ngũ Môn Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0027\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0027\",\n                    \"event_name\": \"Ngũ Môn Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0026\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0026\",\n                    \"event_name\": \"Tứ Trụ Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0026\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0026\",\n                    \"event_name\": \"Tứ Trụ Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0026\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0026\",\n                    \"event_name\": \"Tứ Trụ Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0025\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0025\",\n                    \"event_name\": \"Long Hổ Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0025\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0025\",\n                    \"event_name\": \"Long Hổ Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0025\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0025\",\n                    \"event_name\": \"Long Hổ Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0024\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0024\",\n                    \"event_name\": \"Thập Tự Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001M0024\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001M0024\",\n                    \"event_name\": \"Thập Tự Quyền\"\n                }\n            ],\n            \"category_key\": \"QU\"\n        },\n        {\n            \"id_sheet\": \"QU001F\",\n            \"ls_vdv\": [\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0013\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0013\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 3,\n                            \"fullname\": \"Nguyễn Văn 001F0013\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 4,\n                            \"fullname\": \"Nguyễn Văn 001F0013\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0013\",\n                    \"event_name\": \"Đa Luyện Vũ Khí\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0013\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0013\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 3,\n                            \"fullname\": \"Nguyễn Văn 001F0013\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 4,\n                            \"fullname\": \"Nguyễn Văn 001F0013\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0013\",\n                    \"event_name\": \"Đa Luyện Vũ Khí\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0013\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0013\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 3,\n                            \"fullname\": \"Nguyễn Văn 001F0013\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 4,\n                            \"fullname\": \"Nguyễn Văn 001F0013\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0013\",\n                    \"event_name\": \"Đa Luyện Vũ Khí\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0012\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0012\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 3,\n                            \"fullname\": \"Nguyễn Văn 001F0012\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 4,\n                            \"fullname\": \"Nguyễn Văn 001F0012\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0012\",\n                    \"event_name\": \"Đa Luyện Tay Không\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0012\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0012\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 3,\n                            \"fullname\": \"Nguyễn Văn 001F0012\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 4,\n                            \"fullname\": \"Nguyễn Văn 001F0012\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0012\",\n                    \"event_name\": \"Đa Luyện Tay Không\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0012\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0012\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 3,\n                            \"fullname\": \"Nguyễn Văn 001F0012\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 4,\n                            \"fullname\": \"Nguyễn Văn 001F0012\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0012\",\n                    \"event_name\": \"Đa Luyện Tay Không\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0011\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0011\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0011\",\n                    \"event_name\": \"Tự vệ nữ\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0011\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0011\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0011\",\n                    \"event_name\": \"Tự vệ nữ\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0011\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0011\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0011\",\n                    \"event_name\": \"Tự vệ nữ\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0010\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0010\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0010\",\n                    \"event_name\": \"Song Luyện Vật 2\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0010\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0010\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0010\",\n                    \"event_name\": \"Song Luyện Vật 2\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0010\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0010\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0010\",\n                    \"event_name\": \"Song Luyện Vật 2\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0009\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0009\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0009\",\n                    \"event_name\": \"Song Luyện 3\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0009\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0009\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0009\",\n                    \"event_name\": \"Song Luyện 3\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0009\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0009\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0009\",\n                    \"event_name\": \"Song Luyện 3\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0008\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0008\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0008\",\n                    \"event_name\": \"Song Luyện 1\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0008\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0008\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0008\",\n                    \"event_name\": \"Song Luyện 1\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0008\",\n                            \"dob\": \"2025\"\n                        },\n                        {\n                            \"stt\": 2,\n                            \"fullname\": \"Nguyễn Văn 001F0008\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0008\",\n                    \"event_name\": \"Song Luyện 1\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0007\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0007\",\n                    \"event_name\": \"Tứ Tượng Côn Pháp\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0007\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0007\",\n                    \"event_name\": \"Tứ Tượng Côn Pháp\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0007\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0007\",\n                    \"event_name\": \"Tứ Tượng Côn Pháp\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0006\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0006\",\n                    \"event_name\": \"Song Dao Pháp\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0006\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0006\",\n                    \"event_name\": \"Song Dao Pháp\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0006\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0006\",\n                    \"event_name\": \"Song Dao Pháp\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0005\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0005\",\n                    \"event_name\": \"Tinh Hoa Lưỡng Nghi Kiếm\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0005\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0005\",\n                    \"event_name\": \"Tinh Hoa Lưỡng Nghi Kiếm\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0005\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0005\",\n                    \"event_name\": \"Tinh Hoa Lưỡng Nghi Kiếm\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0004\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0004\",\n                    \"event_name\": \"Ngũ Môn Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0004\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0004\",\n                    \"event_name\": \"Ngũ Môn Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0004\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0004\",\n                    \"event_name\": \"Ngũ Môn Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0003\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0003\",\n                    \"event_name\": \"Tứ Trụ Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0003\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0003\",\n                    \"event_name\": \"Tứ Trụ Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0003\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0003\",\n                    \"event_name\": \"Tứ Trụ Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0002\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0002\",\n                    \"event_name\": \"Long Hổ Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0002\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0002\",\n                    \"event_name\": \"Long Hổ Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 3\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0002\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0002\",\n                    \"event_name\": \"Long Hổ Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 1\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0001\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0001\",\n                    \"event_name\": \"Thập Tự Quyền\"\n                },\n                {\n                    \"team_name\": \"Đơn vị 2\",\n                    \"members\": [\n                        {\n                            \"stt\": 1,\n                            \"fullname\": \"Nguyễn Văn 001F0001\",\n                            \"dob\": \"2025\"\n                        }\n                    ],\n                    \"id_event\": \"001F0001\",\n                    \"event_name\": \"Thập Tự Quyền\"\n                }\n            ],\n            \"category_key\": \"QU\"\n        },\n        {\n            \"id_sheet\": \"DK001M\",\n            \"ls_vdv\": [\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0046\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0046\",\n                    \"event_name\": \"61KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0046\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0046\",\n                    \"event_name\": \"61KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0046\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0046\",\n                    \"event_name\": \"61KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0045\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0045\",\n                    \"event_name\": \"57KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0045\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0045\",\n                    \"event_name\": \"57KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0045\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0045\",\n                    \"event_name\": \"57KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0044\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0044\",\n                    \"event_name\": \"54KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0044\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0044\",\n                    \"event_name\": \"54KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0044\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0044\",\n                    \"event_name\": \"54KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0043\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0043\",\n                    \"event_name\": \"51KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0043\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0043\",\n                    \"event_name\": \"51KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0043\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0043\",\n                    \"event_name\": \"51KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0042\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0042\",\n                    \"event_name\": \"48KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0042\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0042\",\n                    \"event_name\": \"48KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0042\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0042\",\n                    \"event_name\": \"48KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0041\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0041\",\n                    \"event_name\": \"45KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0041\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0041\",\n                    \"event_name\": \"45KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0041\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0041\",\n                    \"event_name\": \"45KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0040\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0040\",\n                    \"event_name\": \"42KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0040\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0040\",\n                    \"event_name\": \"42KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0040\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0040\",\n                    \"event_name\": \"42KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0039\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0039\",\n                    \"event_name\": \"39KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0039\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0039\",\n                    \"event_name\": \"39KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0039\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0039\",\n                    \"event_name\": \"39KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0038\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0038\",\n                    \"event_name\": \"36KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0038\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0038\",\n                    \"event_name\": \"36KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0038\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0038\",\n                    \"event_name\": \"36KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0037\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0037\",\n                    \"event_name\": \"33KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0037\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0037\",\n                    \"event_name\": \"33KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001M0037\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001M0037\",\n                    \"event_name\": \"33KG\"\n                }\n            ],\n            \"category_key\": \"DK\"\n        },\n        {\n            \"id_sheet\": \"DK001F\",\n            \"ls_vdv\": [\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0023\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0023\",\n                    \"event_name\": \"61KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0023\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0023\",\n                    \"event_name\": \"61KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0023\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0023\",\n                    \"event_name\": \"61KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0022\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0022\",\n                    \"event_name\": \"57KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0022\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0022\",\n                    \"event_name\": \"57KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0022\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0022\",\n                    \"event_name\": \"57KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0021\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0021\",\n                    \"event_name\": \"54KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0021\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0021\",\n                    \"event_name\": \"54KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0021\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0021\",\n                    \"event_name\": \"54KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0020\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0020\",\n                    \"event_name\": \"51KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0020\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0020\",\n                    \"event_name\": \"51KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0020\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0020\",\n                    \"event_name\": \"51KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0019\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0019\",\n                    \"event_name\": \"48KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0019\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0019\",\n                    \"event_name\": \"48KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0019\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0019\",\n                    \"event_name\": \"48KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0018\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0018\",\n                    \"event_name\": \"45KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0018\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0018\",\n                    \"event_name\": \"45KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0018\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0018\",\n                    \"event_name\": \"45KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0017\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0017\",\n                    \"event_name\": \"42KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0017\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0017\",\n                    \"event_name\": \"42KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0017\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0017\",\n                    \"event_name\": \"42KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0016\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0016\",\n                    \"event_name\": \"39KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0016\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0016\",\n                    \"event_name\": \"39KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0016\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0016\",\n                    \"event_name\": \"39KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0015\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0015\",\n                    \"event_name\": \"36KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0015\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0015\",\n                    \"event_name\": \"36KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0015\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0015\",\n                    \"event_name\": \"36KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0014\",\n                    \"team_name\": \"Đơn vị 1\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0014\",\n                    \"event_name\": \"33KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0014\",\n                    \"team_name\": \"Đơn vị 2\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0014\",\n                    \"event_name\": \"33KG\"\n                },\n                {\n                    \"fullname\": \"Nguyễn Văn 001F0014\",\n                    \"team_name\": \"Đơn vị 3\",\n                    \"dob\": \"2025\",\n                    \"id_event\": \"001F0014\",\n                    \"event_name\": \"33KG\"\n                }\n            ],\n            \"category_key\": \"DK\"\n        }\n    ]\n}"
 						}
 					]
-				},
-				{
-					"name": "1.2. Cập nhật Cấu hình hệ thống",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"mon_thi\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{hostname}}/api/config/update-config-system",
-							"host": [
-								"{{hostname}}"
-							],
-							"path": [
-								"api",
-								"config",
-								"update-config-system"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
@@ -3154,7 +3573,1253 @@
 			"name": "7. Management Athlete | Quản lý VĐV thi",
 			"item": [
 				{
-					"name": "Athlete",
+					"name": "Referee | Giám định, Trọng tài",
+					"item": [
+						{
+							"name": "1. Lấy thông tin giám định",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{hostname}}/api/referees?tournament_id=1",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"referees"
+									],
+									"query": [
+										{
+											"key": "tournament_id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{hostname}}/api/referees?tournament_id=1",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"referees"
+											],
+											"query": [
+												{
+													"key": "tournament_id",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "266"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"10a-YpAtRycHyYL7u1n2vUR2ulGVuLU\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 05 May 2025 04:46:52 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": [\n        {\n            \"id\": 2,\n            \"full_name\": \"Nguyễn Văn\",\n            \"team_name\": \"HCM\",\n            \"tournament_id\": 1,\n            \"rank\": \"Quốc gia\",\n            \"position\": \"Giám định\",\n            \"code\": null,\n            \"created_at\": \"2025-04-29 07:39:25\",\n            \"updated_at\": \"2025-04-29 07:39:25\"\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "2. Thêm mới",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"full_name\": \"Nguyễn Văn A2\",\n    \"team_name\": \"HCM\",\n    \"tournament_id\": 1,\n    \"rank\": \"Quốc gia\",\n    \"position\": \"Giám định\",\n    \"code\": null,\n    \"created_at\": \"2025-04-29 07:39:25\",\n    \"updated_at\": \"2025-04-29 07:39:25\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{hostname}}/api/referees",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"referees"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"full_name\": \"Nguyễn Văn A2\",\n    \"team_name\": \"HCM\",\n    \"tournament_id\": 1,\n    \"rank\": \"Quốc gia\",\n    \"position\": \"Giám định\",\n    \"code\": null,\n    \"created_at\": \"2025-04-29 07:39:25\",\n    \"updated_at\": \"2025-04-29 07:39:25\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{hostname}}/api/referees",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"referees"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "267"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"10b-p1Fv2nTq9ej8D7bxoVE5N1HtTmg\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 05 May 2025 04:47:37 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": {\n        \"id\": 3,\n        \"code\": null,\n        \"full_name\": \"Nguyễn Văn A2\",\n        \"team_name\": \"HCM\",\n        \"tournament_id\": 1,\n        \"rank\": \"Quốc gia\",\n        \"position\": \"Giám định\",\n        \"created_at\": \"2025-04-29 07:39:25\",\n        \"updated_at\": \"2025-04-29 07:39:25\"\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "3. Cập nhật",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"full_name\": \"Nguyễn Văn A3\",\n    \"team_name\": \"HCM\",\n    \"tournament_id\": 1,\n    \"rank\": \"Quốc gia\",\n    \"position\": \"Giám định\",\n    \"code\": null,\n    \"created_at\": \"2025-04-29 07:39:25\",\n    \"updated_at\": \"2025-04-29 07:39:25\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{hostname}}/api/referees/:id",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"referees",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"full_name\": \"Nguyễn Văn A3\",\n    \"team_name\": \"HCM\",\n    \"tournament_id\": 1,\n    \"rank\": \"Quốc gia\",\n    \"position\": \"Giám định\",\n    \"code\": null,\n    \"created_at\": \"2025-04-29 07:39:25\",\n    \"updated_at\": \"2025-04-29 07:39:25\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{hostname}}/api/referees/:id",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"referees",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "4"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "269"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"10d-DKxI44c6bkYpujnHXygS/zA/UOw\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 05 May 2025 04:53:28 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": {\n        \"id\": \"4\",\n        \"full_name\": \"Nguyễn Văn A3\",\n        \"team_name\": \"HCM\",\n        \"tournament_id\": 1,\n        \"rank\": \"Quốc gia\",\n        \"position\": \"Giám định\",\n        \"code\": null,\n        \"created_at\": \"2025-04-29 07:39:25\",\n        \"updated_at\": \"2025-04-29 07:39:25\"\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "4. Xoá",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{hostname}}/api/referees/:id",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"referees",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{hostname}}/api/referees/:id",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"referees",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "4"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "73"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"49-xPmrWOZSqCNR9LOc8ZVK3AVHRN4\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 05 May 2025 04:54:14 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": {\n        \"id\": \"4\"\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "5. Tìm kiếm theo tên",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{hostname}}/api/referees/search?tournament_id=1&keyword=n",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"referees",
+										"search"
+									],
+									"query": [
+										{
+											"key": "tournament_id",
+											"value": "1"
+										},
+										{
+											"key": "keyword",
+											"value": "n"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{hostname}}/api/referees/search?tournament_id=1&keyword=n",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"referees",
+												"search"
+											],
+											"query": [
+												{
+													"key": "tournament_id",
+													"value": "1"
+												},
+												{
+													"key": "keyword",
+													"value": "n"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "266"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"10a-YpAtRycHyYL7u1n2vUR2ulGVuLU\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 05 May 2025 07:17:28 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": [\n        {\n            \"id\": 2,\n            \"full_name\": \"Nguyễn Văn\",\n            \"team_name\": \"HCM\",\n            \"tournament_id\": 1,\n            \"rank\": \"Quốc gia\",\n            \"position\": \"Giám định\",\n            \"code\": null,\n            \"created_at\": \"2025-04-29 07:39:25\",\n            \"updated_at\": \"2025-04-29 07:39:25\"\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "6. Export file mẫu",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{hostname}}/api/referees/export?tournament_id=1",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"referees",
+										"export"
+									],
+									"query": [
+										{
+											"key": "tournament_id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "7. Upload Dữ liệu",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "vhd_mau_01",
+											"type": "file",
+											"src": "/Users/feliz/Downloads/vhd_mau_01.xlsx"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{hostname}}/api/referees/import",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"referees",
+										"import"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Teams | Đơn vị tham gia",
+					"item": [
+						{
+							"name": "1. Thêm mới",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"tournament_id\": 1,\n  \"full_name\": \"Đơn vị Thể Thao HCM\",\n  \"area\": \"Miền Nam 2\",\n  \"display_name\": \"HCM\",\n  \"leader_name\": \"Nguyễn Văn A\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{hostname}}/api/teams",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"teams"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"tournament_id\": 1,\n  \"full_name\": \"Đơn vị Thể Thao HCM\",\n  \"area\": \"Miền Nam 2\",\n  \"display_name\": \"HCM\",\n  \"leader_name\": \"Nguyễn Văn A\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{hostname}}/api/teams",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"teams"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "197"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"c5-kdrcdSwPidMQF4o7xEQclFNQe7M\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 05 May 2025 06:32:16 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": {\n        \"tournament_id\": 1,\n        \"full_name\": \"Đơn vị Thể Thao HCM\",\n        \"area\": \"Miền Nam 2\",\n        \"display_name\": \"HCM\",\n        \"leader_name\": \"Nguyễn Văn A\"\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "2. Lấy danh sách",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"tournament_id\": 1,\n  \"full_name\": \"Đơn vị Thể Thao HCM\",\n  \"area\": \"Miền Nam 2\",\n  \"display_name\": \"HCM\",\n  \"leader_name\": \"Nguyễn Văn A\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{hostname}}/api/teams?tournament_id=1",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"teams"
+									],
+									"query": [
+										{
+											"key": "tournament_id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"tournament_id\": 1,\n  \"full_name\": \"Đơn vị Thể Thao HCM\",\n  \"area\": \"Miền Nam 2\",\n  \"display_name\": \"HCM\",\n  \"leader_name\": \"Nguyễn Văn A\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{hostname}}/api/teams?tournament_id=1",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"teams"
+											],
+											"query": [
+												{
+													"key": "tournament_id",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "4607"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"11ff-50FEtK0Fx7nDktfudStxxYQLGbw\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 05 May 2025 06:32:52 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": [\n        {\n            \"id\": 22,\n            \"tournament_id\": 1,\n            \"full_name\": \"Đơn vị Thể Thao HCM\",\n            \"area\": \"Miền Nam 2\",\n            \"display_name\": \"HCM\",\n            \"leader_name\": \"Nguyễn Văn A\",\n            \"created_at\": \"2025-05-05 06:32:16\",\n            \"updated_at\": \"2025-05-05 06:32:16\"\n        },\n        {\n            \"id\": 21,\n            \"tournament_id\": 1,\n            \"full_name\": \"Đơn vị Thể Thao HCM\",\n            \"area\": \"Miền Nam 2\",\n            \"display_name\": \"HCM\",\n            \"leader_name\": \"Nguyễn Văn A\",\n            \"created_at\": \"2025-05-05 06:28:23\",\n            \"updated_at\": \"2025-05-05 06:28:23\"\n        },\n        {\n            \"id\": 20,\n            \"tournament_id\": 1,\n            \"full_name\": \"Đơn vị Thể Thao HCM\",\n            \"area\": \"Miền Nam 1\",\n            \"display_name\": \"HCM\",\n            \"leader_name\": \"Nguyễn Văn A\",\n            \"created_at\": \"2025-05-05 06:27:50\",\n            \"updated_at\": \"2025-05-05 06:27:50\"\n        },\n        {\n            \"id\": 19,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 8\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 8\",\n            \"leader_name\": \"Nguyễn Văn B8\",\n            \"created_at\": \"2025-04-29 08:20:20\",\n            \"updated_at\": \"2025-04-29 08:20:20\"\n        },\n        {\n            \"id\": 18,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 7\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 7\",\n            \"leader_name\": \"Nguyễn Văn B7\",\n            \"created_at\": \"2025-04-29 08:20:20\",\n            \"updated_at\": \"2025-04-29 08:20:20\"\n        },\n        {\n            \"id\": 17,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 6\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 6\",\n            \"leader_name\": \"Nguyễn Văn B6\",\n            \"created_at\": \"2025-04-29 08:20:20\",\n            \"updated_at\": \"2025-04-29 08:20:20\"\n        },\n        {\n            \"id\": 16,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 5\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 5\",\n            \"leader_name\": \"Nguyễn Văn B5\",\n            \"created_at\": \"2025-04-29 08:20:20\",\n            \"updated_at\": \"2025-04-29 08:20:20\"\n        },\n        {\n            \"id\": 15,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 4\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 4\",\n            \"leader_name\": \"Nguyễn Văn B4\",\n            \"created_at\": \"2025-04-29 08:20:20\",\n            \"updated_at\": \"2025-04-29 08:20:20\"\n        },\n        {\n            \"id\": 14,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 3\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 3\",\n            \"leader_name\": \"Nguyễn Văn B3\",\n            \"created_at\": \"2025-04-29 08:20:20\",\n            \"updated_at\": \"2025-04-29 08:20:20\"\n        },\n        {\n            \"id\": 13,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 2\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 2\",\n            \"leader_name\": \"Nguyễn Văn B2\",\n            \"created_at\": \"2025-04-29 08:20:20\",\n            \"updated_at\": \"2025-04-29 08:20:20\"\n        },\n        {\n            \"id\": 12,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 1\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 1\",\n            \"leader_name\": \"Nguyễn Văn B1\",\n            \"created_at\": \"2025-04-29 08:20:20\",\n            \"updated_at\": \"2025-04-29 08:20:20\"\n        },\n        {\n            \"id\": 11,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Bình tân\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Q. Bình Tân\",\n            \"leader_name\": \"Nguyễn Văn B\",\n            \"created_at\": \"2025-04-29 08:20:20\",\n            \"updated_at\": \"2025-04-29 08:20:20\"\n        },\n        {\n            \"id\": 10,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 8\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 8\",\n            \"leader_name\": \"Nguyễn Văn B8\",\n            \"created_at\": \"2025-04-29 08:15:38\",\n            \"updated_at\": \"2025-04-29 08:15:38\"\n        },\n        {\n            \"id\": 9,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 7\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 7\",\n            \"leader_name\": \"Nguyễn Văn B7\",\n            \"created_at\": \"2025-04-29 08:15:38\",\n            \"updated_at\": \"2025-04-29 08:15:38\"\n        },\n        {\n            \"id\": 8,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 6\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 6\",\n            \"leader_name\": \"Nguyễn Văn B6\",\n            \"created_at\": \"2025-04-29 08:15:38\",\n            \"updated_at\": \"2025-04-29 08:15:38\"\n        },\n        {\n            \"id\": 7,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 5\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 5\",\n            \"leader_name\": \"Nguyễn Văn B5\",\n            \"created_at\": \"2025-04-29 08:15:38\",\n            \"updated_at\": \"2025-04-29 08:15:38\"\n        },\n        {\n            \"id\": 6,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 4\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 4\",\n            \"leader_name\": \"Nguyễn Văn B4\",\n            \"created_at\": \"2025-04-29 08:15:38\",\n            \"updated_at\": \"2025-04-29 08:15:38\"\n        },\n        {\n            \"id\": 5,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 3\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 3\",\n            \"leader_name\": \"Nguyễn Văn B3\",\n            \"created_at\": \"2025-04-29 08:15:38\",\n            \"updated_at\": \"2025-04-29 08:15:38\"\n        },\n        {\n            \"id\": 4,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 2\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 2\",\n            \"leader_name\": \"Nguyễn Văn B2\",\n            \"created_at\": \"2025-04-29 08:15:38\",\n            \"updated_at\": \"2025-04-29 08:15:38\"\n        },\n        {\n            \"id\": 3,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 1\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 1\",\n            \"leader_name\": \"Nguyễn Văn B1\",\n            \"created_at\": \"2025-04-29 08:15:38\",\n            \"updated_at\": \"2025-04-29 08:15:38\"\n        },\n        {\n            \"id\": 2,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Bình tân\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Q. Bình Tân\",\n            \"leader_name\": \"Nguyễn Văn B\",\n            \"created_at\": \"2025-04-29 08:15:38\",\n            \"updated_at\": \"2025-04-29 08:15:38\"\n        },\n        {\n            \"id\": 1,\n            \"tournament_id\": 1,\n            \"full_name\": \"Đơn vị Thể Thao HCM\",\n            \"area\": \"Miền Nam\",\n            \"display_name\": \"HCM\",\n            \"leader_name\": \"Nguyễn Văn A\",\n            \"created_at\": \"2025-04-29 02:20:13\",\n            \"updated_at\": \"2025-04-29 02:20:13\"\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "3. Cập nhật",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"tournament_id\": 1,\n  \"full_name\": \"Đơn vị Thể Thao HCM\",\n  \"area\": \"Miền Nam 22\",\n  \"display_name\": \"HCM\",\n  \"leader_name\": \"Nguyễn Văn A\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{hostname}}/api/teams/:id",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"teams",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"tournament_id\": 1,\n  \"full_name\": \"Đơn vị Thể Thao HCM\",\n  \"area\": \"Miền Nam 22\",\n  \"display_name\": \"HCM\",\n  \"leader_name\": \"Nguyễn Văn A\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{hostname}}/api/teams/:id",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"teams",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "22"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "198"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"c6-4jeXq6PTjfO2CdUPLsj4WSF7yiQ\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 05 May 2025 06:34:52 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": {\n        \"tournament_id\": 1,\n        \"full_name\": \"Đơn vị Thể Thao HCM\",\n        \"area\": \"Miền Nam 22\",\n        \"display_name\": \"HCM\",\n        \"leader_name\": \"Nguyễn Văn A\"\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "4. Xoá",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"tournament_id\": 1,\n  \"full_name\": \"Đơn vị Thể Thao HCM\",\n  \"area\": \"Miền Nam 22\",\n  \"display_name\": \"HCM\",\n  \"leader_name\": \"Nguyễn Văn A\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{hostname}}/api/teams/:id",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"teams",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"tournament_id\": 1,\n  \"full_name\": \"Đơn vị Thể Thao HCM\",\n  \"area\": \"Miền Nam 22\",\n  \"display_name\": \"HCM\",\n  \"leader_name\": \"Nguyễn Văn A\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{hostname}}/api/teams/:id",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"teams",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "22"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "74"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"4a-iahM8DCHkWOKyYIBrfXwlhhtrLQ\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 05 May 2025 06:35:46 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": {\n        \"id\": \"22\"\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "5. Tìm kiếm",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"tournament_id\": 1,\n  \"full_name\": \"Đơn vị Thể Thao HCM\",\n  \"area\": \"Miền Nam 2\",\n  \"display_name\": \"HCM\",\n  \"leader_name\": \"Nguyễn Văn A\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{hostname}}/api/teams/search?keyword=1",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"teams",
+										"search"
+									],
+									"query": [
+										{
+											"key": "keyword",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"tournament_id\": 1,\n  \"full_name\": \"Đơn vị Thể Thao HCM\",\n  \"area\": \"Miền Nam 2\",\n  \"display_name\": \"HCM\",\n  \"leader_name\": \"Nguyễn Văn A\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{hostname}}/api/teams/search?keyword=1",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"teams",
+												"search"
+											],
+											"query": [
+												{
+													"key": "keyword",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "473"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"1d9-pQ1EJvoRVBXWPymm2GT87cYQpfE\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 05 May 2025 06:38:42 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": [\n        {\n            \"id\": 12,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 1\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 1\",\n            \"leader_name\": \"Nguyễn Văn B1\",\n            \"created_at\": \"2025-04-29 08:20:20\",\n            \"updated_at\": \"2025-04-29 08:20:20\"\n        },\n        {\n            \"id\": 3,\n            \"tournament_id\": 1,\n            \"full_name\": \"Võ thuật Quận 1\",\n            \"area\": \"HCM\",\n            \"display_name\": \"Quận 1\",\n            \"leader_name\": \"Nguyễn Văn B1\",\n            \"created_at\": \"2025-04-29 08:15:38\",\n            \"updated_at\": \"2025-04-29 08:15:38\"\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "6. Export file mẫu",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{hostname}}/api/teams/export?tournament_id=1",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"teams",
+										"export"
+									],
+									"query": [
+										{
+											"key": "tournament_id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "7. Upload Dữ liệu",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "vhd_mau_team_02",
+											"type": "file",
+											"src": "/Users/feliz/Downloads/vhd_mau_team_02.xlsx"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{hostname}}/api/teams/import",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"teams",
+										"import"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Athlete | Vận động viên ĐK/ Quyền",
 					"item": [
 						{
 							"name": "1. Lấy danh sách vận động viên",
@@ -3493,7 +5158,7 @@
 									"variable": [
 										{
 											"key": "id",
-											"value": "493"
+											"value": "559"
 										}
 									]
 								}
@@ -3579,7 +5244,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"num_random\": \"1\"\n}",
+									"raw": "{\n    \"num_random\": \"2\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3587,19 +5252,19 @@
 									}
 								},
 								"url": {
-									"raw": "{{hostname}}/api/athlete/:id",
+									"raw": "{{hostname}}/api/athlete-random/:id",
 									"host": [
 										"{{hostname}}"
 									],
 									"path": [
 										"api",
-										"athlete",
+										"athlete-random",
 										":id"
 									],
 									"variable": [
 										{
 											"key": "id",
-											"value": "493"
+											"value": "494"
 										}
 									]
 								}
@@ -3690,7 +5355,7 @@
 					]
 				},
 				{
-					"name": "Match",
+					"name": "Match | Quản lý trận đấu",
 					"item": [
 						{
 							"name": "1. Cập nhật VĐV thắng",
@@ -3829,12 +5494,83 @@
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{hostname}}/api/ath-match?champ_grp_event_id=46",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"ath-match"
+											],
+											"query": [
+												{
+													"key": "champ_grp_event_id",
+													"value": "46"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "1877"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"755-87cAItbV4a+JyiO77/ux9tOolIE\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 05 May 2025 04:16:08 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": [\n        {\n            \"id\": 57,\n            \"champ_grp_event_id\": 46,\n            \"round\": 1,\n            \"match_id\": \"MX4G72\",\n            \"match_no\": 1,\n            \"ath_red_id\": \"497\",\n            \"ath_blue_id\": \"499\",\n            \"ath_win_id\": null,\n            \"created_at\": \"2025-05-03 17:32:00\",\n            \"updated_at\": \"2025-05-03 17:32:00\",\n            \"match_status\": null\n        },\n        {\n            \"id\": 58,\n            \"champ_grp_event_id\": 46,\n            \"round\": 2,\n            \"match_id\": \"MG96K2\",\n            \"match_no\": 2,\n            \"ath_red_id\": \"494\",\n            \"ath_blue_id\": \"496\",\n            \"ath_win_id\": null,\n            \"created_at\": \"2025-05-03 17:32:00\",\n            \"updated_at\": \"2025-05-03 17:32:00\",\n            \"match_status\": null\n        },\n        {\n            \"id\": 59,\n            \"champ_grp_event_id\": 46,\n            \"round\": 2,\n            \"match_id\": \"M069VD\",\n            \"match_no\": 3,\n            \"ath_red_id\": \"498\",\n            \"ath_blue_id\": \"500\",\n            \"ath_win_id\": null,\n            \"created_at\": \"2025-05-03 17:32:00\",\n            \"updated_at\": \"2025-05-03 17:32:00\",\n            \"match_status\": null\n        },\n        {\n            \"id\": 60,\n            \"champ_grp_event_id\": 46,\n            \"round\": 2,\n            \"match_id\": \"M6BVM3\",\n            \"match_no\": 4,\n            \"ath_red_id\": \"493\",\n            \"ath_blue_id\": \"495\",\n            \"ath_win_id\": null,\n            \"created_at\": \"2025-05-03 17:32:00\",\n            \"updated_at\": \"2025-05-03 17:32:00\",\n            \"match_status\": null\n        },\n        {\n            \"id\": 61,\n            \"champ_grp_event_id\": 46,\n            \"round\": 2,\n            \"match_id\": \"MHFAQ7\",\n            \"match_no\": 5,\n            \"ath_red_id\": \"MX4G72\",\n            \"ath_blue_id\": \"501\",\n            \"ath_win_id\": null,\n            \"created_at\": \"2025-05-03 17:32:00\",\n            \"updated_at\": \"2025-05-03 17:32:00\",\n            \"match_status\": null\n        },\n        {\n            \"id\": 62,\n            \"champ_grp_event_id\": 46,\n            \"round\": 3,\n            \"match_id\": \"M39Q7C\",\n            \"match_no\": 6,\n            \"ath_red_id\": \"MG96K2\",\n            \"ath_blue_id\": \"M069VD\",\n            \"ath_win_id\": null,\n            \"created_at\": \"2025-05-03 17:32:00\",\n            \"updated_at\": \"2025-05-03 17:32:00\",\n            \"match_status\": null\n        },\n        {\n            \"id\": 63,\n            \"champ_grp_event_id\": 46,\n            \"round\": 3,\n            \"match_id\": \"MZ2CXQ\",\n            \"match_no\": 7,\n            \"ath_red_id\": \"M6BVM3\",\n            \"ath_blue_id\": \"MHFAQ7\",\n            \"ath_win_id\": null,\n            \"created_at\": \"2025-05-03 17:32:00\",\n            \"updated_at\": \"2025-05-03 17:32:00\",\n            \"match_status\": null\n        },\n        {\n            \"id\": 64,\n            \"champ_grp_event_id\": 46,\n            \"round\": 4,\n            \"match_id\": \"M1JR9A\",\n            \"match_no\": 8,\n            \"ath_red_id\": \"M39Q7C\",\n            \"ath_blue_id\": \"MZ2CXQ\",\n            \"ath_win_id\": null,\n            \"created_at\": \"2025-05-03 17:32:00\",\n            \"updated_at\": \"2025-05-03 17:32:00\",\n            \"match_status\": null\n        }\n    ]\n}"
+								}
+							]
 						}
 					]
 				},
 				{
-					"name": "Bracket",
+					"name": "Bracket | Tạo sơ đồ thi đấu",
 					"item": [
 						{
 							"name": "1. Kiểm tra số VĐV được miễn",
@@ -3842,7 +5578,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{hostname}}/api/bracket/check-bye?players=16",
+									"raw": "{{hostname}}/api/bracket/check-bye?players=10",
 									"host": [
 										"{{hostname}}"
 									],
@@ -3854,7 +5590,7 @@
 									"query": [
 										{
 											"key": "players",
-											"value": "16"
+											"value": "10"
 										},
 										{
 											"key": "list_bye",
@@ -3949,7 +5685,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{hostname}}/api/bracket/random?champ_grp_event_id=1&list_bye=1",
+									"raw": "{{hostname}}/api/bracket/random?champ_grp_event_id=46",
 									"host": [
 										"{{hostname}}"
 									],
@@ -3961,11 +5697,12 @@
 									"query": [
 										{
 											"key": "champ_grp_event_id",
-											"value": "1"
+											"value": "46"
 										},
 										{
 											"key": "list_bye",
-											"value": "1"
+											"value": "",
+											"disabled": true
 										}
 									]
 								}
@@ -4050,6 +5787,124 @@
 							]
 						}
 					]
+				}
+			]
+		},
+		{
+			"name": "I. Chế độ Nhanh",
+			"item": [
+				{
+					"name": "1.1. Cấu hình hệ thống",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{hostname}}/api/config/get-config-system",
+							"host": [
+								"{{hostname}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"get-config-system"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Thành công",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{hostname}}/api/config/get-config-system",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"config",
+										"get-config-system"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Origin, X-Requested-With, Content-Type, Accept"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, PUT, DELETE"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "516"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"204-du24dMgc5ZRjGVOc/nRjoyaZd9Y\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 01 May 2025 18:48:32 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Thực hiện thành công\",\n    \"data\": {\n        \"mon_thi\": 3,\n        \"so_giam_dinh\": 3,\n        \"so_hiep\": 2,\n        \"so_hiep_phu\": 1,\n        \"he_diem\": 1,\n        \"cau_hinh_doi_khang_diem_thap\": 1,\n        \"cau_hinh_quyen_tinh_tong\": 0,\n        \"cau_hinh_y_te\": 1,\n        \"cau_hinh_xoa_nhac_nho\": 1,\n        \"cau_hinh_xoa_canh_cao\": 1,\n        \"cau_hinh_tinh_diem_tuyet_doi\": 1,\n        \"cau_hinh_hinh_thuc_quyen\": 1,\n        \"cau_hinh_hinh_thuc_doikhang\": 1,\n        \"thoi_gian_tinh_diem\": 1000,\n        \"thoi_gian_thi_dau\": 90,\n        \"thoi_gian_nghi\": 30,\n        \"thoi_gian_hiep_phu\": 60,\n        \"thoi_gian_y_te\": 120,\n        \"khoang_diem_tuyet_toi\": 10,\n        \"che_do_app\": 0\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "1.2. Cập nhật Cấu hình hệ thống",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mon_thi\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{hostname}}/api/config/update-config-system",
+							"host": [
+								"{{hostname}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"update-config-system"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}

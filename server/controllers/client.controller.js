@@ -5,7 +5,6 @@ class ClientController {
     async clientCheckActive (req, res) {
         try {
             const result  = await ClientService.verify_active(req.body);
-            
             res.status(200).json({
                 success: true,
                 message: "Thực hiện thành công",

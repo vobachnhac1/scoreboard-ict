@@ -11,7 +11,7 @@ const admin = require('./../services/admin');
 
 const checkInternet =async()=>{
     try {
-        const rs = axios.get('https://www.google.com');
+        const rs = await axios.get('https://www.google.com');
         console.log("✅ Có Internet");
         return true
     } catch (error) {

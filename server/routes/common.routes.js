@@ -19,7 +19,6 @@ router.delete('/teams/:id', CommonController.deleteTeam);
 router.get('/teams', CommonController.getAllTeamsByTournament);
 router.get('/teams/search', CommonController.searchTeamsByDisplayName);
 
-
 // GIÁM ĐỊNH/TRỌNG TÀI THAM GIA
 router.post('/referees', CommonController.insertReferee);
 router.put('/referees/:id', CommonController.updateReferee);
@@ -41,6 +40,9 @@ router.post('/referees/import', upload.single('vhd_mau_ref_01'), CommonControlle
 router.post('/teams/export', CommonController.exportFileSampleTeams);
 router.post('/teams/import', upload.single('vhd_mau_team_02'), CommonController.importFileTeams);
 
+// common
+router.get('/common/category', CommonController.getCategoryByKey);
+router.get('/common/category-all', CommonController.getCategoryAll);
 
 
 module.exports = router

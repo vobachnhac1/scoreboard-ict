@@ -605,6 +605,53 @@ class CommonController {
         }
     }
 
+    async getCategoryByKey (req, res){
+        try {
+            // thực hiện lấy giải đấu 
+            const { category_key } = req.query;
+            if (!category_key) {
+                return res.status(400).send({
+                    success: false,
+                    message: "Không có category_key",
+                    data: {}
+                });
+            }
+            const list = await dbCommonsService.getListCommonByCategory(category_key)
+            res.status(200).json({ 
+                success: true,
+                message: "Thực hiện thành công",
+                data: list
+            });
+
+        } catch (error) {
+            console.log('error: ', error);
+            res.status(500).json({
+                success: false,
+                message: "Hệ thống xử lý lỗi.",
+                data: {}
+            });
+        }
+    }
+
+    async getCategoryAll (req, res){
+        try {           
+            const list = await dbCommonsService.getAllCommon()
+            res.status(200).json({ 
+                success: true,
+                message: "Thực hiện thành công",
+                data: list
+            });
+
+        } catch (error) {
+            console.log('error: ', error);
+            res.status(500).json({
+                success: false,
+                message: "Hệ thống xử lý lỗi.",
+                data: {}
+            });
+        }
+    }
+
 }
 
 const instances = new CommonController();

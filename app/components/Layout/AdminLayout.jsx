@@ -4,12 +4,12 @@ import Navbar from "./Navbar";
 import CheckActive from "./CheckActive";
 
 const AdminLayout = ({ children }) => {
-  const [isActive, setIsActive] = React.useState(false);
+  const [isActive, setIsActive] = React.useState(true);
   const checkActive = (key) => {
     // Simulate an API call to check the license key
     setTimeout(() => {
       setIsActive(true);
-    }, 1000);
+    }, 0);
   };
 
   return (

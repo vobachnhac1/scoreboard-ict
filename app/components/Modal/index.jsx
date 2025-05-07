@@ -4,18 +4,26 @@ import { Dialog, Transition, DialogPanel, DialogTitle, TransitionChild } from "@
 import { XMarkIcon } from "@heroicons/react/24/solid";
 
 const STATUS_STYLE = {
-  success: "bg-green-100 text-green-800",
-  warning: "bg-yellow-100 text-yellow-800",
-  danger: "bg-red-100 text-red-800",
-  info: "bg-blue-100 text-blue-800",
+  success: "bg-success/10 text-success",
+  warning: "bg-warning/10 text-warning",
+  danger: "bg-danger/10 text-danger",
+  primary: "bg-primary/10 text-primary",
 };
 
-const Modal = ({ isOpen, onClose, title, status = "info", children }) => {
-  const statusClass = STATUS_STYLE[status] || STATUS_STYLE.info;
+const Modal = ({ isOpen, onClose, title, status = "primary", headerClass, children }) => {
+  const customHeaderClass = headerClass ? headerClass : STATUS_STYLE[status] || STATUS_STYLE.primary;
 
   return (
     <Transition show={isOpen} as={Fragment}>
-      <Dialog onClose={onClose} className="relative z-50">
+      <Dialog
+        onClose={(event) => {
+          // Ngăn đóng modal nếu click outside
+          // @ts-ignore
+          if (event?.target?.dataset?.dialog !== "panel") return;
+          onClose();
+        }}
+        className="relative z-50"
+      >
         {/* Overlay */}
         <TransitionChild
           as={Fragment}
@@ -40,9 +48,9 @@ const Modal = ({ isOpen, onClose, title, status = "info", children }) => {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <DialogPanel className="w-full max-w-lg rounded-2xl bg-white shadow-xl overflow-hidden">
+            <DialogPanel className="w-full max-w-md rounded-2xl bg-white shadow-xl overflow-hidden">
               {/* Header */}
-              <div className={`px-6 py-3 text-lg font-semibold text-center ${statusClass}`}>
+              <div className={`px-6 py-3 text-lg font-semibold text-center ${customHeaderClass}`}>
                 <DialogTitle>{title}</DialogTitle>
               </div>
 

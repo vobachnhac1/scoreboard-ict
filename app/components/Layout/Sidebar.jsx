@@ -1,6 +1,6 @@
 import React from "react";
 import { FolderIcon } from "@heroicons/react/24/outline";
-import { Disclosure, DisclosurePanel, DisclosureButton } from "@headlessui/react";
+import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
@@ -24,9 +24,28 @@ const Sidebar = () => {
 
   const isActive = (href) => location.pathname === href || location.pathname.startsWith(href + "/");
 
+  const renderNavItem = (item) => (
+    <li key={item.name}>
+      {item.disabled ? (
+        <div className="flex items-center py-2 px-2 space-x-4 rounded cursor-not-allowed opacity-50" title="Disabled">
+          {item.icon && <item.icon className="h-5 w-5" />}
+          <span className="hidden md:inline capitalize">{item.name.replace(/_/g, " ")}</span>
+        </div>
+      ) : (
+        <Link
+          to={item.href}
+          className={`flex items-center py-2 px-2 space-x-4 rounded cursor-pointer
+          ${isActive(item.href) ? "bg-primary text-white" : "hover:bg-primary hover:text-white"}`}
+        >
+          {item.icon && <item.icon className="h-5 w-5" />}
+          <span className="hidden md:inline capitalize">{item.name.replace(/_/g, " ")}</span>
+        </Link>
+      )}
+    </li>
+  );
+
   return (
     <div className="text-gray-900 h-screen px-2 fixed w-16 md:w-64 border-r border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
-      {/* <h1 className="text-2xl font-bold hidden md:block mt-4 text-center italic">LOGO</h1> */}
       <ul className="flex flex-col mt-5 text-base space-y-1">
         {navigation.map((item) =>
           item.children ? (
@@ -35,21 +54,21 @@ const Sidebar = () => {
                 <>
                   <DisclosureButton
                     className={`w-full flex items-center py-2 px-2 space-x-4 rounded cursor-pointer
-                      ${item.children.some((child) => isActive(child.href)) ? "bg-blue-600 text-white" : "hover:bg-blue-600 hover:text-white"}`}
+                      ${item.children.some((child) => isActive(child.href)) ? "bg-primary text-white" : "hover:bg-primary hover:text-white"}`}
+                    aria-expanded={open}
+                    aria-controls={`panel-${item.name}`}
                   >
                     {item.icon && <item.icon className="h-5 w-5" />}
                     <span className="hidden md:inline capitalize">{item.name.replace(/_/g, " ")}</span>
                   </DisclosureButton>
-                  <DisclosurePanel as="ul" className="pl-4 mt-1 flex flex-col space-y-1 text-base w-full md:pl-10">
+                  <DisclosurePanel as="ul" className="pl-4 mt-1 flex flex-col space-y-1 text-base w-full md:pl-10" id={`panel-${item.name}`}>
                     {item.children.map((child) => (
                       <li key={child.name}>
                         <Link
                           to={child.href}
                           className={`block px-2 py-2 rounded transition-colors
                             ${
-                              isActive(child.href)
-                                ? "bg-blue-600 text-white"
-                                : "hover:bg-gray-200 hover:text-blue-500 dark:hover:text-blue-400 dark:text-gray-300"
+                              isActive(child.href) ? "bg-primary text-white" : "hover:bg-gray-200 hover:text-primary dark:hover:text-primary dark:text-gray-300"
                             }`}
                         >
                           {child.name}
@@ -61,23 +80,7 @@ const Sidebar = () => {
               )}
             </Disclosure>
           ) : (
-            <li key={item.name}>
-              {item.disabled ? (
-                <div className="flex items-center py-2 px-2 space-x-4 rounded cursor-not-allowed opacity-50" title="Disabled">
-                  {item.icon && <item.icon className="h-5 w-5" />}
-                  <span className="hidden md:inline capitalize">{item.name.replace(/_/g, " ")}</span>
-                </div>
-              ) : (
-                <Link
-                  to={item.href}
-                  className={`flex items-center py-2 px-2 space-x-4 rounded cursor-pointer
-      ${isActive(item.href) ? "bg-blue-600 text-white" : "hover:bg-blue-600 hover:text-white"}`}
-                >
-                  {item.icon && <item.icon className="h-5 w-5" />}
-                  <span className="hidden md:inline capitalize">{item.name.replace(/_/g, " ")}</span>
-                </Link>
-              )}
-            </li>
+            renderNavItem(item)
           )
         )}
       </ul>

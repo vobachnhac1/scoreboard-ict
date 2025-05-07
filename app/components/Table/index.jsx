@@ -1,15 +1,15 @@
-import { Empty } from 'antd';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Empty } from "antd";
+import React from "react";
+import { useTranslation } from "react-i18next";
 
 const CustomTable = ({ columns, rows, isLoading = false, rowKey }) => {
-  const { t } = useTranslation('');
+  const { t } = useTranslation("");
 
   const renderType = {
     empty: (
       <tr>
         <th colSpan={columns.length}>
-          <Empty className="text-white" description={t('no_data_found')} />
+          <Empty className="text-white" description={t("no_data_found")} />
         </th>
       </tr>
     ),
@@ -22,7 +22,7 @@ const CustomTable = ({ columns, rows, isLoading = false, rowKey }) => {
               col.renderRow ? (
                 col.renderRow(row, index)
               ) : (
-                <td key={col.key} className={`${col.className || ''} px-3 py-4 border text-sm`}>
+                <td key={col.key} className={`${col.className || ""} px-3 py-4 border text-sm`}>
                   {row[col.key]}
                 </td>
               )
@@ -30,7 +30,7 @@ const CustomTable = ({ columns, rows, isLoading = false, rowKey }) => {
           </tr>
         ))}
       </>
-    )
+    ),
   };
 
   const renderTable = () => {
@@ -51,9 +51,7 @@ const CustomTable = ({ columns, rows, isLoading = false, rowKey }) => {
             {columns.map((col) => (
               <td
                 key={col.key}
-                className={`${
-                  col.headerCenter && 'text-center'
-                } px-3 py-3.5 text-sm font-semibold text-header-row first-of-type:text-center border`}
+                className={`${col.headerCenter && "text-center"} px-3 py-3.5 text-sm font-semibold text-header-row first-of-type:text-center border`}
               >
                 {t(col.title)}
               </td>

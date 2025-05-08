@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../Button";
 
 const CustomTable = ({
@@ -10,13 +10,20 @@ const CustomTable = ({
   onPageChange = (newPage) => {},
   onRowDoubleClick = (row) => {},
 }) => {
+  const visibleColumns = columns.filter((col) => !col.hidden);
+  const [focusedRowIndex, setFocusedRowIndex] = useState(null);
+
+  const handleRowClick = (idx) => {
+    setFocusedRowIndex(idx);
+  };
+
   return (
-    <div className="border rounded-xl overflow-hidden">
+    <div className="border rounded-xl overflow-hidden select-none">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-primary text-white">
             <tr>
-              {columns.map((col) => (
+              {visibleColumns.map((col) => (
                 <th key={col.key} className="px-4 py-3 text-left text-sm font-medium whitespace-nowrap">
                   {col.title}
                 </th>
@@ -27,20 +34,25 @@ const CustomTable = ({
           <tbody className="bg-white divide-y divide-gray-100">
             {loading ? (
               <tr>
-                <td colSpan={columns.length} className="p-6 text-center text-gray-500">
+                <td colSpan={visibleColumns.length} className="p-6 text-center text-gray-500">
                   Đang tải dữ liệu...
                 </td>
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="p-6 text-center text-gray-500">
+                <td colSpan={visibleColumns.length} className="p-6 text-center text-gray-500">
                   Không có dữ liệu.
                 </td>
               </tr>
             ) : (
               data.map((row, idx) => (
-                <tr key={idx} className="hover:bg-gray-100 cursor-pointer" onDoubleClick={() => onRowDoubleClick(row)}>
-                  {columns.map((col) => (
+                <tr
+                  key={idx}
+                  className={`cursor-pointer hover:bg-gray-100 ${focusedRowIndex === idx ? "bg-blue-100" : ""}`}
+                  onClick={() => handleRowClick(idx)}
+                  onDoubleClick={() => onRowDoubleClick(row)}
+                >
+                  {visibleColumns.map((col) => (
                     <td key={col.key} className="px-4 py-2 text-sm text-gray-700" style={{ minWidth: col.width || 100 }}>
                       {col.render ? col.render(row) : row[col.key]}
                     </td>

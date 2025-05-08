@@ -15,9 +15,12 @@ const Sidebar = () => {
       name: "Quản lý cài đặt chung",
       icon: FolderIcon,
       children: [
-        { name: "Giải đấu", href: "/management/general-setting/tournament", icon: ArrowTurnDownRightIcon },
-        { name: "Đối kháng", href: "/management/general-setting/sparring", icon: ArrowTurnDownRightIcon },
-        { name: "Thi quyền", href: "/management/general-setting/competition", icon: ArrowTurnDownRightIcon },
+        { name: "Giải đấu", href: "/management/general-setting/champion", icon: ArrowTurnDownRightIcon },
+        { name: "Nhóm thi", href: "/management/general-setting/champion-grp", icon: ArrowTurnDownRightIcon },
+        { name: "Hình thức thi", href: "/management/general-setting/champion-category", icon: ArrowTurnDownRightIcon },
+        { name: "Nội dung thi", href: "/management/general-setting/champion-event", icon: ArrowTurnDownRightIcon },
+        // { name: "Đối kháng", href: "/management/general-setting/sparring", icon: ArrowTurnDownRightIcon },
+        // { name: "Thi quyền", href: "/management/general-setting/competition", icon: ArrowTurnDownRightIcon },
       ],
     },
   ];

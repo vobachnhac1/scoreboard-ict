@@ -19,7 +19,7 @@ import SystemManagement from '../views/SystemManagement';
 import Home from '../views/Home';
 import History from '../views/History';
 import AdminLayout from '../components/Layout/AdminLayout';
-import { Competition, Connect, Sparring, Tournament } from '../views/Management';
+import { Connect, Champion, ChampionGroup, ChampionCategory, ChampionEvent } from '../views/Management';
 
 export const socketClient = new SocketClient();
 
@@ -33,9 +33,10 @@ const Routers = () => {
 
     { path: '/', element: <AdminLayout><div>PHẦN MỀM XEM LỊCH THI ĐẤU</div></AdminLayout> },
     { path: '/management/connect', element: <AdminLayout><Connect /></AdminLayout> },
-    { path: '/management/general-setting/tournament', element: <AdminLayout><Tournament /></AdminLayout> },
-    { path: '/management/general-setting/sparring', element: <AdminLayout><Sparring /></AdminLayout> },
-    { path: '/management/general-setting/competition', element: <AdminLayout><Competition /></AdminLayout> },
+    { path: '/management/general-setting/champion', element: <AdminLayout><Champion /></AdminLayout> },
+    { path: '/management/general-setting/champion-grp', element: <AdminLayout><ChampionGroup /></AdminLayout> },
+    { path: '/management/general-setting/champion-category', element: <AdminLayout><ChampionCategory /></AdminLayout> },
+    { path: '/management/general-setting/champion-event', element: <AdminLayout><ChampionEvent /></AdminLayout> },
 
     { path: '/feeds', element: <NewsFeed /> },
     { path: '/qr-views', element: <QrViews /> },

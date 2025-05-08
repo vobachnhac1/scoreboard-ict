@@ -17,7 +17,7 @@ const CustomTable = ({
           <thead className="bg-primary text-white">
             <tr>
               {columns.map((col) => (
-                <th key={col.key} className="px-4 py-3 text-left text-sm font-medium" style={{ minWidth: col.width || 100 }}>
+                <th key={col.key} className="px-4 py-3 text-left text-sm font-medium whitespace-nowrap">
                   {col.title}
                 </th>
               ))}
@@ -39,11 +39,7 @@ const CustomTable = ({
               </tr>
             ) : (
               data.map((row, idx) => (
-                <tr
-                  key={idx}
-                  className="hover:bg-gray-100 cursor-pointer"
-                  onDoubleClick={() => onRowDoubleClick(row)}
-                >
+                <tr key={idx} className="hover:bg-gray-100 cursor-pointer" onDoubleClick={() => onRowDoubleClick(row)}>
                   {columns.map((col) => (
                     <td key={col.key} className="px-4 py-2 text-sm text-gray-700" style={{ minWidth: col.width || 100 }}>
                       {col.render ? col.render(row) : row[col.key]}

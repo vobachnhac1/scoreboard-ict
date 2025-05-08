@@ -6,6 +6,8 @@ import Modal from "../../../components/Modal";
 import DisconnectForm from "./Forms/DisconnectForm";
 import NotificationForm from "./Forms/NotificationForm";
 import UpdateForm from "./Forms/UpdateForm";
+import { Constants } from "../../../common/Constants";
+import Utils from "../../../common/utils";
 
 export default function index() {
   const [page, setPage] = useState(1);
@@ -17,69 +19,70 @@ export default function index() {
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
-      // fake data
-      setData(
-        Array.from({ length: 10 }, (_, i) => ({
-          id: i + 1 + (page - 1) * 10,
-          name: `Người dùng ${i + 1 + (page - 1) * 10}`,
-        }))
-      );
+      const fakeDevices = Array.from({ length: 10 }, (_, i) => {
+        const index = i + 1 + (page - 1) * 10;
+        return {
+          order: index,
+          device_name: `Thiết bị ${index}`,
+          judge_permission: ["GD1", "GD2", "GD3", "GD4", "GD5", "GD6", "GD7"][i % 7],
+          device_code: `DEV-${1000 + index}`,
+          device_ip: `192.168.1.${i + 10}`,
+          status: i % 2 === 0 ? "active" : "inactive",
+          accepted: i % 3 === 0 ? "approved" : i % 3 === 1 ? "rejected" : "pending",
+        };
+      });
+      setData(fakeDevices);
       setLoading(false);
     }, 500);
   }, [page]);
 
-  const KEY_ACTIONS = {
-    KH: "KH",
-    GD: "GĐ",
-    DIS: "DIS",
-    MSG: "MSG",
-    UPDATE: "UPDATE",
-  };
-
   const listActions = [
     {
-      key: KEY_ACTIONS.KH,
+      key: Constants.ACCTION_CONNECT_KH,
+      titleModal: "Thông báo",
       color: "bg-[#FAD7AC]",
       description: "Kích hoạt thiết bị mobile",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: KEY_ACTIONS.KH, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACCTION_CONNECT_KH, row: row });
       },
     },
     {
-      key: KEY_ACTIONS.GD,
+      key: Constants.ACCTION_CONNECT_GD,
+      titleModal: "Thông báo",
       color: "bg-[#FAD9D5]",
       description: "Đăng ký thiết bị với quyền giám định",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: KEY_ACTIONS.GD, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACCTION_CONNECT_GD, row: row });
       },
     },
     {
-      key: KEY_ACTIONS.DIS,
+      key: Constants.ACCTION_CONNECT_DIS,
+      titleModal: "Thông báo",
       color: "bg-[#B0E3E6]",
       description: "Ngắt kết nối",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: KEY_ACTIONS.DIS, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACCTION_CONNECT_DIS, row: row });
       },
     },
     {
-      key: KEY_ACTIONS.MSG,
+      key: Constants.ACCTION_CONNECT_MSG,
+      titleModal: "Thông báo",
       color: "bg-[#50d71e]",
       description: "Gửi thông báo đến Giám định",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: KEY_ACTIONS.MSG, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACCTION_CONNECT_MSG, row: row });
       },
     },
   ];
 
   const columns = [
-    // { title: "ID", key: "id" },
-    { title: "STT", key: "id" },
-    { title: "Tên thiết bị", key: "name" },
-    { title: "Quyền giám định", key: "name2" },
-    { title: "Mã thiết bị", key: "name3" },
-    { title: "IP thiết bị", key: "name4" },
-    { title: "Trạng thái", key: "name5" },
-    { title: "Chấp thuận", key: "name6" },
+    { title: "STT", key: "order" },
+    { title: "Tên thiết bị", key: "device_name" },
+    { title: "Quyền giám định", key: "judge_permission", render: (row) => Utils.getJudgePermissionLabel(row.judge_permission) },
+    { title: "Mã thiết bị", key: "device_code" },
+    { title: "IP thiết bị", key: "device_ip" },
+    { title: "Trạng thái", key: "status", render: (row) => <div className="text-nowrap">{Utils.getStatusLabel(row.status)}</div> },
+    { title: "Chấp thuận", key: "accepted", render: (row) => Utils.getApprovalStatusLabel(row.accepted) },
     {
       title: (
         <div className="flex items-center justify-center">
@@ -105,9 +108,9 @@ export default function index() {
   ];
 
   const renderContentModal = (openActions) => {
-    console.log("openActions", openActions);
+    // console.log("openActions", openActions);
     switch (openActions?.key) {
-      case KEY_ACTIONS.KH:
+      case Constants.ACCTION_CONNECT_KH:
         return (
           <div className="text-center">
             <div className="">Kích hoạt thiết bị mobile</div>
@@ -124,7 +127,7 @@ export default function index() {
             </Button>
           </div>
         );
-      case KEY_ACTIONS.GD:
+      case Constants.ACCTION_CONNECT_GD:
         return (
           <div className="text-center">
             <div className="">Đăng ký giám định</div>
@@ -137,33 +140,33 @@ export default function index() {
             </Button>
           </div>
         );
-      case KEY_ACTIONS.DIS:
+      case Constants.ACCTION_CONNECT_DIS:
         return (
           <DisconnectForm
-            data={openActions?.raw}
-            onSuccess={(formData) => {
+            data={openActions?.row}
+            onAgree={(formData) => {
               console.log("DisconnectForm", formData);
               setOpenActions({ ...openActions, isOpen: false });
             }}
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
         );
-      case KEY_ACTIONS.MSG:
+      case Constants.ACCTION_CONNECT_MSG:
         return (
           <NotificationForm
-            data={openActions?.raw}
-            onSuccess={(formData) => {
+            data={openActions?.row}
+            onAgree={(formData) => {
               console.log("NotificationForm", formData);
               setOpenActions({ ...openActions, isOpen: false });
             }}
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
         );
-      case KEY_ACTIONS.UPDATE:
+      case Constants.ACCTION_UPDATE:
         return (
           <UpdateForm
-            data={openActions?.raw}
-            onSuccess={(formData) => {
+            data={openActions?.row}
+            onAgree={(formData) => {
               console.log("UpdateForm", formData);
               setOpenActions({ ...openActions, isOpen: false });
             }}
@@ -172,26 +175,6 @@ export default function index() {
         );
       default:
         return null;
-    }
-  };
-
-  const statusColorHeader = (key) => {
-    console.log("key", key);
-    switch (key) {
-      case KEY_ACTIONS.KH:
-        return "!bg-[#FAD7AC] text-black font-bold text-lg";
-      case KEY_ACTIONS.GD:
-        return "!bg-[#FAD9D5] text-black font-bold text-lg";
-      case KEY_ACTIONS.DIS:
-        return "!bg-[#B0E3E6] text-black font-bold text-lg";
-      case KEY_ACTIONS.MSG:
-        return "!bg-[#50d71e] text-black font-bold text-lg";
-      case KEY_ACTIONS.MSG:
-        return "!bg-[#50d71e] text-black font-bold text-lg";
-      case KEY_ACTIONS.UPDATE:
-        return "!bg-[#F9F7ED] text-black font-bold text-lg";
-      default:
-        return "";
     }
   };
 
@@ -206,14 +189,14 @@ export default function index() {
         onPageChange={setPage}
         onRowDoubleClick={(row) => {
           console.log("Double clicked row:", row);
-          setOpenActions({ isOpen: true, key: KEY_ACTIONS.UPDATE, row: row });
+          setOpenActions({ isOpen: true, key: Constants.ACCTION_UPDATE, row: row });
         }}
       />
       <Modal
         isOpen={openActions?.isOpen || false}
         onClose={() => setOpenActions({ ...openActions, isOpen: false })}
-        title={openActions?.key === KEY_ACTIONS.UPDATE ? "Cập nhật thông tin kết nối" : "Thông báo"}
-        headerClass={statusColorHeader(openActions?.key)}
+        title={listActions.find((e) => e.key === openActions?.key)?.titleModal || "Cập nhật thông tin kết nối"}
+        headerClass={listActions.find((e) => e.key === openActions?.key)?.color}
       >
         {renderContentModal(openActions)}
       </Modal>

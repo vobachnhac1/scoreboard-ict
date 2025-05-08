@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from "react";
 import Button from "../../../../components/Button";
 
-export default function DisconnectForm({ data, onSuccess, onGoBack }) {
+export default function DisconnectForm({ data, onAgree, onGoBack }) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     pauseScoring: false,
@@ -21,7 +21,7 @@ export default function DisconnectForm({ data, onSuccess, onGoBack }) {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      onSuccess(formData);
+      onAgree(formData);
     }, 1500);
   };
 
@@ -49,8 +49,8 @@ export default function DisconnectForm({ data, onSuccess, onGoBack }) {
         </div>
       ))}
 
-      <div className="flex items-center justify-center mt-4">
-        <Button disabled={loading} className="min-w-32 mr-2" variant="secondary" onClick={() => onGoBack()}>
+      <div className="flex items-center justify-center gap-2 mt-4">
+        <Button disabled={loading} className="min-w-32" variant="secondary" onClick={() => onGoBack()}>
           Quay lại
         </Button>
         <Button loading={loading} className="min-w-32" variant="primary" onClick={handleSubmit}>

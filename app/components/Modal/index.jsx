@@ -10,7 +10,7 @@ const STATUS_STYLE = {
   primary: "bg-primary/10 text-primary",
 };
 
-const Modal = ({ isOpen, onClose, title, status = "primary", headerClass, children }) => {
+const Modal = ({ isOpen, onClose, title, status = "primary", headerClass = null, children }) => {
   const customHeaderClass = headerClass ? headerClass : STATUS_STYLE[status] || STATUS_STYLE.primary;
 
   return (

@@ -19,7 +19,7 @@ import SystemManagement from '../views/SystemManagement';
 import Home from '../views/Home';
 import History from '../views/History';
 import AdminLayout from '../components/Layout/AdminLayout';
-import { Connect, GeneralSetting } from '../views/Management';
+import { Competition, Connect, Sparring, Tournament } from '../views/Management';
 
 export const socketClient = new SocketClient();
 
@@ -27,15 +27,16 @@ export const socketClient = new SocketClient();
 const Routers = () => {
   const navigate = useNavigate();
   useHotkeys('F1', () => navigate('/'));
-  useHotkeys('esc', () => navigate('/'));
-  useHotkeys('F2', () => navigate('/scoreboard'));
-  useHotkeys('F3', () => navigate('/player-list'));
-  useHotkeys('F4', () => navigate('/history'));
 
   const routes = [
-    { path: '/', element: <Home />, sidebar: false },
+    // { path: '/', element: <Home />, sidebar: false },
+
+    { path: '/', element: <AdminLayout><div>PHẦN MỀM XEM LỊCH THI ĐẤU</div></AdminLayout> },
     { path: '/management/connect', element: <AdminLayout><Connect /></AdminLayout> },
-    { path: '/management/general-setting', element: <AdminLayout><GeneralSetting /></AdminLayout> },
+    { path: '/management/general-setting/tournament', element: <AdminLayout><Tournament /></AdminLayout> },
+    { path: '/management/general-setting/sparring', element: <AdminLayout><Sparring /></AdminLayout> },
+    { path: '/management/general-setting/competition', element: <AdminLayout><Competition /></AdminLayout> },
+
     { path: '/feeds', element: <NewsFeed /> },
     { path: '/qr-views', element: <QrViews /> },
     { path: '/versus', element: <Versus /> },

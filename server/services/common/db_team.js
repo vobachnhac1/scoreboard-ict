@@ -1,24 +1,13 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
+const {DB_SCHEME, TABLE} = require('./constant_sql')
 
 // Quản lý đơn vị tham gia
 class DBTeamService {
     constructor() {
-        this.db = new sqlite3.Database('./database.sqlite');
+        this.db = new sqlite3.Database(DB_SCHEME);
         this.db.serialize(() => {
-            // // table champion_competition_type: HÌNH THỨC THI: ĐỐI KHÁNG/BIỂU DIỄN
-            this.db.run(`
-                CREATE TABLE IF NOT EXISTS team (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    tournament_id INTEGER NOT NULL,    -- Liên kết tới giải đấu
-                    full_name TEXT NOT NULL,            -- Tên đầy đủ đơn vị
-                    area TEXT,                          -- Khu vực (ví dụ: Miền Bắc, Trung, Nam)
-                    display_name TEXT NOT NULL,         -- Tên hiển thị ngắn
-                    leader_name TEXT,                   -- Người dẫn đoàn
-                    created_at TEXT DEFAULT (datetime('now')),
-                    updated_at TEXT DEFAULT (datetime('now'))
-                )
-             `); 
+            this.db.run(TABLE.CRE_CHP_TEM);
         })
     }
 

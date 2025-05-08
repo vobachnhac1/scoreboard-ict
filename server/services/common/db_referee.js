@@ -1,24 +1,12 @@
 const sqlite3 = require('sqlite3').verbose();
+const {DB_SCHEME, TABLE} = require('./constant_sql')
 
 class DBRefereeService {
     constructor() {
-        this.db = new sqlite3.Database('./database.sqlite');
+        this.db = new sqlite3.Database(DB_SCHEME);
         this.db.serialize(() => {
-            this.db.run(`
-                CREATE TABLE IF NOT EXISTS referee (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    full_name TEXT NOT NULL,
-                    team_name TEXT,
-                    tournament_id INTEGER,
-                    rank TEXT,
-                    position TEXT,
-                    code TEXT UNIQUE,
-                    created_at TEXT DEFAULT (datetime('now')),
-                    updated_at TEXT DEFAULT (datetime('now')),
-                    FOREIGN KEY (team_name) REFERENCES team(id) ON DELETE SET NULL,
-                    FOREIGN KEY (tournament_id) REFERENCES champion(id) ON DELETE CASCADE
-                );
-            `);
+            this.db.run(TABLE.CRE_CHP_REF);
+
         });
     }
 

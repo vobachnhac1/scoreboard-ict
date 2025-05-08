@@ -1,27 +1,14 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
+const {DB_SCHEME, TABLE} = require('./constant_sql')
 
 // champion
 class DBChampionService {
     constructor() {
-        this.db = new sqlite3.Database('./database.sqlite');
+        this.db = new sqlite3.Database(DB_SCHEME);
         this.db.serialize(() => {
-            this.db.run(`
-                CREATE TABLE IF NOT EXISTS champion (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    tournament_name TEXT NOT NULL,
-                    start_date TEXT NOT NULL,  -- SQLite dùng TEXT để lưu DATE
-                    end_date TEXT NOT NULL,    -- (ISO 8601: 'YYYY-MM-DD')
-                    location TEXT,
-                    num_judges INTEGER DEFAULT 0,
-                    num_athletes INTEGER DEFAULT 0,
-                    status TEXT DEFAULT 'NEW',
-                    created_at TEXT DEFAULT (datetime('now')),
-                    updated_at TEXT DEFAULT (datetime('now'))
-                );
-            `); 
+            this.db.run(TABLE.CRE_CHP); 
         })
-
     }
 
     getAllChampion(){

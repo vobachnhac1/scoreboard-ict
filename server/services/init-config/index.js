@@ -1,12 +1,14 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
+const {DB_SCHEME, TABLE} = require('../common/constant_sql')
+
 // Thực hiện khi nào
 // Tạo mới 1 record khi chưa có 1 dữ liệu nào
 // Cập nhật dữ liệu mới nhất sau khi gọi API kích hoạt thành công.
 
 class InitConfigService {
     constructor() {
-        this.db = new sqlite3.Database('./database.sqlite');
+        this.db = new sqlite3.Database(DB_SCHEME);
         this.db.serialize(() => {
             // table initconfig
             this.db.run(`

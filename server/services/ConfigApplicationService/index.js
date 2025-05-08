@@ -3,7 +3,7 @@
 
 // class ConfigApplicationService {
 //     constructor() {
-//         this.db = new sqlite3.Database('./database.sqlite');
+//         this.db = new sqlite3.Database(DB_SCHEME);
 //         this.db.serialize(() => {
 //             this.db.run(`
 //                 CREATE TABLE IF NOT EXISTS config_application (

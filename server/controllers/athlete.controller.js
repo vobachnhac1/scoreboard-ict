@@ -332,6 +332,28 @@ class AthleteController {
                 res.status(500).json({success: false, message: 'Lỗi: API cập nhật VĐV', error: error.message });
             }
         }
+
+        async getAthByChampIdEvt(req, res) {
+            try {
+                const { champ_id, champ_grp_event_id, champ_grp_id, category_key } = req.query;
+                if (!champ_id || !category_key ) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Thông tin không chính xác",
+                        data: {}
+                    });
+                }
+                const list_team = await DBChampionAthleteService.getAthByChampIdEvtDistinct({champ_id, champ_grp_event_id, champ_grp_id, category_key});
+                const list = await DBChampionAthleteService.getAthByChampIdEvt({champ_id, champ_grp_event_id, champ_grp_id, category_key});
+                res.status(200).json({ success: true, message: 'Thực hiện thành công', data: {
+                    list_vdv: list,
+                    list_team: list_team,
+                } });
+
+            } catch (error) {
+                res.status(500).json({success: false, message: 'Lỗi: API lấy danh sách VĐV', error: error.message });
+            }
+        }
     //#endregion
 
 

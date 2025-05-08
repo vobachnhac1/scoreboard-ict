@@ -1,22 +1,13 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
+const {DB_SCHEME, TABLE} = require('./constant_sql')
 
 // commons
 class DBCommonsService {
     constructor() {
-        this.db = new sqlite3.Database('./database.sqlite');
+        this.db = new sqlite3.Database(DB_SCHEME);
         this.db.serialize(() => {
-            // table common_type
-            this.db.run(`
-                CREATE TABLE IF NOT EXISTS commons (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    category_type TEXT(100),
-                    "key" TEXT(100) NOT NULL,
-                    value TEXT(255),
-                    description TEXT(255), 
-                    num_member INTEGER DEFAULT (1)
-                )
-            `); 
+            this.db.run(TABLE.CRE_COM); 
             this.getAllCommon().then(data=>{
                 if(data.length == 0){
                     

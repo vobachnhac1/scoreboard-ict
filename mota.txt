@@ -1,4 +1,4 @@
-1. MÀN HÌNH GIẢI ĐẤU: 
+1. MÀN HÌNH GIẢI ĐẤU:
     - Thêm:            POST: {{hostname}}/api/champion
     - Xoá:           DELETE: {{hostname}}/api/champion/:id
     - Sửa:              PUT: {{hostname}}/api/champion/:id
@@ -74,7 +74,7 @@
             - Lấy danh sách Nhóm:        GET| {{hostname}}/api/champion-grp/:champ_id       (truyền id khi tạo API insert/update)
             - Lấy danh sách giới tính:   GET| {{hostname}}/api/common/category?category_key=gender
             - Lấy d.sách nội dung thi:   GET:{{hostname}}/api/champion-grp-event?champ_grp_id=1&gender_id=F
-            
+
         5.6 API chi tiết:
             - Thêm:                    POST: {{hostname}}/api/athlete
             - Xoá:                   DELETE: {{hostname}}/api/athlete/:id
@@ -91,8 +91,19 @@
             - Kiểm tra VĐV được miễn:                    GET: {{hostname}}/api/bracket/check-bye?players=10
             - Tạo cặp đấu:                               GET: {{hostname}}/api/bracket/random?champ_grp_event_id=46
 
-        4.2: Match: Sơ đồ thi đấu: 
+        4.2: Match: Sơ đồ thi đấu:
             - Cập nhật VĐV thắng:                        PUT: {{hostname}}/api/ath-match?champ_grp_event_id=46
             - Danh sách VDV theo nội dung thi:           GET: {{hostname}}/api/ath-match?champ_grp_event_id=46
 
 
+6. Màn hình xuất danh sách thi đấu:
+- Điều kiện: Hoàn thành bốc thăm kết thúc quá trình đăng ký
+
+
+
+
+
+
+
+Table đối kháng:
+ID | match_id | nội dung thi | round | tên VĐV Đỏ | đơn vị | tên VĐV xanh | đơn vị | trạng thái | kết quả

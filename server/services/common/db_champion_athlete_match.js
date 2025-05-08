@@ -1,5 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
+const {DB_SCHEME, TABLE} = require('../common/constant_sql')
 
 
 
@@ -11,55 +12,10 @@ const fs = require('fs');
  */
 class DBAthMatchService {
     constructor() {
-        this.db = new sqlite3.Database('./database.sqlite');
+        this.db = new sqlite3.Database(DB_SCHEME);
         this.db.serialize(() => {
-            this.db.run(`
-                CREATE TABLE IF NOT EXISTS champion_athlete_match (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    champ_grp_event_id INTEGER NOT NULL,
-                    round INTEGER NOT NULL,
-                    match_id TEXT NOT NULL,
-                    match_no INTEGER NOT NULL,
-                    ath_red_id TEXT NOT NULL,
-                    ath_blue_id TEXT NOT NULL,
-                    ath_win_id TEXT,
-                    match_status TEXT DEFAULT 'WAI',
-                    created_at TEXT DEFAULT (datetime('now')),
-                    updated_at TEXT DEFAULT (datetime('now'))
-                )
-             `); 
-            this.db.run(`
-                CREATE TABLE IF NOT EXISTS DB_MATCH_HIS (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    match_id INTEGER NOT NULL,             -- Mã trận đấu (foreign key nếu cần)
-                    
-                    red_score INTEGER DEFAULT 0,
-                    blue_score INTEGER DEFAULT 0,
-
-                    red_remind INTEGER DEFAULT 0,
-                    blue_remind INTEGER DEFAULT 0,
-
-                    red_warn INTEGER DEFAULT 0,
-                    blue_warn INTEGER DEFAULT 0,
-
-                    red_mins INTEGER DEFAULT 0,            -- Điểm trừ (minuses)
-                    blue_mins INTEGER DEFAULT 0,
-
-                    red_incr INTEGER DEFAULT 0,            -- Điểm cộng (increments)
-                    blue_incr INTEGER DEFAULT 0,
-
-                    round INTEGER DEFAULT 1,               -- Hiệp số
-                    round_type TEXT DEFAULT 'NORMAL',      -- Loại hiệp: NORMAL / EXTRA / etc.
-                    
-                    confirm_attack INTEGER DEFAULT 0,      -- Tổng số lần công nhận đòn tấn công
-
-                    status TEXT DEFAULT 'WAI',          -- ACTIVE / ENDED / REVIEWED etc.
-
-                    created_at TEXT DEFAULT (datetime('now')),
-                    updated_at TEXT DEFAULT (datetime('now'))
-
-                )
-             `); 
+            this.db.run(TABLE.CRE_CHP_ATH_MAT); 
+            this.db.run(TABLE.CRE_CHP_ATH_MAT_HIS); 
         })
     }
 

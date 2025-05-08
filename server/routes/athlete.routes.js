@@ -28,6 +28,7 @@ router.put('/athlete-random/:id', athleteController.updateRandom);
 // Trận đấu
 router.put('/ath-match', athleteController.updateAthMatch);
 router.get('/ath-match', athleteController.getAthMatch);
+router.get('/ath-evt', athleteController.getAthByChampIdEvt);
 
 
 module.exports = router

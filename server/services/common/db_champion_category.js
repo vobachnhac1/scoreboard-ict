@@ -1,20 +1,12 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
+const {DB_SCHEME, TABLE} = require('./constant_sql')
 
 class DBChampCategoryService {
     constructor() {
-        this.db = new sqlite3.Database('./database.sqlite');
+        this.db = new sqlite3.Database(DB_SCHEME);
         this.db.serialize(() => {
-            this.db.run(`
-                CREATE TABLE IF NOT EXISTS champion_category (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    category_key TEXT NOT NULL,
-                    category_name TEXT NOT NULL,
-                    description TEXT,
-                    created_at TEXT DEFAULT (datetime('now')),
-                    updated_at TEXT DEFAULT (datetime('now'))
-                )
-             `); 
+            this.db.run(TABLE.CRE_CHP_CG);
         })
     }
 

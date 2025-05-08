@@ -41,9 +41,9 @@ const ExcelJS = require('exceljs');
             return true
         }else if(type ==  2){
             const data = {
-                cham_grp_id: input.substring(0, 3),
+                cham_grp_id: Number(input.substring(0, 3)),
                 gender_id: input.charAt(3),
-                champ_grp_event_id: input.slice(-4)
+                champ_grp_event_id: Number(input.slice(-4))
             }
             const list_champ_grp = await dbChampionGroupService.getChampionGroupById(data.cham_grp_id);
             if(!list_champ_grp) return false;
@@ -679,11 +679,41 @@ class ChampionController {
     //#endregion
 
     //#region 5. API lấy dụng dung thi theo nhóm thi
+        // API lấy thông tin nội dung thi.
+        async getGrpEvtSearch(req, res) {
+            try {
+                // điều kiện: champ_grp_id => mới tìm theo giới tính
+                const {query, body} = req;
+                const {champ_grp_id, gender_id, champ_id} = query
+                if(!champ_grp_id || !champ_id){
+                    res.json({
+                        success: false,
+                        message: "Tham số truyền vào không đúng",
+                        data: {}
+                    });
+                    return 
+                }
+                const result = await dbChampionGrpEventService.getGrpEvtSearch(champ_id, champ_grp_id, gender_id);
+                res.json({
+                    success: true,
+                    message: "Lấy nội dung thi thành công.",
+                    data: result
+                });
+            } catch (error) {
+                console.log('error: ', error);
+                res.status(500).json({
+                    success: false,
+                    message: "Hệ thống xử lý lỗi.",
+                    data: {}
+                });
+            }
+    }
+
         async getGrpEvent(req, res) {
             try {
                 // điều kiện: champ_grp_id => mới tìm theo giới tính
                 const {query, body} = req;
-                const {champ_grp_id, gender_id} = query
+                const {champ_grp_id, gender_id, champ_id} = query
                 if(!champ_grp_id ){
                     res.json({
                         success: false,
@@ -1203,6 +1233,7 @@ class ChampionController {
                    
                     // lấy danh sách được tải lên phân 
                     let arr_read_excel = []
+                    const arr_error = []
                     for(let i = 0; i < ls_sheetName.length; i++){
                         if(ls_sheetName[i] == 'CODE') continue;
                         const worksheet = workbook.Sheets[`${ls_sheetName[i]}`];
@@ -1295,12 +1326,13 @@ class ChampionController {
                                     itembase = {
                                         ...itembase,
                                         members: [...itembase.members, {
-                                            stt: itembase.members.length + 1,
+                                            stt: (itembase.members.length + 1),
                                             fullname: rawData[k]['Họ tên'],
                                             dob: rawData[k]['Năm sinh'],
                                         }]
                                     }
                                 }
+                                ls_vdv.push(itembase)
                             }
                             input.ls_vdv = ls_vdv
                             arr_read_excel.push(input)
@@ -1309,13 +1341,12 @@ class ChampionController {
 
                     // // Thực hiện lưu vào table quản lý VĐV 
                     for(let i =0; i< arr_read_excel.length; i++){
-
                         const record = arr_read_excel[i];
                         const check_sheet = await checkEncypt(1, record.id_sheet, true)
+                        console.log('check_sheet: ', check_sheet);
                         if(!check_sheet) continue;
-                        const arr_error = []
                         // xoá sheet trong database
-                        const del = await dbChampionAthleteService.deleteByChampGrpId(check_sheet.cham_grp_id, check_sheet.gender_id)
+                        const del = await dbChampionAthleteService.deleteByChampGrpId(check_sheet.cham_grp_id, check_sheet.gender_id, check_sheet.category_key)
                         for(let j = 0; j < record.ls_vdv.length; j++ ){
                             const item = record.ls_vdv[j];
                             const check = await checkEncypt(2, item.id_event, true)
@@ -1326,6 +1357,7 @@ class ChampionController {
                                 let _input = {}
                                 if(record.category_key == 'DK'){
                                     _input = {
+                                        category_key: check_sheet.category_key,
                                         champ_id: input.tournament.champ_id,
                                         champ_grp_event_id: check.champ_grp_event_id,
                                         gender_id: check.gender_id,
@@ -1339,6 +1371,7 @@ class ChampionController {
                                 }else{
                                     for(let m = 0;  m < item.members.length; m++){
                                         _input = {
+                                            category_key: check_sheet.category_key,
                                             champ_id: input.tournament.champ_id,
                                             champ_grp_event_id: check.champ_grp_event_id,
                                             gender_id: check.gender_id,
@@ -1358,7 +1391,8 @@ class ChampionController {
                     res.status(200).json({
                         success: true,
                         message: "Thực hiện thành công",
-                        data: arr_read_excel
+                        data: list_upload,
+                        arr_error: arr_error,
                     });
                 }
             } catch (error) {

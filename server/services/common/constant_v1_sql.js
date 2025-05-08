@@ -1,0 +1,198 @@
+const DB_SCHEME = './database.sqlite'
+
+//-- 1. Bảng commons (dùng chung: giới tính, loại hiệp, v.v.)
+const COMMON = `
+     CREATE TABLE IF NOT EXISTS commons (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        category_type TEXT(100),
+        "key" TEXT(100) NOT NULL,
+        value TEXT(255),
+        description TEXT(255),
+        num_member INTEGER DEFAULT 1
+    );
+`;
+
+//-- 2. Bảng champion (giải đấu)
+const CHAMPION = `
+CREATE TABLE IF NOT EXISTS champion (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tournament_name TEXT NOT NULL,
+    start_date TEXT NOT NULL, -- YYYY-MM-DD
+    end_date TEXT NOT NULL,
+    location TEXT,
+    num_judges INTEGER DEFAULT 0,
+    num_athletes INTEGER DEFAULT 0,
+    status TEXT DEFAULT 'NEW',
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
+
+`;
+
+//-- 3. Bảng champion_category (hạng cân, độ tuổi...)
+const CHAMPION_CATEGORY = `
+CREATE TABLE IF NOT EXISTS champion_category (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category_key TEXT NOT NULL UNIQUE,
+    category_name TEXT NOT NULL,
+    description TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
+
+`;
+
+//-- 4. Bảng champion_group (bảng đấu)
+const CHAMPION_GRP = `
+    CREATE TABLE IF NOT EXISTS champion_group (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        description TEXT,
+        tournament_id INTEGER NOT NULL,
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+    );
+
+`;
+
+//-- 5. Bảng champion_event (sự kiện trong giải đấu)
+const CHAMPION_EVE = `
+    CREATE TABLE IF NOT EXISTS champion_event (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        event_name TEXT,
+        num_member INTEGER DEFAULT 0,
+        category_key TEXT NOT NULL,
+        qu_type TEXT NOT NULL,
+        description TEXT,
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+    );
+`;
+
+//-- 6. Bảng champion_grp_event (gắn sự kiện với bảng đấu và giới tính)
+const CHAMPION_GRP_EVE = `
+    CREATE TABLE IF NOT EXISTS champion_grp_event (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        champ_id TEXT NOT NULL,
+        champ_grp_id TEXT NOT NULL,
+        champ_event_id TEXT NOT NULL,
+        gender_commons_key TEXT NOT NULL,
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+    );
+`;
+
+//-- 7. Bảng team (đơn vị tham gia)
+const CHAMPION_TEAM = `
+    CREATE TABLE IF NOT EXISTS team (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tournament_id INTEGER NOT NULL,    -- Liên kết tới giải đấu
+        full_name TEXT NOT NULL,            -- Tên đầy đủ đơn vị
+        area TEXT,                          -- Khu vực (ví dụ: Miền Bắc, Trung, Nam)
+        display_name TEXT NOT NULL,         -- Tên hiển thị ngắn
+        leader_name TEXT,                   -- Người dẫn đoàn
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+    )
+`;
+
+//-- 8. Bảng referee (trọng tài)
+const CHAMPION_REF = `
+    CREATE TABLE IF NOT EXISTS referee (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        full_name TEXT NOT NULL,
+        team_name TEXT,
+        tournament_id INTEGER,
+        rank TEXT,
+        position TEXT,
+        code TEXT UNIQUE,
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+    );
+`;
+
+//-- 9. Bảng champion_athlete (vận động viên)
+const CHAMPION_ATH = `
+    CREATE TABLE IF NOT EXISTS champion_athlete (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        fullname TEXT NOT NULL,
+        dob TEXT NOT NULL, -- YYYY-MM-DD
+        team_id INTEGER,
+        gender_id TEXT NOT NULL,
+        category_key TEXT NOT NULL,
+        champ_grp_event_id INTEGER NOT NULL,
+        cham_grp_id INTEGER NOT NULL,
+        champ_id INTEGER NOT NULL,
+        num_random TEXT,
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+    );
+`;
+
+//-- 10. Bảng champion_athlete_match (trận đấu)
+const CHAMPION_ATH_MATCH = `
+    CREATE TABLE IF NOT EXISTS champion_athlete_match (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        champ_grp_event_id INTEGER NOT NULL,
+        round INTEGER NOT NULL,
+        match_id TEXT NOT NULL,
+        match_no INTEGER NOT NULL,
+        ath_red_id INTEGER NOT NULL,
+        ath_blue_id INTEGER NOT NULL,
+        ath_win_id INTEGER,
+        match_status TEXT DEFAULT 'WAI',
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+    );
+`;
+
+//-- 11. Bảng DB_MATCH_HIS (lịch sử điểm)
+const CHAMPION_ATH_MATCH_HIS = `
+    CREATE TABLE IF NOT EXISTS DB_MATCH_HIS (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        match_id INTEGER NOT NULL,
+        red_score INTEGER DEFAULT 0,
+        blue_score INTEGER DEFAULT 0,
+        red_remind INTEGER DEFAULT 0,
+        blue_remind INTEGER DEFAULT 0,
+        red_warn INTEGER DEFAULT 0,
+        blue_warn INTEGER DEFAULT 0,
+        red_mins INTEGER DEFAULT 0,
+        blue_mins INTEGER DEFAULT 0,
+        red_incr INTEGER DEFAULT 0,
+        blue_incr INTEGER DEFAULT 0,
+        round INTEGER DEFAULT 1,
+        round_type TEXT DEFAULT 'NORMAL',
+        confirm_attack INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'WAI',
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+    );
+`;
+
+const DB_NO_RELATION = {
+    CRE_COM: COMMON,
+    CRE_CHP: CHAMPION,
+    CRE_CHP_CG: CHAMPION_CATEGORY,
+    CRE_CHP_GRP: CHAMPION_GRP,
+    CRE_CHP_EVT: CHAMPION_EVE,
+    CRE_CHP_GRP_EVT: CHAMPION_GRP_EVE,
+    CRE_CHP_TEM: CHAMPION_TEAM,
+    CRE_CHP_REF: CHAMPION_REF,
+    CRE_CHP_ATH: CHAMPION_ATH,
+    CRE_CHP_ATH_MAT: CHAMPION_ATH_MATCH,
+    CRE_CHP_ATH_MAT_HIS: CHAMPION_ATH_MATCH_HIS,
+}
+
+
+/**
+ * DB_SCHEME: Thiết kế không ràng buộc
+ * DB_SCHEME_UAT: có ràng buộc
+ * 
+ * 
+ */
+
+module.exports = {
+    TABLE: DB_NO_RELATION,
+    DB_SCHEME: DB_SCHEME
+}

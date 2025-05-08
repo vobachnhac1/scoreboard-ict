@@ -48,11 +48,14 @@ router.put('/champion-event/:id', championController.updateEvent);
 router.delete('/champion-event/:id', championController.deleteEvent);
 
 
+
 //5. API quản lý nội dung thi theo Mục 4.
 router.get('/champion-grp-event', championController.getGrpEvent);
 router.post('/champion-grp-event', championController.createGrpEvent);
 router.put('/champion-grp-event/:id', championController.updateGrpEvent);
 router.delete('/champion-grp-event/:id', championController.deleteGrpEvent);
+
+router.get('/champion-grp-event/search', championController.getGrpEvtSearch);
 
 // Xuất File mẫu
 router.post('/champion/export', championController.exportFileChampion);

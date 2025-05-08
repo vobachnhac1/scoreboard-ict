@@ -1397,19 +1397,19 @@
 							}
 						},
 						"url": {
-							"raw": "{{hostname}}/api/champion-grp/:?id=1",
+							"raw": "{{hostname}}/api/champion-grp/:champ_id",
 							"host": [
 								"{{hostname}}"
 							],
 							"path": [
 								"api",
 								"champion-grp",
-								":"
+								":champ_id"
 							],
-							"query": [
+							"variable": [
 								{
-									"key": "id",
-									"value": "1"
+									"key": "champ_id",
+									"value": ""
 								}
 							]
 						}
@@ -1489,6 +1489,86 @@
 								{
 									"key": "Date",
 									"value": "Thu, 01 May 2025 07:20:32 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Lấy nhóm thi đấu thành công.\",\n    \"data\": []\n}"
+						},
+						{
+							"name": "a2. Thông thi nhóm thi theo Giải đấu",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{hostname}}/api/champion-grp/:champ_id",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"champion-grp",
+										":champ_id"
+									],
+									"variable": [
+										{
+											"key": "champ_id",
+											"value": ""
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Origin, X-Requested-With, Content-Type, Accept"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, PUT, DELETE"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "75"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"4b-9E4hvsPbSH1UpSWG4vH6PmrxkVY\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 May 2025 09:03:11 GMT"
 								},
 								{
 									"key": "Connection",
@@ -1919,6 +1999,15 @@
 					"request": {
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"category_key\": \"DK\",\n    \"category_name\": \"Đối kháng\",\n    \"description\": \"Thi Đối kháng\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "{{hostname}}/api/champion-category",
 							"host": [
@@ -4827,7 +4916,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{hostname}}/api/athlete?champ_id=1&champ_grp_event_id=46",
+									"raw": "{{hostname}}/api/athlete?champ_id=1&champ_grp_event_id=36",
 									"host": [
 										"{{hostname}}"
 									],
@@ -4842,7 +4931,7 @@
 										},
 										{
 											"key": "champ_grp_event_id",
-											"value": "46"
+											"value": "36"
 										}
 									]
 								}
@@ -4854,7 +4943,7 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{hostname}}/api/athlete?champ_id=1&champ_grp_event_id=46",
+											"raw": "{{hostname}}/api/athlete?champ_id=1",
 											"host": [
 												"{{hostname}}"
 											],
@@ -4869,7 +4958,8 @@
 												},
 												{
 													"key": "champ_grp_event_id",
-													"value": "46"
+													"value": "46",
+													"disabled": true
 												}
 											]
 										}
@@ -5247,7 +5337,7 @@
 									"raw": "{\n    \"num_random\": \"2\"\n}",
 									"options": {
 										"raw": {
-											"language": "json"
+											"language": "text"
 										}
 									}
 								},
@@ -5905,6 +5995,581 @@
 						}
 					},
 					"response": []
+				}
+			]
+		},
+		{
+			"name": "III. MÀN HÌNH",
+			"item": [
+				{
+					"name": "Quản lý dữ liệu chung",
+					"item": [
+						{
+							"name": "1. Lấy Nhóm thi",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{hostname}}/api/champion-grp/:champ_id",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"champion-grp",
+										":champ_id"
+									],
+									"variable": [
+										{
+											"key": "champ_id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{hostname}}/api/champion-grp/:champ_id",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"champion-grp",
+												":champ_id"
+											],
+											"query": [
+												{
+													"key": "id",
+													"value": "1",
+													"disabled": true
+												}
+											],
+											"variable": [
+												{
+													"key": "champ_id",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "75"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"4b-9E4hvsPbSH1UpSWG4vH6PmrxkVY\""
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 01 May 2025 07:20:32 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Lấy nhóm thi đấu thành công.\",\n    \"data\": []\n}"
+								}
+							]
+						},
+						{
+							"name": "2. Lấy Hình thức",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{hostname}}/api/champion-category",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"champion-category"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{hostname}}/api/champion-category",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"champion-category"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "388"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"184-PZuM06oS1IhZy0zkySXxZ+T9Dgo\""
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 08 May 2025 09:00:15 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Lấy hình thức thành công.\",\n    \"data\": [\n        {\n            \"id\": 2,\n            \"category_key\": \"DK\",\n            \"category_name\": \"Đối kháng\",\n            \"description\": \"Thi Đối kháng\",\n            \"created_at\": \"2025-05-08 08:59:42\",\n            \"updated_at\": \"2025-05-08 08:59:42\"\n        },\n        {\n            \"id\": 1,\n            \"category_key\": \"QU\",\n            \"category_name\": \"Quyền\",\n            \"description\": \"Thi quyền\",\n            \"created_at\": \"2025-05-08 08:59:27\",\n            \"updated_at\": \"2025-05-08 08:59:27\"\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "3. Lấy thông tin giới tính",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{hostname}}/api/common/category?category_key=gender",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"common",
+										"category"
+									],
+									"query": [
+										{
+											"key": "category_key",
+											"value": "gender"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{hostname}}/api/champion-grp/:champ_id",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"champion-grp",
+												":champ_id"
+											],
+											"query": [
+												{
+													"key": "id",
+													"value": "1",
+													"disabled": true
+												}
+											],
+											"variable": [
+												{
+													"key": "champ_id",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "75"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"4b-9E4hvsPbSH1UpSWG4vH6PmrxkVY\""
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 01 May 2025 07:20:32 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Lấy nhóm thi đấu thành công.\",\n    \"data\": []\n}"
+								}
+							]
+						},
+						{
+							"name": "4. API lấy nội dung thi",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{hostname}}/api/champion-grp-event/search?champ_grp_id=1&gender_id=F&champ_id=1",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"champion-grp-event",
+										"search"
+									],
+									"query": [
+										{
+											"key": "champ_grp_id",
+											"value": "1"
+										},
+										{
+											"key": "gender_id",
+											"value": "F"
+										},
+										{
+											"key": "champ_id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{hostname}}/api/champion-grp-event/search?champ_grp_id=1&gender_id=F&champ_id=1",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"champion-grp-event",
+												"search"
+											],
+											"query": [
+												{
+													"key": "champ_grp_id",
+													"value": "1"
+												},
+												{
+													"key": "gender_id",
+													"value": "F"
+												},
+												{
+													"key": "champ_id",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "2645"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"a55-jy2zkvUZLv1U9HqvKAY8j7H3L5U\""
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 08 May 2025 08:57:18 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Lấy nội dung thi thành công.\",\n    \"data\": [\n        {\n            \"champ_grp_event_id\": 1,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Thập Tự Quyền\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 2,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Long Hổ Quyền\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 3,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Tứ Trụ Quyền\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 4,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Ngũ Môn Quyền\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 5,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Tinh Hoa Lưỡng Nghi Kiếm\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 6,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Song Dao Pháp\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 7,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Tứ Tượng Côn Pháp\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 8,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Song Luyện 1\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 9,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Song Luyện 3\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 10,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Song Luyện Vật 2\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 11,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Tự vệ nữ\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 12,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Đa Luyện Tay Không\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 13,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Đa Luyện Vũ Khí\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 14,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"33KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 15,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"36KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 16,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"39KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 17,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"42KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 18,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"45KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 19,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"48KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 20,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"51KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 21,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"54KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 22,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"57KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 23,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"61KG\",\n            \"gender_id\": \"F\"\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "5. API danh sách VĐV",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{hostname}}/api/ath-evt?champ_id=1&category_key=QU&champ_grp_id=1",
+									"host": [
+										"{{hostname}}"
+									],
+									"path": [
+										"api",
+										"ath-evt"
+									],
+									"query": [
+										{
+											"key": "champ_id",
+											"value": "1",
+											"description": "Phải có "
+										},
+										{
+											"key": "category_key",
+											"value": "QU",
+											"description": "Phải có "
+										},
+										{
+											"key": "champ_grp_event_id",
+											"value": "6",
+											"disabled": true
+										},
+										{
+											"key": "champ_grp_id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Thành công",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{hostname}}/api/champion-grp-event/search?champ_grp_id=1&gender_id=F&champ_id=1",
+											"host": [
+												"{{hostname}}"
+											],
+											"path": [
+												"api",
+												"champion-grp-event",
+												"search"
+											],
+											"query": [
+												{
+													"key": "champ_grp_id",
+													"value": "1"
+												},
+												{
+													"key": "gender_id",
+													"value": "F"
+												},
+												{
+													"key": "champ_id",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Origin, X-Requested-With, Content-Type, Accept"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "2645"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"a55-jy2zkvUZLv1U9HqvKAY8j7H3L5U\""
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 08 May 2025 08:57:18 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": true,\n    \"message\": \"Lấy nội dung thi thành công.\",\n    \"data\": [\n        {\n            \"champ_grp_event_id\": 1,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Thập Tự Quyền\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 2,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Long Hổ Quyền\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 3,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Tứ Trụ Quyền\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 4,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Ngũ Môn Quyền\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 5,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Tinh Hoa Lưỡng Nghi Kiếm\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 6,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Song Dao Pháp\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 7,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Tứ Tượng Côn Pháp\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 8,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Song Luyện 1\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 9,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Song Luyện 3\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 10,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Song Luyện Vật 2\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 11,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Tự vệ nữ\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 12,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Đa Luyện Tay Không\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 13,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"Đa Luyện Vũ Khí\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 14,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"33KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 15,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"36KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 16,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"39KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 17,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"42KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 18,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"45KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 19,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"48KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 20,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"51KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 21,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"54KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 22,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"57KG\",\n            \"gender_id\": \"F\"\n        },\n        {\n            \"champ_grp_event_id\": 23,\n            \"champ_id\": \"1\",\n            \"champ_grp_id\": \"1\",\n            \"champ_grp_event_nm\": \"61KG\",\n            \"gender_id\": \"F\"\n        }\n    ]\n}"
+								}
+							]
+						}
+					]
 				}
 			]
 		}

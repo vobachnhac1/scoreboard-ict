@@ -12,7 +12,7 @@ const fs = require('fs');
 
 class DBCategoryService {
     constructor() {
-        this.db = new sqlite3.Database('./database.sqlite');
+        this.db = new sqlite3.Database(DB_SCHEME);
         this.db.serialize(() => {
             // // table champion_competition_type: HÌNH THỨC THI: ĐỐI KHÁNG/BIỂU DIỄN
             // this.db.run(`

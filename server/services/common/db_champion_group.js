@@ -1,21 +1,13 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
+const {DB_SCHEME, TABLE} = require('./constant_sql')
 
 class DBChampionGroupService {
     constructor() {
-        this.db = new sqlite3.Database('./database.sqlite');
+        this.db = new sqlite3.Database(DB_SCHEME);
         this.db.serialize(() => {
             // table champion_age_group: NHÓM/CẤP BẬC
-            this.db.run(`
-                CREATE TABLE IF NOT EXISTS champion_group (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
-                    description TEXT,
-                    tournament_id INTEGER NOT NULL,
-                    created_at TEXT DEFAULT (datetime('now')),
-                    updated_at TEXT DEFAULT (datetime('now'))
-                )
-            `);
+            this.db.run(TABLE.CRE_CHP_GRP);
         });
     };
 

@@ -96,3 +96,15 @@
             - Danh sách VDV theo nội dung thi:           GET: {{hostname}}/api/ath-match?champ_grp_event_id=46
 
 
+6. Màn hình xuất danh sách thi đấu: 
+- Điều kiện: Hoàn thành bốc thăm kết thúc quá trình đăng ký
+
+
+
+
+
+
+
+Table đối kháng:
+ID | match_id | nội dung thi | round | tên VĐV Đỏ | đơn vị | tên VĐV xanh | đơn vị | trạng thái | kết quả
+

@@ -1,20 +1,13 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
+const {DB_SCHEME, TABLE} = require('./constant_v1_sql')
 
 class DBChampionEventGenderService {
     constructor() {
-        this.db = new sqlite3.Database('./database.sqlite');
+        this.db = new sqlite3.Database(DB_SCHEME);
         this.db.serialize(() => {
-            this.db.run(`
-                CREATE TABLE IF NOT EXISTS champion_grp_event (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    champ_event_id TEXT NOT NULL,
-                    gender_commons_key TEXT NOT NULL,
-                    champ_grp_id TEXT NOT NULL,
-                    created_at TEXT DEFAULT (datetime('now')),
-                    updated_at TEXT DEFAULT (datetime('now'))
-                )
-             `); 
+            this.db.run(TABLE.CRE_CHP_GRP_EVT);
+
         })
     }
 
@@ -68,12 +61,6 @@ class DBChampionEventGenderService {
             });
         });
     }
-
-    // event_name: 'Thập Tự Quyền',
-    // num_member: 1,
-    // category_key: 'QU',
-    // qu_type: 'DON',
-    // description: 'Đơn luyện',
 
     // Lấy thông tin
     getGrpEvent(champ_grp_id, gender_id, qu_type) {
@@ -244,9 +231,9 @@ class DBChampionEventGenderService {
     }
 
     // Lấy nội dung thi theo giới tính 
-    getEventById(id) {
+    getEventById(id, category_key) {
         return new Promise((resolve, reject) => {
-            const query = `
+            let query = `
                 SELECT 
                     ge.* 
                 FROM 
@@ -254,8 +241,15 @@ class DBChampionEventGenderService {
                     champion_event en
                 WHERE ge.id = ?
                 AND ge.champ_event_id = en.id
-                AND en.category_key = 'DK'
+                
                 `;
+
+            // if(!category_key || category_key ==  'DK'){
+            //     query += ` AND en.category_key = 'DK' `
+            // }   
+            // if(category_key ==  'QU'){
+            //     query += ` AND en.category_key = 'QU' `
+            // }    
             this.db.get(query, [id], (err, rows) => {
                 if (err) {
                     reject(err);
@@ -265,6 +259,58 @@ class DBChampionEventGenderService {
             });
         });
     }
+
+    //#region  Màn hình Quản lý dữ liệu
+
+        // 1. API lấy thông tin Nội dung thi
+        getGrpEvtSearch(champ_id, champ_grp_id, gender_id){
+            return new Promise((resolve, reject) => {
+                let query= `
+                    select 
+                        cge.id 'champ_grp_event_id',
+                        cge.champ_id 'champ_id',
+                        cge.champ_grp_id 'champ_grp_id',
+                        ce.event_name 'champ_grp_event_nm',
+                        cge.gender_commons_key 'gender_id'  
+                    from 
+                        champion_grp_event cge,
+                        champion_event ce 
+                    where ce.id = cge.champ_event_id
+                `
+                let param = []
+                if(champ_id) query += ' AND cge.champ_id = ? ';
+                if(champ_grp_id) query += ' AND cge.champ_grp_id = ? ';
+                if(gender_id) query += ' AND cge.gender_commons_key = ? ';
+    
+                if(champ_id){
+                    param = [champ_id]
+                }
+                if(champ_id && champ_grp_id){
+                    param = [champ_id, champ_grp_id]
+                }
+                if(champ_id && champ_grp_id && gender_id){
+                    param = [champ_id, champ_grp_id, gender_id]
+                }
+                if(champ_id && !champ_grp_id && gender_id){
+                    param = [champ_id, gender_id]
+                }
+                console.log('param: ', param);
+                console.log('query: ', query);
+    
+                this.db.all(query, param, (err, rows) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(rows);
+                    }
+                });
+            })
+        }
+
+        // 2. API lấy thông vdv theo Nội dung thi
+
+    //#endregion
+
 }
 
 const instance = new DBChampionEventGenderService ();

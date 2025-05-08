@@ -14,7 +14,6 @@ const configRoutes = require('./routes/config.routes');
 const commonRoutes = require('./routes/common.routes');
 const championRoutes = require('./routes/champion.routes');
 const athleteRoutes = require('./routes/athlete.routes');
-const caidatRouter = require('./old/routes/caidat');
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -32,7 +31,6 @@ app.use('/api/config', configRoutes);
 app.use('/api', commonRoutes);
 app.use('/api', championRoutes);
 app.use('/api', athleteRoutes);
-app.use('/api', caidatRouter);
 
 // Serve static files
 app.use(express.static('public'));

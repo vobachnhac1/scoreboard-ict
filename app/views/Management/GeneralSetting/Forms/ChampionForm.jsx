@@ -1,33 +1,54 @@
 // @ts-nocheck
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Button from "../../../../components/Button";
 import { Constants, LIST_CHAMPION_STATUS } from "../../../../common/Constants";
+import { useDispatch } from "react-redux";
+import { addChampion, updateChampion } from "../../../../config/reducers/championSlice";
 
 export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
+  const dispatch = useDispatch();
   const [loadingButton, setLoadingButton] = React.useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     defaultValues: data,
   });
 
+  useEffect(() => {
+    if (data) {
+      reset(data);
+    }
+  }, [data, reset]);
+
   const onSubmit = (formData) => {
     setLoadingButton(true);
-    console.log("Dữ liệu gửi đi:", formData);
     if (type === Constants.ACCTION_INSERT) {
-      // Xử lý thêm mới
-      console.log("Thêm mới giải đấu:", formData);
+      dispatch(addChampion(formData))
+        .unwrap()
+        .then(() => {
+          setLoadingButton(false);
+          onAgree(formData);
+        })
+        .catch((error) => {
+          setLoadingButton(false);
+          console.error("Lỗi khi thêm mới:", error);
+        });
     } else if (type === Constants.ACCTION_UPDATE) {
-      // Xử lý cập nhật
-      console.log("Cập nhật giải đấu:", formData);
+      dispatch(updateChampion({ id: data.id, updatedChampion: formData }))
+        .unwrap()
+        .then(() => {
+          setLoadingButton(false);
+          onAgree(formData);
+        })
+        .catch((error) => {
+          setLoadingButton(false);
+          console.error("Lỗi khi cập nhật:", error);
+        });
     }
-    setTimeout(() => {
-      setLoadingButton(false);
-      onAgree(formData);
-    }, 1500);
   };
 
   return (

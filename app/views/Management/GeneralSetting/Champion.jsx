@@ -7,38 +7,22 @@ import DeleteConfirmForm from "./Forms/DeleteConfirmForm";
 import SearchInput from "../../../components/SearchInput";
 import { Constants } from "../../../common/Constants";
 import Utils from "../../../common/Utils";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteChampion, fetchChampions } from "../../../config/reducers/championSlice";
 
+// @ts-ignore
 export default function Champion({ ...props }) {
+  const dispatch = useDispatch();
+  // @ts-ignore
+  const { champions, loading } = useSelector((state) => state.champions);
   const [page, setPage] = useState(1);
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [openActions, setOpenActions] = useState(null);
   const [search, setSearch] = useState("");
-  const totalPages = 5;
 
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      const fakeData = Array.from({ length: 10 }, (_, i) => {
-        const order = i + 1 + (page - 1) * 10;
-        return {
-          order,
-          tournament_name: `Giải đấu ${order}`,
-          start_date: `2025-06-${(i + 1).toString().padStart(2, "0")}`,
-          end_date: `2025-06-${(i + 3).toString().padStart(2, "0")}`,
-          location: ["Hà Nội", "TP.HCM", "Đà Nẵng", "Cần Thơ"][i % 4],
-          num_judges: 3 + (i % 5),
-          num_athletes: 30 + i * 2,
-          status: ["NEW", "PRO", "COM", "RAN", "IN", "FIN", "CAN", "PEN"][i % 8],
-          created_at: "2025-05-01 10:00:00",
-          updated_at: "2025-05-08 10:00:00",
-        };
-      });
-
-      setData(fakeData);
-      setLoading(false);
-    }, 500);
-  }, [page]);
+    // @ts-ignore
+    dispatch(fetchChampions());
+  }, [dispatch]);
 
   const listActions = [
     {
@@ -71,7 +55,13 @@ export default function Champion({ ...props }) {
   ];
 
   const columns = [
-    { title: "STT", key: "order", align: "center" },
+    {
+      title: "STT",
+      key: "order",
+      align: "center",
+      // @ts-ignore
+      render: (row, index) => index + 1 || (page - 1) * 10 + 1,
+    },
     { title: "Tên giải đấu", key: "tournament_name" },
     { title: "Bắt đầu", key: "start_date", render: (row) => Utils.formatDate(row.start_date) },
     { title: "Kết thúc", key: "end_date", render: (row) => Utils.formatDate(row.end_date) },
@@ -134,8 +124,12 @@ export default function Champion({ ...props }) {
       case Constants.ACCTION_DELETE:
         return (
           <DeleteConfirmForm
-            message={`Bạn có muốn xóa giải đấu ${openActions?.row?.tournament_name} không?`}
-            onAgree={() => setOpenActions({ ...openActions, isOpen: false })}
+            message={`Bạn có muốn xóa giải đấu "${openActions?.row?.tournament_name}" không?`}
+            onAgree={() => {
+              // @ts-ignore
+              dispatch(deleteChampion(openActions?.row?.id));
+              setOpenActions({ ...openActions, isOpen: false });
+            }}
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
         );
@@ -167,10 +161,9 @@ export default function Champion({ ...props }) {
       </div>
       <CustomTable
         columns={columns}
-        data={data}
+        data={champions}
         loading={loading}
         page={page}
-        totalPages={totalPages}
         onPageChange={setPage}
         onRowDoubleClick={(row) => {
           console.log("Double clicked row:", row);

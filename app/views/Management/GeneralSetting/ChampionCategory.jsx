@@ -113,7 +113,7 @@ export default function ChampionCategory() {
       case Constants.ACCTION_DELETE:
         return (
           <DeleteConfirmForm
-            message={`Bạn có muốn xóa nhóm ${openActions?.row?.category_name} không?`}
+            message={`Bạn có muốn xóa nhóm "${openActions?.row?.category_name}" không?`}
             onAgree={() => setOpenActions({ isOpen: false })}
             onGoBack={() => setOpenActions({ isOpen: false })}
           />

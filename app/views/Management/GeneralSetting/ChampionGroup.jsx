@@ -3,37 +3,30 @@ import CustomTable from "../../../components/CustomTable";
 import Button from "../../../components/Button";
 import Modal from "../../../components/Modal";
 import DeleteConfirmForm from "./Forms/DeleteConfirmForm";
-import SearchInput from "../../../components/SearchInput";
 import { Constants } from "../../../common/Constants";
 import Utils from "../../../common/Utils";
 import ChampionGroupForm from "./Forms/ChampionGroupForm";
+import { fetchChampions } from "../../../config/reducers/championSlice";
+import { useDispatch, useSelector } from "react-redux";
+// @ts-ignore
+import { deleteChampionGroup, fetchChampionGroups, fetchChampionGroupsByChampion } from "../../../config/reducers/championGroupSlice";
+import CustomCombobox from "../../../components/CustomCombobox";
 
+// @ts-ignore
 export default function ChampionGroup({ ...props }) {
+  const dispatch = useDispatch();
   const [page, setPage] = useState(1);
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  // @ts-ignore
+  const { championGroups, loading } = useSelector((state) => state.championGroups);
+  // @ts-ignore
+  const { champions, loadingCombobox } = useSelector((state) => state.champions);
   const [openActions, setOpenActions] = useState(null);
-  const [search, setSearch] = useState("");
-  const totalPages = 3;
+  const [champion, setChampion] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      const fakeData = Array.from({ length: 10 }, (_, i) => {
-        const oder = i + 1 + (page - 1) * 10;
-        return {
-          oder,
-          name: `${oder} Kg`,
-          description: `Nhóm cấp ${oder}`,
-          tournament_id: (oder % 5) + 1,
-          created_at: `2025-04-${(i + 1).toString().padStart(2, "0")} 08:00:00`,
-          updated_at: `2025-04-${(i + 2).toString().padStart(2, "0")} 12:00:00`,
-        };
-      });
-      setData(fakeData);
-      setLoading(false);
-    }, 500);
-  }, [page]);
+    // @ts-ignore
+    dispatch(fetchChampions());
+  }, [dispatch]);
 
   const listActions = [
     {
@@ -88,6 +81,7 @@ export default function ChampionGroup({ ...props }) {
       case Constants.ACCTION_INSERT:
         return (
           <ChampionGroupForm
+            id={champion?.id}
             type={Constants.ACCTION_INSERT}
             onAgree={(formData) => {
               console.log("Insert Champion Group:", formData);
@@ -99,6 +93,7 @@ export default function ChampionGroup({ ...props }) {
       case Constants.ACCTION_UPDATE:
         return (
           <ChampionGroupForm
+            id={champion?.id}
             type={Constants.ACCTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
@@ -111,8 +106,12 @@ export default function ChampionGroup({ ...props }) {
       case Constants.ACCTION_DELETE:
         return (
           <DeleteConfirmForm
-            message={`Bạn có muốn xóa nhóm ${openActions?.row?.name} không?`}
-            onAgree={() => setOpenActions({ isOpen: false })}
+            message={`Bạn có muốn xóa nhóm "${openActions?.row?.name}" không?`}
+            onAgree={() => {
+              // @ts-ignore
+              dispatch(deleteChampionGroup(openActions?.row?.id));
+              setOpenActions({ ...openActions, isOpen: false });
+            }}
             onGoBack={() => setOpenActions({ isOpen: false })}
           />
         );
@@ -123,25 +122,32 @@ export default function ChampionGroup({ ...props }) {
 
   return (
     <div className="w-full h-auto overflow-auto">
-      <div className="flex items-center justify-between mb-1">
-        <SearchInput
-          value={search}
-          onChange={setSearch}
-          onSearch={(text) => {
-            console.log("Tìm kiếm:", text);
-          }}
-          placeholder="Tìm kiếm nhóm..."
-        />
+      <div className="flex items-center justify-between gap-2 mb-1">
+        {/* Combobox Dropdown */}
+        <div className="min-w-80">
+          <CustomCombobox
+            data={champions || []}
+            selectedData={champion}
+            onChange={(value) => {
+              console.log(value);
+
+              setChampion(value);
+              // @ts-ignore
+              dispatch(fetchChampionGroupsByChampion(value.id));
+            }}
+            placeholder="Vui lòng chọn nhóm dự thi"
+            keyShow={"tournament_name"}
+          />
+        </div>
         <Button variant="primary" className="min-w-28" onClick={listActions[0].callback}>
           Tạo mới
         </Button>
       </div>
       <CustomTable
         columns={columns}
-        data={data}
+        data={championGroups}
         loading={loading}
         page={page}
-        totalPages={totalPages}
         onPageChange={setPage}
         onRowDoubleClick={(row) => {
           setOpenActions({ isOpen: true, key: Constants.ACCTION_UPDATE, row });
@@ -153,7 +159,7 @@ export default function ChampionGroup({ ...props }) {
         title={listActions.find((e) => e.key === openActions?.key)?.description}
         headerClass={listActions.find((e) => e.key === openActions?.key)?.color}
       >
-        {renderContentModal()}
+        {champion && renderContentModal()}
       </Modal>
     </div>
   );

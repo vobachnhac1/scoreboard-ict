@@ -137,7 +137,7 @@ export default function ChampionEvent() {
       case Constants.ACCTION_DELETE:
         return (
           <DeleteConfirmForm
-            message={`Bạn có muốn xóa giải đấu ${openActions?.row?.event_name} không?`}
+            message={`Bạn có muốn xóa giải đấu "${openActions?.row?.event_name}" không?`}
             onAgree={() => setOpenActions({ isOpen: false })}
             onGoBack={() => setOpenActions({ isOpen: false })}
           />

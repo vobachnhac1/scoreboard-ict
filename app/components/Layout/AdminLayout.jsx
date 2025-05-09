@@ -42,7 +42,7 @@ const AdminLayout = ({ children }) => {
           <div className="flex flex-1 overflow-hidden">
             <Sidebar navigation={navigation} />
             <div className="flex-1 bg-gray-100 p-4 overflow-auto ml-16 md:ml-64">
-              <Breadcrumb navigation={navigation} /> {/* Thêm dòng này */}
+              <Breadcrumb navigation={navigation} />
               {children}
             </div>
           </div>

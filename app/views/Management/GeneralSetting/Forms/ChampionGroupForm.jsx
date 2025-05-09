@@ -1,31 +1,59 @@
 // @ts-nocheck
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Button from "../../../../components/Button";
 import { Constants } from "../../../../common/Constants";
+import { useDispatch } from "react-redux";
+import { addChampionGroup, updateChampionGroup } from "../../../../config/reducers/championGroupSlice";
 
-export default function ChampionGroupForm({ type, data = null, onAgree, onGoBack }) {
+export default function ChampionGroupForm({ id, type, data = null, onAgree, onGoBack }) {
+  const dispatch = useDispatch();
   const [loadingButton, setLoadingButton] = React.useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     defaultValues: data,
   });
 
-  const onSubmit = (formData) => {
-    setLoadingButton(true);
-    console.log("Dữ liệu gửi đi:", formData);
-    if (type === Constants.ACCTION_INSERT) {
-      console.log("Thêm mới nhóm giải:", formData);
-    } else if (type === Constants.ACCTION_UPDATE) {
-      console.log("Cập nhật nhóm giải:", formData);
+  useEffect(() => {
+    if (data) {
+      reset(data);
     }
-    setTimeout(() => {
-      setLoadingButton(false);
-      onAgree(formData);
-    }, 1500);
+  }, [data, reset]);
+
+  const onSubmit = (formData) => {
+    formData = { ...formData, tournament_id: id };
+    setLoadingButton(true);
+    if (type === Constants.ACCTION_INSERT) {
+      // @ts-ignore
+      dispatch(addChampionGroup(formData))
+        // @ts-ignore
+        .unwrap()
+        .then(() => {
+          setLoadingButton(false);
+          onAgree(formData);
+        })
+        .catch((error) => {
+          setLoadingButton(false);
+          console.error("Lỗi khi thêm mới:", error);
+        });
+    } else if (type === Constants.ACCTION_UPDATE) {
+      // @ts-ignore
+      dispatch(updateChampionGroup({ id: data.id, updatedChampion: formData }))
+        // @ts-ignore
+        .unwrap()
+        .then(() => {
+          setLoadingButton(false);
+          onAgree(formData);
+        })
+        .catch((error) => {
+          setLoadingButton(false);
+          console.error("Lỗi khi cập nhật:", error);
+        });
+    }
   };
 
   return (

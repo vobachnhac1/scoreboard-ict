@@ -33,8 +33,8 @@ const Routers = () => {
 
     { path: '/', element: <AdminLayout><div>PHẦN MỀM XEM LỊCH THI ĐẤU</div></AdminLayout> },
     { path: '/management/connect', element: <AdminLayout><Connect /></AdminLayout> },
-    { path: '/management/general-setting', element: <AdminLayout><Champion /></AdminLayout> },
-    { path: '/management/general-setting/champion', element: <AdminLayout><div>QUẢN LÝ CÀI ĐẶT CHUNG</div></AdminLayout> },
+    { path: '/management/general-setting', element: <AdminLayout><div>QUẢN LÝ CÀI ĐẶT CHUNG</div></AdminLayout> },
+    { path: '/management/general-setting/champion', element: <AdminLayout><Champion /></AdminLayout> },
     // { path: '/management/general-setting/champion-grp', element: <AdminLayout><ChampionGroup /></AdminLayout> },
     { path: '/management/general-setting/champion-category', element: <AdminLayout><ChampionCategory /></AdminLayout> },
     { path: '/management/general-setting/champion-event', element: <AdminLayout><ChampionEvent /></AdminLayout> },

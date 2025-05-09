@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import CustomTable from "../../../components/CustomTable";
 import Button from "../../../components/Button";
 import Modal from "../../../components/Modal";
-import ChampionGroupDeleteForm from "./Forms/ChampionGroupDeleteForm";
+import DeleteConfirmForm from "./Forms/DeleteConfirmForm";
 import SearchInput from "../../../components/SearchInput";
 import { Constants } from "../../../common/Constants";
-import Utils from "../../../common/utils";
+import Utils from "../../../common/Utils";
 import ChampionGroupForm from "./Forms/ChampionGroupForm";
 
-export default function ChampionGroup() {
+export default function ChampionGroup({ ...props }) {
   const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -60,13 +60,14 @@ export default function ChampionGroup() {
   ];
 
   const columns = [
-    { title: "STT", key: "oder" },
+    { title: "STT", key: "oder", align: "center" },
     { title: "Tên nhóm", key: "name" },
     { title: "Mô tả", key: "description" },
     { title: "Ngày tạo", key: "created_at", render: (row) => Utils.formatDate(row.created_at) },
     { title: "Ngày sửa", key: "updated_at", render: (row) => Utils.formatDate(row.updated_at) },
     {
       title: "Hành động",
+      align: "center",
       key: "action",
       render: (row) => (
         <div className="flex items-center justify-center gap-2">
@@ -108,14 +109,20 @@ export default function ChampionGroup() {
           />
         );
       case Constants.ACCTION_DELETE:
-        return <ChampionGroupDeleteForm onAgree={() => setOpenActions({ isOpen: false })} onGoBack={() => setOpenActions({ isOpen: false })} />;
+        return (
+          <DeleteConfirmForm
+            message={`Bạn có muốn xóa nhóm ${openActions?.row?.name} không?`}
+            onAgree={() => setOpenActions({ isOpen: false })}
+            onGoBack={() => setOpenActions({ isOpen: false })}
+          />
+        );
       default:
         return null;
     }
   };
 
   return (
-    <div className="w-full h-auto bg-gray-100 overflow-auto">
+    <div className="w-full h-auto overflow-auto">
       <div className="flex items-center justify-between mb-1">
         <SearchInput
           value={search}

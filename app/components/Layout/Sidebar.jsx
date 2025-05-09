@@ -1,29 +1,9 @@
 import React, { Fragment } from "react";
-import { ArrowTurnDownRightIcon, FolderIcon } from "@heroicons/react/24/outline";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
 import { Link, useLocation } from "react-router-dom";
 
-const Sidebar = () => {
+const Sidebar = ({ navigation }) => {
   const location = useLocation();
-
-  const navigation = [
-    { name: "Quản lý kết nối", href: "/management/connect", icon: FolderIcon },
-    { name: "Quản lý VĐV Đối kháng", href: "/", icon: FolderIcon, disabled: true },
-    { name: "Quản lý VĐV Quyền", href: "/", icon: FolderIcon, disabled: true },
-    { name: "Quản lý Lịch sử Giải đấu", href: "/", icon: FolderIcon, disabled: true },
-    {
-      name: "Quản lý cài đặt chung",
-      icon: FolderIcon,
-      children: [
-        { name: "Giải đấu", href: "/management/general-setting/champion", icon: ArrowTurnDownRightIcon },
-        { name: "Nhóm thi", href: "/management/general-setting/champion-grp", icon: ArrowTurnDownRightIcon },
-        { name: "Hình thức thi", href: "/management/general-setting/champion-category", icon: ArrowTurnDownRightIcon },
-        { name: "Nội dung thi", href: "/management/general-setting/champion-event", icon: ArrowTurnDownRightIcon },
-        // { name: "Đối kháng", href: "/management/general-setting/sparring", icon: ArrowTurnDownRightIcon },
-        // { name: "Thi quyền", href: "/management/general-setting/competition", icon: ArrowTurnDownRightIcon },
-      ],
-    },
-  ];
 
   const isActive = (href) => location.pathname === href || location.pathname.startsWith(href + "/");
 

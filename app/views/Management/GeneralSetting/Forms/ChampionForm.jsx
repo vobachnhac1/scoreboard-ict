@@ -2,7 +2,7 @@
 import React, { Fragment } from "react";
 import { useForm } from "react-hook-form";
 import Button from "../../../../components/Button";
-import { Constants, LIST_TOURNAMENT_STATUS } from "../../../../common/Constants";
+import { Constants, LIST_CHAMPION_STATUS } from "../../../../common/Constants";
 
 export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
   const [loadingButton, setLoadingButton] = React.useState(false);
@@ -135,7 +135,7 @@ export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
             {...register("status", { required: "Trạng thái là bắt buộc" })}
             className="form-select col-span-2 w-full px-3 py-2 border rounded-md text-sm"
           >
-            {LIST_TOURNAMENT_STATUS.map((item) => (
+            {LIST_CHAMPION_STATUS.map((item) => (
               <option key={item.key} value={item.key}>
                 {item.label}
               </option>

@@ -7,7 +7,7 @@ import DisconnectForm from "./Forms/DisconnectForm";
 import NotificationForm from "./Forms/NotificationForm";
 import UpdateForm from "./Forms/UpdateForm";
 import { Constants } from "../../../common/Constants";
-import Utils from "../../../common/utils";
+import Utils from "../../../common/Utils";
 
 export default function index() {
   const [page, setPage] = useState(1);
@@ -179,7 +179,7 @@ export default function index() {
   };
 
   return (
-    <div className="w-full h-auto bg-gray-100 overflow-auto  text-">
+    <div className="w-full h-autooverflow-auto">
       <CustomTable
         columns={columns}
         data={data}

@@ -30,7 +30,7 @@ export const LIST_APPROVAL_STATUS = [
   { key: "pending", label: "Chờ duyệt" },
 ];
 
-export const LIST_TOURNAMENT_STATUS = [
+export const LIST_CHAMPION_STATUS = [
   { key: "NEW", label: "Tạo mới" },
   { key: "PRO", label: "Chờ đăng ký" },
   { key: "COM", label: "Hoàn thiện đăng ký" },
@@ -40,4 +40,9 @@ export const LIST_TOURNAMENT_STATUS = [
   { key: "CAN", label: "Hủy" },
   { key: "PEN", label: "Tạm hoãn" },
   { key: "OTH", label: "Khác" },
+];
+
+export const LIST_GENDER = [
+  { key: "M", label: "Nam" },
+  { key: "F", label: "Nữ" },
 ];

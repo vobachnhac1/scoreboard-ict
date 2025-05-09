@@ -1,5 +1,5 @@
 import moment from "moment";
-import { LIST_APPROVAL_STATUS, LIST_JUDGE_PRORMISSION, LIST_STATUS, LIST_TOURNAMENT_STATUS } from "./Constants";
+import { LIST_APPROVAL_STATUS, LIST_JUDGE_PRORMISSION, LIST_STATUS, LIST_CHAMPION_STATUS, LIST_GENDER } from "./Constants";
 
 export default class Utils {
   /**
@@ -53,8 +53,18 @@ export default class Utils {
    * @param {string} key - Mã trạng thái giải đấu (VD: NEW, PRO, COM, ...)
    * @returns {string} - Label tương ứng (VD: Tạo mới, Chờ đăng ký, Hoàn thiện đăng ký, ...)
    */
-  static getTournamentStatusLabel(key) {
-    const found = LIST_TOURNAMENT_STATUS.find((item) => item.key === key);
+  static getChampionStatusLabel(key) {
+    const found = LIST_CHAMPION_STATUS.find((item) => item.key === key);
+    return found ? found.label : key;
+  }
+
+  /**
+   * Lấy label giới tính từ key
+   * @param {string} key - Mã giới tính (VD: M, F)
+   * @returns {string} - Label tương ứng (VD: Nam, Nữ)
+   */
+  static getGenderLabel(key) {
+    const found = LIST_GENDER.find((item) => item.key === key);
     return found ? found.label : key;
   }
 }

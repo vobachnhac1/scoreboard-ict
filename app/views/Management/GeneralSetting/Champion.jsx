@@ -3,12 +3,12 @@ import CustomTable from "../../../components/CustomTable";
 import Button from "../../../components/Button";
 import Modal from "../../../components/Modal";
 import ChampionForm from "./Forms/ChampionForm";
-import ChampionDeleteForm from "./Forms/ChampionDeleteForm";
+import DeleteConfirmForm from "./Forms/DeleteConfirmForm";
 import SearchInput from "../../../components/SearchInput";
 import { Constants } from "../../../common/Constants";
-import Utils from "../../../common/utils";
+import Utils from "../../../common/Utils";
 
-export default function Champion() {
+export default function Champion({ ...props }) {
   const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -71,22 +71,19 @@ export default function Champion() {
   ];
 
   const columns = [
-    { title: "STT", key: "order" },
+    { title: "STT", key: "order", align: "center" },
     { title: "Tên giải đấu", key: "tournament_name" },
     { title: "Bắt đầu", key: "start_date", render: (row) => Utils.formatDate(row.start_date) },
     { title: "Kết thúc", key: "end_date", render: (row) => Utils.formatDate(row.end_date) },
     { title: "Nơi tổ chức", key: "location" },
     { title: "Số VĐV", key: "num_judges" },
     { title: "Số giám định", key: "num_athletes" },
-    { title: "Trạng thái", key: "status", render: (row) => <div className="text-nowrap">{Utils.getTournamentStatusLabel(row.status)}</div> },
+    { title: "Trạng thái", key: "status", render: (row) => <div className="text-nowrap">{Utils.getChampionStatusLabel(row.status)}</div> },
     { title: "Ngày tạo", key: "created_at", render: (row) => Utils.formatDate(row.created_at) },
     { title: "Ngày sửa", key: "updated_at", render: (row) => Utils.formatDate(row.updated_at) },
     {
-      title: (
-        <div className="flex items-center justify-center">
-          <span>Khác</span>
-        </div>
-      ),
+      title: "Hành động",
+      align: "center",
       key: "action",
       render: (row) => (
         <div className="flex items-center justify-center gap-2">
@@ -136,7 +133,8 @@ export default function Champion() {
         );
       case Constants.ACCTION_DELETE:
         return (
-          <ChampionDeleteForm
+          <DeleteConfirmForm
+            message={`Bạn có muốn xóa giải đấu ${openActions?.row?.tournament_name} không?`}
             onAgree={() => setOpenActions({ ...openActions, isOpen: false })}
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
@@ -147,7 +145,7 @@ export default function Champion() {
   };
 
   return (
-    <div className="w-full h-auto bg-gray-100 overflow-auto">
+    <div className="w-full h-auto overflow-auto">
       <div className="flex items-center justify-between mb-1">
         <SearchInput
           value={search}

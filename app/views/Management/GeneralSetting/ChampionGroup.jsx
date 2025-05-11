@@ -6,25 +6,22 @@ import DeleteConfirmForm from "./Forms/DeleteConfirmForm";
 import { Constants } from "../../../common/Constants";
 import Utils from "../../../common/Utils";
 import ChampionGroupForm from "./Forms/ChampionGroupForm";
-import { fetchChampions } from "../../../config/reducers/championSlice";
-import { useDispatch, useSelector } from "react-redux";
-// @ts-ignore
-import { deleteChampionGroup, fetchChampionGroups, fetchChampionGroupsByChampion } from "../../../config/reducers/championGroupSlice";
 import CustomCombobox from "../../../components/CustomCombobox";
+import { deleteChampionGroup, fetchChampionGroupsByChampion } from "../../../config/redux/controller/championGroupSlice";
+import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
+import { fetchChampions } from "../../../config/redux/controller/championSlice";
 
-// @ts-ignore
 export default function ChampionGroup({ ...props }) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
   // @ts-ignore
-  const { championGroups, loading } = useSelector((state) => state.championGroups);
+  const { groups, loading } = useAppSelector((state) => state.championGroups);
   // @ts-ignore
-  const { champions, loadingCombobox } = useSelector((state) => state.champions);
+  const { champions, loadingCombobox } = useAppSelector((state) => state.champions);
   const [openActions, setOpenActions] = useState(null);
   const [champion, setChampion] = useState(null);
 
   useEffect(() => {
-    // @ts-ignore
     dispatch(fetchChampions());
   }, [dispatch]);
 
@@ -53,7 +50,7 @@ export default function ChampionGroup({ ...props }) {
   ];
 
   const columns = [
-    { title: "STT", key: "oder", align: "center" },
+    { title: "STT", key: "order", align: "center" },
     { title: "Tên nhóm", key: "name" },
     { title: "Mô tả", key: "description" },
     { title: "Ngày tạo", key: "created_at", render: (row) => Utils.formatDate(row.created_at) },
@@ -81,7 +78,7 @@ export default function ChampionGroup({ ...props }) {
       case Constants.ACCTION_INSERT:
         return (
           <ChampionGroupForm
-            id={champion?.id}
+            id={champion.id}
             type={Constants.ACCTION_INSERT}
             onAgree={(formData) => {
               console.log("Insert Champion Group:", formData);
@@ -93,7 +90,7 @@ export default function ChampionGroup({ ...props }) {
       case Constants.ACCTION_UPDATE:
         return (
           <ChampionGroupForm
-            id={champion?.id}
+            id={champion.id}
             type={Constants.ACCTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
@@ -108,7 +105,6 @@ export default function ChampionGroup({ ...props }) {
           <DeleteConfirmForm
             message={`Bạn có muốn xóa nhóm "${openActions?.row?.name}" không?`}
             onAgree={() => {
-              // @ts-ignore
               dispatch(deleteChampionGroup(openActions?.row?.id));
               setOpenActions({ ...openActions, isOpen: false });
             }}
@@ -129,23 +125,22 @@ export default function ChampionGroup({ ...props }) {
             data={champions || []}
             selectedData={champion}
             onChange={(value) => {
-              console.log(value);
-
-              setChampion(value);
-              // @ts-ignore
-              dispatch(fetchChampionGroupsByChampion(value.id));
+              if (value) {
+                setChampion(value);
+                dispatch(fetchChampionGroupsByChampion(value.id));
+              }
             }}
             placeholder="Vui lòng chọn nhóm dự thi"
             keyShow={"tournament_name"}
           />
         </div>
-        <Button variant="primary" className="min-w-28" onClick={listActions[0].callback}>
+        <Button disabled={!champion?.id} variant="primary" className="min-w-28" onClick={listActions[0].callback}>
           Tạo mới
         </Button>
       </div>
       <CustomTable
         columns={columns}
-        data={championGroups}
+        data={groups}
         loading={loading}
         page={page}
         onPageChange={setPage}

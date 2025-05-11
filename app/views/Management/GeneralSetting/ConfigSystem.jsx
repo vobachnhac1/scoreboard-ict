@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Button from "../../../components/Button";
 import { SwitchField } from "../../../components/SwitchField";
+import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
+import { fetchConfigSystem, updateAndRefreshConfigSystem } from "../../../config/redux/controller/configSystemSlice";
 
 const inputFields = {
   "Cài đặt chung": [
@@ -34,42 +36,41 @@ const switchFields = {
 };
 
 export default function ConfigSystem() {
-  const [loadingButton, setLoadingButton] = React.useState(false);
-
+  const dispatch = useAppDispatch();
+  // @ts-ignore
+  const { data, loading } = useAppSelector((state) => state.configSystem);
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
     setValue,
+    reset,
   } = useForm({
-    defaultValues: {
-      mon_thi: 3,
-      so_giam_dinh: 3,
-      so_hiep: 2,
-      so_hiep_phu: 1,
-      he_diem: 1,
-      cau_hinh_doi_khang_diem_thap: 1,
-      cau_hinh_quyen_tinh_tong: 0,
-      cau_hinh_y_te: 1,
-      cau_hinh_xoa_nhac_nho: 1,
-      cau_hinh_xoa_canh_cao: 1,
-      cau_hinh_tinh_diem_tuyet_doi: 1,
-      cau_hinh_hinh_thuc_quyen: 1,
-      thoi_gian_tinh_diem: 1000,
-      thoi_gian_thi_dau: 90,
-      thoi_gian_nghi: 30,
-      thoi_gian_hiep_phu: 60,
-      thoi_gian_y_te: 120,
-      khoang_diem_tuyet_toi: 10,
-      che_do_app: 0,
-    },
+    defaultValues: data,
   });
 
+  useEffect(() => {
+    dispatch(fetchConfigSystem());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (data) {
+      reset(data);
+    }
+  }, [data, reset]);
+
   const onSubmit = (formData) => {
-    setLoadingButton(true);
-    console.log("Dữ liệu gửi đi:", formData);
-    setTimeout(() => setLoadingButton(false), 1500);
+    if (!formData) return;
+    dispatch(updateAndRefreshConfigSystem(formData))
+      .unwrap()
+      .then(() => {
+        // handle
+      })
+      .catch((error) => {
+        //
+        console.error("Lỗi khi thêm mới:", error);
+      });
   };
 
   const renderInputGroup = (title, fields, index) => (
@@ -82,7 +83,7 @@ export default function ConfigSystem() {
           </label>
           <input
             id={name}
-            readOnly={loadingButton}
+            readOnly={loading}
             {...register(name, { required: `${label} là bắt buộc` })}
             type="text"
             placeholder={placeholder}
@@ -98,7 +99,7 @@ export default function ConfigSystem() {
     <div key={index} className="col-span-1 p-4 bg-primary/10 shadow-md rounded-lg">
       <div className="font-bold text-primary mb-2">{title}</div>
       {fields.map(({ name, label }, i) => (
-        <SwitchField key={i} id={name} disabled={loadingButton} label={label} value={watch(name) === 1} onChange={(val) => setValue(name, val ? 1 : 0)} />
+        <SwitchField key={i} id={name} disabled={loading} label={label} value={watch(name) === 1} onChange={(val) => setValue(name, val ? 1 : 0)} />
       ))}
     </div>
   );
@@ -110,7 +111,7 @@ export default function ConfigSystem() {
           <Button disabled type="button" className="min-w-32" variant="secondary">
             Đặt lại
           </Button>
-          <Button loading={loadingButton} type="submit" className="min-w-32" variant="primary">
+          <Button loading={loading} type="submit" className="min-w-32" variant="primary">
             Lưu
           </Button>
         </div>

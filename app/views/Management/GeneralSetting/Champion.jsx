@@ -7,20 +7,18 @@ import DeleteConfirmForm from "./Forms/DeleteConfirmForm";
 import SearchInput from "../../../components/SearchInput";
 import { Constants } from "../../../common/Constants";
 import Utils from "../../../common/Utils";
-import { useDispatch, useSelector } from "react-redux";
-import { deleteChampion, fetchChampions } from "../../../config/reducers/championSlice";
+import { deleteChampion, fetchChampions } from "../../../config/redux/controller/championSlice";
+import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
 
-// @ts-ignore
 export default function Champion({ ...props }) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   // @ts-ignore
-  const { champions, loading } = useSelector((state) => state.champions);
+  const { champions, loading } = useAppSelector((state) => state.champions);
   const [page, setPage] = useState(1);
   const [openActions, setOpenActions] = useState(null);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    // @ts-ignore
     dispatch(fetchChampions());
   }, [dispatch]);
 
@@ -59,8 +57,6 @@ export default function Champion({ ...props }) {
       title: "STT",
       key: "order",
       align: "center",
-      // @ts-ignore
-      render: (row, index) => index + 1 || (page - 1) * 10 + 1,
     },
     { title: "Tên giải đấu", key: "tournament_name" },
     { title: "Bắt đầu", key: "start_date", render: (row) => Utils.formatDate(row.start_date) },
@@ -126,7 +122,6 @@ export default function Champion({ ...props }) {
           <DeleteConfirmForm
             message={`Bạn có muốn xóa giải đấu "${openActions?.row?.tournament_name}" không?`}
             onAgree={() => {
-              // @ts-ignore
               dispatch(deleteChampion(openActions?.row?.id));
               setOpenActions({ ...openActions, isOpen: false });
             }}

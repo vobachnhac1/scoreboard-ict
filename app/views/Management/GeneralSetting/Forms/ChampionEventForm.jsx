@@ -44,7 +44,7 @@ export default function ChampionEventForm({ type, data = null, onAgree, onGoBack
             className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
             placeholder="Nhập tên hạng cân"
           />
-          {errors.event_name && <p className="text-red-500 text-sm col-span-2 col-start-2">{errors.event_name.message}</p>}
+          {errors.event_name && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.event_name.message)}</p>}
         </div>
 
         {/* Số thành viên */}
@@ -64,7 +64,7 @@ export default function ChampionEventForm({ type, data = null, onAgree, onGoBack
             className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
             placeholder="Nhập số lượng thành viên"
           />
-          {errors.num_member && <p className="text-red-500 text-sm col-span-2 col-start-2">{errors.num_member.message}</p>}
+          {errors.num_member && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.num_member.message)}</p>}
         </div>
 
         {/* Mã hình thức thi */}
@@ -80,7 +80,7 @@ export default function ChampionEventForm({ type, data = null, onAgree, onGoBack
             className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
             placeholder="VD: DK, QUN"
           />
-          {errors.category_key && <p className="text-red-500 text-sm col-span-2 col-start-2">{errors.category_key.message}</p>}
+          {errors.category_key && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.category_key.message)}</p>}
         </div>
 
         {/* Loại quyền (qu_type) */}

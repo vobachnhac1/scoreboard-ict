@@ -17,7 +17,6 @@ const Modal = ({ isOpen, onClose, title, status = "primary", headerClass = null,
     <Transition show={isOpen} as={Fragment}>
       <Dialog
         onClose={(event) => {
-          // Ngăn đóng modal nếu click outside
           // @ts-ignore
           if (event?.target?.dataset?.dialog !== "panel") return;
           onClose();

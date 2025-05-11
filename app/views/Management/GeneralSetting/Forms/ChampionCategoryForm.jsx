@@ -1,31 +1,55 @@
-// @ts-nocheck
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Button from "../../../../components/Button";
 import { Constants } from "../../../../common/Constants";
+import { useAppDispatch } from "../../../../config/redux/store";
+import { addAndRefreshChampionCategory, updateAndRefreshChampionCategory } from "../../../../config/redux/controller/championCategorySlice";
 
 export default function ChampionCategoryFrom({ type, data = null, onAgree, onGoBack }) {
+  const dispatch = useAppDispatch();
   const [loadingButton, setLoadingButton] = React.useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     defaultValues: data,
   });
 
+  useEffect(() => {
+    if (data) {
+      reset(data);
+    }
+  }, [data, reset]);
+
   const onSubmit = (formData) => {
     setLoadingButton(true);
-    console.log("Dữ liệu gửi đi:", formData);
     if (type === Constants.ACCTION_INSERT) {
-      console.log("Thêm mới nhóm giải:", formData);
+      // @ts-ignore
+      dispatch(addAndRefreshChampionCategory({formData}))
+        .unwrap()
+        .then(() => {
+          setLoadingButton(false);
+          onAgree(formData);
+        })
+        .catch((error) => {
+          setLoadingButton(false);
+          console.error("Lỗi khi thêm mới:", error);
+        });
     } else if (type === Constants.ACCTION_UPDATE) {
-      console.log("Cập nhật nhóm giải:", formData);
+      // @ts-ignore
+      dispatch(updateAndRefreshChampionCategory({ id: data.id, formData }))
+        .unwrap()
+        .then(() => {
+          setLoadingButton(false);
+          onAgree(formData);
+        })
+        .catch((error) => {
+          setLoadingButton(false);
+          console.error("Lỗi khi cập nhật:", error);
+        });
     }
-    setTimeout(() => {
-      setLoadingButton(false);
-      onAgree(formData);
-    }, 1500);
   };
 
   return (
@@ -44,7 +68,7 @@ export default function ChampionCategoryFrom({ type, data = null, onAgree, onGoB
             className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
             placeholder="Nhập mã hình thức thi"
           />
-          {errors.category_key && <p className="text-red-500 text-sm col-span-2 col-start-2">{errors.category_key.message}</p>}
+          {errors.category_key && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.category_key.message)}</p>}
         </div>
 
         {/* Tên hình thưc thi */}
@@ -60,7 +84,7 @@ export default function ChampionCategoryFrom({ type, data = null, onAgree, onGoB
             className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
             placeholder="Nhập hình thức thi"
           />
-          {errors.category_name && <p className="text-red-500 text-sm col-span-2 col-start-2">{errors.category_name.message}</p>}
+          {errors.category_name && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.category_name.message)}</p>}
         </div>
 
         {/* Mô tả */}

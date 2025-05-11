@@ -1,14 +1,13 @@
-// @ts-nocheck
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import Button from "../../../../components/Button";
 import { Constants, LIST_CHAMPION_STATUS } from "../../../../common/Constants";
-import { useDispatch } from "react-redux";
-import { addChampion, updateChampion } from "../../../../config/reducers/championSlice";
+import { useAppDispatch } from "../../../../config/redux/store";
+import Button from "../../../../components/Button";
+import { addChampion, updateAndRefreshChampion } from "../../../../config/redux/controller/championSlice";
 
 export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
-  const dispatch = useDispatch();
-  const [loadingButton, setLoadingButton] = React.useState(false);
+  const dispatch = useAppDispatch();
+  const [loadingButton, setLoadingButton] = useState(false);
   const {
     register,
     handleSubmit,
@@ -38,7 +37,8 @@ export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
           console.error("Lỗi khi thêm mới:", error);
         });
     } else if (type === Constants.ACCTION_UPDATE) {
-      dispatch(updateChampion({ id: data.id, updatedChampion: formData }))
+      // @ts-ignore
+      dispatch(updateAndRefreshChampion({ id: data.id, formData }))
         .unwrap()
         .then(() => {
           setLoadingButton(false);
@@ -67,7 +67,7 @@ export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
             className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
             placeholder="Nhập tên giải"
           />
-          {errors.tournament_name && <p className="text-red-500 text-sm col-span-2 col-start-2">{errors.tournament_name.message}</p>}
+          {errors.tournament_name && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.tournament_name.message)}</p>}
         </div>
 
         {/* Ngày bắt đầu */}
@@ -82,7 +82,7 @@ export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
             type="date"
             className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
           />
-          {errors.start_date && <p className="text-red-500 text-sm col-span-2 col-start-2">{errors.start_date.message}</p>}
+          {errors.start_date && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.start_date.message)}</p>}
         </div>
 
         {/* Ngày kết thúc */}
@@ -97,7 +97,7 @@ export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
             type="date"
             className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
           />
-          {errors.end_date && <p className="text-red-500 text-sm col-span-2 col-start-2">{errors.end_date.message}</p>}
+          {errors.end_date && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.end_date.message)}</p>}
         </div>
 
         {/* Địa điểm */}
@@ -112,7 +112,7 @@ export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
             type="text"
             className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
           />
-          {errors.location && <p className="text-red-500 text-sm col-span-2 col-start-2">{errors.location.message}</p>}
+          {errors.location && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.location.message)}</p>}
         </div>
 
         {/* Số lượng trọng tài */}
@@ -127,7 +127,7 @@ export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
             type="number"
             className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
           />
-          {errors.num_judges && <p className="text-red-500 text-sm col-span-2 col-start-2">{errors.num_judges.message}</p>}
+          {errors.num_judges && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.num_judges.message)}</p>}
         </div>
 
         {/* Số lượng vận động viên */}
@@ -142,7 +142,7 @@ export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
             type="number"
             className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
           />
-          {errors.num_athletes && <p className="text-red-500 text-sm col-span-2 col-start-2">{errors.num_athletes.message}</p>}
+          {errors.num_athletes && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.num_athletes.message)}</p>}
         </div>
 
         {/* Trạng thái */}
@@ -151,7 +151,7 @@ export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
             Trạng thái
           </label>
           <select
-            readOnly={loadingButton}
+            disabled={loadingButton}
             id="status"
             {...register("status", { required: "Trạng thái là bắt buộc" })}
             className="form-select col-span-2 w-full px-3 py-2 border rounded-md text-sm"
@@ -162,7 +162,7 @@ export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
               </option>
             ))}
           </select>
-          {errors.status && <p className="text-red-500 text-sm col-span-2 col-start-2">{errors.status.message}</p>}
+          {errors.status && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.status.message)}</p>}
         </div>
 
         {/* Buttons */}

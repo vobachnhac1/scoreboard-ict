@@ -7,14 +7,16 @@ import SearchInput from "../../../components/SearchInput";
 import { Constants } from "../../../common/Constants";
 import Utils from "../../../common/Utils";
 import ChampionCategoryForm from "./Forms/ChampionCategoryForm";
+import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
+import { fetchChampionCategories } from "../../../config/redux/controller/championCategorySlice";
 
 export default function ChampionCategory() {
+  const dispatch = useAppDispatch();
+  // @ts-ignore
+  const { categories, loading } = useAppSelector((state) => state.championCategories);
   const [page, setPage] = useState(1);
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [openActions, setOpenActions] = useState(null);
   const [search, setSearch] = useState("");
-  const totalPages = 3;
 
   const listActions = [
     {
@@ -41,25 +43,8 @@ export default function ChampionCategory() {
   ];
 
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      File;
-      const fakeData = Array.from({ length: 10 }, (_, i) => {
-        const order = i + 1 + (page - 1) * 10;
-        return {
-          order,
-          category_key: ["QHI", "DK"][i % 2],
-          category_name: `Quyền ${["Hiện Đại", "Truyền Thống", "Tổng Hợp"][i % 3]}`,
-          description: `Thi quyền ${["Hiện Đại", "Truyền Thống", "Tổng Hợp"][i % 3]}`,
-          created_at: `2025-05-${(i + 1).toString().padStart(2, "0")} 08:00:00`,
-          updated_at: `2025-05-${(i + 2).toString().padStart(2, "0")} 12:00:00`,
-        };
-      });
-      setData(fakeData);
-      setLoading(false);
-    }, 500);
-  }, [page]);
-
+    dispatch(fetchChampionCategories());
+  }, [dispatch]);
   const columns = [
     { title: "STT", key: "order", align: "center" },
     { title: "Tên nhóm", key: "category_name" },
@@ -140,10 +125,9 @@ export default function ChampionCategory() {
       </div>
       <CustomTable
         columns={columns}
-        data={data}
+        data={categories}
         loading={loading}
         page={page}
-        totalPages={totalPages}
         onPageChange={setPage}
         onRowDoubleClick={(row) => {
           setOpenActions({ isOpen: true, key: Constants.ACCTION_UPDATE, row });

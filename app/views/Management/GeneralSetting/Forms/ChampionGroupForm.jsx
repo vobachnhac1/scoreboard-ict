@@ -1,13 +1,12 @@
-// @ts-nocheck
 import React, { Fragment, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Button from "../../../../components/Button";
 import { Constants } from "../../../../common/Constants";
-import { useDispatch } from "react-redux";
-import { addChampionGroup, updateChampionGroup } from "../../../../config/reducers/championGroupSlice";
+import { useAppDispatch } from "../../../../config/redux/store";
+import { addAndRefreshChampionGroups, updateAndRefreshChampionGroups } from "../../../../config/redux/controller/championGroupSlice";
 
 export default function ChampionGroupForm({ id, type, data = null, onAgree, onGoBack }) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [loadingButton, setLoadingButton] = React.useState(false);
   const {
     register,
@@ -25,12 +24,15 @@ export default function ChampionGroupForm({ id, type, data = null, onAgree, onGo
   }, [data, reset]);
 
   const onSubmit = (formData) => {
-    formData = { ...formData, tournament_id: id };
+    formData = {
+      name: formData.name,
+      description: formData.description,
+      tournament_id: id,
+    };
     setLoadingButton(true);
     if (type === Constants.ACCTION_INSERT) {
       // @ts-ignore
-      dispatch(addChampionGroup(formData))
-        // @ts-ignore
+      dispatch(addAndRefreshChampionGroups({ formData }))
         .unwrap()
         .then(() => {
           setLoadingButton(false);
@@ -42,8 +44,7 @@ export default function ChampionGroupForm({ id, type, data = null, onAgree, onGo
         });
     } else if (type === Constants.ACCTION_UPDATE) {
       // @ts-ignore
-      dispatch(updateChampionGroup({ id: data.id, updatedChampion: formData }))
-        // @ts-ignore
+      dispatch(updateAndRefreshChampionGroups({ id: data.id, formData }))
         .unwrap()
         .then(() => {
           setLoadingButton(false);
@@ -72,7 +73,7 @@ export default function ChampionGroupForm({ id, type, data = null, onAgree, onGo
             className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
             placeholder="Nhập tên nhóm"
           />
-          {errors.name && <p className="text-red-500 text-sm col-span-2 col-start-2">{errors.name.message}</p>}
+          {errors.name && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.name.message)}</p>}
         </div>
 
         {/* Mô tả */}

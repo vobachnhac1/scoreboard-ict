@@ -14,7 +14,6 @@ export default function index() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [openActions, setOpenActions] = useState(null);
-  const totalPages = 5;
 
   useEffect(() => {
     setLoading(true);
@@ -180,12 +179,22 @@ export default function index() {
 
   return (
     <div className="w-full h-autooverflow-auto">
+      <div className="flex justify-end items-center gap-2 mb-1">
+        <Button variant="primary" className="min-w-28">
+          Cập nhật license
+        </Button>
+        <Button variant="primary" className="min-w-28">
+          Mã kích hoạt điện thoại
+        </Button>
+        <Button variant="primary" className="min-w-28">
+          Tải lại
+        </Button>
+      </div>
       <CustomTable
         columns={columns}
         data={data}
         loading={loading}
         page={page}
-        totalPages={totalPages}
         onPageChange={setPage}
         onRowDoubleClick={(row) => {
           console.log("Double clicked row:", row);

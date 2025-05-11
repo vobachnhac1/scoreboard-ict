@@ -8,6 +8,8 @@ import configReducer from './configReducer';
 import championReducer from '../controller/championSlice';
 import championGroupReducer from '../controller/championGroupSlice';
 import championCategoryReducer from '../controller/championCategorySlice';
+import championEventReducer from '../controller/championEventSlice';
+import championEventGroupsReducer from '../controller/championEventGroupSlice';
 import configSystemReducer from '../controller/configSystemSlice';
 
 // persist config cho auth
@@ -31,6 +33,8 @@ const rootReducer = combineReducers({
   champions: championReducer,
   championGroups: championGroupReducer,
   championCategories: championCategoryReducer,
+  championEvents: championEventReducer,
+  championEventGroups: championEventGroupsReducer,
   configSystem: configSystemReducer,
 });
 

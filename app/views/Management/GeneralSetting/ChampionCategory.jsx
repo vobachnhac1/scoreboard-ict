@@ -8,7 +8,7 @@ import { Constants } from "../../../common/Constants";
 import Utils from "../../../common/Utils";
 import ChampionCategoryForm from "./Forms/ChampionCategoryForm";
 import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
-import { fetchChampionCategories } from "../../../config/redux/controller/championCategorySlice";
+import { deleteChampionCategory, fetchChampionCategories } from "../../../config/redux/controller/championCategorySlice";
 
 export default function ChampionCategory() {
   const dispatch = useAppDispatch();
@@ -45,6 +45,7 @@ export default function ChampionCategory() {
   useEffect(() => {
     dispatch(fetchChampionCategories());
   }, [dispatch]);
+
   const columns = [
     { title: "STT", key: "order", align: "center" },
     { title: "Tên nhóm", key: "category_name" },
@@ -99,7 +100,10 @@ export default function ChampionCategory() {
         return (
           <DeleteConfirmForm
             message={`Bạn có muốn xóa nhóm "${openActions?.row?.category_name}" không?`}
-            onAgree={() => setOpenActions({ isOpen: false })}
+            onAgree={() => {
+              dispatch(deleteChampionCategory(openActions?.row?.id));
+              setOpenActions({ ...openActions, isOpen: false });
+            }}
             onGoBack={() => setOpenActions({ isOpen: false })}
           />
         );

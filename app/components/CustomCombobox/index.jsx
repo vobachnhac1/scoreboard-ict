@@ -9,7 +9,7 @@ export default function CustomCombobox({ data, selectedData, onChange, placehold
 
   return (
     <Combobox value={selectedData} onChange={onChange}>
-      <div className="relative">
+      <div className="relative select-none">
         <div className="relative w-full">
           <ComboboxInput
             className="w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm"

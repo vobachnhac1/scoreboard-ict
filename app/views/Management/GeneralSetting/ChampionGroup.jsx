@@ -7,7 +7,7 @@ import { Constants } from "../../../common/Constants";
 import Utils from "../../../common/Utils";
 import ChampionGroupForm from "./Forms/ChampionGroupForm";
 import CustomCombobox from "../../../components/CustomCombobox";
-import { deleteChampionGroup, fetchChampionGroupsByChampion } from "../../../config/redux/controller/championGroupSlice";
+import { deleteChampionGroup, fetchChampionGroups } from "../../../config/redux/controller/championGroupSlice";
 import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
 import { fetchChampions } from "../../../config/redux/controller/championSlice";
 
@@ -19,7 +19,7 @@ export default function ChampionGroup({ ...props }) {
   // @ts-ignore
   const { champions, loadingCombobox } = useAppSelector((state) => state.champions);
   const [openActions, setOpenActions] = useState(null);
-  const [champion, setChampion] = useState(null);
+  const [selectedChampion, setSelectedChampion] = useState(null);
 
   useEffect(() => {
     dispatch(fetchChampions());
@@ -78,7 +78,7 @@ export default function ChampionGroup({ ...props }) {
       case Constants.ACCTION_INSERT:
         return (
           <ChampionGroupForm
-            id={champion.id}
+            id={selectedChampion.id}
             type={Constants.ACCTION_INSERT}
             onAgree={(formData) => {
               console.log("Insert Champion Group:", formData);
@@ -90,7 +90,7 @@ export default function ChampionGroup({ ...props }) {
       case Constants.ACCTION_UPDATE:
         return (
           <ChampionGroupForm
-            id={champion.id}
+            id={selectedChampion.id}
             type={Constants.ACCTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
@@ -123,24 +123,24 @@ export default function ChampionGroup({ ...props }) {
         <div className="min-w-80">
           <CustomCombobox
             data={champions || []}
-            selectedData={champion}
+            selectedData={selectedChampion}
             onChange={(value) => {
               if (value) {
-                setChampion(value);
-                dispatch(fetchChampionGroupsByChampion(value.id));
+                setSelectedChampion(value);
+                dispatch(fetchChampionGroups(value.id));
               }
             }}
             placeholder="Vui lòng chọn nhóm dự thi"
             keyShow={"tournament_name"}
           />
         </div>
-        <Button disabled={!champion?.id} variant="primary" className="min-w-28" onClick={listActions[0].callback}>
+        <Button disabled={!selectedChampion?.id} variant="primary" className="min-w-28" onClick={listActions[0].callback}>
           Tạo mới
         </Button>
       </div>
       <CustomTable
         columns={columns}
-        data={groups}
+        data={selectedChampion ? groups : []}
         loading={loading}
         page={page}
         onPageChange={setPage}
@@ -154,7 +154,7 @@ export default function ChampionGroup({ ...props }) {
         title={listActions.find((e) => e.key === openActions?.key)?.description}
         headerClass={listActions.find((e) => e.key === openActions?.key)?.color}
       >
-        {champion && renderContentModal()}
+        {selectedChampion && renderContentModal()}
       </Modal>
     </div>
   );

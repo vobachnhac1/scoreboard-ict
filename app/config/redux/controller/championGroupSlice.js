@@ -3,8 +3,9 @@ import axiosClient from '../../../helpers/api';
 
 const API_URL = '/api/champion-grp';
 
-export const fetchChampionGroups = createAsyncThunk('championGroups/fetchAll', async () => {
-  const response = await axiosClient.get(API_URL);
+export const fetchChampionGroups = createAsyncThunk('championGroups/fetchAll', async (id) => {
+  const url = id !== undefined && id !== null ? `${API_URL}/${id}` : API_URL;
+  const response = await axiosClient.get(url);
   return response.data;
 });
 
@@ -29,7 +30,7 @@ export const addAndRefreshChampionGroups = createAsyncThunk(
   // @ts-ignore
   async ({ formData }, { dispatch }) => {
     await dispatch(addChampionGroup(formData));
-    await dispatch(fetchChampionGroupsByChampion(formData.tournament_id));
+    await dispatch(fetchChampionGroups(formData.tournament_id));
   }
 );
 
@@ -39,14 +40,9 @@ export const updateAndRefreshChampionGroups = createAsyncThunk(
   async ({ id, formData }, { dispatch }) => {
     // @ts-ignore
     await dispatch(updateChampionGroup({ id, formData }));
-    await dispatch(fetchChampionGroupsByChampion(id));
+    await dispatch(fetchChampionGroups(id));
   }
 );
-
-export const fetchChampionGroupsByChampion = createAsyncThunk('championGroups/fetchByChampion', async (champId) => {
-  const response = await axiosClient.get(`${API_URL}/${champId}`);
-  return response.data;
-});
 
 const championGroupSlice = createSlice({
   name: 'championGroups',
@@ -81,9 +77,6 @@ const championGroupSlice = createSlice({
           state.groups[index] = action.payload;
         }
       })
-      .addCase(fetchChampionGroupsByChampion.fulfilled, (state, action) => {
-        state.groups = action.payload;
-      });
   },
 });
 

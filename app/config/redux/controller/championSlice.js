@@ -3,8 +3,9 @@ import axiosClient from '../../../helpers/api';
 
 const API_URL = '/api/champion';
 
-export const fetchChampions = createAsyncThunk('champions/fetchAll', async () => {
-  const response = await axiosClient.get(API_URL);
+export const fetchChampions = createAsyncThunk('champions/fetchAll', async (id) => {
+  const url = id !== undefined && id !== null ? `${API_URL}/${id}` : API_URL;
+  const response = await axiosClient.get(url);
   return response.data;
 });
 

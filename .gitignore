@@ -31,3 +31,7 @@ package-lock.json
 # OS metadata
 .DS_Store
 Thumbs.db
+
+
+# bundle App
+public/app.bundle.js

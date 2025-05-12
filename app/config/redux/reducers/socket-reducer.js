@@ -52,7 +52,7 @@
 
 // src/store/socketSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import socketClient from '../socket/socketClient';
+import socketClient from '../../socket/SocketClient';
 
 export const connectSocket = createAsyncThunk('socket/connect', async (role) => {
   socketClient.init(role).connect();

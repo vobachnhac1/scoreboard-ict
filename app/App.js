@@ -6,7 +6,7 @@ import './index.css';
 import './styles/main.scss';
 import { useSelector, useDispatch } from 'react-redux';
 import { initI18n } from './i18n';
-import { connectSocket, disconnectSocket } from './config/reducers/socket-reducer';
+import { connectSocket, disconnectSocket } from './config/redux/reducers/socket-reducer';
 import { useSocketEvent, emitSocketEvent } from './config/hooks/useSocketEvents';
 const App = () => {
   const { language } = useSelector((state) => state.language);

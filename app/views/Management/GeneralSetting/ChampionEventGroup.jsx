@@ -16,9 +16,9 @@ export default function ChampionEventGroup() {
   const dispatch = useAppDispatch();
 
   // @ts-ignore
-  const { groups, loading: loadingGroups } = useAppSelector((state) => state.championGroups);
+  const { data: groups, loading: loadingGroups } = useAppSelector((state) => state.championGroups);
   // @ts-ignore
-  const { eventGroups, loading: loadingEventGroups } = useAppSelector((state) => state.championEventGroups);
+  const { data: eventGroups, loading: loadingEventGroups } = useAppSelector((state) => state.championEventGroups);
   const [page, setPage] = useState(1);
   const [openActions, setOpenActions] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -26,11 +26,6 @@ export default function ChampionEventGroup() {
   useEffect(() => {
     dispatch(fetchChampionGroups());
   }, [dispatch]);
-
-  useEffect(() => {
-    // @ts-ignore
-    selectedGroup && dispatch(fetchChampionEventGroups({ champ_grp_id: selectedGroup.id }));
-  }, [dispatch, selectedGroup]);
 
   const listActions = [
     {
@@ -55,7 +50,6 @@ export default function ChampionEventGroup() {
       callback: (row) => setOpenActions({ isOpen: true, key: Constants.ACCTION_DELETE, row }),
     },
   ];
-  console.log(openActions);
 
   const columns = [
     { title: "STT", key: "order", align: "center" },
@@ -92,7 +86,8 @@ export default function ChampionEventGroup() {
             id={selectedGroup.id}
             type={Constants.ACCTION_INSERT}
             onAgree={(formData) => {
-              console.log("Insert Champion Group:", formData);
+              // @ts-ignore
+              selectedGroup && dispatch(fetchChampionEventGroups({ champ_grp_id: selectedGroup?.id }));
               setOpenActions({ isOpen: false });
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}
@@ -105,7 +100,8 @@ export default function ChampionEventGroup() {
             type={Constants.ACCTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
-              console.log("Update Champion Group:", formData);
+              // @ts-ignore
+              selectedGroup && dispatch(fetchChampionEventGroups({ champ_grp_id: selectedGroup?.id }));
               setOpenActions({ isOpen: false });
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}
@@ -116,8 +112,8 @@ export default function ChampionEventGroup() {
           <DeleteConfirmForm
             message={`Bạn có muốn xóa nội dung theo nhóm thi "${openActions?.row?.event_name}" không?`}
             onAgree={() => {
-              dispatch(deleteChampionEventGroup(openActions?.row?.champ_grp_event_id));
               setOpenActions({ ...openActions, isOpen: false });
+              dispatch(deleteChampionEventGroup(openActions?.row?.champ_grp_event_id));
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}
           />
@@ -133,7 +129,17 @@ export default function ChampionEventGroup() {
         <div className="flex items-center justify-between gap-2 mb-2">
           {/* Combobox Dropdown */}
           <div className="min-w-80">
-            <CustomCombobox data={groups} selectedData={selectedGroup} onChange={setSelectedGroup} placeholder="Vui lòng chọn nhóm thi" keyShow={"name"} />
+            <CustomCombobox
+              data={groups}
+              selectedData={selectedGroup}
+              onChange={(value) => {
+                setSelectedGroup(value);
+                // @ts-ignore
+                dispatch(fetchChampionEventGroups({ champ_grp_id: value?.id }));
+              }}
+              placeholder="Vui lòng chọn nhóm thi"
+              keyShow={"name"}
+            />
           </div>
           <Button disabled={!selectedGroup} variant="primary" className="min-w-28" onClick={listActions[0].callback}>
             Tạo mới

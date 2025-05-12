@@ -10,19 +10,24 @@ import Utils from "../../../common/Utils";
 import { deleteChampion, fetchChampions } from "../../../config/redux/controller/championSlice";
 import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
 
-export default function Champion({ ...props }) {
+export default function Champion() {
   const dispatch = useAppDispatch();
   // @ts-ignore
-  const { champions, loading } = useAppSelector((state) => state.champions);
+  const { data: champions, loading } = useAppSelector((state) => state.champions);
   const [page, setPage] = useState(1);
   const [openActions, setOpenActions] = useState(null);
   const [search, setSearch] = useState("");
 
-  useEffect( ()=>{
+  useEffect(() => {
     // gọi API
-    handleSearch()
-  },[])
+    dispatch(fetchChampions());
+  }, []);
 
+  const handleSearch = async (text) => {
+    console.log("Tìm kiếm:", text);
+    // @ts-ignore
+    dispatch(fetchChampions({ search: text }));
+  };
 
   const listActions = [
     {
@@ -101,7 +106,8 @@ export default function Champion({ ...props }) {
           <ChampionForm
             type={Constants.ACCTION_INSERT}
             onAgree={(formData) => {
-              console.log("ChampionForm", formData);
+              // @ts-ignore
+              dispatch(fetchChampions({ search: search }));
               setOpenActions({ ...openActions, isOpen: false });
             }}
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
@@ -113,7 +119,8 @@ export default function Champion({ ...props }) {
             type={Constants.ACCTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
-              console.log("ChampionForm", formData);
+              // @ts-ignore
+              dispatch(fetchChampions({ search: search }));
               setOpenActions({ ...openActions, isOpen: false });
             }}
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
@@ -134,26 +141,11 @@ export default function Champion({ ...props }) {
         return null;
     }
   };
-  const handleSearch =async(text)=>{    
-    setLoading(true);
-    console.log("Tìm kiếm:", text);
-    const resp = await getAllChamp()
-    if(resp.status == 200){
-      const list = resp?.data?.data?.map((ele, ind)=>({...ele, order: ind +1}))
-      setData(list?? [])
-    } 
-    setLoading(false);
-  }
 
   return (
     <div className="w-full h-auto overflow-auto">
       <div className="flex items-center justify-between mb-1">
-        <SearchInput
-          value={search}
-          onChange={setSearch}
-          onSearch={handleSearch}
-          placeholder="Tìm kiếm giải đấu..."
-        />
+        <SearchInput value={search} onChange={setSearch} onSearch={handleSearch} placeholder="Tìm kiếm giải đấu..." />
         <Button
           variant="primary"
           className="min-w-28"

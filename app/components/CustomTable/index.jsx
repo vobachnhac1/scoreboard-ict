@@ -65,7 +65,7 @@ const CustomTable = ({
                 >
                   {visibleColumns.map((col) => (
                     <td key={col.key} className={`px-4 py-2 text-sm text-gray-700 ${getAlignmentClass(col.align)}`} style={{ minWidth: col.width || 100 }}>
-                      {col.render ? col.render(row) : row[col.key]}
+                      {col.render ? col.render(row) : col.key === "order" ? row[col.key] ?? idx + 1 : row[col.key]}
                     </td>
                   ))}
                 </tr>

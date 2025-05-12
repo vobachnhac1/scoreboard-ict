@@ -1,44 +1,31 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosClient from '../../../helpers/api';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { getAllChamp, createChamp, updateChamp, deleteChamp } from "../../apis";
 
-const API_URL = '/api/champion';
-
-export const fetchChampions = createAsyncThunk('champions/fetchAll', async (id) => {
-  const url = id !== undefined && id !== null ? `${API_URL}/${id}` : API_URL;
-  const response = await axiosClient.get(url);
+export const fetchChampions = createAsyncThunk("champions/fetchAll", async (params) => {
+  const response = await getAllChamp(params);
   return response.data;
 });
 
-export const addChampion = createAsyncThunk('champions/add', async (newChampion) => {
-  const response = await axiosClient.post(API_URL, newChampion);
+export const addChampion = createAsyncThunk("champions/add", async (newChampion) => {
+  const response = await createChamp(newChampion);
   return response.data;
 });
 
-export const deleteChampion = createAsyncThunk('champions/delete', async (id) => {
-  await axiosClient.delete(`${API_URL}/${id}`);
+export const deleteChampion = createAsyncThunk("champions/delete", async (id) => {
+  await deleteChamp(id);
   return id;
 });
 
 // @ts-ignore
-export const updateChampion = createAsyncThunk('champions/update', async ({ id, formData }) => {
-  const response = await axiosClient.put(`${API_URL}/${id}`, formData);
+export const updateChampion = createAsyncThunk("champions/update", async ({ id, formData }) => {
+  const response = await updateChamp(id, formData);
   return response.data;
 });
 
-export const updateAndRefreshChampion = createAsyncThunk(
-  'champions/updateAndRefresh',
-  // @ts-ignore
-  async ({ id, formData }, { dispatch }) => {
-    // @ts-ignore
-    await dispatch(updateChampion({ id, formData }));
-    await dispatch(fetchChampions());
-  }
-);
-
 const championSlice = createSlice({
-  name: 'champions',
+  name: "champions",
   initialState: {
-    champions: [],
+    data: [],
     loading: false,
     error: null,
   },
@@ -50,22 +37,22 @@ const championSlice = createSlice({
       })
       .addCase(fetchChampions.fulfilled, (state, action) => {
         state.loading = false;
-        state.champions = action.payload;
+        state.data = action.payload;
       })
       .addCase(fetchChampions.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
       .addCase(addChampion.fulfilled, (state, action) => {
-        state.champions.push(action.payload);
+        state.data.push(action.payload);
       })
       .addCase(deleteChampion.fulfilled, (state, action) => {
-        state.champions = state.champions.filter(champion => champion.id !== action.payload);
+        state.data = state.data.filter((champion) => champion.id !== action.payload);
       })
       .addCase(updateChampion.fulfilled, (state, action) => {
-        const index = state.champions.findIndex(champion => champion.id === action.payload.id);
+        const index = state.data.findIndex((champion) => champion.id === action.payload.id);
         if (index !== -1) {
-          state.champions[index] = action.payload;
+          state.data[index] = action.payload;
         }
       });
   },

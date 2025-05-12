@@ -7,15 +7,15 @@ import DisconnectForm from "./Forms/DisconnectForm";
 import NotificationForm from "./Forms/NotificationForm";
 import UpdateForm from "./Forms/UpdateForm";
 import { Constants } from "../../../common/Constants";
-import Utils from "../../../common/utils";
-import { useSelector } from 'react-redux';
-import { useSocketEvent, emitSocketEvent,  } from '../../../config/hooks/useSocketEvents';
+import Utils from "../../../common/Utils";
+import { useSelector } from "react-redux";
+import { useSocketEvent, emitSocketEvent } from "../../../config/hooks/useSocketEvents";
 
 export default function index() {
+  // @ts-ignore
   const socket = useSelector((state) => state.socket);
-  useEffect(()=>{
-  },[])
- 
+  useEffect(() => {}, []);
+
   const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -102,8 +102,8 @@ export default function index() {
               variant="none"
               className={`!rounded-none !p-2 w-16 ${action.color} mr-1 hover:opacity-75`}
               onClick={() => {
-                console.log('action.key: ', action.key);
-                action.callback(row)
+                console.log("action.key: ", action.key);
+                action.callback(row);
               }}
               key={action.key}
             >
@@ -186,22 +186,21 @@ export default function index() {
     }
   };
 
-
-  useSocketEvent('RES_ROOM_ADMIN', (data) => {
-    console.log('Receive from server:', data);
+  useSocketEvent("RES_ROOM_ADMIN", (data) => {
+    console.log("Receive from server:", data);
   });
-  
-  useSocketEvent('RES_MSG', (data) => {
-    console.log('Receive from client:', data);
+
+  useSocketEvent("RES_MSG", (data) => {
+    console.log("Receive from client:", data);
   });
 
   const sendMessage = () => {
     const param = {
-      "uuid_desktop": "CO2GJ74NMD6M",
-      "room_id": "1AZJM9JL8D",
-      "permission": 9
-    }
-    emitSocketEvent('REGISTER_ROOM_ADMIN',param);
+      uuid_desktop: "CO2GJ74NMD6M",
+      room_id: "1AZJM9JL8D",
+      permission: 9,
+    };
+    emitSocketEvent("REGISTER_ROOM_ADMIN", param);
   };
 
   return (

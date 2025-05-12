@@ -3,13 +3,13 @@ import { useForm } from "react-hook-form";
 import Button from "../../../../components/Button";
 import { Constants } from "../../../../common/Constants";
 import { useAppDispatch, useAppSelector } from "../../../../config/redux/store";
-import { addAndRefreshChampionEvent, updateAndRefreshChampionEvents } from "../../../../config/redux/controller/championEventSlice";
+import { addChampionEvent, updateChampionEvent } from "../../../../config/redux/controller/championEventSlice";
 import { fetchChampionCategories } from "../../../../config/redux/controller/championCategorySlice";
 
 export default function ChampionEventCategoryForm({ id, type, data = null, onAgree, onGoBack }) {
   const dispatch = useAppDispatch();
   // @ts-ignore
-  const { categories, loading: loadingCategories } = useAppSelector((state) => state.championCategories);
+  const { data: categories, loading: loadingCategories } = useAppSelector((state) => state.championCategories);
 
   const [loadingButton, setLoadingButton] = React.useState(false);
   const {
@@ -45,7 +45,7 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
     setLoadingButton(true);
     if (type === Constants.ACCTION_INSERT) {
       // @ts-ignore
-      dispatch(addAndRefreshChampionEvent({ formData }))
+      dispatch(addChampionEvent({ formData }))
         .unwrap()
         .then(() => {
           setLoadingButton(false);
@@ -57,7 +57,7 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
         });
     } else if (type === Constants.ACCTION_UPDATE) {
       // @ts-ignore
-      dispatch(updateAndRefreshChampionEvents({ formData }))
+      dispatch(updateChampionEvent({ id: data.id, formData }))
         .unwrap()
         .then(() => {
           setLoadingButton(false);

@@ -1,53 +1,33 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosClient from '../../../helpers/api';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createChampGroup, deleteChampGroup, getAllChampGroups, getChampGroupsByChampId, updateChampGroup } from "../../apis";
 
-const API_URL = '/api/champion-grp';
-
-export const fetchChampionGroups = createAsyncThunk('championGroups/fetchAll', async (id) => {
-  const url = id !== undefined && id !== null ? `${API_URL}/${id}` : API_URL;
-  const response = await axiosClient.get(url);
+export const fetchChampionGroups = createAsyncThunk("championGroups/fetchAll", async (champId) => {
+  // @ts-ignore
+  const response = champId ? await getChampGroupsByChampId(champId) : await getAllChampGroups();
   return response.data;
 });
 
-export const addChampionGroup = createAsyncThunk('championGroups/add', async (formData) => {
-  const response = await axiosClient.post(API_URL, formData);
+// @ts-ignore
+export const addChampionGroup = createAsyncThunk("championGroups/add", async ({ formData }) => {
+  const response = await createChampGroup(formData);
   return response.data;
 });
 
-export const deleteChampionGroup = createAsyncThunk('championGroups/delete', async (id) => {
-  await axiosClient.delete(`${API_URL}/${id}`);
+export const deleteChampionGroup = createAsyncThunk("championGroups/delete", async (id) => {
+  await deleteChampGroup(id);
   return id;
 });
 
 // @ts-ignore
-export const updateChampionGroup = createAsyncThunk('championGroups/update', async ({ id, formData }) => {
-  const response = await axiosClient.put(`${API_URL}/${id}`, formData);
+export const updateChampionGroup = createAsyncThunk("championGroups/update", async ({ id, formData }) => {
+  const response = await updateChampGroup(id, formData);
   return response.data;
 });
 
-export const addAndRefreshChampionGroups = createAsyncThunk(
-  'championGroups/addAndRefresh',
-  // @ts-ignore
-  async ({ formData }, { dispatch }) => {
-    await dispatch(addChampionGroup(formData));
-    await dispatch(fetchChampionGroups(formData.tournament_id));
-  }
-);
-
-export const updateAndRefreshChampionGroups = createAsyncThunk(
-  'championGroups/updateAndRefresh',
-  // @ts-ignore
-  async ({ id, formData }, { dispatch }) => {
-    // @ts-ignore
-    await dispatch(updateChampionGroup({ id, formData }));
-    await dispatch(fetchChampionGroups(id));
-  }
-);
-
 const championGroupSlice = createSlice({
-  name: 'championGroups',
+  name: "championGroups",
   initialState: {
-    groups: [],
+    data: [],
     loading: false,
     error: null,
   },
@@ -59,24 +39,24 @@ const championGroupSlice = createSlice({
       })
       .addCase(fetchChampionGroups.fulfilled, (state, action) => {
         state.loading = false;
-        state.groups = action.payload;
+        state.data = action.payload;
       })
       .addCase(fetchChampionGroups.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
       .addCase(addChampionGroup.fulfilled, (state, action) => {
-        state.groups.push(action.payload);
+        state.data.push(action.payload);
       })
       .addCase(deleteChampionGroup.fulfilled, (state, action) => {
-        state.groups = state.groups.filter(group => group.id !== action.payload);
+        state.data = state.data.filter((group) => group.id !== action.payload);
       })
       .addCase(updateChampionGroup.fulfilled, (state, action) => {
-        const index = state.groups.findIndex(group => group.id === action.payload.id);
+        const index = state.data.findIndex((group) => group.id === action.payload.id);
         if (index !== -1) {
-          state.groups[index] = action.payload;
+          state.data[index] = action.payload;
         }
-      })
+      });
   },
 });
 

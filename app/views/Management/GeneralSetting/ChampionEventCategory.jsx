@@ -15,9 +15,9 @@ export default function ChampionEventCategory() {
   const dispatch = useAppDispatch();
 
   // @ts-ignore
-  const { categories, loading: loadingCategories } = useAppSelector((state) => state.championCategories);
+  const { data: categories, loading: loadingCategories } = useAppSelector((state) => state.championCategories);
   // @ts-ignore
-  const { events, loading: loadingEvents } = useAppSelector((state) => state.championEvents);
+  const { data: events, loading: loadingEvents } = useAppSelector((state) => state.championEvents);
   const [page, setPage] = useState(1);
   const [openActions, setOpenActions] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -89,7 +89,7 @@ export default function ChampionEventCategory() {
             id={selectedCategory.category_key}
             type={Constants.ACCTION_INSERT}
             onAgree={(formData) => {
-              console.log("Insert Champion Group:", formData);
+              selectedCategory && dispatch(fetchChampionEvents(selectedCategory.category_key));
               setOpenActions({ isOpen: false });
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}
@@ -102,7 +102,7 @@ export default function ChampionEventCategory() {
             type={Constants.ACCTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
-              console.log("Update Champion Group:", formData);
+              selectedCategory && dispatch(fetchChampionEvents(selectedCategory.category_key));
               setOpenActions({ isOpen: false });
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}

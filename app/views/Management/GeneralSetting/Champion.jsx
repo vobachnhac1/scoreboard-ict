@@ -18,9 +18,11 @@ export default function Champion({ ...props }) {
   const [openActions, setOpenActions] = useState(null);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    dispatch(fetchChampions());
-  }, [dispatch]);
+  useEffect( ()=>{
+    // gọi API
+    handleSearch()
+  },[])
+
 
   const listActions = [
     {
@@ -132,6 +134,16 @@ export default function Champion({ ...props }) {
         return null;
     }
   };
+  const handleSearch =async(text)=>{    
+    setLoading(true);
+    console.log("Tìm kiếm:", text);
+    const resp = await getAllChamp()
+    if(resp.status == 200){
+      const list = resp?.data?.data?.map((ele, ind)=>({...ele, order: ind +1}))
+      setData(list?? [])
+    } 
+    setLoading(false);
+  }
 
   return (
     <div className="w-full h-auto overflow-auto">
@@ -139,9 +151,7 @@ export default function Champion({ ...props }) {
         <SearchInput
           value={search}
           onChange={setSearch}
-          onSearch={(text) => {
-            console.log("Tìm kiếm:", text);
-          }}
+          onSearch={handleSearch}
           placeholder="Tìm kiếm giải đấu..."
         />
         <Button

@@ -21,7 +21,7 @@ import History from '../views/History';
 import AdminLayout from '../components/Layout/AdminLayout';
 import { Connect, Champion, ChampionCategory, ChampionEvent, ConfigSystem } from '../views/Management';
 
-export const socketClient = new SocketClient();
+// export const socketClient = new SocketClient().connect();
 
 // Tạo component App
 const Routers = () => {

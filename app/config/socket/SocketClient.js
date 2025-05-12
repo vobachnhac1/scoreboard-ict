@@ -1,50 +1,72 @@
+// import { io } from 'socket.io-client';
+
+// let socket = null;
+
+// export const getSocketClient = (role = 'guest') => {
+//   if (!socket) {
+//     socket = io('http://localhost:6789', {
+//       autoConnect: true,
+//       transports: ['websocket'],
+//       query: { role }, // hoặc query: { role }
+//     });
+//   } else {
+//     // Update role before connecting if needed
+//     socket.auth = { role };
+//   }
+//   return socket;
+// };
+
+// src/socket/socketClient.js
 import { io } from 'socket.io-client';
 
 class SocketClient {
-  socket;
+  constructor() {
+    this.socket = null;
+  }
+
+  init(role = 'guest') {
+    if (!this.socket) {
+      this.socket = io('http://localhost:6789', {
+        autoConnect: true,
+        transports: ['websocket'],
+        query: { role }, // hoặc query: { role }
+      });
+    }
+    return this;
+  }
 
   connect() {
-    this.socket = io.connect(process.env.SOCKET_HOST, { transports: ['websocket'] });
-    return new Promise((resolve, reject) => {
-      this.socket.on('connect', () => resolve());
-      this.socket.on('connect_error', (error) => reject(error));
-    });
+    if (this.socket && !this.socket.connected) {
+      this.socket.connect();
+    }
   }
 
   disconnect() {
-    return new Promise((resolve) => {
-      this.socket.disconnect(() => {
-        this.socket = null;
-        resolve();
-      });
-    });
+    if (this.socket?.connected) {
+      this.socket.disconnect();
+    }
   }
 
-  emit(event, data) {
-    return new Promise((resolve, reject) => {
-      if (!this.socket) return reject('No socket connection.');
-
-      return this.socket.emit(event, data, (response) => {
-        // Response is the optional callback that you can use with socket.io in every request. See 1 above.
-        if (response.error) {
-          console.error(response.error);
-          return reject(response.error);
-        }
-
-        return resolve();
-      });
-    });
+  emit(event, payload) {
+    this.socket?.emit(event, payload);
   }
 
-  on(event, fun) {
-    // No promise is needed here, but we're expecting one in the middleware.
-    return new Promise((resolve, reject) => {
-      if (!this.socket) return reject('No socket connection.');
+  on(event, callback) {
+    this.socket?.on(event, callback);
+  }
 
-      this.socket.on(event, fun);
-      resolve();
-    });
+  off(event, callback) {
+    this.socket?.off(event, callback);
+  }
+
+  isConnected() {
+    return !!this.socket?.connected;
+  }
+
+  getInstance() {
+    return this.socket;
   }
 }
 
-export default SocketClient;
+const socketClient = new SocketClient();
+export default socketClient;

@@ -23,6 +23,7 @@ export default function ChampionGroup({ ...props }) {
 
   useEffect(() => {
     dispatch(fetchChampions());
+    dispatch(fetchChampionGroups());
   }, [dispatch]);
 
   const listActions = [
@@ -73,15 +74,14 @@ export default function ChampionGroup({ ...props }) {
     },
   ];
 
-  const renderContentModal = () => {
+  const RenderContentModal = () => {
     switch (openActions?.key) {
       case Constants.ACCTION_INSERT:
         return (
           <ChampionGroupForm
-            id={selectedChampion.id}
             type={Constants.ACCTION_INSERT}
             onAgree={(formData) => {
-              console.log("Insert Champion Group:", formData);
+              dispatch(fetchChampionGroups(selectedChampion?.id));
               setOpenActions({ isOpen: false });
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}
@@ -90,11 +90,10 @@ export default function ChampionGroup({ ...props }) {
       case Constants.ACCTION_UPDATE:
         return (
           <ChampionGroupForm
-            id={selectedChampion.id}
             type={Constants.ACCTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
-              console.log("Update Champion Group:", formData);
+              dispatch(fetchChampionGroups(selectedChampion?.id));
               setOpenActions({ isOpen: false });
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}
@@ -125,22 +124,20 @@ export default function ChampionGroup({ ...props }) {
             data={champions || []}
             selectedData={selectedChampion}
             onChange={(value) => {
-              if (value) {
-                setSelectedChampion(value);
-                dispatch(fetchChampionGroups(value.id));
-              }
+              setSelectedChampion(value);
+              dispatch(fetchChampionGroups(value?.id));
             }}
             placeholder="Vui lòng chọn nhóm dự thi"
             keyShow={"tournament_name"}
           />
         </div>
-        <Button disabled={!selectedChampion?.id} variant="primary" className="min-w-28" onClick={listActions[0].callback}>
+        <Button variant="primary" className="min-w-28" onClick={listActions[0].callback}>
           Tạo mới
         </Button>
       </div>
       <CustomTable
         columns={columns}
-        data={selectedChampion ? groups : []}
+        data={groups}
         loading={loading}
         page={page}
         onPageChange={setPage}
@@ -154,7 +151,7 @@ export default function ChampionGroup({ ...props }) {
         title={listActions.find((e) => e.key === openActions?.key)?.description}
         headerClass={listActions.find((e) => e.key === openActions?.key)?.color}
       >
-        {selectedChampion && renderContentModal()}
+        <RenderContentModal />
       </Modal>
     </div>
   );

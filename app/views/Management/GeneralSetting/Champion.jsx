@@ -10,7 +10,7 @@ import Utils from "../../../common/Utils";
 import { deleteChampion, fetchChampions } from "../../../config/redux/controller/championSlice";
 import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
 
-export default function Champion({ ...props }) {
+export default function Champion() {
   const dispatch = useAppDispatch();
   // @ts-ignore
   const { champions, loading } = useAppSelector((state) => state.champions);
@@ -18,11 +18,16 @@ export default function Champion({ ...props }) {
   const [openActions, setOpenActions] = useState(null);
   const [search, setSearch] = useState("");
 
-  useEffect( ()=>{
+  useEffect(() => {
     // gọi API
-    handleSearch()
-  },[])
+    dispatch(fetchChampions());
+  }, []);
 
+  const handleSearch = async (text) => {
+    console.log("Tìm kiếm:", text);
+    // @ts-ignore
+    dispatch(fetchChampions({ search: text }));
+  };
 
   const listActions = [
     {
@@ -134,26 +139,11 @@ export default function Champion({ ...props }) {
         return null;
     }
   };
-  const handleSearch =async(text)=>{    
-    setLoading(true);
-    console.log("Tìm kiếm:", text);
-    const resp = await getAllChamp()
-    if(resp.status == 200){
-      const list = resp?.data?.data?.map((ele, ind)=>({...ele, order: ind +1}))
-      setData(list?? [])
-    } 
-    setLoading(false);
-  }
 
   return (
     <div className="w-full h-auto overflow-auto">
       <div className="flex items-center justify-between mb-1">
-        <SearchInput
-          value={search}
-          onChange={setSearch}
-          onSearch={handleSearch}
-          placeholder="Tìm kiếm giải đấu..."
-        />
+        <SearchInput value={search} onChange={setSearch} onSearch={handleSearch} placeholder="Tìm kiếm giải đấu..." />
         <Button
           variant="primary"
           className="min-w-28"

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosClient from '../../../helpers/api';
+import axiosClient from '../../apis/axiosClient';
 
-const API_URL = '/api/champion-grp';
+const API_URL = '/champion-grp';
 
 export const fetchChampionGroups = createAsyncThunk('championGroups/fetchAll', async (id) => {
   const url = id !== undefined && id !== null ? `${API_URL}/${id}` : API_URL;
@@ -9,7 +9,8 @@ export const fetchChampionGroups = createAsyncThunk('championGroups/fetchAll', a
   return response.data;
 });
 
-export const addChampionGroup = createAsyncThunk('championGroups/add', async (formData) => {
+// @ts-ignore
+export const addChampionGroup = createAsyncThunk('championGroups/add', async ({formData}) => {
   const response = await axiosClient.post(API_URL, formData);
   return response.data;
 });
@@ -24,25 +25,6 @@ export const updateChampionGroup = createAsyncThunk('championGroups/update', asy
   const response = await axiosClient.put(`${API_URL}/${id}`, formData);
   return response.data;
 });
-
-export const addAndRefreshChampionGroups = createAsyncThunk(
-  'championGroups/addAndRefresh',
-  // @ts-ignore
-  async ({ formData }, { dispatch }) => {
-    await dispatch(addChampionGroup(formData));
-    await dispatch(fetchChampionGroups(formData.tournament_id));
-  }
-);
-
-export const updateAndRefreshChampionGroups = createAsyncThunk(
-  'championGroups/updateAndRefresh',
-  // @ts-ignore
-  async ({ id, formData }, { dispatch }) => {
-    // @ts-ignore
-    await dispatch(updateChampionGroup({ id, formData }));
-    await dispatch(fetchChampionGroups(id));
-  }
-);
 
 const championGroupSlice = createSlice({
   name: 'championGroups',

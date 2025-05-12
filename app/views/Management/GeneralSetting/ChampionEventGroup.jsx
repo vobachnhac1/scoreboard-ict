@@ -27,11 +27,6 @@ export default function ChampionEventGroup() {
     dispatch(fetchChampionGroups());
   }, [dispatch]);
 
-  useEffect(() => {
-    // @ts-ignore
-    selectedGroup && dispatch(fetchChampionEventGroups({ champ_grp_id: selectedGroup.id }));
-  }, [dispatch, selectedGroup]);
-
   const listActions = [
     {
       key: Constants.ACCTION_INSERT,
@@ -92,7 +87,8 @@ export default function ChampionEventGroup() {
             id={selectedGroup.id}
             type={Constants.ACCTION_INSERT}
             onAgree={(formData) => {
-              console.log("Insert Champion Group:", formData);
+              // @ts-ignore
+              selectedGroup && dispatch(fetchChampionEventGroups({ champ_grp_id: selectedGroup?.id }));
               setOpenActions({ isOpen: false });
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}
@@ -106,6 +102,8 @@ export default function ChampionEventGroup() {
             data={openActions?.row}
             onAgree={(formData) => {
               console.log("Update Champion Group:", formData);
+              // @ts-ignore
+              selectedGroup && dispatch(fetchChampionEventGroups({ champ_grp_id: selectedGroup?.id }));
               setOpenActions({ isOpen: false });
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}
@@ -116,8 +114,8 @@ export default function ChampionEventGroup() {
           <DeleteConfirmForm
             message={`Bạn có muốn xóa nội dung theo nhóm thi "${openActions?.row?.event_name}" không?`}
             onAgree={() => {
-              dispatch(deleteChampionEventGroup(openActions?.row?.champ_grp_event_id));
               setOpenActions({ ...openActions, isOpen: false });
+              dispatch(deleteChampionEventGroup(openActions?.row?.champ_grp_event_id));
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}
           />
@@ -133,7 +131,17 @@ export default function ChampionEventGroup() {
         <div className="flex items-center justify-between gap-2 mb-2">
           {/* Combobox Dropdown */}
           <div className="min-w-80">
-            <CustomCombobox data={groups} selectedData={selectedGroup} onChange={setSelectedGroup} placeholder="Vui lòng chọn nhóm thi" keyShow={"name"} />
+            <CustomCombobox
+              data={groups}
+              selectedData={selectedGroup}
+              onChange={(value) => {
+                setSelectedGroup(value);
+                // @ts-ignore
+                dispatch(fetchChampionEventGroups({ champ_grp_id: value?.id }));
+              }}
+              placeholder="Vui lòng chọn nhóm thi"
+              keyShow={"name"}
+            />
           </div>
           <Button disabled={!selectedGroup} variant="primary" className="min-w-28" onClick={listActions[0].callback}>
             Tạo mới

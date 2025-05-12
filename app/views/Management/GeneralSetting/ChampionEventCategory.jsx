@@ -89,7 +89,7 @@ export default function ChampionEventCategory() {
             id={selectedCategory.category_key}
             type={Constants.ACCTION_INSERT}
             onAgree={(formData) => {
-              console.log("Insert Champion Group:", formData);
+              selectedCategory && dispatch(fetchChampionEvents(selectedCategory.category_key));
               setOpenActions({ isOpen: false });
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}
@@ -102,7 +102,7 @@ export default function ChampionEventCategory() {
             type={Constants.ACCTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
-              console.log("Update Champion Group:", formData);
+              selectedCategory && dispatch(fetchChampionEvents(selectedCategory.category_key));
               setOpenActions({ isOpen: false });
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}

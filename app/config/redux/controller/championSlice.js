@@ -1,11 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosClient from '../../../helpers/api';
+import axiosClient from '../../apis/axiosClient';
 
-const API_URL = '/api/champion';
+const API_URL = '/champion';
 
-export const fetchChampions = createAsyncThunk('champions/fetchAll', async (id) => {
-  const url = id !== undefined && id !== null ? `${API_URL}/${id}` : API_URL;
-  const response = await axiosClient.get(url);
+export const fetchChampions = createAsyncThunk('champions/fetchAll', async (params) => {
+  const response = await axiosClient.get(API_URL, { params });
   return response.data;
 });
 

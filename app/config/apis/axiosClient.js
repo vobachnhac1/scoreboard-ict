@@ -23,12 +23,14 @@ axiosClient.interceptors.request.use(
 
 // Add response interceptor (xử lý lỗi 401, 500,...)
 axiosClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response && response.data) {
+      return response.data;
+    }
+    return response;
+  },
   (error) => {
-    // if (error.response?.status === 401) {
-    //   // Ví dụ: tự động logout hoặc refresh token
-    //   console.warn('Unauthorized, please login again');
-    // }
+    console.error('API error:', error);
     return Promise.reject(error);
   }
 );

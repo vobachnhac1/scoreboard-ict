@@ -18,6 +18,16 @@ export default function ChampionCategory() {
   const [openActions, setOpenActions] = useState(null);
   const [search, setSearch] = useState("");
 
+  useEffect(() => {
+    dispatch(fetchChampionCategories());
+  }, [dispatch]);
+
+  const handleSearch = async (text) => {
+    console.log("Tìm kiếm:", text);
+    // @ts-ignore
+    dispatch(fetchChampionCategories({ search: text }));
+  };
+
   const listActions = [
     {
       key: Constants.ACCTION_INSERT,
@@ -42,15 +52,11 @@ export default function ChampionCategory() {
     },
   ];
 
-  useEffect(() => {
-    dispatch(fetchChampionCategories());
-  }, [dispatch]);
-
   const columns = [
     { title: "STT", key: "order", align: "center" },
-    { title: "Tên nhóm", key: "category_name" },
+    { title: "Mã hình thức", key: "category_key" },
+    { title: "Hình thức thi", key: "category_name" },
     { title: "Mô tả", key: "description" },
-    { title: "Mã nhóm", key: "category_key" },
     { title: "Ngày tạo", key: "created_at", render: (row) => Utils.formatDate(row.created_at) },
     { title: "Ngày sửa", key: "updated_at", render: (row) => Utils.formatDate(row.updated_at) },
     {
@@ -78,7 +84,7 @@ export default function ChampionCategory() {
           <ChampionCategoryForm
             type={Constants.ACCTION_INSERT}
             onAgree={(formData) => {
-              console.log("Insert Champion Group:", formData);
+              dispatch(fetchChampionCategories())
               setOpenActions({ isOpen: false });
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}
@@ -90,7 +96,7 @@ export default function ChampionCategory() {
             type={Constants.ACCTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
-              console.log("Update Champion Group:", formData);
+              dispatch(fetchChampionCategories())
               setOpenActions({ isOpen: false });
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}
@@ -115,14 +121,7 @@ export default function ChampionCategory() {
   return (
     <div className="w-full h-auto overflow-auto">
       <div className="flex items-center justify-between mb-1">
-        <SearchInput
-          value={search}
-          onChange={setSearch}
-          onSearch={(text) => {
-            console.log("Tìm kiếm:", text);
-          }}
-          placeholder="Tìm kiếm nhóm..."
-        />
+        <SearchInput value={search} onChange={setSearch} onSearch={handleSearch} placeholder="Tìm kiếm nhóm..." />
         <Button variant="primary" className="min-w-28" onClick={listActions[0].callback}>
           Tạo mới
         </Button>

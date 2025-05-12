@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosClient from '../../../helpers/api';
+import axiosClient from '../../apis/axiosClient';
 
-const API_URL = '/api/config';
+const API_URL = '/config';
 
 export const fetchConfigSystem = createAsyncThunk('configSystem/fetchAll', async () => {
   const response = await axiosClient.post(`${API_URL}/get-config-system`);

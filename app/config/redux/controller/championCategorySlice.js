@@ -1,14 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosClient from '../../../helpers/api';
+import axiosClient from '../../apis/axiosClient';
 
-const API_URL = '/api/champion-category';
+const API_URL = '/champion-category';
 
-export const fetchChampionCategories = createAsyncThunk('championCategories/fetchAll', async () => {
-  const response = await axiosClient.get(API_URL);
+export const fetchChampionCategories = createAsyncThunk('championCategories/fetchAll', async (params) => {
+  const response = await axiosClient.get(API_URL, { params });
   return response.data;
 });
 
-export const addChampionCategory = createAsyncThunk('championCategories/add', async (formData) => {
+// @ts-ignore
+export const addChampionCategory = createAsyncThunk('championCategories/add', async ({ formData }) => {
   const response = await axiosClient.post(API_URL, formData);
   return response.data;
 });
@@ -23,25 +24,6 @@ export const updateChampionCategory = createAsyncThunk('championCategories/updat
   const response = await axiosClient.put(`${API_URL}/${id}`, formData);
   return response.data;
 });
-
-export const addAndRefreshChampionCategory = createAsyncThunk(
-  'championCategory/addAndRefresh',
-  // @ts-ignore
-  async ({ formData }, { dispatch }) => {
-    await dispatch(addChampionCategory(formData));
-    await dispatch(fetchChampionCategories());
-  }
-);
-
-export const updateAndRefreshChampionCategory = createAsyncThunk(
-  'championCategory/updateAndRefresh',
-  // @ts-ignore
-  async ({ id, formData }, { dispatch }) => {
-    // @ts-ignore
-    await dispatch(updateChampionCategory({ id, formData }));
-    await dispatch(fetchChampionCategories());
-  }
-);
 
 const championCategorySlice = createSlice({
   name: 'championCategories',

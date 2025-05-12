@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosClient from '../../../helpers/api';
+import axiosClient from '../../apis/axiosClient';
 
-const API_URL = '/api/champion-grp-event';
+const API_URL = '/champion-grp-event';
 
 export const fetchChampionEventGroups = createAsyncThunk('championEventGroup/fetchAll', async (params) => {
   // @ts-ignore
@@ -9,7 +9,8 @@ export const fetchChampionEventGroups = createAsyncThunk('championEventGroup/fet
   return response.data;
 });
 
-export const addChampionEventGroup = createAsyncThunk('championEventGroup/add', async (formData) => {
+// @ts-ignore
+export const addChampionEventGroup = createAsyncThunk('championEventGroup/add', async ({ formData }) => {
   const response = await axiosClient.post(API_URL, formData);
   return response.data;
 });
@@ -24,27 +25,6 @@ export const updateChampionEventGroup = createAsyncThunk('championEventGroup/upd
   const response = await axiosClient.put(`${API_URL}/${id}`, formData);
   return response.data;
 });
-
-export const addAndRefreshChampionEventGroup = createAsyncThunk(
-  'championEvent/addAndRefresh',
-  // @ts-ignore
-  async ({ formData }, { dispatch }) => {
-    await dispatch(addChampionEventGroup(formData));
-    // @ts-ignore
-    await dispatch(fetchChampionEventGroups({ champ_grp_id: formData.champ_grp_id }));
-  }
-);
-
-export const updateAndRefreshChampionEventGroups = createAsyncThunk(
-  'championEvent/updateAndRefresh',
-  // @ts-ignore
-  async ({ id, formData }, { dispatch }) => {
-    // @ts-ignore
-    await dispatch(updateChampionEventGroup({ id, formData }));
-    // @ts-ignore
-    await dispatch(fetchChampionEventGroups({ champ_grp_id: formData.champ_grp_id }));
-  }
-);
 
 const championEventGroupslice = createSlice({
   name: 'championEventGroups',

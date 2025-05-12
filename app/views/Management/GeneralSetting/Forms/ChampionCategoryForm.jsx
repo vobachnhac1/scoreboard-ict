@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import Button from "../../../../components/Button";
 import { Constants } from "../../../../common/Constants";
 import { useAppDispatch } from "../../../../config/redux/store";
-import { addAndRefreshChampionCategory, updateAndRefreshChampionCategory } from "../../../../config/redux/controller/championCategorySlice";
+import { addChampionCategory, updateChampionCategory } from "../../../../config/redux/controller/championCategorySlice";
 
 export default function ChampionCategoryFrom({ type, data = null, onAgree, onGoBack }) {
   const dispatch = useAppDispatch();
@@ -27,7 +27,7 @@ export default function ChampionCategoryFrom({ type, data = null, onAgree, onGoB
     setLoadingButton(true);
     if (type === Constants.ACCTION_INSERT) {
       // @ts-ignore
-      dispatch(addAndRefreshChampionCategory({formData}))
+      dispatch(addChampionCategory({ formData }))
         .unwrap()
         .then(() => {
           setLoadingButton(false);
@@ -39,7 +39,7 @@ export default function ChampionCategoryFrom({ type, data = null, onAgree, onGoB
         });
     } else if (type === Constants.ACCTION_UPDATE) {
       // @ts-ignore
-      dispatch(updateAndRefreshChampionCategory({ id: data.id, formData }))
+      dispatch(updateChampionCategory({ id: data.id, formData }))
         .unwrap()
         .then(() => {
           setLoadingButton(false);

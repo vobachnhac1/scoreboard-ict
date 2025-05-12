@@ -5,7 +5,7 @@ import { Constants, LIST_GENDER } from "../../../../common/Constants";
 import { useAppDispatch, useAppSelector } from "../../../../config/redux/store";
 import { fetchChampionEvents } from "../../../../config/redux/controller/championEventSlice";
 import { fetchChampionGroups } from "../../../../config/redux/controller/championGroupSlice";
-import { addAndRefreshChampionEventGroup, updateAndRefreshChampionEventGroups } from "../../../../config/redux/controller/championEventGroupSlice";
+import { addChampionEventGroup, updateChampionEventGroup } from "../../../../config/redux/controller/championEventGroupSlice";
 
 export default function ChampionEventCategoryForm({ id, type, data = null, onAgree, onGoBack }) {
   const dispatch = useAppDispatch();
@@ -48,7 +48,7 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
     setLoadingButton(true);
     if (type === Constants.ACCTION_INSERT) {
       // @ts-ignore
-      dispatch(addAndRefreshChampionEventGroup({ formData }))
+      dispatch(addChampionEventGroup({ formData }))
         .unwrap()
         .then(() => {
           setLoadingButton(false);
@@ -60,7 +60,7 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
         });
     } else if (type === Constants.ACCTION_UPDATE) {
       // @ts-ignore
-      dispatch(updateAndRefreshChampionEventGroups({ formData, id: data.champ_grp_event_id }))
+      dispatch(updateChampionEventGroup({ formData, id: data.champ_grp_event_id }))
         .unwrap()
         .then(() => {
           setLoadingButton(false);

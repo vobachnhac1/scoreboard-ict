@@ -9,7 +9,7 @@ import { fetchChampionCategories } from "../../../../config/redux/controller/cha
 export default function ChampionEventCategoryForm({ id, type, data = null, onAgree, onGoBack }) {
   const dispatch = useAppDispatch();
   // @ts-ignore
-  const { categories, loading: loadingCategories } = useAppSelector((state) => state.championCategories);
+  const { data: categories, loading: loadingCategories } = useAppSelector((state) => state.championCategories);
 
   const [loadingButton, setLoadingButton] = React.useState(false);
   const {

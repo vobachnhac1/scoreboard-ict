@@ -1,15 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosClient from '../../apis/axiosClient';
-
-const API_URL = '/config';
+import { getConfigSystem } from '../../apis';
 
 export const fetchConfigSystem = createAsyncThunk('configSystem/fetchAll', async () => {
-  const response = await axiosClient.post(`${API_URL}/get-config-system`);
+  const response = await getConfigSystem();
   return response.data;
 });
 
 export const updateConfigSystem = createAsyncThunk('configSystem/update', async (formData) => {
-  const response = await axiosClient.post(`${API_URL}/update-config-system`, formData);
+  const response = await updateConfigSystem(formData);
   return response.data;
 });
 

@@ -2,32 +2,49 @@ import React, { Fragment, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Button from "../../../../components/Button";
 import { Constants } from "../../../../common/Constants";
-import { useAppDispatch, useAppSelector } from "../../../../config/redux/store";
+import { useAppDispatch } from "../../../../config/redux/store";
 import { addChampionGroup, updateChampionGroup } from "../../../../config/redux/controller/championGroupSlice";
-import { fetchChampions } from "../../../../config/redux/controller/championSlice";
+import { getAllChamp } from "../../../../config/apis";
 
 export default function ChampionGroupForm({ type, data = null, onAgree, onGoBack }) {
   const dispatch = useAppDispatch();
   // @ts-ignore
-  const { champions, loading: LoadingChamp } = useAppSelector((state) => state.champions);
+  const [champions, setChampions] = React.useState([]);
   const [loadingButton, setLoadingButton] = React.useState(false);
+  const defaultValues = {
+    name: "",
+    description: "",
+    tournament_id: "",
+  };
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
-  } = useForm();
+  } = useForm({ defaultValues });
 
   useEffect(() => {
-    if (champions.length === 0) {
-      dispatch(fetchChampions());
+    const fetchData = async () => {
+      try {
+        const [resChamp] = await Promise.all([getAllChamp()]);
+        setChampions(resChamp.data);
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (data && champions.length > 0) {
+      reset({
+        name: data.name,
+        description: data.description,
+        tournament_id: data.tournament_id,
+      });
     }
-    if (data) {
-      reset(data);
-      setValue("tournament_id", data.tournament_id);
-    }
-  }, [data, reset, setValue, champions.length, dispatch]);
+  }, [data, champions]);
 
   const onSubmit = (formData) => {
     formData = {
@@ -72,11 +89,11 @@ export default function ChampionGroupForm({ type, data = null, onAgree, onGoBack
             Giải đấu
           </label>
           <select
-            // disabled
             id="tournament_id"
             {...register("tournament_id", { required: "Giải đấu là bắt buộc" })}
             className="form-select col-span-2 w-full px-3 py-2 border rounded-md text-sm"
           >
+            <option value="">-- Vui lòng chọn --</option>
             {champions.map((item, i) => (
               <option key={i} value={item?.id}>
                 {item?.tournament_name}

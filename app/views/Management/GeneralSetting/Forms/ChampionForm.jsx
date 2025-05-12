@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Constants, LIST_CHAMPION_STATUS } from "../../../../common/Constants";
 import { useAppDispatch } from "../../../../config/redux/store";
 import Button from "../../../../components/Button";
-import { addChampion, updateAndRefreshChampion } from "../../../../config/redux/controller/championSlice";
+import { addChampion, updateChampion } from "../../../../config/redux/controller/championSlice";
 
 export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
   const dispatch = useAppDispatch();
@@ -38,7 +38,7 @@ export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
         });
     } else if (type === Constants.ACCTION_UPDATE) {
       // @ts-ignore
-      dispatch(updateAndRefreshChampion({ id: data.id, formData }))
+      dispatch(updateChampion({ id: data.id, formData }))
         .unwrap()
         .then(() => {
           setLoadingButton(false);

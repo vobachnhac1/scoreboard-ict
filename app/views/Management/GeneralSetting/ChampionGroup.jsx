@@ -15,9 +15,9 @@ export default function ChampionGroup({ ...props }) {
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
   // @ts-ignore
-  const { groups, loading } = useAppSelector((state) => state.championGroups);
+  const { data: groups, loading } = useAppSelector((state) => state.championGroups);
   // @ts-ignore
-  const { champions, loadingCombobox } = useAppSelector((state) => state.champions);
+  const { data: champions, loadingCombobox } = useAppSelector((state) => state.champions);
   const [openActions, setOpenActions] = useState(null);
   const [selectedChampion, setSelectedChampion] = useState(null);
 

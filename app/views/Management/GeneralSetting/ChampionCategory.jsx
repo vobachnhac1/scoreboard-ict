@@ -13,7 +13,7 @@ import { deleteChampionCategory, fetchChampionCategories } from "../../../config
 export default function ChampionCategory() {
   const dispatch = useAppDispatch();
   // @ts-ignore
-  const { categories, loading } = useAppSelector((state) => state.championCategories);
+  const { data: categories, loading } = useAppSelector((state) => state.championCategories);
   const [page, setPage] = useState(1);
   const [openActions, setOpenActions] = useState(null);
   const [search, setSearch] = useState("");
@@ -84,7 +84,7 @@ export default function ChampionCategory() {
           <ChampionCategoryForm
             type={Constants.ACCTION_INSERT}
             onAgree={(formData) => {
-              dispatch(fetchChampionCategories())
+              dispatch(fetchChampionCategories());
               setOpenActions({ isOpen: false });
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}
@@ -96,7 +96,7 @@ export default function ChampionCategory() {
             type={Constants.ACCTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
-              dispatch(fetchChampionCategories())
+              dispatch(fetchChampionCategories());
               setOpenActions({ isOpen: false });
             }}
             onGoBack={() => setOpenActions({ isOpen: false })}

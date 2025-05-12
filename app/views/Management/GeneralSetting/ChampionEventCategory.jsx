@@ -15,9 +15,9 @@ export default function ChampionEventCategory() {
   const dispatch = useAppDispatch();
 
   // @ts-ignore
-  const { categories, loading: loadingCategories } = useAppSelector((state) => state.championCategories);
+  const { data: categories, loading: loadingCategories } = useAppSelector((state) => state.championCategories);
   // @ts-ignore
-  const { events, loading: loadingEvents } = useAppSelector((state) => state.championEvents);
+  const { data: events, loading: loadingEvents } = useAppSelector((state) => state.championEvents);
   const [page, setPage] = useState(1);
   const [openActions, setOpenActions] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);

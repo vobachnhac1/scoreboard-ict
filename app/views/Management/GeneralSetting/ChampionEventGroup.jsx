@@ -16,9 +16,9 @@ export default function ChampionEventGroup() {
   const dispatch = useAppDispatch();
 
   // @ts-ignore
-  const { groups, loading: loadingGroups } = useAppSelector((state) => state.championGroups);
+  const { data: groups, loading: loadingGroups } = useAppSelector((state) => state.championGroups);
   // @ts-ignore
-  const { eventGroups, loading: loadingEventGroups } = useAppSelector((state) => state.championEventGroups);
+  const { data: eventGroups, loading: loadingEventGroups } = useAppSelector((state) => state.championEventGroups);
   const [page, setPage] = useState(1);
   const [openActions, setOpenActions] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -50,7 +50,6 @@ export default function ChampionEventGroup() {
       callback: (row) => setOpenActions({ isOpen: true, key: Constants.ACCTION_DELETE, row }),
     },
   ];
-  console.log(openActions);
 
   const columns = [
     { title: "STT", key: "order", align: "center" },
@@ -101,7 +100,6 @@ export default function ChampionEventGroup() {
             type={Constants.ACCTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
-              console.log("Update Champion Group:", formData);
               // @ts-ignore
               selectedGroup && dispatch(fetchChampionEventGroups({ champ_grp_id: selectedGroup?.id }));
               setOpenActions({ isOpen: false });

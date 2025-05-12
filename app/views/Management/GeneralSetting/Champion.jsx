@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
 export default function Champion() {
   const dispatch = useAppDispatch();
   // @ts-ignore
-  const { champions, loading } = useAppSelector((state) => state.champions);
+  const { data: champions, loading } = useAppSelector((state) => state.champions);
   const [page, setPage] = useState(1);
   const [openActions, setOpenActions] = useState(null);
   const [search, setSearch] = useState("");
@@ -106,7 +106,8 @@ export default function Champion() {
           <ChampionForm
             type={Constants.ACCTION_INSERT}
             onAgree={(formData) => {
-              console.log("ChampionForm", formData);
+              // @ts-ignore
+              dispatch(fetchChampions({ search: search }));
               setOpenActions({ ...openActions, isOpen: false });
             }}
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
@@ -118,7 +119,8 @@ export default function Champion() {
             type={Constants.ACCTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
-              console.log("ChampionForm", formData);
+              // @ts-ignore
+              dispatch(fetchChampions({ search: search }));
               setOpenActions({ ...openActions, isOpen: false });
             }}
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}

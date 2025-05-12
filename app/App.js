@@ -12,15 +12,16 @@ const App = () => {
   const { language } = useSelector((state) => state.language);
 
   const dispatch = useDispatch();
-  const connectionStatus = useSelector((state) => state.socket.connectionStatus);
+  const connectionStatus = useSelector((state) => state.socket.connected);
 
   useEffect(() => {
-    dispatch(connectSocket('admin'));
-
+    if(!connectionStatus){
+      dispatch(connectSocket('admin'));
+    }
     return () => {
       dispatch(disconnectSocket());
     };
-  }, [dispatch]);
+  }, []);
 
 
   // console.log(language);

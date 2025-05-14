@@ -35,7 +35,7 @@ const CustomTable = ({
           <thead className="bg-primary text-white">
             <tr>
               {visibleColumns.map((col) => (
-                <th key={col.key} className={`px-4 py-3 text-sm font-medium whitespace-nowrap ${getAlignmentClass(col.align)}`}>
+                <th key={col.key} className={`px-4 py-3 text-sm font-medium whitespace-nowrap ${getAlignmentClass(col.align)} ${col.className || ""}`}>
                   {col.title}
                 </th>
               ))}
@@ -64,7 +64,11 @@ const CustomTable = ({
                   onDoubleClick={() => onRowDoubleClick(row)}
                 >
                   {visibleColumns.map((col) => (
-                    <td key={col.key} className={`px-4 py-2 text-sm text-gray-700 ${getAlignmentClass(col.align)}`} style={{ minWidth: col.width || 100 }}>
+                    <td
+                      key={col.key}
+                      className={`px-4 py-2 text-sm text-gray-700 ${getAlignmentClass(col.align)} ${col.className || ""}`}
+                      style={{ minWidth: col.width || 100 }}
+                    >
                       {col.render ? col.render(row) : col.key === "order" ? row[col.key] ?? idx + 1 : row[col.key]}
                     </td>
                   ))}

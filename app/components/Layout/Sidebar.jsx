@@ -32,12 +32,12 @@ const Sidebar = ({ navigation }) => {
       <ul className="flex flex-col mt-5 text-base space-y-1">
         {navigation.map((item) =>
           item.children ? (
-            <Disclosure key={item.name} as="li" defaultOpen={item.children.some((child) => isActive(child.href))} className="text-base">
+            <Disclosure key={item.name} as="li" defaultOpen={item.children.some((child) => isActive(child.href)) || isActive(item.href)} className="text-base">
               {({ open }) => (
                 <Fragment>
                   <DisclosureButton
                     className={`w-full flex items-center py-2 px-2 space-x-4 rounded cursor-pointer
-                      ${item.children.some((child) => isActive(child.href)) ? "bg-primary text-white" : "hover:bg-primary hover:text-white"}`}
+          ${item.children.some((child) => isActive(child.href)) || isActive(item.href) ? "bg-primary text-white" : "hover:bg-primary hover:text-white"}`}
                     aria-expanded={open}
                     aria-controls={`panel-${item.name}`}
                   >

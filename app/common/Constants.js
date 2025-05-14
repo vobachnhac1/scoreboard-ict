@@ -7,7 +7,21 @@ export const Constants = {
   ACCTION_CONNECT_GD: "GD",
   ACCTION_CONNECT_DIS: "DIS",
   ACCTION_CONNECT_MSG: "MSG",
+
+  ACCTION_ATHLETE_RESULT: "RESULT",
+  ACCTION_ATHLETE_ADJUST: "ADJUST",
+  ACCTION_ATHLETE_CONTINUE: "CONTINUE",
+  ACCTION_ATHLETE_IN: "IN",
+  ACCTION_ATHLETE_RE: "RE",
 }
+
+export const LIST_STATUS_ATHLETE = [
+  { key: "WAI", label: "Chờ" },
+  { key: "IN", label: "Đang diễn ra" },
+  { key: "FIN", label: "Kết thúc" },
+  { key: "CAN", label: "Huỷ" },
+  { key: "OTH", label: "Khác" },
+];
 
 export const LIST_JUDGE_PRORMISSION = [
   { key: "GD1", label: "Giám định 1" },

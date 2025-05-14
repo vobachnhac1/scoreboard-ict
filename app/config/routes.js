@@ -9,17 +9,15 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import PlayerList from '../views/PlayerList';
 import Bracket from '../views/Bracket';
 import QrViews from '../views/QrViews';
-import SidebarLayout from '../components/Layout/SidebarLayout';
 import UserManagement from '../views/UserManagement';
 import UserInfo from '../views/UserInfo';
 import Login from '../views/Login';
 import NewsFeed from '../views/NewsFeed';
 import { Empty } from 'antd';
 import SystemManagement from '../views/SystemManagement';
-import Home from '../views/Home';
 import History from '../views/History';
 import AdminLayout from '../components/Layout/AdminLayout';
-import { Connect, Champion, ChampionCategory, ChampionEvent, ConfigSystem } from '../views/Management';
+import { Connect, Champion, ChampionCategory, ChampionEvent, ConfigSystem, MatchAthlete, Athlete, DataAthlete, ReportAthlete } from '../views/Management';
 
 // export const socketClient = new SocketClient().connect();
 
@@ -33,6 +31,10 @@ const Routers = () => {
 
     { path: '/', element: <AdminLayout><div>PHẦN MỀM XEM LỊCH THI ĐẤU</div></AdminLayout> },
     { path: '/management/connect', element: <AdminLayout><Connect /></AdminLayout> },
+    { path: '/management/athlete', element: <AdminLayout><Athlete /></AdminLayout> },
+    { path: '/management/athlete/match', element: <AdminLayout><MatchAthlete /></AdminLayout> },
+    { path: '/management/athlete/data', element: <AdminLayout><DataAthlete /></AdminLayout> },
+    { path: '/management/athlete/report', element: <AdminLayout><ReportAthlete /></AdminLayout> },
     { path: '/management/general-setting', element: <AdminLayout><div>QUẢN LÝ CÀI ĐẶT CHUNG</div></AdminLayout> },
     { path: '/management/general-setting/champion', element: <AdminLayout><Champion /></AdminLayout> },
     // { path: '/management/general-setting/champion-grp', element: <AdminLayout><ChampionGroup /></AdminLayout> },

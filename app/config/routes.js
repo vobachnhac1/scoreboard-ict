@@ -20,6 +20,7 @@ import Home from '../views/Home';
 import History from '../views/History';
 import AdminLayout from '../components/Layout/AdminLayout';
 import { Connect, Champion, ChampionCategory, ChampionEvent, ConfigSystem } from '../views/Management';
+import MatchScore from '../views/MatchScore';
 
 // export const socketClient = new SocketClient().connect();
 
@@ -39,6 +40,7 @@ const Routers = () => {
     { path: '/management/general-setting/champion-category', element: <AdminLayout><ChampionCategory /></AdminLayout> },
     { path: '/management/general-setting/champion-event', element: <AdminLayout><ChampionEvent /></AdminLayout> },
     { path: '/management/general-setting/config-system', element: <AdminLayout><ConfigSystem /></AdminLayout> },
+    { path: '/match-score', element: <MatchScore /> },
 
     { path: '/feeds', element: <NewsFeed /> },
     { path: '/qr-views', element: <QrViews /> },

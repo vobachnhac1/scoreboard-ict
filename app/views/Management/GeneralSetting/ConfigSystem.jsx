@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Button from "../../../components/Button";
 import { SwitchField } from "../../../components/SwitchField";
 import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
-import { fetchConfigSystem, updateAndRefreshConfigSystem } from "../../../config/redux/controller/configSystemSlice";
+import { fetchConfigSystem, updateConfigSystem } from "../../../config/redux/controller/configSystemSlice";
 
 const inputFields = {
   "Cài đặt chung": [
@@ -14,7 +14,7 @@ const inputFields = {
     { name: "he_diem", label: "Hệ điểm" },
   ],
   "Cài đặt thời gian": [
-    { name: "thoi_gian_tinh_diem", label: "Thời gian tính điểm", placeholder: "ms" },
+    { name: "thoi_gian_tinh_diem", label: "Thời gian tính điểm", placeholder: "giây" },
     { name: "thoi_gian_thi_dau", label: "Thời gian thi đấu", placeholder: "giây" },
     { name: "thoi_gian_nghi", label: "Thời gian nghỉ", placeholder: "giây" },
     { name: "thoi_gian_hiep_phu", label: "Thời gian hiệp phụ", placeholder: "giây" },
@@ -61,11 +61,13 @@ export default function ConfigSystem() {
   }, [data, reset]);
 
   const onSubmit = (formData) => {
+    console.log(formData);
+
     if (!formData) return;
-    dispatch(updateAndRefreshConfigSystem(formData))
+    dispatch(updateConfigSystem(formData))
       .unwrap()
       .then(() => {
-        // handle
+        dispatch(fetchConfigSystem());
       })
       .catch((error) => {
         //

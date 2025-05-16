@@ -151,6 +151,20 @@ export default function DataTotalAthleteList() {
         data={data}
         loading={loading}
         page={page}
+        contentHeader={
+          <div className="relative">
+            <div className="">Danh sách VĐV tham dự</div>
+            <Button
+              className="absolute right-0 -top-[6px]"
+              variant="warning"
+              onClick={() => {
+                setOpenActions({ isOpen: true, key: Constants.ACCTION_INSERT, row: null });
+              }}
+            >
+              Thêm
+            </Button>
+          </div>
+        }
         onPageChange={setPage}
         onRowDoubleClick={(row) => {
           console.log("Double clicked row:", row);

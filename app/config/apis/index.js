@@ -38,4 +38,4 @@ export const getCommonCategoryByKey = (key) => axiosClient.get(`/common/category
 
 // ================== SYSTEM ==================
 export const getConfigSystem = () => axiosClient.post('/config/get-config-system');
-export const updateConfigSystem = (data) => axiosClient.post('/config/update-config-system', data);
+export const updateConfigSystemOther = (data) => axiosClient.post('/config/update-config-system', data);

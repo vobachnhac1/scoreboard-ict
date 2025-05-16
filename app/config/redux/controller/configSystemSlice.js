@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getConfigSystem } from '../../apis';
+import { getConfigSystem, updateConfigSystemOther } from '../../apis';
 
 export const fetchConfigSystem = createAsyncThunk('configSystem/fetchAll', async () => {
   const response = await getConfigSystem();
@@ -7,18 +7,9 @@ export const fetchConfigSystem = createAsyncThunk('configSystem/fetchAll', async
 });
 
 export const updateConfigSystem = createAsyncThunk('configSystem/update', async (formData) => {
-  const response = await updateConfigSystem(formData);
+  const response = await updateConfigSystemOther(formData);
   return response.data;
 });
-
-export const updateAndRefreshConfigSystem = createAsyncThunk(
-  'configSystem/updateAndRefresh',
-  async (formData, { dispatch }) => {
-    // @ts-ignore
-    await dispatch(updateConfigSystem(formData));
-    await dispatch(fetchConfigSystem());
-  }
-);
 
 const configSystemSlice = createSlice({
   name: 'configSystem',

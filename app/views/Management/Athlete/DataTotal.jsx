@@ -9,6 +9,7 @@ import { deleteChampion, fetchChampions } from "../../../config/redux/controller
 import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
 import ActionForm from "./Forms/ActionForm";
 import DataForm from "./Forms/DataForm";
+import Input from "../../../components/Input";
 
 export default function DataTotal() {
   const dispatch = useAppDispatch();
@@ -168,11 +169,71 @@ export default function DataTotal() {
 
   return (
     <div className="w-full h-auto overflow-auto">
-      <div className="flex items-center justify-between mb-1">
-        <SearchInput value={search} onChange={setSearch} onSearch={handleSearch} placeholder="Tìm kiếm giải đấu..." />
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2 mb-1">
+          {/* Chọn nhóm thi */}
+          <select
+            defaultValue={""}
+            id="gender_commons_key"
+            className="form-select col-span-2 min-w-24 px-3 py-2 border rounded-md text-sm"
+            aria-placeholder="Vui lòng chọn loại"
+          >
+            <option value="">Nhóm thi</option>
+            {[1, 2, 3].map((item, i) => (
+              <option key={i} value={i}>
+                {i}
+              </option>
+            ))}
+          </select>
+
+          {/* Chọn Hình thức */}
+          <select
+            defaultValue={""}
+            id="gender_commons_key"
+            className="form-select col-span-2 min-w-24 px-3 py-2 border rounded-md text-sm"
+            aria-placeholder="Vui lòng chọn loại"
+          >
+            <option value="">Hình thức</option>
+            {[1, 2, 3].map((item, i) => (
+              <option key={i} value={i}>
+                {i}
+              </option>
+            ))}
+          </select>
+
+          {/* Chọn giới tính */}
+          <select
+            defaultValue={""}
+            id="gender_commons_key"
+            className="form-select col-span-2 min-w-24 px-3 py-2 border rounded-md text-sm"
+            aria-placeholder="Vui lòng chọn loại"
+          >
+            <option value="">Giới tính</option>
+            {[1, 2, 3].map((item, i) => (
+              <option key={i} value={i}>
+                {i}
+              </option>
+            ))}
+          </select>
+          <Input className="!rounded-md !border-black !p-2 !py-1.5" placeholder="Tìm kiếm" />
+          <Button
+            onClick={() => {
+              console.log("search:");
+            }}
+          >
+            Tìm kiếm
+          </Button>
+          <Button
+            onClick={() => {
+              console.log("Upload File:");
+            }}
+          >
+            Upload File
+          </Button>
+        </div>
         <Button
           variant="primary"
-          className="min-w-28"
+          className="min-w-24"
           onClick={() => {
             setOpenActions({ isOpen: true, key: Constants.ACCTION_INSERT });
           }}

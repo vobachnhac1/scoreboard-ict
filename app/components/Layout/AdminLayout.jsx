@@ -37,6 +37,7 @@ const AdminLayout = ({ children }) => {
         // { name: "Nhóm thi", href: "/management/general-setting/champion-grp", icon: ArrowTurnDownRightIcon },
         { name: "Hình thức thi", href: "/management/general-setting/champion-category", icon: ArrowTurnDownRightIcon },
         { name: "Nội dung thi", href: "/management/general-setting/champion-event", icon: ArrowTurnDownRightIcon },
+        { name: "Sắp xếp lích thi đấu", href: "/management/general-setting/arrange-schedule", icon: ArrowTurnDownRightIcon },
         { name: "Máy chủ", href: "/management/general-setting/config-system", icon: ArrowTurnDownRightIcon },
       ],
     },

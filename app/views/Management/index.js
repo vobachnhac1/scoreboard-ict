@@ -8,4 +8,5 @@ export { default as ReportAthlete } from './Athlete/Report';
 export { default as Champion } from './GeneralSetting';
 export { default as ChampionCategory } from './GeneralSetting/ChampionCategory';
 export { default as ChampionEvent } from './GeneralSetting/ChampionEvent';
+export { default as ArrangeSchedule } from './GeneralSetting/ArrangeSchedule';
 export { default as ConfigSystem } from './GeneralSetting/ConfigSystem';

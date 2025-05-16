@@ -25,8 +25,8 @@ export default function index() {
       </TabList>
       <TabPanels className="mt-2">
         <TabPanel className="rounded-lg bg-white p-3 ring-1 ring-black/5 h-fit">
-          <div className="grid grid-cols-6 gap-4">
-            <div className="col-span-4">
+          <div className="grid grid-cols-5 gap-4">
+            <div className="col-span-3">
               <DataTotal />
             </div>
             <div className="col-span-2">

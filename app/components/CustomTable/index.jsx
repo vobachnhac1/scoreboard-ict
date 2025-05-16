@@ -9,6 +9,7 @@ const CustomTable = ({
   page = 1,
   totalPages = 1,
   contentHeader = null,
+  rounded = "rounded-xl",
   onPageChange = (newPage) => {},
   onRowDoubleClick = (row) => {},
 }) => {
@@ -31,7 +32,7 @@ const CustomTable = ({
   };
 
   return (
-    <div className="border rounded-xl overflow-hidden select-none">
+    <div className={`border overflow-hidden select-none ${rounded}`}>
       {/* Hiển thị content nếu có */}
       {contentHeader && <div className="px-4 py-3 border-b bg-primary text-sm text-white font-semibold text-center">{contentHeader}</div>}
       <div className="overflow-x-auto">
@@ -41,7 +42,7 @@ const CustomTable = ({
               <>
                 <tr>
                   {columnGroups.map((group, idx) => (
-                    <th key={`group-${idx}`} colSpan={group.colSpan} className="px-4 py-3 text-sm font-semibold text-center border-r last:border-none">
+                    <th key={`group-${idx}`} colSpan={group.colSpan} className="px-4 py-3 text-sm font-semibold text-center border-b">
                       {group.title}
                     </th>
                   ))}
@@ -107,19 +108,23 @@ const CustomTable = ({
       </div>
 
       {/* Phân trang */}
-      <div className="flex justify-between items-center px-4 py-3 bg-gray-50 text-sm text-gray-700">
-        <span>
-          Trang {page} / {totalPages}
-        </span>
-        <div className="space-x-2">
-          <Button variant="primary" disabled={page <= 1} onClick={() => onPageChange(page - 1)} className="!px-3 !py-1">
-            Trước
-          </Button>
-          <Button variant="primary" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)} className="!px-3 !py-1">
-            Sau
-          </Button>
+      {page ? (
+        <div className="flex justify-between items-center px-4 py-3 bg-gray-50 text-sm text-gray-700">
+          <span>
+            Trang {page} / {totalPages}
+          </span>
+          <div className="space-x-2">
+            <Button variant="primary" disabled={page <= 1} onClick={() => onPageChange(page - 1)} className="!px-3 !py-1">
+              Trước
+            </Button>
+            <Button variant="primary" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)} className="!px-3 !py-1">
+              Sau
+            </Button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <React.Fragment />
+      )}
     </div>
   );
 };

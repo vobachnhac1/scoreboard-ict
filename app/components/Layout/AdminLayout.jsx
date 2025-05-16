@@ -41,6 +41,7 @@ const AdminLayout = ({ children }) => {
         { name: "Máy chủ", href: "/management/general-setting/config-system", icon: ArrowTurnDownRightIcon },
       ],
     },
+    { name: "Demo UI", href: "/match-score", icon: FolderIcon},
   ];
 
   return (

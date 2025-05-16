@@ -43,7 +43,7 @@ const Routers = () => {
     { path: '/management/general-setting/champion-event', element: <AdminLayout><ChampionEvent /></AdminLayout> },
     { path: '/management/general-setting/arrange-schedule', element: <AdminLayout><ArrangeSchedule /></AdminLayout> },
     { path: '/management/general-setting/config-system', element: <AdminLayout><ConfigSystem /></AdminLayout> },
-    { path: '/match-score', element: <MatchScore /> },
+    { path: '/match-score', element: <AdminLayout><MatchScore /></AdminLayout> },
 
     { path: '/feeds', element: <NewsFeed /> },
     { path: '/qr-views', element: <QrViews /> },

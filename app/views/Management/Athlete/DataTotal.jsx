@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
 import ActionForm from "./Forms/ActionForm";
 import DataForm from "./Forms/DataForm";
 import Input from "../../../components/Input";
+import { getAllChampCategories, getAllChampGroups, getCommonCategoryByKey } from "../../../config/apis";
 
 export default function DataTotal() {
   const dispatch = useAppDispatch();
@@ -21,7 +22,28 @@ export default function DataTotal() {
 
   const [page, setPage] = useState(1);
   const [openActions, setOpenActions] = useState(null);
-  const [search, setSearch] = useState("");
+
+  const [groups, setGroups] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [commonsGender, setCommonGender] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [resChampGroups, resChampCategories, resCommonsGender] = await Promise.all([
+          getAllChampGroups(),
+          getAllChampCategories(),
+          getCommonCategoryByKey("gender"),
+        ]);
+        setGroups(resChampGroups.data);
+        setCategories(resChampCategories.data);
+        setCommonGender(resCommonsGender.data);
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -167,36 +189,36 @@ export default function DataTotal() {
     }
   };
 
-  return (
+  return (  
     <div className="w-full h-auto overflow-auto">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col min-[1750px]:flex-row gap-2 mb-2">
         <div className="flex items-center gap-2 mb-1">
           {/* Chọn nhóm thi */}
           <select
             defaultValue={""}
             id="gender_commons_key"
-            className="form-select col-span-2 min-w-24 px-3 py-2 border rounded-md text-sm"
+            className="form-select col-span-2 min-w-28 px-2 py-2 border rounded-md text-sm"
             aria-placeholder="Vui lòng chọn loại"
           >
             <option value="">Nhóm thi</option>
-            {[1, 2, 3].map((item, i) => (
-              <option key={i} value={i}>
-                {i}
+            {groups.map((item, i) => (
+              <option key={i} value={item?.id}>
+                {item?.name}
               </option>
             ))}
           </select>
 
-          {/* Chọn Hình thức */}
+          {/* Chọn hình thức */}
           <select
             defaultValue={""}
             id="gender_commons_key"
-            className="form-select col-span-2 min-w-24 px-3 py-2 border rounded-md text-sm"
+            className="form-select col-span-2 min-w-28 px-2 py-2 border rounded-md text-sm"
             aria-placeholder="Vui lòng chọn loại"
           >
             <option value="">Hình thức</option>
-            {[1, 2, 3].map((item, i) => (
-              <option key={i} value={i}>
-                {i}
+            {categories.map((item, i) => (
+              <option key={i} value={item?.id}>
+                {item?.category_name}
               </option>
             ))}
           </select>
@@ -205,41 +227,49 @@ export default function DataTotal() {
           <select
             defaultValue={""}
             id="gender_commons_key"
-            className="form-select col-span-2 min-w-24 px-3 py-2 border rounded-md text-sm"
+            className="form-select col-span-2 min-w-28 px-2 py-2 border rounded-md text-sm"
             aria-placeholder="Vui lòng chọn loại"
           >
             <option value="">Giới tính</option>
-            {[1, 2, 3].map((item, i) => (
-              <option key={i} value={i}>
-                {i}
+            {commonsGender.map((item, i) => (
+              <option key={i} value={item?.key}>
+                {item?.value}
               </option>
             ))}
           </select>
-          <Input className="!rounded-md !border-black !p-2 !py-1.5" placeholder="Tìm kiếm" />
+        </div>
+        <div className="w-full flex items-center justify-between gap-2 mb-1">
+          <div className="flex items-center gap-2">
+            <div>
+              <Input className="!rounded-md !border-black !p-2 !py-1.5 min-w-28" placeholder="Nội dung" />
+            </div>
+            <Button
+              className="min-w-28"
+              onClick={() => {
+                console.log("search:");
+              }}
+            >
+              Tìm kiếm
+            </Button>
+            <Button
+              className="min-w-28"
+              onClick={() => {
+                console.log("Upload File:");
+              }}
+            >
+              Upload File
+            </Button>
+          </div>
           <Button
+            variant="primary"
+            className="min-w-28"
             onClick={() => {
-              console.log("search:");
+              setOpenActions({ isOpen: true, key: Constants.ACCTION_INSERT });
             }}
           >
-            Tìm kiếm
-          </Button>
-          <Button
-            onClick={() => {
-              console.log("Upload File:");
-            }}
-          >
-            Upload File
+            Thêm đơn vị
           </Button>
         </div>
-        <Button
-          variant="primary"
-          className="min-w-24"
-          onClick={() => {
-            setOpenActions({ isOpen: true, key: Constants.ACCTION_INSERT });
-          }}
-        >
-          Thêm đơn vị
-        </Button>
       </div>
       <CustomTable
         columns={columns}

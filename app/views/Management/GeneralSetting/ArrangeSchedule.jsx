@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import classNames from "classnames";
 import Button from "../../../components/Button";
-import Input from "../../../components/Input";
 import { useAppDispatch } from "../../../config/redux/store";
 import ArrangeScheduleEventsTable from "./ArrangeScheduleEventsTable";
 import ArrangeSchedulePreviewTable from "./ArrangeSchedulePreviewTable";
+import { getAllChampGroups, getCommonCategoryByKey } from "../../../config/apis";
 
 export default function ArrangeSchedule() {
   const dispatch = useAppDispatch();
@@ -17,6 +17,45 @@ export default function ArrangeSchedule() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [openActions, setOpenActions] = useState(null);
+
+  const [groups, setGroups] = useState([]);
+  const [commonsGender, setCommonGender] = useState([]);
+  const [eventOptions, setEventOptions] = useState([]);
+  const [search, setSearch] = useState({
+    group: "",
+    gender: "",
+    event: "",
+  });
+
+  // Fetch group and gender options
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [resChampGroups, resCommonsGender] = await Promise.all([getAllChampGroups(), getCommonCategoryByKey("gender")]);
+        setGroups(resChampGroups.data);
+        setCommonGender(resCommonsGender.data);
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // useEffect(() => {
+  //   const fetchEvents = async () => {
+  //     if (search.group && search.gender) {
+  //       try {
+  //         const res = await getAllChampEventsByChamp({ groupId: search.group, gender: search.gender });
+  //         setEventOptions(res.data || []);
+  //       } catch (error) {
+  //         setEventOptions([]);
+  //       }
+  //     } else {
+  //       setEventOptions([]);
+  //     }
+  //   };
+  //   fetchEvents();
+  // }, [search.group, search.gender]);
 
   useEffect(() => {
     setLoading(true);
@@ -46,6 +85,34 @@ export default function ArrangeSchedule() {
     }, 500);
   }, [page]);
 
+  const handleSelectChange = (e) => {
+    const { id, value } = e.target;
+    setSearch((prev) => ({ ...prev, [id]: value }));
+    if (id === "group" || id === "gender") {
+      setSearch((prev) => ({ ...prev, event: "" }));
+    }
+  };
+
+  const handleSearch = async () => {
+    setLoading(true);
+    // Replace with real API call if available
+    // Example: const res = await getEvents({ group: search.group, gender: search.gender, event: search.event });
+    setTimeout(() => {
+      const filteredEvents = Array.from({ length: 10 }, (_, i) => {
+        const index = i + 1 + (page - 1) * 10;
+        return {
+          id: index,
+          order: index,
+          noi_dung: `Nội dung ${index}`,
+          loai: index % 2 === 0 ? "Cá nhân" : "Đồng đội",
+          thu_tu: index,
+        };
+      });
+      setDataEvents(filteredEvents);
+      setLoading(false);
+    }, 500);
+  };
+
   const RenderContent = () => {
     return (
       <div>
@@ -53,57 +120,55 @@ export default function ArrangeSchedule() {
           <div className="flex items-center gap-2 mb-2">
             {/* Chọn nhóm thi */}
             <select
-              defaultValue={""}
-              id="gender_commons_key"
+              id="group"
+              value={search.group}
+              onChange={handleSelectChange}
               className="form-select col-span-2 min-w-36 px-3 py-2 border rounded-md text-sm"
               aria-placeholder="Vui lòng chọn loại"
             >
               <option value="">Nhóm thi</option>
-              {[1, 2, 3].map((item, i) => (
-                <option key={i} value={i}>
-                  {i}
+              {groups.map((item, i) => (
+                <option key={i} value={item?.id}>
+                  {item?.name}
                 </option>
               ))}
             </select>
 
             {/* Chọn giới tính */}
             <select
-              defaultValue={""}
-              id="gender_commons_key"
+              id="gender"
+              value={search.gender}
+              onChange={handleSelectChange}
               className="form-select col-span-2 min-w-36 px-3 py-2 border rounded-md text-sm"
               aria-placeholder="Vui lòng chọn loại"
             >
               <option value="">Giới tính</option>
-              {[1, 2, 3].map((item, i) => (
-                <option key={i} value={i}>
-                  {i}
+              {commonsGender.map((item, i) => (
+                <option key={i} value={item?.key}>
+                  {item?.value}
                 </option>
               ))}
             </select>
-            {/* Nội dung thi đấu */}
+
+            {/* Chọn nội dung theo giải đấu */}
             <select
-              defaultValue={""}
-              id="gender_commons_key"
-              className="form-select col-span-2 min-w-36 px-3 py-2 border rounded-md text-sm"
+              id="event"
+              value={search.event}
+              onChange={handleSelectChange}
+              className="form-select col-span-2 min-w-48 px-3 py-2 border rounded-md text-sm"
               aria-placeholder="Vui lòng chọn loại"
+              disabled={!search.group || !search.gender || eventOptions.length === 0}
             >
-              <option value="">Nội dung thi đấu</option>
-              {[1, 2, 3].map((item, i) => (
-                <option key={i} value={i}>
-                  {i}
+              <option value="">Nội dung theo giải đấu</option>
+              {eventOptions.map((item, i) => (
+                <option key={i} value={item?.id}>
+                  {item?.category_name}
                 </option>
               ))}
             </select>
-            <Input className="!rounded-md !border-black !p-2 !py-1.5" placeholder="Tìm kiếm" />
-            <Button
-              onClick={() => {
-                console.log("search:");
-              }}
-            >
-              Tìm kiếm
-            </Button>
+            <Button onClick={handleSearch}>Tìm kiếm</Button>
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end items-center gap-2">
             <Button
               variant="primary"
               className="min-w-24"

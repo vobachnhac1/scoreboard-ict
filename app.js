@@ -19,6 +19,8 @@ const configRoutes = require('./server/routes/config.routes');
 const commonRoutes = require('./server/routes/common.routes');
 const championRoutes = require('./server/routes/champion.routes');
 const athleteRoutes = require('./server/routes/athlete.routes');
+const competitionRoutes = require('./server/routes/competition.routes');
+const competitionMatchRoutes = require('./server/routes/competition_match.routes');
 
 
 app.use(bodyParser.json());
@@ -41,6 +43,8 @@ app.use('/api/config', configRoutes);
 app.use('/api', commonRoutes);
 app.use('/api', championRoutes);
 app.use('/api', athleteRoutes);
+app.use('/api', competitionRoutes);
+app.use('/api', competitionMatchRoutes);
 
 
 // Khởi tạo socket

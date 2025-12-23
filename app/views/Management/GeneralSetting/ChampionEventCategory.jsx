@@ -56,7 +56,7 @@ export default function ChampionEventCategory() {
 
   const columns = [
     { title: "STT", key: "order", align: "center" },
-    { title: "Tên hạng cân", key: "event_name" },
+    { title: "Nội dung thi", key: "event_name" },
     { title: "Số thành viên", key: "num_member" },
     { title: "Loại", key: "category_key" },
     { title: "Kiểu quyền", key: "qu_type" },

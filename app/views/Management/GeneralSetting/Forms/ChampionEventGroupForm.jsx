@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import Button from "../../../../components/Button";
 import { Constants } from "../../../../common/Constants";
 import { addChampionEventGroup, updateChampionEventGroup } from "../../../../config/redux/controller/championEventGroupSlice";
-import { getAllChampEvents, getAllChampGroups, getAllCommonCategoryKeys } from "../../../../config/apis";
+import { getAllChampEvents, getAllChampGroups, getCommonCategoryByKey, getAllChampCategories } from "../../../../config/apis";
 import { useAppDispatch } from "../../../../config/redux/store";
 
 export default function ChampionEventCategoryForm({ id, type, data = null, onAgree, onGoBack }) {
@@ -11,9 +11,11 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
   const [groups, setGroups] = React.useState([]);
   const [events, setEvents] = React.useState([]);
   const [commonsKey, setCommonKey] = React.useState([]);
+  const [champCategory, setChampCategory] = React.useState([]);
   const [loadingButton, setLoadingButton] = React.useState(false);
   const defaultValues = {
     champ_grp_id: id,
+    champ_category_id: "",
     champ_event_id: "",
     gender_commons_key: "",
   };
@@ -27,40 +29,44 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
 
   useEffect(() => {
     getDataSelect();
-  }, []);
+  }, []);  
 
   const getDataSelect = async () => {
     try {
-      const [resChampGroups, resChampEvents, resCommonsKey] = await Promise.all([getAllChampGroups(), getAllChampEvents(), getAllCommonCategoryKeys()]);
+      const [resChampGroups, resChampEvents, resCommonsKey, resChampCategory] = await Promise.all([getAllChampGroups(), getAllChampEvents(), getCommonCategoryByKey('gender'), getAllChampCategories()]);
       setGroups(resChampGroups.data);
       setEvents(resChampEvents.data);
       setCommonKey(resCommonsKey.data);
-    } catch (error) {
+      setChampCategory(resChampCategory.data)
+    } catch (error) { 
       console.error("Lỗi khi lấy dữ liệu:", error);
     }
   };
 
   // Reset form khi có đủ data và danh sách chọn
   useEffect(() => {
-    if (data && groups.length && events.length && commonsKey.length) {
+    if (data && groups.length && events.length && commonsKey.length && champCategory.length) {
       reset({
         champ_grp_id: data.champ_grp_id ?? id,
         champ_event_id: data.champ_event_id,
+        champ_category_id: data.champ_category_id,
         gender_commons_key: data.gender_commons_key,
       });
-    } else if (!data && groups.length && events.length && commonsKey.length) {
+    } else if (!data && groups.length && events.length && commonsKey.length && champCategory.length) {
       reset({
         champ_grp_id: id,
         champ_event_id: "",
+        champ_category_id: "",
         gender_commons_key: "",
       });
     }
-  }, [data, id, groups, events, commonsKey]);
+  }, [data, id, groups, events, commonsKey, champCategory]);
 
   const onSubmit = (formData) => {
     formData = {
       champ_event_id: formData.champ_event_id,
       champ_grp_id: formData.champ_grp_id,
+      champ_category_id: formData.champ_category_id,
       gender_commons_key: formData.gender_commons_key,
     };
     setLoadingButton(true);
@@ -115,6 +121,26 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
           {errors.champ_grp_id && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.champ_grp_id.message)}</p>}
         </div>
 
+        {/* Hình thức */}
+        <div className="grid grid-cols-3 gap-1 items-center">
+          <label htmlFor="champ_category_id" className="text-sm font-medium text-gray-700">
+            Hình thức
+          </label>
+          <select
+            id="champ_category_id"
+            {...register("champ_category_id", { required: "Hình thức thi bắt buộc" })}
+            className="form-select col-span-2 w-full px-3 py-2 border rounded-md text-sm"
+          >
+            <option value="">-- Vui lòng chọn --</option>
+            {champCategory.map((item, i) => (
+              <option key={i} value={item?.category_key}>
+                {item?.category_name}
+              </option>
+            ))}
+          </select>
+          {errors.champ_category_id && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.champ_category_id.message)}</p>}
+        </div>
+
         {/* Nội dung thi */}
         <div className="grid grid-cols-3 gap-1 items-center">
           <label htmlFor="champ_event_id" className="text-sm font-medium text-gray-700">
@@ -139,7 +165,7 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
         {/* Loại */}
         <div className="grid grid-cols-3 gap-1 items-center">
           <label htmlFor="gender_commons_key" className="text-sm font-medium text-gray-700">
-            Loại
+            Giới tính
           </label>
           <select
             defaultValue={""}

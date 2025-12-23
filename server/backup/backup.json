@@ -1,0 +1,281 @@
+{
+  "champion": [],
+  "champion_athlete": [],
+  "champion_athlete_match": [],
+  "DB_MATCH_HIS": [],
+  "initconfig": [
+    {
+      "mac_address": "ac:de:48:00:11:22",
+      "uuid_desktop": "CO2GJ74NMD6M",
+      "key_license": "",
+      "total_device_desktop": 0,
+      "total_device_app": 0,
+      "use_desktop": 0,
+      "use_app": 0,
+      "expired_date": "20251231",
+      "active_date": "20250101",
+      "promotion_code": "FREE",
+      "room_code": "P4MJWP3HGD"
+    }
+  ],
+  "config_values": [
+    {
+      "id": 1,
+      "key": "system",
+      "child_key": "mon_thi",
+      "value": "3"
+    },
+    {
+      "id": 2,
+      "key": "system",
+      "child_key": "so_giam_dinh",
+      "value": "3"
+    },
+    {
+      "id": 3,
+      "key": "system",
+      "child_key": "so_hiep",
+      "value": "2"
+    }
+  ],
+  "license_child": [],
+  "sqlite_sequence": [
+    {
+      "name": "commons",
+      "seq": 27
+    },
+    {
+      "name": "config_values",
+      "seq": 3
+    },
+    {
+      "name": "competition_dk",
+      "seq": 1
+    }
+  ],
+  "referee": [],
+  "commons": [
+    {
+      "id": 1,
+      "category_type": "gender",
+      "key": "M",
+      "value": "Nam",
+      "description": "Giới tính",
+      "num_member": 0
+    },
+    {
+      "id": 2,
+      "category_type": "gender",
+      "key": "F",
+      "value": "Nữ",
+      "description": "Giới tính",
+      "num_member": 0
+    },
+    {
+      "id": 3,
+      "category_type": "gender",
+      "key": "O",
+      "value": "Khác",
+      "description": "Giới tính",
+      "num_member": 0
+    },
+    {
+      "id": 4,
+      "category_type": "champ_comp_type",
+      "key": "DK",
+      "value": "Đối kháng",
+      "description": "Đối kháng",
+      "num_member": 0
+    },
+    {
+      "id": 5,
+      "category_type": "champ_comp_type",
+      "key": "QU",
+      "value": "Quyền",
+      "description": "Quyền",
+      "num_member": 0
+    },
+    {
+      "id": 6,
+      "category_type": "qu_type",
+      "key": "DON",
+      "value": "Đơn luyện",
+      "description": "",
+      "num_member": 1
+    },
+    {
+      "id": 7,
+      "category_type": "qu_type",
+      "key": "DAL",
+      "value": "Đa luyện",
+      "description": "",
+      "num_member": 4
+    },
+    {
+      "id": 8,
+      "category_type": "qu_type",
+      "key": "DDO",
+      "value": "Đồng đội",
+      "description": "",
+      "num_member": 6
+    },
+    {
+      "id": 9,
+      "category_type": "qu_type",
+      "key": "TUV",
+      "value": "Tự vệ",
+      "description": "",
+      "num_member": 2
+    },
+    {
+      "id": 10,
+      "category_type": "qu_type",
+      "key": "SON",
+      "value": "Song luyện",
+      "description": "",
+      "num_member": 2
+    },
+    {
+      "id": 11,
+      "category_type": "qu_type",
+      "key": "VON",
+      "value": "Võ nhạc",
+      "description": "",
+      "num_member": 6
+    },
+    {
+      "id": 12,
+      "category_type": "qu_type",
+      "key": "OTH",
+      "value": "Khác",
+      "description": "",
+      "num_member": 1
+    },
+    {
+      "id": 13,
+      "category_type": "champion_type",
+      "key": "NEW",
+      "value": "Tạo mới",
+      "description": "",
+      "num_member": 0
+    },
+    {
+      "id": 14,
+      "category_type": "champion_type",
+      "key": "PRO",
+      "value": "Chờ đăng ký",
+      "description": "",
+      "num_member": 0
+    },
+    {
+      "id": 15,
+      "category_type": "champion_type",
+      "key": "COM",
+      "value": "Hoàn thiện đăng ký",
+      "description": "",
+      "num_member": 0
+    },
+    {
+      "id": 16,
+      "category_type": "champion_type",
+      "key": "RAN",
+      "value": "Bốc thăm",
+      "description": "",
+      "num_member": 0
+    },
+    {
+      "id": 17,
+      "category_type": "champion_type",
+      "key": "IN",
+      "value": "Đang diễn ra",
+      "description": "",
+      "num_member": 0
+    },
+    {
+      "id": 18,
+      "category_type": "champion_type",
+      "key": "FIN",
+      "value": "Kết thúc",
+      "description": "",
+      "num_member": 0
+    },
+    {
+      "id": 19,
+      "category_type": "champion_type",
+      "key": "CAN",
+      "value": "Huỷ",
+      "description": "",
+      "num_member": 0
+    },
+    {
+      "id": 20,
+      "category_type": "champion_type",
+      "key": "PEN",
+      "value": "Tạm hoãn",
+      "description": "",
+      "num_member": 0
+    },
+    {
+      "id": 21,
+      "category_type": "champion_type",
+      "key": "OTH",
+      "value": "Khác",
+      "description": "",
+      "num_member": 0
+    },
+    {
+      "id": 22,
+      "category_type": "match_type",
+      "key": "WAI",
+      "value": "Chờ",
+      "description": "",
+      "num_member": 0
+    },
+    {
+      "id": 23,
+      "category_type": "match_type",
+      "key": "IN",
+      "value": "Đang diễn ra",
+      "description": "",
+      "num_member": 0
+    },
+    {
+      "id": 24,
+      "category_type": "match_type",
+      "key": "FIN",
+      "value": "Kết thúc",
+      "description": "",
+      "num_member": 0
+    },
+    {
+      "id": 25,
+      "category_type": "match_type",
+      "key": "CAN",
+      "value": "Huỷ",
+      "description": "",
+      "num_member": 0
+    },
+    {
+      "id": 26,
+      "category_type": "match_type",
+      "key": "OTH",
+      "value": "Khác",
+      "description": "",
+      "num_member": 0
+    },
+    {
+      "id": 27,
+      "category_type": "gender",
+      "key": "M,F",
+      "value": "Chọn cả 2",
+      "description": "Giới tính",
+      "num_member": 0
+    }
+  ],
+  "champion_category": [],
+  "champion_group": [],
+  "competition_dk": [],
+  "champion_grp_event": [],
+  "team": [],
+  "champion_event": []
+}

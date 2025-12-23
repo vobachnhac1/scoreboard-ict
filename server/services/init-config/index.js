@@ -71,12 +71,23 @@ class InitConfigService {
                     // insert lần đầu
                     const stmt = this.db.prepare("INSERT INTO config_values (key, child_key, value) VALUES (?, ?, ?)");
                     const data = [
-                        ['system', 'mon_thi', '3'],
-                        ['system', 'so_giam_dinh', '3'],
-                        ['system', 'so_hiep', '2'],
-                        ['system', 'so_hiep_phu', '1'],
-                        ['system', 'he_diem', '1'], // 1,2,3
+                        // ===== THÔNG TIN GIẢI ĐẤU =====
+                        ['system', 'ten_giai_dau', 'Giải Vô địch Vovinam Toàn quốc 2025'],
+                        ['system', 'bo_mon', 'Vovinam'],
+                        ['system', 'thoi_gian_bat_dau', '2025-01-15'],
+                        ['system', 'thoi_gian_ket_thuc', '2025-01-20'],
+                        ['system', 'mo_ta_giai_dau', 'Giải đấu quy tụ các võ sĩ xuất sắc nhất cả nước'],
 
+                        // ===== CÀI ĐẶT CHUNG =====
+                        ['system', 'mon_thi', 'Đối kháng'],
+                        ['system', 'he_diem', '10'],
+
+                        // ===== CÀI ĐẶT SỐ LƯỢNG =====
+                        ['system', 'so_giam_dinh', '5'],
+                        ['system', 'so_hiep', '3'],
+                        ['system', 'so_hiep_phu', '1'],
+
+                        // ===== CHẾ ĐỘ ÁP DỤNG =====
                         ['system', 'cau_hinh_doi_khang_diem_thap', '1'], // 1: Có | 0: Không
                         ['system', 'cau_hinh_quyen_tinh_tong', '0'],     // 1: Có | 0: Không
                         ['system', 'cau_hinh_y_te', '1'],                // 1: Có | 0: Không
@@ -86,16 +97,20 @@ class InitConfigService {
                         ['system', 'cau_hinh_hinh_thuc_quyen', '1'],     // 1: Có | 0: Không
                         ['system', 'cau_hinh_hinh_thuc_doikhang', '1'],  // 1: Có | 0: Không
 
-                        ['system', 'thoi_gian_tinh_diem', '1000'],
-                        ['system', 'thoi_gian_thi_dau', '90'],
-                        ['system', 'thoi_gian_nghi', '30'],
-                        ['system', 'thoi_gian_hiep_phu', '60'],
+                        // ===== CÀI ĐẶT THỜI GIAN =====
+                        ['system', 'thoi_gian_tinh_diem', '180'],
+                        ['system', 'thoi_gian_thi_dau', '120'],
+                        ['system', 'thoi_gian_nghi', '60'],
+                        ['system', 'thoi_gian_hiep_phu', '90'],
                         ['system', 'thoi_gian_y_te', '120'],
 
+                        // ===== ĐIỂM ÁP DỤNG =====
                         ['system', 'khoang_diem_tuyet_toi', '10'],
 
-                        ['system', 'che_do_app', '1'], // chế độ chỉ dùng Thi đối kháng đơn giản | Thi quyền đơn giản 
+                        // ===== CHẾ ĐỘ APP =====
+                        ['system', 'che_do_app', '1'], // chế độ chỉ dùng Thi đối kháng đơn giản | Thi quyền đơn giản
 
+                        // ===== COMPETITION (Legacy - Giữ lại để tương thích) =====
                         ['competition', 'ten_giai', 'GIẢI VÔ ĐỊCH THỂ DỤC THỂ THAO NĂM 2025'],
                         ['competition', 'thoi_gian_bat_dau', '07-07-2025'],
                         ['competition', 'thoi_gian_ket_thuc', '10-07-2025'],
@@ -294,17 +309,32 @@ class InitConfigService {
         });
     };
 
-    // thêm mới 
+    // thêm mới (legacy - có typo)
     inserteKeyValue(data) {
         const {key, child_key, value} = data
         return new Promise((resolve, reject) => {
             this.db.run(`INSERT INTO config_values (key, child_key, value) VALUES (?, ?, ?)`,
-                [key, child_key, value], 
+                [key, child_key, value],
                 function(err) {
                     if (err) {
                         reject(err);
                     } else {
                         resolve(data);
+                    }
+                });
+        });
+    }
+
+    // thêm mới (fixed typo - sử dụng hàm này)
+    insertKeyValue(key, child_key, value) {
+        return new Promise((resolve, reject) => {
+            this.db.run(`INSERT INTO config_values (key, child_key, value) VALUES (?, ?, ?)`,
+                [key, child_key, value],
+                function(err) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve({ id: this.lastID, key, child_key, value });
                     }
                 });
         });

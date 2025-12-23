@@ -22,6 +22,7 @@ export const deleteChampCategory = (id) => axiosClient.delete(`/champion-categor
 
 // ================== CHAMPION EVENT (NỘI DUNG THI THEO HÌNH THỨC) ==================
 export const getAllChampEvents = () => axiosClient.get('/champion-event');
+export const getAllChampEventsByCategory = (category_key) => axiosClient.get(`/champion-event/${category_key}`);
 export const createChampEvent = (data) => axiosClient.post('/champion-event', data);
 export const updateChampEvent = (id, data) => axiosClient.put(`/champion-event/${id}`, data);
 export const deleteChampEvent = (id) => axiosClient.delete(`/champion-event/${id}`);

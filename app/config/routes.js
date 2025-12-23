@@ -17,8 +17,11 @@ import { Empty } from 'antd';
 import SystemManagement from '../views/SystemManagement';
 import History from '../views/History';
 import AdminLayout from '../components/Layout/AdminLayout';
-import { Connect, Champion, ChampionCategory, ChampionEvent, ConfigSystem, MatchAthlete, Athlete, DataAthlete, ReportAthlete, ArrangeSchedule } from '../views/Management';
+import { Connect, Champion,ChampionGroup, ChampionCategory, ChampionEvent, ConfigSystem, CompetitionManagement, CompetitionDataDetail, MatchAthlete, Athlete, DataAthlete, ReportAthlete, ArrangeSchedule } from '../views/Management';
 import MatchScore from '../views/MatchScore';
+import VovinamSparring from '../views/MatchScore/Sparring/Vovinam';
+import KickBoxingSparring from '../views/MatchScore/Sparring/KickBoxing';
+import PencakSparring from '../views/MatchScore/Sparring/Pencak';
 
 // export const socketClient = new SocketClient().connect();
 
@@ -29,7 +32,6 @@ const Routers = () => {
 
   const routes = [
     // { path: '/', element: <Home />, sidebar: false },
-
     { path: '/', element: <AdminLayout><div>PHẦN MỀM XEM LỊCH THI ĐẤU</div></AdminLayout> },
     { path: '/management/connect', element: <AdminLayout><Connect /></AdminLayout> },
     { path: '/management/athlete', element: <AdminLayout><Athlete /></AdminLayout> },
@@ -38,12 +40,17 @@ const Routers = () => {
     { path: '/management/athlete/report', element: <AdminLayout><ReportAthlete /></AdminLayout> },
     { path: '/management/general-setting', element: <AdminLayout><div>QUẢN LÝ CÀI ĐẶT CHUNG</div></AdminLayout> },
     { path: '/management/general-setting/champion', element: <AdminLayout><Champion /></AdminLayout> },
-    // { path: '/management/general-setting/champion-grp', element: <AdminLayout><ChampionGroup /></AdminLayout> },
+    { path: '/management/general-setting/champion-grp', element: <AdminLayout><ChampionGroup /></AdminLayout> },
     { path: '/management/general-setting/champion-category', element: <AdminLayout><ChampionCategory /></AdminLayout> },
     { path: '/management/general-setting/champion-event', element: <AdminLayout><ChampionEvent /></AdminLayout> },
     { path: '/management/general-setting/arrange-schedule', element: <AdminLayout><ArrangeSchedule /></AdminLayout> },
     { path: '/management/general-setting/config-system', element: <AdminLayout><ConfigSystem /></AdminLayout> },
+    { path: '/management/general-setting/competition-management', element: <AdminLayout><CompetitionManagement /></AdminLayout> },
+    { path: '/management/competition-data/:id', element: <AdminLayout><CompetitionDataDetail /></AdminLayout> },
     { path: '/match-score', element: <AdminLayout><MatchScore /></AdminLayout> },
+    { path: '/match-score/sparring/vovinam', element: <VovinamSparring /> },
+    { path: '/match-score/sparring/kickboxing', element: <KickBoxingSparring /> },
+    { path: '/match-score/sparring/pencak', element: <PencakSparring /> },
 
     { path: '/feeds', element: <NewsFeed /> },
     { path: '/qr-views', element: <QrViews /> },
@@ -58,7 +65,7 @@ const Routers = () => {
     { path: '/history', element: <History /> }
   ];
 
-  const renderElement = (route) => {
+  const renderElement = (route) => { 
     if (route.path === '/login') {
       return <Login />;
     }

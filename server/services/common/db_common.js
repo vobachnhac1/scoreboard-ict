@@ -17,6 +17,7 @@ class DBCommonsService {
                         ['gender','M','Nam', 'Giới tính', 0],
                         ['gender','F','Nữ', 'Giới tính', 0],
                         ['gender','O','Khác', 'Giới tính',0],
+                        ['gender','M,F','Nam/Nữ', 'Giới tính',0],
 
                         ['champ_comp_type','DK','Đối kháng', 'Đối kháng',0],
                         ['champ_comp_type','QU','Quyền', 'Quyền',0],

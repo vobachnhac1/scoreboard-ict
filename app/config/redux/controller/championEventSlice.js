@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { createChampEvent, deleteChampEvent, getAllChampEvents, updateChampEvent } from "../../apis";
+import { createChampEvent, deleteChampEvent, getAllChampEventsByCategory, updateChampEvent } from "../../apis";
 
-export const fetchChampionEvents = createAsyncThunk("championEvent/fetchAll", async () => {
-  const response = await getAllChampEvents();
+export const fetchChampionEvents = createAsyncThunk("championEvent/fetchAll", async (category_key) => {
+  const response = await getAllChampEventsByCategory(category_key);
   return response.data;
 });
 

@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from "react";
 import Button from "../../../../components/Button";
+import { emitSocketEvent } from "../../../../config/hooks/useSocketEvents";
 
 export default function DisconnectForm({ data, onAgree, onGoBack }) {
   const [loading, setLoading] = useState(false);
@@ -17,12 +18,24 @@ export default function DisconnectForm({ data, onAgree, onGoBack }) {
 
   const handleSubmit = () => {
     console.log("Dữ liệu gửi đi:", formData, "Với thiết bị:", data);
-    // TODO: xử lý formData ở đây
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      onAgree(formData);
-    }, 1500);
+
+    // Gửi socket event DISCONNECT_CLIENT
+    if (data?.socket_id && data?.room_id) {
+      setLoading(true);
+
+      emitSocketEvent("DISCONNECT_CLIENT", {
+        socket_id: data.socket_id,
+        room_id: data.room_id
+      });
+
+      // Đợi một chút để server xử lý
+      setTimeout(() => {
+        setLoading(false);
+        onAgree(formData);
+      }, 1000);
+    } else {
+      console.error("Thiếu thông tin socket_id hoặc room_id");
+    }
   };
 
   return (

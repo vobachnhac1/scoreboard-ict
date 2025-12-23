@@ -38,9 +38,26 @@ class Admin {
         try {
             const res_config  = await init_config_db.getAllKeyValueByKey('system');
             let config = {};
+
+            // Danh sách các trường là string (không convert sang number)
+            const stringFields = [
+                'ten_giai_dau',
+                'bo_mon',
+                'thoi_gian_bat_dau',
+                'thoi_gian_ket_thuc',
+                'mo_ta_giai_dau',
+                'mon_thi'
+            ];
+
             res_config.forEach(element => {
-                config[`${element.child_key}`] = Number(element.value);
+                // Nếu là string field thì giữ nguyên, còn lại convert sang number
+                if (stringFields.includes(element.child_key)) {
+                    config[`${element.child_key}`] = element.value;
+                } else {
+                    config[`${element.child_key}`] = Number(element.value);
+                }
             });
+
             console.log('config: ', config);
             return config
         } catch (error) {
@@ -49,21 +66,34 @@ class Admin {
         }
     }
 
-    // 4. Cập nhật thông tin cấu hình hệ thống 
+    // 4. Cập nhật thông tin cấu hình hệ thống
     update_information_system = async (body) =>{
         try {
             if(!body) return false
+
             const lsInput = Object.entries(body).map(([key, value]) => ({
                 key,
-                value
-              }));
+                value: String(value) // Convert to string để lưu vào database
+            }));
+
             const lsDB = await init_config_db.getAllKeyValueByKey('system');
+
             for(let i = 0 ; i < lsInput.length; i++){
                 const item = lsDB.find(ele=> ele.child_key == lsInput[i].key)
+
                 if(item){
-                    await init_config_db.updateKeyValueByKey(item.id, {...item, value: lsInput[i].value})
+                    // Cập nhật nếu đã tồn tại
+                    await init_config_db.updateKeyValueByKey(item.id, {
+                        ...item,
+                        value: lsInput[i].value
+                    })
+                } else {
+                    // Thêm mới nếu chưa tồn tại
+                    console.log(`[update_information_system] Thêm mới field: ${lsInput[i].key}`);
+                    await init_config_db.insertKeyValue('system', lsInput[i].key, lsInput[i].value);
                 }
             }
+
             return true;
         } catch (error) {
             console.log('[update_information_system] error: ', error);

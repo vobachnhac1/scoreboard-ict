@@ -21,39 +21,48 @@ export default function index() {
   const [loading, setLoading] = useState(false);
   const [openActions, setOpenActions] = useState(null);
 
+  // Fetch danh sách thiết bị khi component mount hoặc page thay đổi
   useEffect(() => {
     setLoading(true);
-    setTimeout(() => {
-      const fakeDevices = Array.from({ length: 10 }, (_, i) => {
-        const index = i + 1 + (page - 1) * 10;
-        return {
-          order: index,
-          device_name: `Thiết bị ${index}`,
-          judge_permission: ["GD1", "GD2", "GD3", "GD4", "GD5", "GD6", "GD7"][i % 7],
-          device_code: `DEV-${1000 + index}`,
-          device_ip: `192.168.1.${i + 10}`,
-          status: i % 2 === 0 ? "active" : "inactive",
-          accepted: i % 3 === 0 ? "approved" : i % 3 === 1 ? "rejected" : "pending",
-        };
-      });
-      setData(fakeDevices);
-      setLoading(false);
-    }, 500);
+
+    // emitSocketEvent("ADMIN_FETCH_CONN", {});
+    // Khởi tạo REGISTER_ROOM_ADMIN
+    // emitSocketEvent("REGISTER_ROOM_ADMIN", {
+    //   room_id: "1AZJM9JL8D", // tự tạo 
+    //   uuid_desktop: "CO2GJ74NMD6M", // lấy từ  thiết bị  
+    //   permission: 9,
+    // });
+
   }, [page]);
+
+  // Button khởi tạo kết nối socket theo emit REGISTER_ROOM_ADMIN 
+  const handleInitConnection = () => {
+    emitSocketEvent("REGISTER_ROOM_ADMIN", {
+      room_id: "1AZJM9JL8D", // tự tạo 
+      uuid_desktop: "CO2GJ74NMD6M", // lấy từ  thiết bị  
+      permission: 9,
+    });
+  };
 
   const listActions = [
     {
       key: Constants.ACCTION_CONNECT_KH,
-      titleModal: "Thông báo",
+      titleModal: "Kích hoạt thiết bị",
       color: "bg-[#FAD7AC]",
       description: "Kích hoạt thiết bị mobile",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_CONNECT_KH, row: row });
+        // Phê duyệt kết nối thiết bị
+        if (row.socket_id && row.room_id) {
+          emitSocketEvent("APPROVED", {
+            socket_id: row.socket_id,
+            room_id: row.room_id
+          });
+        }
       },
     },
     {
       key: Constants.ACCTION_CONNECT_GD,
-      titleModal: "Thông báo",
+      titleModal: "Đăng ký giám định",
       color: "bg-[#FAD9D5]",
       description: "Đăng ký thiết bị với quyền giám định",
       callback: (row) => {
@@ -62,7 +71,7 @@ export default function index() {
     },
     {
       key: Constants.ACCTION_CONNECT_DIS,
-      titleModal: "Thông báo",
+      titleModal: "Ngắt kết nối",
       color: "bg-[#B0E3E6]",
       description: "Ngắt kết nối",
       callback: (row) => {
@@ -71,7 +80,7 @@ export default function index() {
     },
     {
       key: Constants.ACCTION_CONNECT_MSG,
-      titleModal: "Thông báo",
+      titleModal: "Gửi thông báo",
       color: "bg-[#50d71e]",
       description: "Gửi thông báo đến Giám định",
       callback: (row) => {
@@ -186,21 +195,71 @@ export default function index() {
     }
   };
 
-  useSocketEvent("RES_ROOM_ADMIN", (data) => {
-    console.log("Receive from server:", data);
+  // Lắng nghe response từ server khi fetch danh sách thiết bị
+  useSocketEvent("RES_ROOM_ADMIN", (response) => {
+    console.log("Receive from server:", response);
+
+    // Kiểm tra nếu response từ ADMIN_FETCH_CONN
+    if (response.path === "ADMIN_FETCH_CONN" && response.status === 200) {
+      // Chuyển đổi MapConn object thành array
+      const deviceList = response.data.ls_conn || {};
+      const devices = Object.values(deviceList).map((conn, index) => ({
+        order: index + 1,
+        device_name: conn.device_name || `Thiết bị ${conn.socket_id?.substring(0, 8)}`,
+        judge_permission: conn.referrer ? `GD${conn.referrer}` : "Chưa gán",
+        device_code: conn.device_id || conn.socket_id,
+        device_ip: conn.client_ip || "N/A",
+        status: conn.connect_status_code === "CONNECTED" ? "active" : "inactive",
+        accepted: conn.register_status_code === "CONNECTED" ? "approved"
+                : conn.register_status_code === "PROCESSING" ? "pending"
+                : conn.register_status_code === "ADMIN" ? "admin"
+                : "rejected",
+        // Lưu thêm thông tin gốc để sử dụng cho các action
+        socket_id: conn.socket_id,
+        room_id: conn.room_id,
+        permission: conn.permission,
+        token: conn.token,
+        rawData: conn
+      }));
+
+      setData(devices);
+      setLoading(false);
+    }
+
+    // Xử lý response từ các action khác (APPROVED, REJECTED, DISCONNECT_CLIENT, etc.)
+    if (response.status === 200 && response.data?.ls_conn) {
+      // Refresh lại danh sách sau khi thực hiện action
+      const deviceList = response.data.ls_conn || {};
+      const devices = Object.values(deviceList).map((conn, index) => ({
+        order: index + 1,
+        device_name: conn.device_name || `Thiết bị ${conn.socket_id?.substring(0, 8)}`,
+        judge_permission: conn.referrer ? `GD${conn.referrer}` : "Chưa gán",
+        device_code: conn.device_id || conn.socket_id,
+        device_ip: conn.client_ip || "N/A",
+        status: conn.connect_status_code === "CONNECTED" ? "active" : "inactive",
+        accepted: conn.register_status_code === "CONNECTED" ? "approved"
+                : conn.register_status_code === "PROCESSING" ? "pending"
+                : conn.register_status_code === "ADMIN" ? "admin"
+                : "rejected",
+        socket_id: conn.socket_id,
+        room_id: conn.room_id,
+        permission: conn.permission,
+        token: conn.token,
+        rawData: conn
+      }));
+
+      setData(devices);
+    }
   });
 
   useSocketEvent("RES_MSG", (data) => {
     console.log("Receive from client:", data);
   });
 
-  const sendMessage = () => {
-    const param = {
-      uuid_desktop: "CO2GJ74NMD6M",
-      room_id: "1AZJM9JL8D",
-      permission: 9,
-    };
-    emitSocketEvent("REGISTER_ROOM_ADMIN", param);
+  // Hàm refresh danh sách thiết bị
+  const handleRefresh = () => {
+    setLoading(true);
+    emitSocketEvent("ADMIN_FETCH_CONN", {});
   };
 
   return (
@@ -212,8 +271,8 @@ export default function index() {
         <Button variant="primary" className="min-w-28">
           Mã kích hoạt điện thoại
         </Button>
-        <Button variant="primary" className="min-w-28">
-          Tải lại
+        <Button variant="primary" className="min-w-28" onClick={handleRefresh} disabled={loading}>
+          {loading ? "Đang tải..." : "Tải lại"}
         </Button>
       </div>
       <CustomTable

@@ -12,6 +12,8 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
   const { data: categories, loading: loadingCategories } = useAppSelector((state) => state.championCategories);
 
   const [loadingButton, setLoadingButton] = React.useState(false);
+  const [selectedGenders, setSelectedGenders] = React.useState([]);
+
   const {
     register,
     handleSubmit,
@@ -33,7 +35,24 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
     }
   }, [categories.length]);
 
-  const onSubmit = (formData) => {
+  // Xử lý chọn giới tính
+  const handleGenderChange = (gender) => {
+    setSelectedGenders(prev => {
+      if (prev.includes(gender)) {
+        return prev.filter(g => g !== gender);
+      } else {
+        return [...prev, gender];
+      }
+    });
+  };
+
+  const onSubmit = async (formData) => {
+    // Validate giới tính
+    if (selectedGenders.length === 0) {
+      alert("Vui lòng chọn ít nhất một giới tính");
+      return;
+    }
+
     formData = {
       event_name: formData.event_name,
       num_member: formData.num_member,
@@ -42,19 +61,29 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
       description: formData.description,
       ...formData,
     };
+
     setLoadingButton(true);
+
     if (type === Constants.ACCTION_INSERT) {
-      // @ts-ignore
-      dispatch(addChampionEvent({ formData }))
-        .unwrap()
-        .then(() => {
-          setLoadingButton(false);
-          onAgree(formData);
-        })
-        .catch((error) => {
-          setLoadingButton(false);
-          console.error("Lỗi khi thêm mới:", error);
+      try {
+        // Nếu chọn cả 2 giới tính, tạo 2 records
+        const promises = selectedGenders.map(gender => {
+          const genderFormData = {
+            ...formData,
+            event_name: `${formData.event_name} (${gender === 'F' ? 'Nữ' : 'Nam'})`,
+            gender: gender
+          };
+          // @ts-ignore
+          return dispatch(addChampionEvent({ formData: genderFormData })).unwrap();
         });
+
+        await Promise.all(promises);
+        setLoadingButton(false);
+        onAgree(formData);
+      } catch (error) {
+        setLoadingButton(false);
+        console.error("Lỗi khi thêm mới:", error);
+      }
     } else if (type === Constants.ACCTION_UPDATE) {
       // @ts-ignore
       dispatch(updateChampionEvent({ id: data.id, formData }))
@@ -94,18 +123,18 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
           {errors.category_key && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.category_key.message)}</p>}
         </div>
 
-        {/* Tên hạng cân */}
+        {/* Nội dung thi */}
         <div className="grid grid-cols-3 gap-1 items-center">
           <label htmlFor="event_name" className="text-sm font-medium text-gray-700">
-            Tên hạng cân
+            Nội dung thi
           </label>
           <input
             id="event_name"
             disabled={loadingButton}
-            {...register("event_name", { required: "Tên hạng cân là bắt buộc" })}
+            {...register("event_name", { required: "Nội dung thi là bắt buộc" })}
             type="text"
             className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
-            placeholder="Nhập tên hạng cân"
+            placeholder="Nhập nội dung thi"
           />
           {errors.event_name && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.event_name.message)}</p>}
         </div>
@@ -133,7 +162,7 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
         {/* Loại quyền (qu_type) */}
         <div className="grid grid-cols-3 gap-1 items-center">
           <label htmlFor="qu_type" className="text-sm font-medium text-gray-700">
-            Loại quyền
+            Loại
           </label>
           <input
             id="qu_type"
@@ -141,8 +170,40 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
             {...register("qu_type")}
             type="text"
             className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
-            placeholder="Nhập loại quyền (nếu có)"
+            placeholder="Nhập phân loại(nếu có)"
           />
+        </div>
+
+        {/* Giới tính */}
+        <div className="grid grid-cols-3 gap-1 items-center">
+          <label className="text-sm font-medium text-gray-700">
+            Giới tính <span className="text-red-500">*</span>
+          </label>
+          <div className="col-span-2 flex gap-4">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                disabled={loadingButton}
+                checked={selectedGenders.includes('M')}
+                onChange={() => handleGenderChange('M')}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <span className="text-sm">Nam (M)</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                disabled={loadingButton}
+                checked={selectedGenders.includes('F')}
+                onChange={() => handleGenderChange('F')}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <span className="text-sm">Nữ (F)</span>
+            </label>
+          </div>
+          {selectedGenders.length === 0 && (
+            <p className="text-red-500 text-sm col-span-2 col-start-2">Vui lòng chọn ít nhất một giới tính</p>
+          )}
         </div>
 
         {/* Mô tả */}

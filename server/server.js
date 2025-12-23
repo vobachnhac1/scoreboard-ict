@@ -14,6 +14,8 @@ const configRoutes = require('./routes/config.routes');
 const commonRoutes = require('./routes/common.routes');
 const championRoutes = require('./routes/champion.routes');
 const athleteRoutes = require('./routes/athlete.routes');
+const competitionRoutes = require('./routes/competition.routes');
+const competitionMatchRoutes = require('./routes/competition_match.routes');
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -31,6 +33,8 @@ app.use('/api/config', configRoutes);
 app.use('/api', commonRoutes);
 app.use('/api', championRoutes);
 app.use('/api', athleteRoutes);
+app.use('/api', competitionRoutes);
+app.use('/api', competitionMatchRoutes);
 
 // Serve static files
 app.use(express.static('public'));
@@ -39,7 +43,6 @@ app.use(express.static('public'));
 InitSocket(io);
 
 // Khởi tạo database.
-
 
 // Gọi khi khởi tạo ứng dụng
 FetchInitApp()

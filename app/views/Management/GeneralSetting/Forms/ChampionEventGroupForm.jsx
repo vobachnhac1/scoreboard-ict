@@ -70,7 +70,7 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
       gender_commons_key: formData.gender_commons_key,
     };
     setLoadingButton(true);
-    if (type === Constants.ACCTION_INSERT) {
+    if (type === Constants.ACTION_INSERT) {
       // @ts-ignore
       dispatch(addChampionEventGroup({ formData }))
         .unwrap()
@@ -82,7 +82,7 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
           setLoadingButton(false);
           console.error("Lỗi khi thêm mới:", error);
         });
-    } else if (type === Constants.ACCTION_UPDATE) {
+    } else if (type === Constants.ACTION_UPDATE) {
       // @ts-ignore
       dispatch(updateChampionEventGroup({ formData, id: data.champ_grp_event_id }))
         .unwrap()

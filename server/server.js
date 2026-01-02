@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const path = require('path');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
@@ -27,6 +28,10 @@ app.use((req, res, next) => {
     next();
 });
 
+// Serve static files - PHẢI ĐẶT TRƯỚC ROUTES
+app.use(express.static('public'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Routes
 // app.use('/api/common', commonRoutes);
 app.use('/api/config', configRoutes);
@@ -35,9 +40,6 @@ app.use('/api', championRoutes);
 app.use('/api', athleteRoutes);
 app.use('/api', competitionRoutes);
 app.use('/api', competitionMatchRoutes);
-
-// Serve static files
-app.use(express.static('public'));
 
 // Khởi tạo socket
 InitSocket(io);

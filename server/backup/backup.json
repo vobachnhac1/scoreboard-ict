@@ -1,4 +1,5 @@
 {
+  "team": [],
   "champion": [],
   "champion_athlete": [],
   "champion_athlete_match": [],
@@ -39,6 +40,9 @@
     }
   ],
   "license_child": [],
+  "champion_category": [],
+  "champion_group": [],
+  "competition_dk": [],
   "sqlite_sequence": [
     {
       "name": "commons",
@@ -51,9 +55,38 @@
     {
       "name": "competition_dk",
       "seq": 1
+    },
+    {
+      "name": "logos",
+      "seq": 3
     }
   ],
   "referee": [],
+  "champion_grp_event": [],
+  "champion_event": [],
+  "logos": [
+    {
+      "id": 1,
+      "url": "https://vovinambinhtan.com/upload/hinhanh/logovovi-1486.png",
+      "position": 0,
+      "created_at": "2025-12-24 05:41:03",
+      "updated_at": "2025-12-24 05:41:03"
+    },
+    {
+      "id": 2,
+      "url": "https://vovinambinhtan.com/upload/hinhanh/logovovi-1486.png",
+      "position": 1,
+      "created_at": "2025-12-24 05:41:03",
+      "updated_at": "2025-12-24 05:41:03"
+    },
+    {
+      "id": 3,
+      "url": "https://vovinambinhtan.com/upload/hinhanh/logovovi-1486.png",
+      "position": 2,
+      "created_at": "2025-12-24 05:41:03",
+      "updated_at": "2025-12-24 05:41:03"
+    }
+  ],
   "commons": [
     {
       "id": 1,
@@ -271,11 +304,5 @@
       "description": "Giới tính",
       "num_member": 0
     }
-  ],
-  "champion_category": [],
-  "champion_group": [],
-  "competition_dk": [],
-  "champion_grp_event": [],
-  "team": [],
-  "champion_event": []
+  ]
 }

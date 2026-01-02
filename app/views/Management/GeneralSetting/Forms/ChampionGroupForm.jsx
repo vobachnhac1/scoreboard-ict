@@ -53,7 +53,7 @@ export default function ChampionGroupForm({ type, data = null, onAgree, onGoBack
       tournament_id: formData.tournament_id,
     };
     setLoadingButton(true);
-    if (type === Constants.ACCTION_INSERT) {
+    if (type === Constants.ACTION_INSERT) {
       // @ts-ignore
       dispatch(addChampionGroup({ formData }))
         .unwrap()
@@ -65,7 +65,7 @@ export default function ChampionGroupForm({ type, data = null, onAgree, onGoBack
           setLoadingButton(false);
           console.error("Lỗi khi thêm mới:", error);
         });
-    } else if (type === Constants.ACCTION_UPDATE) {
+    } else if (type === Constants.ACTION_UPDATE) {
       // @ts-ignore
       dispatch(updateChampionGroup({ id: data.id, formData }))
         .unwrap()

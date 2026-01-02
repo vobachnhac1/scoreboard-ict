@@ -30,25 +30,25 @@ export default function ChampionCategory() {
 
   const listActions = [
     {
-      key: Constants.ACCTION_INSERT,
+      key: Constants.ACTION_INSERT,
       btnText: "Thêm",
       color: "bg-[#CCE5FF]",
       description: "Thêm nhóm",
-      callback: () => setOpenActions({ isOpen: true, key: Constants.ACCTION_INSERT }),
+      callback: () => setOpenActions({ isOpen: true, key: Constants.ACTION_INSERT }),
     },
     {
-      key: Constants.ACCTION_UPDATE,
+      key: Constants.ACTION_UPDATE,
       btnText: "Sửa",
       color: "bg-[#FFFF88]",
       description: "Cập nhật nhóm",
-      callback: (row) => setOpenActions({ isOpen: true, key: Constants.ACCTION_UPDATE, row }),
+      callback: (row) => setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row }),
     },
     {
-      key: Constants.ACCTION_DELETE,
+      key: Constants.ACTION_DELETE,
       btnText: "Xóa",
       color: "bg-[#FFCCCC]",
       description: "Xóa nhóm",
-      callback: (row) => setOpenActions({ isOpen: true, key: Constants.ACCTION_DELETE, row }),
+      callback: (row) => setOpenActions({ isOpen: true, key: Constants.ACTION_DELETE, row }),
     },
   ];
 
@@ -66,7 +66,7 @@ export default function ChampionCategory() {
       render: (row) => (
         <div className="flex items-center justify-center gap-2">
           {listActions
-            .filter((action) => action.key !== Constants.ACCTION_INSERT)
+            .filter((action) => action.key !== Constants.ACTION_INSERT)
             .map((action) => (
               <Button key={action.key} variant="none" className={`!rounded-md !p-1 w-16 ${action.color} hover:opacity-75`} onClick={() => action.callback(row)}>
                 {action.btnText}
@@ -79,10 +79,10 @@ export default function ChampionCategory() {
 
   const renderContentModal = () => {
     switch (openActions?.key) {
-      case Constants.ACCTION_INSERT:
+      case Constants.ACTION_INSERT:
         return (
           <ChampionCategoryForm
-            type={Constants.ACCTION_INSERT}
+            type={Constants.ACTION_INSERT}
             onAgree={(formData) => {
               dispatch(fetchChampionCategories());
               setOpenActions({ isOpen: false });
@@ -90,10 +90,10 @@ export default function ChampionCategory() {
             onGoBack={() => setOpenActions({ isOpen: false })}
           />
         );
-      case Constants.ACCTION_UPDATE:
+      case Constants.ACTION_UPDATE:
         return (
           <ChampionCategoryForm
-            type={Constants.ACCTION_UPDATE}
+            type={Constants.ACTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
               dispatch(fetchChampionCategories());
@@ -102,7 +102,7 @@ export default function ChampionCategory() {
             onGoBack={() => setOpenActions({ isOpen: false })}
           />
         );
-      case Constants.ACCTION_DELETE:
+      case Constants.ACTION_DELETE:
         return (
           <DeleteConfirmForm
             message={`Bạn có muốn xóa nhóm "${openActions?.row?.category_name}" không?`}
@@ -133,7 +133,7 @@ export default function ChampionCategory() {
         page={page}
         onPageChange={setPage}
         onRowDoubleClick={(row) => {
-          setOpenActions({ isOpen: true, key: Constants.ACCTION_UPDATE, row });
+          setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row });
         }}
       />
       <Modal

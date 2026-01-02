@@ -64,7 +64,7 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
 
     setLoadingButton(true);
 
-    if (type === Constants.ACCTION_INSERT) {
+    if (type === Constants.ACTION_INSERT) {
       try {
         // Nếu chọn cả 2 giới tính, tạo 2 records
         const promises = selectedGenders.map(gender => {
@@ -84,7 +84,7 @@ export default function ChampionEventCategoryForm({ id, type, data = null, onAgr
         setLoadingButton(false);
         console.error("Lỗi khi thêm mới:", error);
       }
-    } else if (type === Constants.ACCTION_UPDATE) {
+    } else if (type === Constants.ACTION_UPDATE) {
       // @ts-ignore
       dispatch(updateChampionEvent({ id: data.id, formData }))
         .unwrap()

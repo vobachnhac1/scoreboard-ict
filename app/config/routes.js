@@ -17,7 +17,7 @@ import { Empty } from 'antd';
 import SystemManagement from '../views/SystemManagement';
 import History from '../views/History';
 import AdminLayout from '../components/Layout/AdminLayout';
-import { Connect, Champion,ChampionGroup, ChampionCategory, ChampionEvent, ConfigSystem, CompetitionManagement, CompetitionDataDetail, MatchAthlete, Athlete, DataAthlete, ReportAthlete, ArrangeSchedule } from '../views/Management';
+import { Connect, Champion,ChampionGroup, ChampionCategory, ChampionEvent, ConfigSystem, CompetitionManagement, CompetitionDataDetail, MatchAthlete, Athlete, DataAthlete, ReportAthlete, ArrangeSchedule, CompetitionDataDetailOrther } from '../views/Management';
 import MatchScore from '../views/MatchScore';
 import VovinamSparring from '../views/MatchScore/Sparring/Vovinam';
 import KickBoxingSparring from '../views/MatchScore/Sparring/KickBoxing';
@@ -47,8 +47,9 @@ const Routers = () => {
     { path: '/management/general-setting/config-system', element: <AdminLayout><ConfigSystem /></AdminLayout> },
     { path: '/management/general-setting/competition-management', element: <AdminLayout><CompetitionManagement /></AdminLayout> },
     { path: '/management/competition-data/:id', element: <AdminLayout><CompetitionDataDetail /></AdminLayout> },
+    { path: '/management/competition-data-other/:id', element: <AdminLayout><CompetitionDataDetailOrther /></AdminLayout> },
     { path: '/match-score', element: <AdminLayout><MatchScore /></AdminLayout> },
-    { path: '/match-score/sparring/vovinam', element: <VovinamSparring /> },
+    { path: '/scoreboard/vovinam', element: <ScoreBoard /> },
     { path: '/match-score/sparring/kickboxing', element: <KickBoxingSparring /> },
     { path: '/match-score/sparring/pencak', element: <PencakSparring /> },
 

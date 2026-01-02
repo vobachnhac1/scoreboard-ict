@@ -13,3 +13,4 @@ export { default as ArrangeSchedule } from './GeneralSetting/ArrangeSchedule';
 export { default as ConfigSystem } from './GeneralSetting/ConfigSystem';
 export { default as CompetitionManagement } from './GeneralSetting/CompetitionManagement';
 export { default as CompetitionDataDetail } from './GeneralSetting/CompetitionDataDetail';
+export { default as CompetitionDataDetailOrther } from './GeneralSetting/CompetitionDataDetailOrther';

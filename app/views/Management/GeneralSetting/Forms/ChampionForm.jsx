@@ -25,7 +25,7 @@ export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
 
   const onSubmit = (formData) => {
     setLoadingButton(true);
-    if (type === Constants.ACCTION_INSERT) {
+    if (type === Constants.ACTION_INSERT) {
       dispatch(addChampion(formData))
         .unwrap()
         .then(() => {
@@ -36,7 +36,7 @@ export default function ChampionForm({ type, data = null, onAgree, onGoBack }) {
           setLoadingButton(false);
           console.error("Lỗi khi thêm mới:", error);
         });
-    } else if (type === Constants.ACCTION_UPDATE) {
+    } else if (type === Constants.ACTION_UPDATE) {
       // @ts-ignore
       dispatch(updateChampion({ id: data.id, formData }))
         .unwrap()

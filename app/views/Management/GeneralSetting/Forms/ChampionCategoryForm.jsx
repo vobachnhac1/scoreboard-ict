@@ -25,7 +25,7 @@ export default function ChampionCategoryFrom({ type, data = null, onAgree, onGoB
 
   const onSubmit = (formData) => {
     setLoadingButton(true);
-    if (type === Constants.ACCTION_INSERT) {
+    if (type === Constants.ACTION_INSERT) {
       // @ts-ignore
       dispatch(addChampionCategory({ formData }))
         .unwrap()
@@ -37,7 +37,7 @@ export default function ChampionCategoryFrom({ type, data = null, onAgree, onGoB
           setLoadingButton(false);
           console.error("Lỗi khi thêm mới:", error);
         });
-    } else if (type === Constants.ACCTION_UPDATE) {
+    } else if (type === Constants.ACTION_UPDATE) {
       // @ts-ignore
       dispatch(updateChampionCategory({ id: data.id, formData }))
         .unwrap()

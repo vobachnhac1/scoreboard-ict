@@ -31,30 +31,30 @@ export default function Champion() {
 
   const listActions = [
     {
-      key: Constants.ACCTION_INSERT,
+      key: Constants.ACTION_INSERT,
       btnText: "Thêm",
       color: "bg-[#CCE5FF]",
       description: "Tạo thông tin giải đấu",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_INSERT, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_INSERT, row: row });
       },
     },
     {
-      key: Constants.ACCTION_UPDATE,
+      key: Constants.ACTION_UPDATE,
       btnText: "Sửa",
       color: "bg-[#FFFF88]",
       description: "Cập nhật thông tin giải đấu",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_UPDATE, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
       },
     },
     {
-      key: Constants.ACCTION_DELETE,
+      key: Constants.ACTION_DELETE,
       btnText: "Xóa",
       color: "bg-[#FFCCCC]",
       description: "Thông báo",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_DELETE, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_DELETE, row: row });
       },
     },
   ];
@@ -82,7 +82,7 @@ export default function Champion() {
         <div className="flex items-center justify-center gap-2">
           {listActions.map(
             (action) =>
-              action?.key !== Constants.ACCTION_INSERT && (
+              action?.key !== Constants.ACTION_INSERT && (
                 <Button
                   variant="none"
                   className={`!rounded-md !p-1 w-16 ${action.color} hover:opacity-75`}
@@ -101,10 +101,10 @@ export default function Champion() {
   const renderContentModal = (openActions) => {
     // console.log("openActions", openActions);
     switch (openActions?.key) {
-      case Constants.ACCTION_INSERT:
+      case Constants.ACTION_INSERT:
         return (
           <ChampionForm
-            type={Constants.ACCTION_INSERT}
+            type={Constants.ACTION_INSERT}
             onAgree={(formData) => {
               // @ts-ignore
               dispatch(fetchChampions({ search: search }));
@@ -113,10 +113,10 @@ export default function Champion() {
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
         );
-      case Constants.ACCTION_UPDATE:
+      case Constants.ACTION_UPDATE:
         return (
           <ChampionForm
-            type={Constants.ACCTION_UPDATE}
+            type={Constants.ACTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
               // @ts-ignore
@@ -126,7 +126,7 @@ export default function Champion() {
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
         );
-      case Constants.ACCTION_DELETE:
+      case Constants.ACTION_DELETE:
         return (
           <DeleteConfirmForm
             message={`Bạn có muốn xóa giải đấu "${openActions?.row?.tournament_name}" không?`}
@@ -150,7 +150,7 @@ export default function Champion() {
           variant="primary"
           className="min-w-28"
           onClick={() => {
-            setOpenActions({ isOpen: true, key: Constants.ACCTION_INSERT });
+            setOpenActions({ isOpen: true, key: Constants.ACTION_INSERT });
           }}
         >
           Tạo mới
@@ -164,7 +164,7 @@ export default function Champion() {
         onPageChange={setPage}
         onRowDoubleClick={(row) => {
           console.log("Double clicked row:", row);
-          setOpenActions({ isOpen: true, key: Constants.ACCTION_UPDATE, row: row });
+          setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
         }}
       />
       <Modal

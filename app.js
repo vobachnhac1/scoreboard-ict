@@ -21,11 +21,13 @@ const championRoutes = require('./server/routes/champion.routes');
 const athleteRoutes = require('./server/routes/athlete.routes');
 const competitionRoutes = require('./server/routes/competition.routes');
 const competitionMatchRoutes = require('./server/routes/competition_match.routes');
+const competitionMatchTeamRoutes = require('./server/routes/competition_match_team.routes');
 
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'server/uploads')));
 
 // allow cors
 app.use(cors());
@@ -45,6 +47,7 @@ app.use('/api', championRoutes);
 app.use('/api', athleteRoutes);
 app.use('/api', competitionRoutes);
 app.use('/api', competitionMatchRoutes);
+app.use('/api', competitionMatchTeamRoutes);
 
 
 // Khởi tạo socket

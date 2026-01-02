@@ -130,6 +130,70 @@ class CompetitionController {
         }
     }
 
+    // PUT /api/competition-dk/:id/row/:rowIndex - Cập nhật một row cụ thể
+    async updateCompetitionDKRow(req, res) {
+        try {
+            const { id, rowIndex } = req.params;
+            const { data: rowData } = req.body;
+
+            if (!rowData || !Array.isArray(rowData)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Thiếu thông tin row data hoặc data không đúng định dạng array."
+                });
+            }
+
+            // Lấy dữ liệu hiện tại
+            const competition = await dbCompetitionDKService.getCompetitionDKById(id);
+
+            if (!competition) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Không tìm thấy competition."
+                });
+            }
+
+            // Parse data nếu là string
+            let currentData = competition.data;
+            if (typeof currentData === 'string') {
+                currentData = JSON.parse(currentData);
+            }
+
+            // Cập nhật row (rowIndex + 1 vì row 0 là header)
+            const actualRowIndex = parseInt(rowIndex) + 1;
+
+            if (actualRowIndex < 1 || actualRowIndex >= currentData.length) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Row index ${rowIndex} không hợp lệ.`
+                });
+            }
+
+            // Cập nhật row
+            currentData[actualRowIndex] = rowData;
+
+            // Lưu lại toàn bộ data
+            const result = await dbCompetitionDKService.updateCompetitionDK(id, {
+                sheet_name: competition.sheet_name,
+                file_name: competition.file_name,
+                data: currentData
+            });
+
+            res.json({
+                success: true,
+                message: `Cập nhật row ${rowIndex} thành công.`,
+                data: result
+            });
+        } catch (error) {
+            console.error('Error updateCompetitionDKRow:', error);
+            res.status(500).json({
+                success: false,
+                message: "Hệ thống xử lý lỗi.",
+                error: error.message
+            });
+        }
+    }
+
     // DELETE /api/competition-dk/:id - Xóa
     async deleteCompetitionDK(req, res) {
         try {

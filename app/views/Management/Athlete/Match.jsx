@@ -54,48 +54,48 @@ export default function index() {
 
   const listActions = [
     {
-      key: Constants.ACCTION_ATHLETE_RESULT,
+      key: Constants.ACTION_ATHLETE_RESULT,
       btnText: "Kết quả",
       color: "bg-[#FAD7AC]",
       description: "Kết quả",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_ATHLETE_RESULT, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_ATHLETE_RESULT, row: row });
       },
     },
     {
-      key: Constants.ACCTION_ATHLETE_ADJUST,
+      key: Constants.ACTION_ATHLETE_ADJUST,
       btnText: "Điều chỉnh",
       color: "bg-[#FFFF88]",
       description: "Cập nhật thông tin",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_ATHLETE_ADJUST, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_ATHLETE_ADJUST, row: row });
       },
     },
     {
-      key: Constants.ACCTION_ATHLETE_CONTINUE,
+      key: Constants.ACTION_ATHLETE_CONTINUE,
       btnText: "Tiếp tục",
       color: "bg-[#CDEB8B]",
       description: "Tiếp tục",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_ATHLETE_CONTINUE, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_ATHLETE_CONTINUE, row: row });
       },
     },
     {
-      key: Constants.ACCTION_ATHLETE_IN,
+      key: Constants.ACTION_ATHLETE_IN,
       btnText: "Vào trận",
       color: "bg-[#CCE5FF]",
       description: "Vào trận",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_ATHLETE_IN, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_ATHLETE_IN, row: row });
       },
     },
     {
-      key: Constants.ACCTION_ATHLETE_RE,
+      key: Constants.ACTION_ATHLETE_RE,
       btnText: "Thi lại",
       color: "bg-[#FAD9D5]",
       description: "Thi lại",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_ATHLETE_RE, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_ATHLETE_RE, row: row });
       },
     },
   ];
@@ -103,11 +103,11 @@ export default function index() {
   const getActionsByStatus = (status) => {
     switch (status) {
       case "FIN": // Kết thúc
-        return [Constants.ACCTION_ATHLETE_RESULT, Constants.ACCTION_ATHLETE_RE];
+        return [Constants.ACTION_ATHLETE_RESULT, Constants.ACTION_ATHLETE_RE];
       case "IN": // Đang diễn ra
-        return [Constants.ACCTION_ATHLETE_CONTINUE, Constants.ACCTION_ATHLETE_RE];
+        return [Constants.ACTION_ATHLETE_CONTINUE, Constants.ACTION_ATHLETE_RE];
       case "WAI": // Chờ
-        return [Constants.ACCTION_ATHLETE_IN, Constants.ACCTION_ATHLETE_ADJUST];
+        return [Constants.ACTION_ATHLETE_IN, Constants.ACTION_ATHLETE_ADJUST];
       default: // Các trạng thái khác: HUỶ, KHÁC...
         return [];
     }
@@ -155,7 +155,7 @@ export default function index() {
 
   const renderContentModal = (openActions) => {
     switch (openActions?.key) {
-      case Constants.ACCTION_ATHLETE_RESULT:
+      case Constants.ACTION_ATHLETE_RESULT:
         return (
           <ActionForm
             message={`Mã trận đấu "${openActions?.row?.match_id}"`}
@@ -165,7 +165,7 @@ export default function index() {
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
         );
-      case Constants.ACCTION_ATHLETE_CONTINUE:
+      case Constants.ACTION_ATHLETE_CONTINUE:
         return (
           <ActionForm
             message={`Mã trận đấu "${openActions?.row?.match_id}"`}
@@ -175,7 +175,7 @@ export default function index() {
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
         );
-      case Constants.ACCTION_ATHLETE_IN:
+      case Constants.ACTION_ATHLETE_IN:
         return (
           <ActionForm
             message={`Mã trận đấu "${openActions?.row?.match_id}"`}
@@ -185,7 +185,7 @@ export default function index() {
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
         );
-      case Constants.ACCTION_ATHLETE_RE:
+      case Constants.ACTION_ATHLETE_RE:
         return (
           <ActionForm
             message={`Mã trận đấu "${openActions?.row?.match_id}"`}
@@ -195,10 +195,10 @@ export default function index() {
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
         );
-      case Constants.ACCTION_ATHLETE_ADJUST:
+      case Constants.ACTION_ATHLETE_ADJUST:
         return (
           <MatchForm
-            type={Constants.ACCTION_ATHLETE_ADJUST}
+            type={Constants.ACTION_ATHLETE_ADJUST}
             data={openActions?.row}
             onAgree={(formData) => {
               setOpenActions({ ...openActions, isOpen: false });
@@ -224,7 +224,7 @@ export default function index() {
         onPageChange={setPage}
         // onRowDoubleClick={(row) => {
         //   console.log("Double clicked row:", row);
-        //   setOpenActions({ isOpen: true, key: Constants.ACCTION_ATHLETE_ADJUST, row: row });
+        //   setOpenActions({ isOpen: true, key: Constants.ACTION_ATHLETE_ADJUST, row: row });
         // }}
       />
       <Modal

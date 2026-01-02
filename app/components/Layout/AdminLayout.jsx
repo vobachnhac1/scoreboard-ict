@@ -16,16 +16,16 @@ const AdminLayout = ({ children }) => {
 
   const navigation = [
     { name: "Quản lý kết nối", href: "/management/connect", icon: FolderIcon },
-    {
-      name: "Quản lý VĐV Đối kháng",
-      icon: FolderIcon,
-      href: "/management/athlete",
-      children: [
-        { name: "Đang diễn ra", href: "/management/athlete/match", icon: ArrowTurnDownRightIcon },
-        { name: "Quản lý dữ liệu", href: "/management/athlete/data", icon: ArrowTurnDownRightIcon },
-        { name: "Báo cáo", href: "/management/athlete/report", icon: ArrowTurnDownRightIcon },
-      ],
-    },
+    // {
+    //   name: "Quản lý VĐV Đối kháng",
+    //   icon: FolderIcon,
+    //   href: "/management/athlete",
+    //   children: [
+    //     { name: "Đang diễn ra", href: "/management/athlete/match", icon: ArrowTurnDownRightIcon },
+    //     { name: "Quản lý dữ liệu", href: "/management/athlete/data", icon: ArrowTurnDownRightIcon },
+    //     { name: "Báo cáo", href: "/management/athlete/report", icon: ArrowTurnDownRightIcon },
+    //   ],
+    // },
     // { name: "Quản lý VĐV Quyền", href: "/", icon: FolderIcon, disabled: true },
     // { name: "Quản lý Lịch sử Giải đấu", href: "/", icon: FolderIcon, disabled: true },
     {
@@ -43,7 +43,8 @@ const AdminLayout = ({ children }) => {
         { name: "Máy chủ", href: "/management/general-setting/config-system", icon: ArrowTurnDownRightIcon },
       ],
     },
-    { name: "Demo UI", href: "/match-score", icon: FolderIcon},
+    // { name: "Demo UI", href: "/match-score", icon: FolderIcon},
+    // { name: "scoreboard", href: "/scoreboard", icon: FolderIcon}, // kiểm tra scoreboard 
   ];
 
   return (

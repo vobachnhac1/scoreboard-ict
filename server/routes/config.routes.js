@@ -5,6 +5,7 @@ const router = express.Router();
 const AdminController = require('../controllers/admin.controller');
 const ClientController = require('../controllers/client.controller');
 const CommonController = require('../controllers/common.controller');
+const LogoController = require('../controllers/logo.controller');
 const init_config_db = require('../services/init-config');
 
 
@@ -104,6 +105,14 @@ router.post('/get-config-system', AdminController.getInformationSystem);
 router.post('/update-config-system', AdminController.updateInformationSystem);
 router.get('/get-qr-active', AdminController.getQRActiveDevice);
 router.get('/get-qr-register', AdminController.getQRRegisterReferrer);
+
+// Logo Management Routes
+router.get('/logos', LogoController.getAllLogos);
+router.post('/logos', LogoController.createLogo);
+router.post('/logos/upload', LogoController.uploadMiddleware, LogoController.uploadLogo);
+router.put('/logos/:id', LogoController.updateLogo);
+router.delete('/logos/:id', LogoController.deleteLogo);
+router.put('/logos/reorder', LogoController.reorderLogos);
 
 
 

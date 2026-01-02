@@ -40,7 +40,7 @@ const FetchInitApp = async  ()=>{
             total_device_app: 0, 
             use_desktop: 0, 
             use_app: 0, 
-            expired_date:'20251231' , 
+            expired_date:'20261231' , 
             active_date: '20250101', 
             promotion_code: 'FREE',
         }

@@ -1,9 +1,10 @@
 const sqlite3 = require('sqlite3').verbose();
 const { DB_SCHEME } = require('./constant_sql');
+const { configureSQLite } = require('./db_config');
 
 class DBCompetitionDKService {
     constructor() {
-        this.db = new sqlite3.Database(DB_SCHEME);
+        this.db = configureSQLite(new sqlite3.Database(DB_SCHEME));
         this.db.serialize(() => {
             this.db.run(`
                 CREATE TABLE IF NOT EXISTS competition_dk (

@@ -29,25 +29,25 @@ export default function ChampionEventGroup() {
 
   const listActions = [
     {
-      key: Constants.ACCTION_INSERT,
+      key: Constants.ACTION_INSERT,
       btnText: "Thêm",
       color: "bg-[#CCE5FF]",
       description: "Thêm nội dung theo nhóm thi",
-      callback: () => setOpenActions({ isOpen: true, key: Constants.ACCTION_INSERT }),
+      callback: () => setOpenActions({ isOpen: true, key: Constants.ACTION_INSERT }),
     },
     {
-      key: Constants.ACCTION_UPDATE,
+      key: Constants.ACTION_UPDATE,
       btnText: "Sửa",
       color: "bg-[#FFFF88]",
       description: "Cập nhật nội dung theo nhóm thi",
-      callback: (row) => setOpenActions({ isOpen: true, key: Constants.ACCTION_UPDATE, row }),
+      callback: (row) => setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row }),
     },
     {
-      key: Constants.ACCTION_DELETE,
+      key: Constants.ACTION_DELETE,
       btnText: "Xóa",
       color: "bg-[#FFCCCC]",
       description: "Xóa nội dung theo nhóm thi",
-      callback: (row) => setOpenActions({ isOpen: true, key: Constants.ACCTION_DELETE, row }),
+      callback: (row) => setOpenActions({ isOpen: true, key: Constants.ACTION_DELETE, row }),
     },
   ];
 
@@ -67,7 +67,7 @@ export default function ChampionEventGroup() {
       render: (row) => (
         <div className="flex items-center justify-center gap-2">
           {listActions
-            .filter((action) => action.key !== Constants.ACCTION_INSERT)
+            .filter((action) => action.key !== Constants.ACTION_INSERT)
             .map((action) => (
               <Button key={action.key} variant="none" className={`!rounded-md !p-1 w-16 ${action.color} hover:opacity-75`} onClick={() => action.callback(row)}>
                 {action.btnText}
@@ -80,11 +80,11 @@ export default function ChampionEventGroup() {
 
   const RenderContentModal = () => {
     switch (openActions?.key) {
-      case Constants.ACCTION_INSERT:
+      case Constants.ACTION_INSERT:
         return (
           <ChampionEventGroupForm
             id={selectedGroup.id}
-            type={Constants.ACCTION_INSERT}
+            type={Constants.ACTION_INSERT}
             onAgree={(formData) => {
               // @ts-ignore
               selectedGroup && dispatch(fetchChampionEventGroups({ champ_grp_id: selectedGroup?.id }));
@@ -93,11 +93,11 @@ export default function ChampionEventGroup() {
             onGoBack={() => setOpenActions({ isOpen: false })}
           />
         );
-      case Constants.ACCTION_UPDATE:
+      case Constants.ACTION_UPDATE:
         return (
           <ChampionEventGroupForm
             id={selectedGroup.id}
-            type={Constants.ACCTION_UPDATE}
+            type={Constants.ACTION_UPDATE}
             data={openActions?.row}
             onAgree={(formData) => {
               // @ts-ignore
@@ -107,7 +107,7 @@ export default function ChampionEventGroup() {
             onGoBack={() => setOpenActions({ isOpen: false })}
           />
         );
-      case Constants.ACCTION_DELETE:
+      case Constants.ACTION_DELETE:
         return (
           <DeleteConfirmForm
             message={`Bạn có muốn xóa nội dung theo nhóm thi "${openActions?.row?.event_name}" không?`}
@@ -152,7 +152,7 @@ export default function ChampionEventGroup() {
           page={page}
           onPageChange={setPage}
           onRowDoubleClick={(row) => {
-            setOpenActions({ isOpen: true, key: Constants.ACCTION_UPDATE, row });
+            setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row });
           }}
         />
       </div>

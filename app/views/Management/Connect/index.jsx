@@ -46,7 +46,7 @@ export default function index() {
 
   const listActions = [
     {
-      key: Constants.ACCTION_CONNECT_KH,
+      key: Constants.ACTION_CONNECT_KH,
       titleModal: "Kích hoạt thiết bị",
       color: "bg-[#FAD7AC]",
       description: "Kích hoạt thiết bị mobile",
@@ -61,30 +61,30 @@ export default function index() {
       },
     },
     {
-      key: Constants.ACCTION_CONNECT_GD,
+      key: Constants.ACTION_CONNECT_GD,
       titleModal: "Đăng ký giám định",
       color: "bg-[#FAD9D5]",
       description: "Đăng ký thiết bị với quyền giám định",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_CONNECT_GD, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_CONNECT_GD, row: row });
       },
     },
     {
-      key: Constants.ACCTION_CONNECT_DIS,
+      key: Constants.ACTION_CONNECT_DIS,
       titleModal: "Ngắt kết nối",
       color: "bg-[#B0E3E6]",
       description: "Ngắt kết nối",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_CONNECT_DIS, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_CONNECT_DIS, row: row });
       },
     },
     {
-      key: Constants.ACCTION_CONNECT_MSG,
+      key: Constants.ACTION_CONNECT_MSG,
       titleModal: "Gửi thông báo",
       color: "bg-[#50d71e]",
       description: "Gửi thông báo đến Giám định",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_CONNECT_MSG, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_CONNECT_MSG, row: row });
       },
     },
   ];
@@ -127,7 +127,7 @@ export default function index() {
   const renderContentModal = (openActions) => {
     // console.log("openActions", openActions);
     switch (openActions?.key) {
-      case Constants.ACCTION_CONNECT_KH:
+      case Constants.ACTION_CONNECT_KH:
         return (
           <div className="text-center">
             <div className="">Kích hoạt thiết bị mobile</div>
@@ -144,7 +144,7 @@ export default function index() {
             </Button>
           </div>
         );
-      case Constants.ACCTION_CONNECT_GD:
+      case Constants.ACTION_CONNECT_GD:
         return (
           <div className="text-center">
             <div className="">Đăng ký giám định</div>
@@ -157,7 +157,7 @@ export default function index() {
             </Button>
           </div>
         );
-      case Constants.ACCTION_CONNECT_DIS:
+      case Constants.ACTION_CONNECT_DIS:
         return (
           <DisconnectForm
             data={openActions?.row}
@@ -168,7 +168,7 @@ export default function index() {
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
         );
-      case Constants.ACCTION_CONNECT_MSG:
+      case Constants.ACTION_CONNECT_MSG:
         return (
           <NotificationForm
             data={openActions?.row}
@@ -179,7 +179,7 @@ export default function index() {
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
         );
-      case Constants.ACCTION_UPDATE:
+      case Constants.ACTION_UPDATE:
         return (
           <UpdateForm
             data={openActions?.row}
@@ -283,7 +283,7 @@ export default function index() {
         onPageChange={setPage}
         onRowDoubleClick={(row) => {
           console.log("Double clicked row:", row);
-          setOpenActions({ isOpen: true, key: Constants.ACCTION_UPDATE, row: row });
+          setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
         }}
       />
       <Modal

@@ -5,7 +5,17 @@ class CompetitionMatchController {
     // POST /api/competition-match - Tạo match mới
     async createMatch(req, res) {
         try {
-            const { competition_dk_id, match_no, row_index, red_name, blue_name, config_system } = req.body;
+            const {
+                competition_dk_id,
+                match_no,
+                row_index,
+                red_name,
+                blue_name,
+                match_name,
+                team_name,
+                match_type,
+                config_system
+            } = req.body;
 
             if (!competition_dk_id || match_no === undefined || row_index === undefined) {
                 return res.status(400).json({
@@ -20,6 +30,9 @@ class CompetitionMatchController {
                 row_index,
                 red_name,
                 blue_name,
+                match_name,
+                team_name,
+                match_type,
                 config_system
             });
 
@@ -130,7 +143,7 @@ class CompetitionMatchController {
     async updateMatchStatus(req, res) {
         try {
             const { id } = req.params;
-            const { status } = req.body;
+            const { status, winner } = req.body;
 
             if (!status) {
                 return res.status(400).json({
@@ -139,7 +152,7 @@ class CompetitionMatchController {
                 });
             }
 
-            const result = await dbCompetitionMatchService.updateMatchStatus(id, status);
+            const result = await dbCompetitionMatchService.updateMatchStatus(id, status, winner);
 
             res.json({
                 success: true,

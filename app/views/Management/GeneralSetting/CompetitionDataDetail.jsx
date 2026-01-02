@@ -6,9 +6,156 @@ import Button from '../../../components/Button';
 import Modal from '../../../components/Modal';
 import SearchInput from '../../../components/SearchInput';
 import { Constants } from '../../../common/Constants';
+import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
+import { fetchConfigSystem, updateConfigSystem } from "../../../config/redux/controller/configSystemSlice";
+import * as XLSX from 'xlsx';
+
+// Component hiển thị chi tiết từng hiệp
+function RoundHistoryCard({ round, roundIndex, logs }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="bg-white  border border-gray-200 overflow-hidden">
+      {/* Header - Tóm tắt hiệp */}
+      <div
+        className="p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`h-4 w-4 transition-transform text-gray-400 ${expanded ? 'rotate-90' : ''}`}
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+            </svg>
+            <div className="text-sm font-semibold text-gray-700">
+              Hiệp {round.round}
+              {round.roundType && round.roundType !== 'NORMAL' && (
+                <span className="ml-2 text-xs px-2 py-0.5 bg-purple-100 text-purple-700 rounded">
+                  {round.roundType === 'EXTRA' ? 'Hiệp phụ' : round.roundType}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {/* Điểm số */}
+            <div className="flex items-center gap-2">
+              <div className="text-center">
+                <div className="text-xs text-gray-500">Đỏ</div>
+                <div className="text-lg font-bold text-red-600">{round.red?.match?.score || 0}</div>
+              </div>
+              <div className="text-gray-400">-</div>
+              <div className="text-center">
+                <div className="text-xs text-gray-500">Xanh</div>
+                <div className="text-lg font-bold text-blue-600">{round.blue?.match?.score || 0}</div>
+              </div>
+            </div>
+
+            {/* Số lượng logs */}
+            {logs.length > 0 && (
+              <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                {logs.length} hành động
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Expanded - Chi tiết logs */}
+      {expanded && logs.length > 0 && (
+        <div className="border-t border-gray-200 bg-gray-50 p-3">
+          <div className="text-xs font-semibold text-gray-600 mb-2">📋 Chi tiết hành động</div>
+          <div className="max-h-60 overflow-y-auto bg-white rounded border border-gray-200">
+            <table className="min-w-full text-xs">
+              <thead className="bg-gray-100 sticky top-0">
+                <tr>
+                  <th className="px-2 py-1.5 text-left font-medium text-gray-600">Thời gian</th>
+                  <th className="px-2 py-1.5 text-left font-medium text-gray-600">Loại</th>
+                  <th className="px-2 py-1.5 text-left font-medium text-gray-600">Đội</th>
+                  <th className="px-2 py-1.5 text-left font-medium text-gray-600">Mô tả</th>
+                  <th className="px-2 py-1.5 text-center font-medium text-gray-600">Điểm</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {logs.map((log, logIndex) => (
+                  <tr key={logIndex} className="hover:bg-gray-50">
+                    <td className="px-2 py-1.5 text-gray-600">{log.time || '-'}</td>
+                    <td className="px-2 py-1.5">
+                      <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
+                        log.actionType === 'score' ? 'bg-green-100 text-green-800' :
+                        log.actionType === 'warn' ? 'bg-yellow-100 text-yellow-800' :
+                        log.actionType === 'remind' ? 'bg-blue-100 text-blue-800' :
+                        log.actionType === 'medical' ? 'bg-red-100 text-red-800' :
+                        log.actionType === 'fall' ? 'bg-orange-100 text-orange-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {log.actionType}
+                      </span>
+                    </td>
+                    <td className="px-2 py-1.5">
+                      {log.team === 'red' ? (
+                        <span className="text-red-600 font-medium">🔴 Đỏ</span>
+                      ) : log.team === 'blue' ? (
+                        <span className="text-blue-600 font-medium">🔵 Xanh</span>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
+                    </td>
+                    <td className="px-2 py-1.5 text-gray-700">{log.description || '-'}</td>
+                    <td className="px-2 py-1.5 text-center">
+                      <span className="font-mono text-gray-900 font-medium">
+                        {log.redScore || 0} - {log.blueScore || 0}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Thống kê hiệp */}
+          {round.red && round.blue && (
+            <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+              <div className="bg-red-50 rounded p-2">
+                <div className="font-semibold text-red-700 mb-1">🔴 Giáp Đỏ</div>
+                <div className="space-y-0.5 text-gray-600">
+                  <div>Điểm: <span className="font-bold text-red-600">{round.red.match?.score || 0}</span></div>
+                  <div>Nhắc nhở: {round.red.match?.remind || 0}</div>
+                  <div>Cảnh cáo: {round.red.match?.warn || 0}</div>
+                  <div>Ngã: {round.red.match?.fall || 0}</div>
+                </div>
+              </div>
+              <div className="bg-blue-50 rounded p-2">
+                <div className="font-semibold text-blue-700 mb-1">🔵 Giáp Xanh</div>
+                <div className="space-y-0.5 text-gray-600">
+                  <div>Điểm: <span className="font-bold text-blue-600">{round.blue.match?.score || 0}</span></div>
+                  <div>Nhắc nhở: {round.blue.match?.remind || 0}</div>
+                  <div>Cảnh cáo: {round.blue.match?.warn || 0}</div>
+                  <div>Ngã: {round.blue.match?.fall || 0}</div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Thông báo khi không có logs */}
+      {expanded && logs.length === 0 && (
+        <div className="border-t border-gray-200 bg-gray-50 p-3 text-center text-xs text-gray-500">
+          Không có hành động nào trong hiệp này
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function CompetitionDataDetail() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { id } = useParams();
 
   const [loading, setLoading] = useState(true);
@@ -21,8 +168,14 @@ export default function CompetitionDataDetail() {
   // State cho modal actions
   const [openActions, setOpenActions] = useState(null);
 
+  // Ref để lưu hàm exportToExcel từ HistoryView
+  const exportToExcelRef = React.useRef(null);
+
   // Load dữ liệu khi component mount
+  const configSystem = useAppSelector((state) => state.configSystem);  
+
   useEffect(() => {
+    dispatch(fetchConfigSystem());
     fetchData();
   }, [id]);
 
@@ -30,8 +183,6 @@ export default function CompetitionDataDetail() {
     try {
       setLoading(true);
       const response = await axios.get(`http://localhost:6789/api/competition-dk/${id}`);
-      console.log('response: ', response);
-
       if (response?.data?.success && response?.data?.data) {
         const data = response.data.data;
         setSheetData(data);
@@ -95,57 +246,57 @@ export default function CompetitionDataDetail() {
   // List actions - Tương tự MatchAthlete
   const listActions = [
     {
-      key: Constants.ACCTION_MATCH_START,
+      key: Constants.ACTION_MATCH_START,
       btnText: 'Vào trận',
       color: 'bg-[#CCE5FF]',
       description: 'Vào trận',
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_MATCH_START, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_MATCH_START, row: row });
       },
     },
     {
-      key: Constants.ACCTION_ATHLETE_RESULT,
+      key: Constants.ACTION_MATCH_RESULT,
       btnText: 'Kết quả',
       color: 'bg-[#FAD7AC]',
       description: 'Kết quả',
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_ATHLETE_RESULT, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_MATCH_RESULT, row: row });
       },
     },
     {
-      key: Constants.ACCTION_MATCH_CONFIG,
+      key: Constants.ACTION_MATCH_CONFIG,
       btnText: 'Cấu hình',
       color: 'bg-[#FFFF88]',
       description: 'Cấu hình hệ thống',
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_MATCH_CONFIG, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_MATCH_CONFIG, row: row });
       },
     },
     {
-      key: Constants.ACCTION_MATCH_HISTORY,
+      key: Constants.ACTION_MATCH_HISTORY,
       btnText: 'Lịch sử',
       color: 'bg-[#CDEB8B]',
       description: 'Lịch sử thi đấu',
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_MATCH_HISTORY, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_MATCH_HISTORY, row: row });
       },
     },
     {
-      key: Constants.ACCTION_UPDATE,
+      key: Constants.ACTION_UPDATE,
       btnText: 'Cập nhật',
       color: 'bg-[#E0E0E0]',
       description: 'Cập nhật dữ liệu',
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_UPDATE, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
       },
     },
     {
-      key: Constants.ACCTION_DELETE,
+      key: Constants.ACTION_DELETE,
       btnText: 'Xóa',
       color: 'bg-[#FFCCCC]',
       description: 'Xác nhận xóa',
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACCTION_DELETE, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_DELETE, row: row });
       },
     },
   ];
@@ -154,13 +305,13 @@ export default function CompetitionDataDetail() {
   const getActionsByStatus = (status) => {
     switch (status) {
       case "FIN": // Kết thúc
-        return [Constants.ACCTION_ATHLETE_RESULT, Constants.ACCTION_MATCH_HISTORY, Constants.ACCTION_MATCH_CONFIG];
+        return [Constants.ACTION_MATCH_RESULT, Constants.ACTION_MATCH_HISTORY];
       case "IN": // Đang diễn ra
-        return [Constants.ACCTION_MATCH_START, Constants.ACCTION_ATHLETE_RESULT, Constants.ACCTION_MATCH_HISTORY, Constants.ACCTION_MATCH_CONFIG];
+        return [Constants.ACTION_MATCH_START, Constants.ACTION_MATCH_RESULT, Constants.ACTION_MATCH_HISTORY];
       case "WAI": // Chờ
-        return [Constants.ACCTION_MATCH_START, Constants.ACCTION_ATHLETE_RESULT, Constants.ACCTION_MATCH_CONFIG, Constants.ACCTION_UPDATE, Constants.ACCTION_DELETE];
+        return [Constants.ACTION_MATCH_START, Constants.ACTION_MATCH_RESULT, Constants.ACTION_UPDATE, Constants.ACTION_DELETE];
       default:
-        return [Constants.ACCTION_UPDATE, Constants.ACCTION_DELETE];
+        return [Constants.ACTION_UPDATE, Constants.ACTION_DELETE];
     }
   };
 
@@ -318,6 +469,7 @@ export default function CompetitionDataDetail() {
       const dataWithWinner = [...rowData, row.winner_text || ''];
 
       return {
+        key: index,
         id: index,
         rowIndex: index,
         data: dataWithWinner,
@@ -329,6 +481,7 @@ export default function CompetitionDataDetail() {
     }
     // Nếu row là array (chưa có match_status)
     return {
+      key: index,
       id: index,
       rowIndex: index,
       data: [...row, ''], // Thêm cột trống cho VĐV thắng
@@ -371,26 +524,44 @@ export default function CompetitionDataDetail() {
   // Xử lý cập nhật
   const handleUpdate = async (formData) => {
     try {
-      // Loại bỏ cột VĐV thắng khỏi headers khi lưu
+      const row = openActions.row;
+      console.log('row: ', row, formData);
+
+      // 1. Cập nhật dữ liệu Excel (các cột)
       const headersWithoutWinner = headers.slice(0, -1);
       const rowData = headersWithoutWinner.map((_, index) => formData[`col_${index}`] || '');
 
-      const newRows = rows.map((row, index) => {
-        if (index === openActions.row.rowIndex) {
-          return {
-            ...row,
-            data: rowData,
-            match_status: formData.match_status || row.match_status
-          };
-        }
-        return row;
+      // 2. Gọi API cập nhật row riêng lẻ
+      await axios.put(`http://localhost:6789/api/competition-dk/${id}/row/${row.rowIndex}`, {
+        data: rowData
       });
 
-      const newData = [headersWithoutWinner, ...newRows.map(r => r.data)];
+      // 3. Nếu có match_id, cập nhật match_status vào database
+      if (row.match_id) {
+        await axios.put(`http://localhost:6789/api/competition-match/${row.match_id}/status`, {
+          status: formData.match_status
+        });
+      }
 
-      await saveDataToServer(newData);
+      // 4. Cập nhật state local
+      const newRows = rows.map((r, index) => {
+        if (index === row.rowIndex) {
+          return {
+            ...r,
+            data: rowData,
+            match_status: formData.match_status || r.match_status
+          };
+        }
+        return r;
+      });
+
+      // 5. Cập nhật state và đóng modal
       setRows(newRows);
       setOpenActions({ ...openActions, isOpen: false });
+
+      // 4. Reload data để đồng bộ
+      await fetchData();
+
       alert('Cập nhật thành công!');
     } catch (error) {
       console.error('Error updating:', error);
@@ -403,12 +574,24 @@ export default function CompetitionDataDetail() {
     try {
       const newRows = rows.filter((_, index) => index !== openActions.row.rowIndex);
 
+      // Cập nhật lại ID cho các row sau khi xóa
+      const updatedRows = newRows.map((row, index) => ({
+        ...row,
+        data: row.data.map((cell, cellIndex) => {
+          // Cột đầu tiên là ID, cập nhật lại theo index mới
+          if (cellIndex === 0) {
+            return index + 1;
+          }
+          return cell;
+        })
+      }));
+
       // Loại bỏ cột VĐV thắng khỏi headers khi lưu
       const headersWithoutWinner = headers.slice(0, -1);
-      const newData = [headersWithoutWinner, ...newRows.map(r => r.data)];
+      const newData = [headersWithoutWinner, ...updatedRows.map(r => r.data)];
 
       await saveDataToServer(newData);
-      setRows(newRows);
+      setRows(updatedRows);
       setOpenActions({ ...openActions, isOpen: false });
       alert('Xóa thành công!');
     } catch (error) {
@@ -430,6 +613,8 @@ export default function CompetitionDataDetail() {
   const handleMatchStart = async () => {
     try {
       const row = openActions.row;
+      console.log('🚀 CompetitionDataDetail - handleMatchStart - row:', row)
+      console.log('🚀 CompetitionDataDetail - handleMatchStart - configSystem:', configSystem);
 
       // Nếu chưa có match_id, tạo match mới
       if (!row.match_id) {
@@ -439,7 +624,7 @@ export default function CompetitionDataDetail() {
           row_index: row.rowIndex,
           red_name: row.data[3] || '',
           blue_name: row.data[6] || '',
-          config_system: row.config_system || {}
+          config_system: configSystem.data || {}
         });
 
         row.match_id = createResponse.data.data.id;
@@ -454,10 +639,13 @@ export default function CompetitionDataDetail() {
       setOpenActions({ ...openActions, isOpen: false });
 
       // Chuẩn bị dữ liệu trận đấu
+
       const matchData = {
         match_id: row.match_id,
         match_no: row.data[0] || '',
-        weight_class: row.data[2] || '',
+        match_weight: row.data[1] || '',
+        match_type: row.data[2] || '',
+        match_level: row.data[9] || '',
         red: {
           name: row.data[3] || '',
           unit: row.data[4] || '',
@@ -468,15 +656,19 @@ export default function CompetitionDataDetail() {
           unit: row.data[7] || '',
           country: row.data[8] || ''
         },
-        config_system: row.config_system || {},
-        competition_name: sheetData?.sheet_name || 'GIẢI VÔ ĐỊCH VOVINAM'
+        match_status: 'IN',
+        ten_giai_dau: configSystem.data.ten_giai_dau || '',
+        ten_mon_thi: configSystem.data.bo_mon || '',
+        config_system: configSystem.data || {},
+        competition_dk_id: id, // Thêm competition_dk_id để dùng cho handleNextMatch
+        row_index: row.match_id, // Thêm row_index để tìm trận tiếp theo
       };
 
       console.log('🚀 CompetitionDataDetail - Navigating with matchData:', matchData);
       console.log('🚀 CompetitionDataDetail - row.data:', row.data);
-
+      
       // Chuyển sang màn hình thi đấu với state
-      navigate('/match-score/sparring/vovinam', {
+      navigate('/scoreboard/vovinam', {
         state: {
           matchData,
           returnUrl: `/management/competition-data/${id}`
@@ -501,8 +693,6 @@ export default function CompetitionDataDetail() {
         notes: formData.notes,
         status: 'FIN'
       };
-      console.log('row.match_id: ', row.match_id);
-
       // Nếu có match_id, thêm vào history
       if (row.match_id) {
         await axios.post(`http://localhost:6789/api/competition-match/${row.match_id}/history`, historyData);
@@ -515,12 +705,114 @@ export default function CompetitionDataDetail() {
         });
       }
 
-      alert('Lưu kết quả thành công!');
+      // 3. Tự động cập nhật VĐV thắng vào các trận tiếp theo
+      const updateCount = await updateWinnerToNextMatches(row, formData.winner);
+
+      // 4. Đóng modal
       setOpenActions({ ...openActions, isOpen: false });
-      fetchData(); // Reload data
+
+      // 5. Reload data để hiển thị cập nhật
+      await fetchData();
+
+      // 6. Thông báo thành công
+      if (updateCount > 0) {
+        alert(`Lưu kết quả thành công! Đã tự động cập nhật ${updateCount} trận tiếp theo.`);
+      } else {
+        alert('Lưu kết quả thành công!');
+      }
     } catch (error) {
       console.error('Error saving result:', error);
       alert('Lỗi khi lưu kết quả: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
+  // Hàm tự động cập nhật VĐV thắng vào các trận tiếp theo
+  const updateWinnerToNextMatches = async (currentRow, winner) => {
+    try {
+      // Lấy số trận hiện tại (ví dụ: "1", "2", "3"...)
+      const currentMatchNumber = currentRow.data[0]; // Cột đầu tiên là "Trận số"
+      console.log('🔍 Tìm kiếm pattern win.' + currentMatchNumber + ' trong danh sách...');
+
+      // Xác định tên VĐV thắng
+      let winnerName = '';
+      let winnerUnit = '';
+      if (winner?.toUpperCase() === 'RED') {
+        winnerName = currentRow.data[3] || ''; // Tên Giáp Đỏ
+        winnerUnit = currentRow.data[4] || ''; // Đơn vị Giáp Đỏ
+      } else if (winner?.toUpperCase() === 'BLUE') {
+        winnerName = currentRow.data[6] || ''; // Tên Giáp Xanh
+        winnerUnit = currentRow.data[7] || ''; // Đơn vị Giáp Xanh
+      }
+
+      console.log('🏆 VĐV thắng:', { name: winnerName, unit: winnerUnit });
+
+      // Nếu không có VĐV thắng, không cần cập nhật
+      if (!winnerName) {
+        console.log('⚠️ Không có thông tin VĐV thắng, bỏ qua cập nhật.');
+        return 0;
+      }
+
+      // Pattern để tìm: "win.1", "win.2", etc.
+      const winPattern = `win.${currentMatchNumber}`;
+      const updateRequests = [];
+      let updateCount = 0;
+
+      // Duyệt qua tất cả các hàng để tìm pattern
+      for (let i = 0; i < rows.length; i++) {
+        const rowData = rows[i].data;
+        let needUpdate = false;
+        let updatedRow = [...rowData];
+
+        // Kiểm tra từng cell trong row
+        for (let j = 0; j < rowData.length; j++) {
+          const cellValue = String(rowData[j] || '').toLowerCase().trim();
+
+          if (cellValue === winPattern.toLowerCase()) {
+            // Tìm thấy pattern, cập nhật tên VĐV thắng
+            console.log(`✅ Tìm thấy "${winPattern}" tại trận ${updatedRow[0]}, cột ${j}`);
+
+            updatedRow[j] = winnerName;
+            needUpdate = true;
+
+            // Nếu cột tiếp theo là đơn vị, cập nhật luôn
+            if (j + 1 < rowData.length) {
+              updatedRow[j + 1] = winnerUnit;
+            }
+
+            updateCount++;
+          }
+        }
+
+        // Nếu có cập nhật, gọi API để lưu
+        if (needUpdate) {
+          console.log(`📝 Cập nhật backend - Trận ${updatedRow[0]}: ${winnerName} (${winnerUnit})`);
+
+          updateRequests.push(
+            axios.put(`http://localhost:6789/api/competition-dk/${id}/row/${i}`, { data: updatedRow })
+              .then(() => {
+                console.log(`✅ Đã cập nhật backend - Trận ${updatedRow[0]}`);
+              })
+              .catch(err => {
+                console.error(`❌ Lỗi cập nhật backend - Trận ${updatedRow[0]}:`, err);
+                throw err;
+              })
+          );
+        }
+      }
+
+      // Chờ tất cả requests hoàn thành
+      if (updateRequests.length > 0) {
+        console.log(`⏳ Đang cập nhật ${updateRequests.length} trận vào backend...`);
+        await Promise.all(updateRequests);
+        console.log(`✅ Đã cập nhật thành công ${updateRequests.length} trận vào backend!`);
+      } else {
+        console.log('ℹ️ Không tìm thấy trận nào cần cập nhật.');
+      }
+
+      return updateCount;
+    } catch (error) {
+      console.error('❌ Error updating winner to next matches:', error);
+      throw error; // Throw để handleResult có thể catch
     }
   };
 
@@ -549,17 +841,17 @@ export default function CompetitionDataDetail() {
   // Render nội dung modal
   const renderContentModal = (openActions) => {
     switch (openActions?.key) {
-      case Constants.ACCTION_MATCH_START:
+      case Constants.ACTION_MATCH_START:
         return <ActionConfirm message={`Bắt đầu trận ${openActions.row?.data[0]}?`} onConfirm={handleMatchStart} onCancel={() => setOpenActions({ ...openActions, isOpen: false })} />;
-      case Constants.ACCTION_ATHLETE_RESULT:
+      case Constants.ACTION_MATCH_RESULT:
         return <ResultForm row={openActions.row} onSubmit={handleResult} onCancel={() => setOpenActions({ ...openActions, isOpen: false })} />;
-      case Constants.ACCTION_MATCH_CONFIG:
+      case Constants.ACTION_MATCH_CONFIG:
         return <ConfigForm row={openActions.row} onSubmit={handleConfig} onCancel={() => setOpenActions({ ...openActions, isOpen: false })} />;
-      case Constants.ACCTION_MATCH_HISTORY:
-        return <HistoryView row={openActions.row} onClose={() => setOpenActions({ ...openActions, isOpen: false })} />;
-      case Constants.ACCTION_UPDATE:
+      case Constants.ACTION_MATCH_HISTORY:
+        return <HistoryView row={openActions.row} onClose={() => setOpenActions({ ...openActions, isOpen: false })} exportToExcelRef={exportToExcelRef} />;
+      case Constants.ACTION_UPDATE:
         return <DataForm headers={headers} data={openActions.row?.data} row={openActions.row} onSubmit={handleUpdate} onCancel={() => setOpenActions({ ...openActions, isOpen: false })} />;
-      case Constants.ACCTION_DELETE:
+      case Constants.ACTION_DELETE:
         return <DeleteConfirm onConfirm={handleDelete} onCancel={() => setOpenActions({ ...openActions, isOpen: false })} />;
       default:
         return null;
@@ -568,9 +860,9 @@ export default function CompetitionDataDetail() {
 
   if (loading) {
     return (
-      <div className="p-6 bg-white rounded-lg shadow">
+      <div className="p-6 bg-white  shadow">
         <div className="text-center py-8">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <div className="inline-block animate-spin  h-8 w-8 border-b-2 border-blue-500"></div>
           <p className="mt-2 text-gray-600">Đang tải dữ liệu...</p>
         </div>
       </div>
@@ -579,8 +871,8 @@ export default function CompetitionDataDetail() {
 
   if (!sheetData) {
     return (
-      <div className="p-6 bg-white rounded-lg shadow">
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
+      <div className="p-6 bg-white  shadow">
+        <div className="text-center py-12 bg-gray-50 ">
           <svg
             className="mx-auto h-12 w-12 text-gray-400"
             fill="none"
@@ -601,11 +893,11 @@ export default function CompetitionDataDetail() {
   }
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow">
+    <div className="p-6 bg-white  shadow">
       {/* Header */}
       <div className="mb-6">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/management/general-setting/competition-management')}
           className="mb-4 flex items-center text-blue-600 hover:text-blue-800 font-medium"
         >
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -627,7 +919,7 @@ export default function CompetitionDataDetail() {
       </div>
 
       {/* Bảng dữ liệu */}
-      <div className="overflow-x-auto overflow-y-visible shadow-sm border border-gray-200 rounded-lg">
+      <div className="overflow-x-auto overflow-y-visible shadow-sm border border-gray-200 ">
         <div className="min-w-max">
           <CustomTable
             columns={columns}
@@ -636,21 +928,230 @@ export default function CompetitionDataDetail() {
             page={page}
             onPageChange={setPage}
             onRowDoubleClick={(row) => {
-              setOpenActions({ isOpen: true, key: Constants.ACCTION_UPDATE, row: row });
+              setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
             }}
           />
         </div>
       </div>
 
-      {/* Modal */}
-      <Modal
-        isOpen={openActions?.isOpen || false}
-        onClose={() => setOpenActions({ ...openActions, isOpen: false })}
-        title={listActions.find((e) => e.key === openActions?.key)?.description}
-        headerClass={listActions.find((e) => e.key === openActions?.key)?.color}
-      >
-        {renderContentModal(openActions)}
-      </Modal>
+      {/* Modal Config - Custom style giống Vovinam */}
+      {openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_CONFIG && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
+          <div className="bg-white rounded-2xl shadow-2xl w-[800px] h-[600px] overflow-hidden flex flex-col">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-2 flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-7 w-7"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                CẤU HÌNH TRẬN ĐẤU
+              </h2>
+              <button
+                onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                className="text-white hover:text-gray-300 transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            {renderContentModal(openActions)}
+          </div>
+        </div>
+      )}
+
+      {/* Modal Kết quả - Custom style giống Vovinam */}
+      {openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_RESULT && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
+          <div className="bg-white rounded-2xl shadow-2xl w-[900px] max-h-[95vh] overflow-hidden flex flex-col">
+            {/* Header - Căn giữa */}
+            <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
+              <h2 className="text-2xl font-bold text-white">
+                KẾT QUẢ TRẬN ĐẤU
+              </h2>
+              <button
+                onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                className="text-white hover:text-gray-300 transition-colors absolute right-6"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {renderContentModal(openActions)}
+            </div>
+
+            {/* Footer - Cố định */}
+            <div className="bg-gray-50 px-6 py-4 flex justify-between items-center gap-3 border-t border-gray-200 flex-shrink-0">
+              <button
+                onClick={() => {
+                  if (exportToExcelRef.current) {
+                    exportToExcelRef.current();
+                  }
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg flex items-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                Xuất Excel
+              </button>
+              <button
+                onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2.5 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Lịch sử - Custom style giống Vovinam */}
+      {openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_HISTORY && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
+          <div className="bg-white rounded-2xl shadow-2xl w-[900px] max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Header - Căn giữa */}
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
+              <h2 className="text-2xl font-bold text-white">
+                LỊCH SỬ TRẬN ĐẤU
+              </h2>
+              <button
+                onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                className="text-white hover:text-gray-300 transition-colors absolute right-6"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {renderContentModal(openActions)}
+            </div>
+
+            {/* Footer - Cố định */}
+            <div className="bg-gray-50 px-6 py-4 flex justify-between items-center gap-3 border-t border-gray-200 flex-shrink-0">
+              <button
+                onClick={() => {
+                  if (exportToExcelRef.current) {
+                    exportToExcelRef.current();
+                  }
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg flex items-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                Xuất Excel
+              </button>
+              <button
+                onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2.5 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Cập nhật - Custom style */}
+      {openActions?.isOpen && openActions?.key === Constants.ACTION_UPDATE && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
+          <div className="bg-white rounded-2xl shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Header - Căn giữa */}
+            <div className="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                </svg>
+                CẬP NHẬT TRẬN ĐẤU
+              </h2>
+              <button
+                onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                className="text-white hover:text-gray-300 transition-colors absolute right-6"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {renderContentModal(openActions)}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal khác - Sử dụng Modal component cũ */}
+      {openActions?.isOpen &&
+       openActions?.key !== Constants.ACTION_MATCH_CONFIG &&
+       openActions?.key !== Constants.ACTION_MATCH_RESULT &&
+       openActions?.key !== Constants.ACTION_MATCH_HISTORY &&
+       openActions?.key !== Constants.ACTION_UPDATE && (
+        <Modal
+          isOpen={true}
+          onClose={() => setOpenActions({ ...openActions, isOpen: false })}
+          title={listActions.find((e) => e.key === openActions?.key)?.description}
+          headerClass={listActions.find((e) => e.key === openActions?.key)?.color}
+        >
+          {renderContentModal(openActions)}
+        </Modal>
+      )}
     </div>
   );
 }
@@ -671,53 +1172,248 @@ function DataForm({ headers, data = null, row = null, onSubmit, onCancel }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validation
+    const requiredFields = ['col_0', 'col_1', 'col_2', 'col_3', 'col_6']; // STT, Nội dung, Hạng cân, VĐV đỏ, VĐV xanh
+    const missingFields = requiredFields.filter(field => {
+      const value = formData[field];
+      return !value || (typeof value === 'string' && value.trim() === '');
+    });
+
+    if (missingFields.length > 0) {
+      alert('Vui lòng điền đầy đủ các trường bắt buộc!');
+      return;
+    }
+
     onSubmit(formData);
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'WAI': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case 'IN': return 'bg-blue-100 text-blue-800 border-blue-300';
+      case 'FIN': return 'bg-green-100 text-green-800 border-green-300';
+      case 'CAN': return 'bg-red-100 text-red-800 border-red-300';
+      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Trường trạng thái */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Trạng thái
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Trường trạng thái - Nổi bật */}
+      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <label className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+          </svg>
+          Trạng thái trận đấu
         </label>
         <select
           value={formData.match_status}
           onChange={(e) => setFormData({ ...formData, match_status: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={`w-full px-4 py-3 border-2 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${getStatusColor(formData.match_status)}`}
         >
-          <option value="WAI">Chờ</option>
-          <option value="IN">Đang diễn ra</option>
-          <option value="FIN">Kết thúc</option>
-          <option value="CAN">Hủy</option>
+          <option value="WAI">⏳ Chờ thi đấu</option>
+          <option value="IN">▶️ Đang diễn ra</option>
+          <option value="FIN">✅ Kết thúc</option>
+          <option value="CAN">❌ Hủy bỏ</option>
         </select>
       </div>
 
-      {/* Các trường dữ liệu */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {editableHeaders.map((header, index) => (
-          <div key={index}>
+      {/* Thông tin chung */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2 pb-2 border-b border-gray-200">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+            <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+          </svg>
+          Thông tin chung
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* STT */}
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {header || `Cột ${index + 1}`}
+              {editableHeaders[0] || 'STT'}
+              <span className="text-red-500 ml-1">*</span>
             </label>
             <input
               type="text"
-              value={formData[`col_${index}`] || ''}
-              onChange={(e) => setFormData({ ...formData, [`col_${index}`]: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder={`Nhập ${header || `cột ${index + 1}`}`}
+              value={formData.col_0 || ''}
+              onChange={(e) => setFormData({ ...formData, col_0: e.target.value })}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+              placeholder="Nhập STT (bắt buộc)"
+              required
             />
           </div>
-        ))}
+
+          {/* Nội dung */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {editableHeaders[1] || 'Nội dung'}
+              <span className="text-red-500 ml-1">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.col_1 || ''}
+              onChange={(e) => setFormData({ ...formData, col_1: e.target.value })}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+              placeholder="Nhập nội dung (bắt buộc)"
+              required
+            />
+          </div>
+
+          {/* Hạng cân */}
+          <div className="md:col-span-3">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {editableHeaders[2] || 'Hạng cân'}
+              <span className="text-red-500 ml-1">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.col_2 || ''}
+              onChange={(e) => setFormData({ ...formData, col_2: e.target.value })}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+              placeholder="Nhập hạng cân (bắt buộc)"
+              required
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="flex justify-end gap-2 pt-4">
-        <Button variant="outline" onClick={onCancel} type="button">
+      {/* Thông tin VĐV - 2 cột đỏ/xanh */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Cột ĐỎ */}
+        <div className="bg-red-50 p-4 rounded-lg border-2 border-red-200">
+          <h3 className="text-lg font-bold text-red-700 flex items-center gap-2 pb-3 mb-4 border-b-2 border-red-300">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+            </svg>
+            VĐV ĐỎ
+          </h3>
+
+          <div className="space-y-4">
+            {/* Tên VĐV đỏ */}
+            <div>
+              <label className="block text-sm font-semibold text-red-800 mb-2">
+                {editableHeaders[3] || 'Tên VĐV'}
+                <span className="text-red-600 ml-1">*</span>
+              </label>
+              <input
+                type="text"
+                value={formData.col_3 || ''}
+                onChange={(e) => setFormData({ ...formData, col_3: e.target.value })}
+                className="w-full px-4 py-2.5 border-2 border-red-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                placeholder="Nhập tên VĐV đỏ"
+                required
+              />
+            </div>
+
+            {/* Đơn vị đỏ */}
+            <div>
+              <label className="block text-sm font-semibold text-red-800 mb-2">
+                {editableHeaders[4] || 'Đơn vị'}
+              </label>
+              <input
+                type="text"
+                value={formData.col_4 || ''}
+                onChange={(e) => setFormData({ ...formData, col_4: e.target.value })}
+                className="w-full px-4 py-2.5 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-red-50"
+                placeholder="Nhập đơn vị"
+              />
+            </div>
+
+            {/* Năm sinh đỏ */}
+            <div>
+              <label className="block text-sm font-semibold text-red-800 mb-2">
+                {editableHeaders[5] || 'Năm sinh'}
+              </label>
+              <input
+                type="text"
+                value={formData.col_5 || ''}
+                onChange={(e) => setFormData({ ...formData, col_5: e.target.value })}
+                className="w-full px-4 py-2.5 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-red-50"
+                placeholder="Nhập năm sinh"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Cột XANH */}
+        <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+          <h3 className="text-lg font-bold text-blue-700 flex items-center gap-2 pb-3 mb-4 border-b-2 border-blue-300">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+            </svg>
+            VĐV XANH
+          </h3>
+
+          <div className="space-y-4">
+            {/* Tên VĐV xanh */}
+            <div>
+              <label className="block text-sm font-semibold text-blue-800 mb-2">
+                {editableHeaders[6] || 'Tên VĐV'}
+                <span className="text-blue-600 ml-1">*</span>
+              </label>
+              <input
+                type="text"
+                value={formData.col_6 || ''}
+                onChange={(e) => setFormData({ ...formData, col_6: e.target.value })}
+                className="w-full px-4 py-2.5 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                placeholder="Nhập tên VĐV xanh"
+                required
+              />
+            </div>
+
+            {/* Đơn vị xanh */}
+            <div>
+              <label className="block text-sm font-semibold text-blue-800 mb-2">
+                {editableHeaders[7] || 'Đơn vị'}
+              </label>
+              <input
+                type="text"
+                value={formData.col_7 || ''}
+                onChange={(e) => setFormData({ ...formData, col_7: e.target.value })}
+                className="w-full px-4 py-2.5 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-50"
+                placeholder="Nhập đơn vị"
+              />
+            </div>
+
+            {/* Năm sinh xanh */}
+            <div>
+              <label className="block text-sm font-semibold text-blue-800 mb-2">
+                {editableHeaders[8] || 'Năm sinh'}
+              </label>
+              <input
+                type="text"
+                value={formData.col_8 || ''}
+                onChange={(e) => setFormData({ ...formData, col_8: e.target.value })}
+                className="w-full px-4 py-2.5 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-50"
+                placeholder="Nhập năm sinh"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer buttons */}
+      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-6 py-2.5 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg"
+        >
           Hủy
-        </Button>
-        <Button variant="primary" type="submit">
+        </button>
+        <button
+          type="submit"
+          className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg flex items-center gap-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+          </svg>
           {data ? 'Cập nhật' : 'Thêm mới'}
-        </Button>
+        </button>
       </div>
     </form>
   );
@@ -762,89 +1458,218 @@ function ActionConfirm({ message, onConfirm, onCancel }) {
 
 // Component form kết quả
 function ResultForm({ row, onSubmit, onCancel }) {
-  const [formData, setFormData] = React.useState({
-    winner: '',
+  // Lấy thông tin từ row
+  const redName = row?.data[3] || '-';
+  const redUnit = row?.data[4] || '';
+  const blueName = row?.data[6] || '-';
+  const blueUnit = row?.data[7] || '';
+  const existingWinner = row?.data[row?.data?.length - 1] || ''; // Cột cuối là VĐV thắng
+
+  // Xác định winner từ dữ liệu có sẵn
+  const getInitialWinner = () => {
+    if (!existingWinner || existingWinner === '-') return '';
+    // So sánh tên để xác định winner
+    if (existingWinner.includes(redName)) return 'red';
+    if (existingWinner.includes(blueName)) return 'blue';
+    return '';
+  };
+  // thông tin khởi tạo 
+  const initialData = {
+    winner: getInitialWinner(),
     red_score: 0,
     blue_score: 0,
     notes: ''
-  });
+  };
 
+  const [formData, setFormData] = React.useState(initialData);
+
+  const [isEditing, setIsEditing] = React.useState(!existingWinner || existingWinner === '-');
+  const [ isUpdated, setIsUpdated] = useState(false)
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.winner) {
+    if (!formData.winner && !isUpdated) {
       alert('Vui lòng chọn người thắng!');
       return;
     }
-    onSubmit(formData);
+    if(!isUpdated){
+      onSubmit(formData);
+      setIsUpdated(false);
+    }
+
   };
 
   const handleSelectWinner = (winner) => {
+    setIsUpdated(false);
     setFormData({ ...formData, winner });
   };
 
+  const handleUpdate = ()=>{
+    setIsUpdated(true)
+    setIsEditing(true);
+    setFormData({
+      winner: '',
+      red_score: 0,
+      blue_score: 0,
+      notes: '' 
+    });
+  }
+  const handleCancel = () => {
+    setIsEditing(false);
+    setIsUpdated(false);
+    setFormData(initialData);
+    onCancel();
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className={`p-4 rounded-lg border-2 ${formData.winner === 'red' ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Giáp Đỏ</label>
-          <p className="text-lg font-semibold text-red-600 mb-3">{row?.data[3] || '-'}</p>
-          <input
-            type="number"
-            value={formData.red_score}
-            onChange={(e) => setFormData({ ...formData, red_score: parseInt(e.target.value) || 0 })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md mb-3"
-            placeholder="Điểm"
-          />
-          <Button
-            type="button"
-            variant="none"
-            className={`w-full ${formData.winner === 'red' ? 'bg-red-600 text-white' : 'bg-red-100 text-red-600 hover:bg-red-200'}`}
-            onClick={() => handleSelectWinner('red')}
-          >
-            {formData.winner === 'red' ? '✓ Người thắng' : 'Chọn thắng'}
-          </Button>
-        </div>
-        <div className={`p-4 rounded-lg border-2 ${formData.winner === 'blue' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Giáp Xanh</label>
-          <p className="text-lg font-semibold text-blue-600 mb-3">{row?.data[6] || '-'}</p>
-          <input
-            type="number"
-            value={formData.blue_score}
-            onChange={(e) => setFormData({ ...formData, blue_score: parseInt(e.target.value) || 0 })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md mb-3"
-            placeholder="Điểm"
-          />
-          <Button
-            type="button"
-            variant="none"
-            className={`w-full ${formData.winner === 'blue' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}`}
-            onClick={() => handleSelectWinner('blue')}
-          >
-            {formData.winner === 'blue' ? '✓ Người thắng' : 'Chọn thắng'}
-          </Button>
+    <form onSubmit={handleSubmit} className="flex flex-col h-full">
+      {/* Content - Scrollable */}
+      <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
+        <div className="space-y-6">
+          {/* Hiển thị VĐV thắng phía trên */}
+          {existingWinner && existingWinner !== '-' && (
+            <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 p-6  text-center shadow-lg">
+              <div className="text-white text-sm font-semibold mb-2 uppercase tracking-wide">🏆 VĐV THẮNG CUỘC</div>
+              <div className="text-white text-3xl font-bold">{existingWinner}</div>
+            </div>
+          )}
+
+          {/* Hiển thị thông tin VĐV xanh/đỏ - Luôn hiển thị, disable khi không chỉnh sửa */}
+          <div className="bg-white p-6  shadow-md border border-gray-200">
+            <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">
+              Thông tin VĐV và chọn người thắng
+            </h3>
+
+            <div className="grid grid-cols-2 gap-6">
+              {/* Giáp Đỏ */}
+              <div className={`bg-gradient-to-br from-red-50 to-red-100 border-4 p-6  transition-all ${
+                formData.winner === 'red'
+                  ? 'border-red-500 shadow-xl shadow-red-200 scale-105'
+                  : 'border-red-200 hover:border-red-300 hover:shadow-lg'
+              } ${!isEditing ? 'opacity-75' : ''}`}>
+                <div className="text-center mb-6">
+                  <div className="inline-block bg-red-600 text-white px-4 py-1  text-xs font-bold mb-3 uppercase tracking-wide">
+                    Giáp Đỏ
+                  </div>
+                  <div className="text-2xl font-bold text-red-700 mb-2">{redName}</div>
+                  {redUnit && <div className="text-sm text-red-600 font-medium">{redUnit}</div>}
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 text-center">Điểm số</label>
+                  <input
+                    type="number"
+                    value={formData.red_score}
+                    onChange={(e) => setFormData({ ...formData, red_score: parseInt(e.target.value) || 0 })}
+                    disabled={!isEditing}
+                    className="w-full px-4 py-4 border-2 border-red-300  text-center text-3xl font-bold focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    placeholder="0"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleSelectWinner('red')}
+                  disabled={!isEditing}
+                  className={`w-full py-4  font-bold text-lg transition-all disabled:cursor-not-allowed ${
+                    formData.winner === 'red'
+                      ? 'bg-red-600 text-white shadow-xl transform scale-105'
+                      : 'bg-white text-red-600 border-2 border-red-600 hover:bg-red-50'
+                  } ${!isEditing ? 'opacity-50' : ''}`}
+                >
+                  {formData.winner === 'red' ? '✓ NGƯỜI THẮNG' : 'CHỌN THẮNG'}
+                </button>
+              </div>
+
+              {/* Giáp Xanh */}
+              <div className={`bg-gradient-to-br from-blue-50 to-blue-100 border-4 p-6  transition-all ${
+                formData.winner === 'blue'
+                  ? 'border-blue-500 shadow-xl shadow-blue-200 scale-105'
+                  : 'border-blue-200 hover:border-blue-300 hover:shadow-lg'
+              } ${!isEditing ? 'opacity-75' : ''}`}>
+                <div className="text-center mb-6">
+                  <div className="inline-block bg-blue-600 text-white px-4 py-1  text-xs font-bold mb-3 uppercase tracking-wide">
+                    Giáp Xanh
+                  </div>
+                  <div className="text-2xl font-bold text-blue-700 mb-2">{blueName}</div>
+                  {blueUnit && <div className="text-sm text-blue-600 font-medium">{blueUnit}</div>}
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 text-center">Điểm số</label>
+                  <input
+                    type="number"
+                    value={formData.blue_score}
+                    onChange={(e) => setFormData({ ...formData, blue_score: parseInt(e.target.value) || 0 })}
+                    disabled={!isEditing}
+                    className="w-full px-4 py-4 border-2 border-blue-300  text-center text-3xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    placeholder="0"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleSelectWinner('blue')}
+                  disabled={!isEditing}
+                  className={`w-full py-4  font-bold text-lg transition-all disabled:cursor-not-allowed ${
+                    formData.winner === 'blue'
+                      ? 'bg-blue-600 text-white shadow-xl transform scale-105'
+                      : 'bg-white text-blue-600 border-2 border-blue-600 hover:bg-blue-50'
+                  } ${!isEditing ? 'opacity-50' : ''}`}
+                >
+                  {formData.winner === 'blue' ? '✓ NGƯỜI THẮNG' : 'CHỌN THẮNG'}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Ghi chú</label>
-        <textarea
-          value={formData.notes}
-          onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          rows="3"
-          placeholder="Ghi chú..."
-        />
+      {/* Footer - Giống Vovinam */}
+      <div className="bg-gray-100 px-6 py-4 flex justify-end gap-3 border-t border-gray-200">
+        {!isEditing ? (
+          // Khi không chỉnh sửa - Hiển thị button Cập nhật và Đóng
+          <>
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2  font-semibold transition-colors"
+            >
+              Đóng
+            </button>
+            <button
+              type="button"
+              onClick={handleUpdate}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2  font-semibold transition-colors shadow-md"
+            >
+              Cập nhật
+            </button>
+          </>
+        ) : (
+          // Khi đang chỉnh sửa - Hiển thị button Hủy và Lưu
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                if (existingWinner && existingWinner !== '-') {
+                  setIsEditing(false);
+                } else {
+                  onCancel();
+                }
+              }}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2  font-semibold transition-colors"
+            >
+              {existingWinner && existingWinner !== '-' ? 'Hủy chỉnh sửa' : 'Hủy'}
+            </button>
+            <button
+              type="submit"
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2  font-semibold transition-colors shadow-md"
+            >
+            Lưu
+            </button>
+          </>
+        )}
       </div>
-
-      <div className="flex justify-end gap-2 pt-4">
-        <Button variant="outline" onClick={onCancel} type="button">
-          Hủy
-        </Button>
-        <Button variant="primary" type="submit">
-          Lưu kết quả
-        </Button>
-      </div>
-    </form>
+    </form> 
   );
 }
 
@@ -894,232 +1719,731 @@ function ConfigForm({ row, onSubmit, onCancel }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-h-[70vh] overflow-y-auto">
-      {/* Cài đặt số lượng */}
-      <div>
-        <h3 className="text-lg font-semibold mb-3 text-gray-800">Cài đặt số lượng</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Số hiệp</label>
-            <select
-              value={configData.so_hiep}
-              onChange={(e) => handleChange('so_hiep', parseInt(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+    <form onSubmit={handleSubmit} className="flex flex-col flex-1">
+      {/* Content - Scrollable */}
+      <div className="p-6 overflow-y-auto max-h-[calc(600px-140px)] bg-gray-50">
+        <div className="space-y-6">
+        {/* Section: Thông tin trận đấu */}
+        <div className="bg-gradient-to-r from-green-500 to-green-600 p-4 ">
+          <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              viewBox="0 0 20 20"
+              fill="currentColor"
             >
-              <option value="1">1 hiệp</option>
-              <option value="2">2 hiệp</option>
-              <option value="3">3 hiệp</option>
-              <option value="5">5 hiệp</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Số hiệp phụ</label>
-            <select
-              value={configData.so_hiep_phu}
-              onChange={(e) => handleChange('so_hiep_phu', parseInt(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            >
-              <option value="0">Không có</option>
-              <option value="1">1 hiệp phụ</option>
-              <option value="2">2 hiệp phụ</option>
-              <option value="3">3 hiệp phụ</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Số giám định</label>
-            <select
-              value={configData.so_giam_dinh}
-              onChange={(e) => handleChange('so_giam_dinh', parseInt(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            >
-              <option value="3">3 giám định</option>
-              <option value="5">5 giám định</option>
-              <option value="10">10 giám định</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Hệ điểm</label>
-            <select
-              value={configData.he_diem}
-              onChange={(e) => handleChange('he_diem', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            >
-              <option value="1">Hệ điểm 1</option>
-              <option value="2">Hệ điểm 2</option>
-              <option value="3">Hệ điểm 3</option>
-              <option value="10">Hệ điểm 10</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Cài đặt thời gian */}
-      <div>
-        <h3 className="text-lg font-semibold mb-3 text-gray-800">Cài đặt thời gian</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Thời gian tính điểm (ms)</label>
-            <input
-              type="number"
-              value={configData.thoi_gian_tinh_diem}
-              onChange={(e) => handleChange('thoi_gian_tinh_diem', parseInt(e.target.value) || 1000)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Thời gian thi đấu (giây)</label>
-            <input
-              type="number"
-              value={configData.thoi_gian_thi_dau}
-              onChange={(e) => handleChange('thoi_gian_thi_dau', parseInt(e.target.value) || 120)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Thời gian hiệp (giây)</label>
-            <input
-              type="number"
-              value={configData.thoi_gian_hiep}
-              onChange={(e) => handleChange('thoi_gian_hiep', parseInt(e.target.value) || 90)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Thời gian nghỉ (giây)</label>
-            <input
-              type="number"
-              value={configData.thoi_gian_nghi}
-              onChange={(e) => handleChange('thoi_gian_nghi', parseInt(e.target.value) || 30)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Thời gian hiệp phụ (giây)</label>
-            <input
-              type="number"
-              value={configData.thoi_gian_hiep_phu}
-              onChange={(e) => handleChange('thoi_gian_hiep_phu', parseInt(e.target.value) || 90)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Thời gian y tế (giây)</label>
-            <input
-              type="number"
-              value={configData.thoi_gian_y_te}
-              onChange={(e) => handleChange('thoi_gian_y_te', parseInt(e.target.value) || 30)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Điểm áp dụng */}
-      <div>
-        <h3 className="text-lg font-semibold mb-3 text-gray-800">Điểm áp dụng</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Khoảng điểm tuyệt đối</label>
-            <input
-              type="number"
-              value={configData.khoang_diem_tuyet_toi}
-              onChange={(e) => handleChange('khoang_diem_tuyet_toi', parseInt(e.target.value) || 10)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Chế độ áp dụng */}
-      <div>
-        <h3 className="text-lg font-semibold mb-3 text-gray-800">Chế độ áp dụng</h3>
-        <div className="space-y-3">
-          {[
-            { key: 'cau_hinh_doi_khang_diem_thap', label: 'Đối kháng tính điểm thấp' },
-            { key: 'cau_hinh_quyen_tinh_tong', label: 'Quyền tính điểm tổng' },
-            { key: 'cau_hinh_y_te', label: 'Tính thời gian y tế' },
-            { key: 'cau_hinh_tinh_diem_tuyet_doi', label: 'Tính điểm thắng tuyệt đối' },
-            { key: 'cau_hinh_xoa_nhac_nho', label: 'Xoá nhắc nhở' },
-            { key: 'cau_hinh_xoa_canh_cao', label: 'Xoá cảnh cáo' },
-          ].map(({ key, label }) => (
-            <div key={key} className="flex items-center">
-              <input
-                type="checkbox"
-                id={key}
-                checked={configData[key] || false}
-                onChange={(e) => handleChange(key, e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
               />
-              <label htmlFor={key} className="ml-2 text-sm text-gray-700">
-                {label}
+            </svg>
+            Thông tin trận đấu
+          </h3>
+
+          <div className="grid grid-cols-3 gap-4">
+            {/* Hệ điểm */}
+            <div className="bg-white border border-gray-200 p-3 ">
+              <label className="block text-gray-600 text-xs font-semibold mb-1">
+                Hệ điểm
               </label>
+              <div className="text-gray-800 text-lg font-bold">
+                {configData.he_diem === '1' || configData.he_diem === 1 ? 'Hệ điểm 1' :
+                 configData.he_diem === '2' || configData.he_diem === 2 ? 'Hệ điểm 2' :
+                 configData.he_diem === '3' || configData.he_diem === 3 ? 'Hệ điểm 3' :
+                 'Hệ điểm 2'}
+              </div>
             </div>
-          ))}
+
+            {/* Số giám định */}
+            <div className="bg-white border border-gray-200 p-3 ">
+              <label className="block text-gray-600 text-xs font-semibold mb-1">
+                Số giám định
+              </label>
+              <div className="text-gray-800 text-lg font-bold">
+                {configData.so_giam_dinh === '3' || configData.so_giam_dinh === 3 ? '3 giám định' :
+                 configData.so_giam_dinh === '5' || configData.so_giam_dinh === 5 ? '5 giám định' :
+                 configData.so_giam_dinh === '10' || configData.so_giam_dinh === 10 ? '10 giám định' :
+                 '3 giám định'}
+              </div>
+            </div>
+
+            {/* Tổng số hiệp */}
+            <div className="bg-white border border-gray-200 p-3 ">
+              <label className="block text-gray-600 text-xs font-semibold mb-1">
+                Tổng số hiệp
+              </label>
+              <div className="text-gray-800 text-lg font-bold">
+                {(configData.so_hiep || 3) + (configData.so_hiep_phu || 0)} hiệp
+              </div>
+              <div className="text-gray-500 text-xs mt-1">
+                ({configData.so_hiep || 3} chính + {configData.so_hiep_phu || 0} phụ)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section: Cấu hình hiệp */}
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 ">
+          <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+              <path
+                fillRule="evenodd"
+                d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Cấu hình hiệp
+          </h3>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Số hiệp chính */}
+            <div className="bg-white border border-gray-200 p-4 ">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Số hiệp chính
+              </label>
+              <select
+                value={configData.so_hiep || '3'}
+                onChange={(e) => handleChange('so_hiep', parseInt(e.target.value))}
+                className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+              >
+                <option value="1">1 hiệp</option>
+                <option value="2">2 hiệp</option>
+                <option value="3">3 hiệp</option>
+              </select>
+              <p className="text-gray-500 text-xs mt-2">
+                Theo cấu hình hệ thống
+              </p>
+            </div>
+
+            {/* Số hiệp phụ */}
+            <div className="bg-white border border-gray-200 p-4 ">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Số hiệp phụ
+              </label>
+              <select
+                value={configData.so_hiep_phu || '0'}
+                onChange={(e) => handleChange('so_hiep_phu', parseInt(e.target.value))}
+                className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+              >
+                <option value="0">Không có</option>
+                <option value="1">1 hiệp phụ</option>
+                <option value="2">2 hiệp phụ</option>
+                <option value="3">3 hiệp phụ</option>
+              </select>
+              <p className="text-gray-500 text-xs mt-2">
+                Theo cấu hình hệ thống
+              </p>
+            </div>
+
+            {/* Hệ điểm */}
+            <div className="bg-white border border-gray-200 p-4 ">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Hệ điểm
+              </label>
+              <select
+                value={configData.he_diem || '2'}
+                onChange={(e) => handleChange('he_diem', e.target.value)}
+                className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+              >
+                <option value="1">Hệ điểm 1</option>
+                <option value="2">Hệ điểm 2</option>
+                <option value="3">Hệ điểm 3</option>
+              </select>
+              <p className="text-gray-500 text-xs mt-2">
+                Theo cấu hình hệ thống
+              </p>
+            </div>
+
+            {/* Số giám định */}
+            <div className="bg-white border border-gray-200 p-4 ">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Số giám định
+              </label>
+              <select
+                value={configData.so_giam_dinh || '3'}
+                onChange={(e) => handleChange('so_giam_dinh', e.target.value)}
+                className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+              >
+                <option value="3">3 giám định</option>
+                <option value="5">5 giám định</option>
+                <option value="10">10 giám định</option>
+              </select>
+              <p className="text-gray-500 text-xs mt-2">
+                Theo cấu hình hệ thống
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Section: Cấu hình thời gian */}
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 ">
+          <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Cấu hình thời gian
+          </h3>
+
+          <div className="grid grid-cols-3 gap-4">
+            {/* Thời gian tính điểm */}
+            <div className="bg-white border border-gray-200 p-4 ">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Thời gian tính điểm (ms)
+              </label>
+              <input
+                type="number"
+                value={configData.thoi_gian_tinh_diem}
+                onChange={(e) => handleChange('thoi_gian_tinh_diem', parseInt(e.target.value))}
+                className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+              />
+            </div>
+
+            {/* Thời gian thi đấu */}
+            <div className="bg-white border border-gray-200 p-4 ">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Thời gian thi đấu (giây)
+              </label>
+              <input
+                type="number"
+                value={configData.thoi_gian_thi_dau}
+                onChange={(e) => handleChange('thoi_gian_thi_dau', parseInt(e.target.value))}
+                className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+              />
+            </div>
+
+            {/* Thời gian nghỉ */}
+            <div className="bg-white border border-gray-200 p-4 ">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Thời gian nghỉ (giây)
+              </label>
+              <input
+                type="number"
+                value={configData.thoi_gian_nghi}
+                onChange={(e) => handleChange('thoi_gian_nghi', parseInt(e.target.value))}
+                className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+              />
+            </div>
+
+            {/* Thời gian hiệp phụ */}
+            <div className="bg-white border border-gray-200 p-4 ">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Thời gian hiệp phụ (giây)
+              </label>
+              <input
+                type="number"
+                value={configData.thoi_gian_hiep_phu}
+                onChange={(e) => handleChange('thoi_gian_hiep_phu', parseInt(e.target.value))}
+                className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+              />
+            </div>
+
+            {/* Thời gian y tế */}
+            <div className="bg-white border border-gray-200 p-4 ">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Thời gian y tế (giây)
+              </label>
+              <input
+                type="number"
+                value={configData.thoi_gian_y_te}
+                onChange={(e) => handleChange('thoi_gian_y_te', parseInt(e.target.value))}
+                className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Section: Điểm áp dụng */}
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 ">
+          <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            Điểm áp dụng
+          </h3>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white border border-gray-200 p-4 ">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Khoảng điểm tuyệt đối
+              </label>
+              <input
+                type="number"
+                value={configData.khoang_diem_tuyet_toi}
+                onChange={(e) => handleChange('khoang_diem_tuyet_toi', parseInt(e.target.value))}
+                className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+              />
+              <p className="text-gray-500 text-xs mt-2">
+                Khoảng cách điểm để thắng tuyệt đối
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Section: Chế độ áp dụng */}
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 ">
+          <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Chế độ áp dụng
+          </h3>
+
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { key: 'cau_hinh_doi_khang_diem_thap', label: 'Đối kháng tính điểm thấp' },
+              { key: 'cau_hinh_quyen_tinh_tong', label: 'Quyền tính điểm tổng' },
+              { key: 'cau_hinh_y_te', label: 'Tính thời gian y tế' },
+              { key: 'cau_hinh_tinh_diem_tuyet_doi', label: 'Tính điểm thắng tuyệt đối' },
+              { key: 'cau_hinh_xoa_nhac_nho', label: 'Xoá nhắc nhở' },
+              { key: 'cau_hinh_xoa_canh_cao', label: 'Xoá cảnh cáo' },
+            ].map(({ key, label }) => (
+              <div key={key} className="bg-white border border-gray-200 p-3 ">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id={key}
+                    checked={configData[key] || false}
+                    onChange={(e) => handleChange(key, e.target.checked)}
+                    className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <span className="text-sm text-gray-700 font-medium">
+                    {label}
+                  </span>
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
         </div>
       </div>
 
-      <div className="flex justify-end gap-2 pt-4 border-t sticky bottom-0 bg-white">
-        <Button variant="outline" onClick={onCancel} type="button">
+      {/* Footer - Giống Vovinam */}
+      <div className="bg-gray-100 px-6 py-4 flex justify-end gap-3 border-t border-gray-200">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2  font-semibold transition-colors"
+        >
           Hủy
-        </Button>
-        <Button variant="primary" type="submit">
-          Lưu cấu hình
-        </Button>
+        </button>
+        <button
+          type="submit"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2  font-semibold transition-colors"
+        >
+          Lưu thay đổi
+        </button>
       </div>
     </form>
   );
 }
 
-// Component xem lịch sử
-function HistoryView({ row, onClose }) {
+// Component xem lịch sử - Hiển thị giống màn hình Vovinam
+function HistoryView({ row, onClose, exportToExcelRef }) {
   const [history, setHistory] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+  const [matchInfo, setMatchInfo] = React.useState(null);
+  const [expandedRow, setExpandedRow] = React.useState(null);
+
+  // Hàm xuất Excel
+  const exportToExcel = () => {
+    try {
+      // Lấy dữ liệu
+      const latestHistoryItem = history.length > 0 ? history[history.length - 1] : null;
+      const allLogs = latestHistoryItem?.logs || [];
+      const roundHistory = latestHistoryItem?.round_history || [];
+
+      const redName = row.data[3] || 'VĐV ĐỎ';
+      const redUnit = row.data[4] || '';
+      const blueName = row.data[6] || 'VĐV XANH';
+      const blueUnit = row.data[7] || '';
+      const latestHistory = history.length > 0 ? history[history.length - 1] : null;
+      const redScore = latestHistory?.red_score || 0;
+      const blueScore = latestHistory?.blue_score || 0;
+      const winner = matchInfo?.winner || row.winner;
+
+      // Tạo workbook
+      const wb = XLSX.utils.book_new();
+
+      // Sheet 1: Thông tin tổng quan
+      const summaryData = [
+        ['KẾT QUẢ TRẬN ĐẤU'],
+        [],
+        ['Thông tin', 'Giá trị'],
+        ['VĐV Đỏ', redName],
+        ['Đơn vị Đỏ', redUnit],
+        ['Điểm Đỏ', redScore],
+        [],
+        ['VĐV Xanh', blueName],
+        ['Đơn vị Xanh', blueUnit],
+        ['Điểm Xanh', blueScore],
+        [],
+        ['Người chiến thắng', winner === 'RED' ? redName : winner === 'BLUE' ? blueName : 'Hòa'],
+      ];
+      const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
+      XLSX.utils.book_append_sheet(wb, ws1, 'Tổng quan');
+
+      // Sheet 2: Kết quả từng hiệp
+      if (roundHistory.length > 0) {
+        const roundData = [
+          ['KẾT QUẢ TỪNG HIỆP'],
+          [],
+          ['Hiệp', 'Loại hiệp', 'Điểm Đỏ', 'Điểm Xanh', 'Thắng', 'Ngã', 'Biên', 'Nhắc nhở', 'Cảnh cáo']
+        ];
+
+        roundHistory.forEach(round => {
+          roundData.push([
+            round.round,
+            round.roundType === 'EXTRA' ? 'Hiệp phụ' : 'Hiệp',
+            round.red?.match?.score || 0,
+            round.blue?.match?.score || 0,
+            round.red?.match?.win || 0,
+            round.red?.match?.fall || 0,
+            round.red?.match?.out || 0,
+            round.red?.match?.warning || 0,
+            round.red?.match?.penalty || 0
+          ]);
+        });
+
+        const ws2 = XLSX.utils.aoa_to_sheet(roundData);
+        XLSX.utils.book_append_sheet(wb, ws2, 'Kết quả hiệp');
+      }
+
+      // Sheet 3: Lịch sử chi tiết
+      if (allLogs.length > 0) {
+        const logData = [
+          ['LỊCH SỬ CHI TIẾT HÀNH ĐỘNG'],
+          [],
+          ['STT', 'Thời gian', 'Hiệp', 'Hành động', 'Giáp', 'Điểm']
+        ];
+
+        allLogs.forEach((log, index) => {
+          const actionMap = {
+            'SCORE_1': 'Điểm 1',
+            'SCORE_2': 'Điểm 2',
+            'SCORE_3': 'Điểm 3',
+            'SCORE_5': 'Điểm 5',
+            'SCORE_10': 'Điểm 10',
+            'WIN': 'Thắng',
+            'FALL': 'Ngã',
+            'OUT': 'Biên',
+            'WARNING': 'Nhắc nhở',
+            'PENALTY': 'Cảnh cáo',
+            'MEDICAL': 'Y tế',
+            'ROUND_END': 'Kết thúc hiệp',
+            'MATCH_END': 'Kết thúc trận'
+          };
+
+          logData.push([
+            index + 1,
+            log.timestamp || '',
+            log.round || '',
+            actionMap[log.action] || log.action,
+            log.side === 'RED' ? 'Đỏ' : log.side === 'BLUE' ? 'Xanh' : '',
+            `${log.redScore || 0} - ${log.blueScore || 0}`
+          ]);
+        });
+
+        const ws3 = XLSX.utils.aoa_to_sheet(logData);
+        XLSX.utils.book_append_sheet(wb, ws3, 'Lịch sử chi tiết');
+      }
+
+      // Xuất file
+      const fileName = `Ket_qua_tran_dau_${redName}_vs_${blueName}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+
+      console.log('Xuất Excel thành công!');
+    } catch (error) {
+      console.error('Lỗi khi xuất Excel:', error);
+      alert('Có lỗi xảy ra khi xuất file Excel!');
+    }
+  };
 
   React.useEffect(() => {
-    // TODO: Gọi API để lấy lịch sử
-    setTimeout(() => {
-      setHistory([
-        { id: 1, action: 'Bắt đầu trận', time: '2025-12-23 10:00:00', user: 'Admin' },
-        { id: 2, action: 'Cập nhật điểm', time: '2025-12-23 10:15:00', user: 'Giám định 1' },
-        { id: 3, action: 'Kết thúc trận', time: '2025-12-23 10:30:00', user: 'Admin' },
-      ]);
-      setLoading(false);
-    }, 500);
+    const fetchHistory = async () => {
+      try {
+        setLoading(true);
+
+        // Lấy lịch sử từ API nếu có match_id
+        if (row.match_id) {
+          const response = await axios.get(`http://localhost:6789/api/competition-match/${row.match_id}/history`);
+          if (response?.data?.success) {
+            setHistory(response.data.data || []);
+          }
+
+          // Lấy thông tin match
+          const matchResponse = await axios.get(`http://localhost:6789/api/competition-match/${row.match_id}`);
+          if (matchResponse?.data?.success) {
+            setMatchInfo(matchResponse.data.data);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching history:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+
+    // Gán hàm exportToExcel vào ref để component cha có thể gọi
+    if (exportToExcelRef) {
+      exportToExcelRef.current = exportToExcel;
+    }
   }, [row]);
 
   if (loading) {
-    return <div className="text-center py-4">Đang tải...</div>;
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin  h-12 w-12 border-b-2 border-blue-600"></div>
+        <span className="ml-3 text-gray-600">Đang tải lịch sử...</span>
+      </div>
+    );
   }
 
+  // Tính điểm cuối cùng từ history
+  const latestHistory = history.length > 0 ? history[history.length - 1] : null;
+  const redScore = latestHistory?.red_score || 0;
+  const blueScore = latestHistory?.blue_score || 0;
+  const winner = matchInfo?.winner || row.winner;
+
+  // Thông tin VĐV
+  const redName = row.data[3] || 'VĐV ĐỎ';
+  const redUnit = row.data[4] || '';
+  const blueName = row.data[6] || 'VĐV XANH';
+  const blueUnit = row.data[7] || '';
+
+  // Lấy round_history và logs từ history cuối cùng
+  const latestHistoryItem = history.length > 0 ? history[history.length - 1] : null;
+  const roundHistory = latestHistoryItem?.round_history || [];
+  const allLogs = latestHistoryItem?.logs || [];
+
   return (
-    <div className="space-y-4">
-      <div className="max-h-96 overflow-y-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Thời gian</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Hành động</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Người thực hiện</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {history.map((item) => (
-              <tr key={item.id}>
-                <td className="px-4 py-2 text-sm text-gray-900">{item.time}</td>
-                <td className="px-4 py-2 text-sm text-gray-900">{item.action}</td>
-                <td className="px-4 py-2 text-sm text-gray-900">{item.user}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="space-y-6">
+      {/* 1. KẾT QUẢ TỔNG - Bảng điểm giống Vovinam */}
+      <div className="bg-gradient-to-br from-gray-900 to-gray-800  p-6 shadow-2xl">
+        <div className="bg-gradient-to-r from-purple-600 to-purple-800 px-4 py-2 -mx-6 -mt-6 mb-6">
+          <h3 className="text-xl font-bold text-white flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+              <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            KẾT QUẢ TỔNG
+          </h3>
+        </div>
+
+        <div className="flex justify-between items-center gap-6">
+          {/* Giáp Đỏ */}
+          <div className={`flex-1 bg-red-600  p-6 shadow-lg transition-all ${
+            winner?.toUpperCase() === 'RED' ? 'ring-4 ring-yellow-400 ring-offset-2 ring-offset-gray-900' : ''
+          }`}>
+            <div className="text-white text-center">
+              <div className="text-8xl font-bold mb-4">{redScore}</div>
+              <div className="border-t-2 border-white/30 pt-4">
+                <p className="text-2xl font-bold">{redName}</p>
+                <p className="text-lg opacity-90">{redUnit}</p>
+              </div>
+              {winner?.toUpperCase() === 'RED' && (
+                <div className="mt-4 bg-yellow-400 text-gray-900 font-bold py-2 px-4  inline-block">
+                  🏆 CHIẾN THẮNG
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Giữa */}
+          <div className="flex flex-col items-center justify-center px-6 text-white">
+            <div className="text-3xl font-bold mb-2">VS</div>
+            <div className="text-xl opacity-75">Trận {row.data[0]}</div>
+            <div className="mt-4 bg-yellow-400 text-gray-900 font-bold px-6 py-2 ">
+              {row.match_status === 'FIN' ? 'ĐÃ KẾT THÚC' :
+               row.match_status === 'IN' ? 'ĐANG THI ĐẤU' : 'CHỜ THI ĐẤU'}
+            </div>
+          </div>
+
+          {/* Giáp Xanh */}
+          <div className={`flex-1 bg-blue-600  p-6 shadow-lg transition-all ${
+            winner?.toUpperCase() === 'BLUE' ? 'ring-4 ring-yellow-400 ring-offset-2 ring-offset-gray-900' : ''
+          }`}>
+            <div className="text-white text-center">
+              <div className="text-8xl font-bold mb-4">{blueScore}</div>
+              <div className="border-t-2 border-white/30 pt-4">
+                <p className="text-2xl font-bold">{blueName}</p>
+                <p className="text-lg opacity-90">{blueUnit}</p>
+              </div>
+              {winner?.toUpperCase() === 'BLUE' && (
+                <div className="mt-4 bg-yellow-400 text-gray-900 font-bold py-2 px-4  inline-block">
+                  🏆 CHIẾN THẮNG
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="flex justify-end pt-4">
-        <Button variant="outline" onClick={onClose}>
-          Đóng
-        </Button>
-      </div>
+      {/* 2. KẾT QUẢ TỪNG HIỆP */}
+      {roundHistory.length > 0 && (
+        <div className="bg-white  shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-green-600 to-green-800 px-6 py-4">
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+              </svg>
+              KẾT QUẢ TỪNG HIỆP ({roundHistory.length})
+            </h3>
+          </div>
+
+          <div className="p-6 space-y-3 bg-gray-50">
+            {roundHistory.map((round, roundIndex) => {
+              // Lọc logs theo hiệp
+              const roundLogs = allLogs.filter(log => log.round === round.round) || [];
+
+              return (
+                <RoundHistoryCard
+                  key={roundIndex}
+                  round={round}
+                  roundIndex={roundIndex}
+                  logs={roundLogs}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 3. LỊCH SỬ CHI TIẾT HÀNH ĐỘNG */}
+      {allLogs.length > 0 && (
+        <div className="bg-white  shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4">
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+              </svg>
+              LỊCH SỬ CHI TIẾT HÀNH ĐỘNG ({allLogs.length})
+            </h3>
+          </div>
+
+          <div className="max-h-[500px] overflow-y-auto border border-gray-200 ">
+            {allLogs.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-lg">Chưa có lịch sử hành động</p>
+              </div>
+            ) : (
+            <table className="min-w-full text-sm">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10 shadow-sm">
+                <tr>
+                  <th className="px-3 py-3 text-center font-semibold text-gray-700 border-b-2 border-gray-300 w-12">#</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700 border-b-2 border-gray-300">Thời gian</th>
+                  <th className="px-4 py-3 text-center font-semibold text-gray-700 border-b-2 border-gray-300 w-20">Hiệp</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700 border-b-2 border-gray-300">Loại hành động</th>
+                  <th className="px-4 py-3 text-center font-semibold text-gray-700 border-b-2 border-gray-300 w-24">Đội</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700 border-b-2 border-gray-300">Mô tả</th>
+                  <th className="px-4 py-3 text-center font-semibold text-gray-700 border-b-2 border-gray-300 w-28">Tỷ số</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {allLogs.map((log, logIndex) => {
+                  const getActionTypeLabel = (type) => {
+                    const types = {
+                      'score': 'Ghi điểm',
+                      'warn': 'Cảnh cáo',
+                      'remind': 'Nhắc nhở',
+                      'medical': 'Y tế',
+                      'fall': 'Ngã',
+                      'win': 'Thắng',
+                      'reset': 'Reset'
+                    };
+                    return types[type] || type;
+                  };
+
+                  return (
+                    <tr key={logIndex} className="hover:bg-blue-50 transition-colors duration-150">
+                      <td className="px-3 py-3 text-center text-gray-500 font-medium border-r border-gray-100">
+                        {logIndex + 1}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700 font-medium">
+                        {log.time || '-'}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="inline-flex items-center justify-center px-2 py-1  bg-indigo-100 text-indigo-700 text-xs font-semibold">
+                          {log.round || '-'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center px-3 py-1.5  text-xs font-semibold ${
+                          log.actionType === 'score' ? 'bg-green-100 text-green-800 border border-green-200' :
+                          log.actionType === 'warn' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' :
+                          log.actionType === 'remind' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                          log.actionType === 'medical' ? 'bg-red-100 text-red-800 border border-red-200' :
+                          log.actionType === 'fall' ? 'bg-orange-100 text-orange-800 border border-orange-200' :
+                          log.actionType === 'win' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
+                          'bg-gray-100 text-gray-800 border border-gray-200'
+                        }`}>
+                          {getActionTypeLabel(log.actionType)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        {log.team === 'red' ? (
+                          <span className="inline-flex items-center px-3 py-1  bg-red-100 text-red-700 font-bold text-sm border border-red-200">
+                            Đỏ
+                          </span>
+                        ) : log.team === 'blue' ? (
+                          <span className="inline-flex items-center px-3 py-1  bg-blue-100 text-blue-700 font-bold text-sm border border-blue-200">
+                            Xanh
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                        {log.description || '-'}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="inline-flex items-center justify-center px-3 py-1.5  bg-gray-100 font-mono text-gray-900 font-bold text-sm border border-gray-300">
+                          {log.redScore || 0} - {log.blueScore || 0}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-

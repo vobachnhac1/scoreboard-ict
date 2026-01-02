@@ -46,8 +46,19 @@ class InitConfigService {
                     device_id TEXT,
                     expired_date TEXT
                 )
-            `);  
-            
+            `);
+
+            // table logos - Quản lý danh sách logo/hình ảnh
+            this.db.run(`
+                CREATE TABLE IF NOT EXISTS logos (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    url TEXT NOT NULL,
+                    position INTEGER DEFAULT 0,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
+
             
             /**
              * 
@@ -467,6 +478,98 @@ class InitConfigService {
             });
         });
     };
+
+    // ===== LOGO MANAGEMENT FUNCTIONS =====
+
+    // Lấy tất cả logos, sắp xếp theo position
+    getAllLogos() {
+        return new Promise((resolve, reject) => {
+            this.db.all("SELECT * FROM logos ORDER BY position ASC", [], (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    }
+
+    // Thêm logo mới
+    insertLogo(data) {
+        const { url, position } = data;
+        return new Promise((resolve, reject) => {
+            this.db.run(
+                "INSERT INTO logos (url, position) VALUES (?, ?)",
+                [url, position || 0],
+                function(err) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve({ id: this.lastID, url, position });
+                    }
+                }
+            );
+        });
+    }
+
+    // Cập nhật logo
+    updateLogo(id, data) {
+        const { url, position } = data;
+        const updates = [];
+        const values = [];
+
+        if (url !== undefined) {
+            updates.push("url = ?");
+            values.push(url);
+        }
+        if (position !== undefined) {
+            updates.push("position = ?");
+            values.push(position);
+        }
+
+        updates.push("updated_at = CURRENT_TIMESTAMP");
+        values.push(id);
+
+        return new Promise((resolve, reject) => {
+            this.db.run(
+                `UPDATE logos SET ${updates.join(", ")} WHERE id = ?`,
+                values,
+                function(err) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve({ id, changes: this.changes });
+                    }
+                }
+            );
+        });
+    }
+
+    // Xóa logo
+    deleteLogo(id) {
+        return new Promise((resolve, reject) => {
+            this.db.run("DELETE FROM logos WHERE id = ?", [id], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve({ id, changes: this.changes });
+                }
+            });
+        });
+    }
+
+    // Lấy logo theo ID
+    getLogoById(id) {
+        return new Promise((resolve, reject) => {
+            this.db.get("SELECT * FROM logos WHERE id = ?", [id], (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(row);
+                }
+            });
+        });
+    }
 
 }
 const instance = new InitConfigService()

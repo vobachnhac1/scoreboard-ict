@@ -34,9 +34,10 @@ export default function ManagementConnectionSocket() {
     const initSocket = async () => {
       try {
         // Kiểm tra xem socket đã connected chưa
-        console.log("🔍 Checking socket status:", socket.connected);
+        console.log("🔍 Checking socket status:", socket.connected, socketClient.isConnected());
+        // kiểm tra thêm connection socket hiện tại 
 
-        if (!socket.connected) {
+        if (!socket.connected || !socketClient.isConnected() ) {
           console.log("Khởi tạo socket connection...");
           await dispatch(connectSocket('admin'));
 
@@ -45,7 +46,7 @@ export default function ManagementConnectionSocket() {
           setupSocketListeners(store);
         } else {
           console.log("Socket already connected");
-          await dispatch(connectSocket('admin'));
+          // await dispatch(connectSocket('admin'));
         }
 
         // Load room từ localStorage
@@ -62,7 +63,6 @@ export default function ManagementConnectionSocket() {
 
             // Auto connect với room đã lưu
             setLoading(true);
-            console.log("Registering admin to room...");
             emitSocketEvent("REGISTER_ROOM_ADMIN", {
               room_id: roomData.room_id,
               uuid_desktop: roomData.uuid_desktop,
@@ -91,107 +91,104 @@ export default function ManagementConnectionSocket() {
       // Không disconnect socket khi unmount vì có thể cần dùng ở component khác
     };
   }, [dispatch, store]); // Chỉ chạy 1 lần khi mount
+  
+  // Lắng nghe response từ server khi fetch danh sách thiết bị
+  useSocketEvent("RES_ROOM_ADMIN", (response) => {
+    console.log("Receive from server:", response);
 
-  // Hàm tạo/sử dụng room
-  const handleCreateRoom = async(roomData) => {
-    // Lưu vào localStorage
-    localStorage.setItem("admin_room", JSON.stringify(roomData));
-    setCurrentRoom(roomData);
-    setShowCreateRoom(false);
-    // Kết nối đến room
-    setLoading(true);
-    try {
-        console.log("Bắt đầu tạo lại kết nối socket...");
+    // Kiểm tra nếu response từ ADMIN_FETCH_CONN
+    if (response.path === "ADMIN_FETCH_CONN" && response.status === 200) {
+      // Chuyển đổi MapConn object thành array
+      const deviceList = response.data.ls_conn || {};
+      const devices = Object.values(deviceList)?.filter(ele=> ele?.register_status_code !=='ADMIN').map((conn, index) => ({
+        order: index + 1,
+        device_name: conn.device_name || `Thiết bị ${conn.socket_id?.substring(0, 8)}`,
+        judge_permission: conn.referrer ? LIST_JUDGE_PRORMISSION.find((item) => item.key === Number(conn.referrer)).label : "Chưa gán",
+        device_code: conn.device_id || conn.socket_id,
+        device_ip: conn.client_ip || "N/A",
+        status: conn.connect_status_code === "CONNECTED" ? "active" : "inactive",
+        accepted: conn.register_status_code === "CONNECTED" ? "approved"
+                : conn.register_status_code === "PROCESSING" ? "pending"
+                : conn.register_status_code === "ADMIN" ? "admin"
+                : "rejected",
+        // Lưu thêm thông tin gốc để sử dụng cho các action
+        socket_id: conn.socket_id,
+        room_id: conn.room_id,
+        permission: conn.permission,
+        token: conn.token,
+        rawData: conn,
+        referrer: conn.referrer
+      }));
 
-        // Bước 1: Ngắt kết nối hiện tại
-        console.log("1. Ngắt kết nối socket hiện tại...");
-        await dispatch(disconnectSocket());
-
-        // Đợi 500ms để đảm bảo socket đã ngắt hoàn toàn
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Bước 2: Tạo kết nối mới
-        console.log("2. Tạo kết nối socket mới...");
-        await dispatch(connectSocket('admin'));
-
-        // Đợi 500ms để socket kết nối
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Bước 3: Đăng ký lại admin vào room
-        console.log("3. Đăng ký admin vào room...");
-        if (currentRoom) {
-          emitSocketEvent("REGISTER_ROOM_ADMIN", {
-            room_id: currentRoom.room_id,
-            uuid_desktop: currentRoom.uuid_desktop,
-            permission: 9,
-          });
-        }
-
-        // Đợi 500ms rồi refresh
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Bước 4: Refresh danh sách
-        console.log("4. Refresh danh sách thiết bị...");
-        emitSocketEvent("ADMIN_FETCH_CONN", {});
-
-        console.log("Tạo lại kết nối socket thành công!");
-        alert("Tạo lại kết nối socket thành công!");
-
-    } catch (error) {
-      console.error("Lỗi khi tạo lại kết nối:", error);
-      alert("Lỗi khi tạo lại kết nối socket. Vui lòng thử lại.");
-    } finally {
-      setIsReconnecting(false);
+      setData(devices);
       setLoading(false);
     }
-  };
 
-  // Hàm mở modal tạo room mới
-  const handleOpenCreateRoom = () => {
-    setShowCreateRoom(true);
-  };
-
-  // Hàm xóa room hiện tại
-  const handleDeleteRoom = () => {
-    const confirmDelete = window.confirm(
-      "Bạn có chắc chắn muốn xóa room hiện tại?\n\nSocket sẽ bị ngắt kết nối."
-    );
-    if (confirmDelete) {
-      localStorage.removeItem("admin_room");
-      setCurrentRoom(null);
-      setData([]);
-
-      // Disconnect socket
-      // dispatch(disconnectSocket());
-
-      // Hiển thị modal tạo room mới
-      setShowCreateRoom(true);
-      console.log("Deleted room");
+    // Xử lý response từ các action khác (APPROVED, REJECTED, DISCONNECT_CLIENT, etc.)
+    if (response.status === 200 && response.data?.ls_conn) {
+      // Refresh lại danh sách sau khi thực hiện action
+      const deviceList = response.data.ls_conn || {};
+      const devices = Object.values(deviceList)?.filter(ele=> ele?.register_status_code !=='ADMIN').map((conn, index) => ({
+        order: index + 1,
+        device_name: conn.device_name || `Thiết bị ${conn.socket_id?.substring(0, 8)}`,
+        judge_permission: conn.referrer ? LIST_JUDGE_PRORMISSION.find((item) => item.key === Number(conn.referrer)).label : "Chưa gán",
+        device_code: conn.device_id || conn.socket_id,
+        device_ip: conn.client_ip || "N/A",
+        status: conn.connect_status_code === "CONNECTED" ? "active" : "inactive",
+        accepted: conn.register_status_code === "CONNECTED" ? "approved"
+                : conn.register_status_code === "PROCESSING" ? "pending"
+                : conn.register_status_code === "ADMIN" ? "admin"
+                : "rejected",
+        socket_id: conn.socket_id,
+        room_id: conn.room_id,
+        permission: conn.permission,
+        token: conn.token,
+        rawData: conn,
+        referrer: conn.referrer
+      }));
+      setData(devices);
+      setLoading(false);
     }
-  };
+  });
 
+  // Lắng nghe response từ client khi fetch danh sách thiết bị
+  useSocketEvent("RES_MSG", (response) => {
+    console.log("Receive from client:", response);
+  });
+
+  // Action configurations với icons và colors
   const listActions = [
     {
       key: Constants.ACTION_CONNECT_KH,
+      btnText: "Kích hoạt",
       titleModal: "Kích hoạt thiết bị",
-      color: "bg-[#FAD7AC]",
+      icon: "✅",
+      color: "bg-amber-200",
+      hoverColor: "hover:bg-amber-300",
       description: "Kích hoạt thiết bị mobile",
       callback: (row) => onApproveInfoClient(row),
     },
     {
       key: Constants.ACTION_CONNECT_GD,
       titleModal: "Đăng ký giám định",
-      color: "bg-[#FAD9D5]",
+      btnText: "Đăng ký GĐ",
+      icon: "👤",
+      color: "bg-rose-200",
+      hoverColor: "hover:bg-rose-300",
       description: "Đăng ký thiết bị với quyền giám định",
       callback: (row) => {
-        setOpenActions({ isOpen: true, key: Constants.ACTION_CONNECT_GD, row: row });
+        // setOpenActions({ isOpen: true, key: Constants.ACTION_CONNECT_GD, row: row });
+        setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row })
       },
     },
     {
       key: Constants.ACTION_CONNECT_DIS,
       titleModal: "Ngắt kết nối",
-      color: "bg-[#B0E3E6]",
-      description: "Ngắt kết nối",
+      btnText: "Ngắt kết nối",
+      icon: "🔌",
+      color: "bg-cyan-200",
+      hoverColor: "hover:bg-cyan-300",
+      description: "Ngắt kết nối thiết bị",
       callback: (row) => {
         setOpenActions({ isOpen: true, key: Constants.ACTION_CONNECT_DIS, row: row });
       },
@@ -199,13 +196,21 @@ export default function ManagementConnectionSocket() {
     {
       key: Constants.ACTION_CONNECT_MSG,
       titleModal: "Gửi thông báo",
-      color: "bg-[#50d71e]",
+      btnText: "Gửi thông báo",
+      icon: "📢",
+      color: "bg-green-300",
+      hoverColor: "hover:bg-green-400",
       description: "Gửi thông báo đến Giám định",
       callback: (row) => {
         setOpenActions({ isOpen: true, key: Constants.ACTION_CONNECT_MSG, row: row });
       },
     },
   ];
+
+  // Helper: Tìm action config theo key (tránh duplicate code)
+  const getActionConfig = (key) => {
+    return listActions.find((action) => action.key === key);
+  };
 
   const columns = [
     { title: "STT", key: "order" },
@@ -217,29 +222,56 @@ export default function ManagementConnectionSocket() {
     { title: "Chấp thuận", key: "accepted", render: (row) => Utils.getApprovalStatusLabel(row.accepted) },
     {
       title: (
-        <div className="flex items-center justify-center">
-          <span>Khác</span> <NotePopover listActions={listActions} />
+        <div className="flex items-center justify-center gap-1">
+          <span className="font-semibold">Actions</span>
+          {/* <NotePopover listActions={listActions} /> */}
         </div>
       ),
       key: "action",
-      render: (row) => (
-        <div className="flex items-center justify-center">
-          {listActions.map((action) => (
-            <Button
-              variant="none"
-              className={`!rounded-none !p-2 w-16 ${action.color} mr-1 hover:opacity-75`}
-              onClick={() => {
-                console.log("action.key: ", action.key);
-                action.callback(row);
-              }}
-              key={action.key}
-            >
-              {action.key}
-            </Button>
-          ))}
-        </div>
-      ),
-    },
+      render: (row) =>{
+        if(row?.accepted == "admin") return <div/>;
+        return  (
+          <div className="flex items-center justify-center gap-1">
+            {listActions.map((action) => (
+              <button
+                key={action.key}
+                onClick={() => {
+                  console.log("🎯 Action clicked:", action.key, row);
+                  action.callback(row);
+                }}
+                className={`
+                  group relative
+                  px-3 py-2 min-w-[4rem]
+                  ${action.color} ${action.hoverColor}
+                  rounded-md
+                  transition-all duration-200
+                  shadow-sm hover:shadow-md
+                  border border-gray-300
+                  font-medium text-sm
+                `}
+                title={action.description}
+              >
+                <div className="flex flex-col items-center gap-0.5">
+                  {/* <span className="text-lg leading-none">{action.icon}</span> */}
+                  <span className="text-xs leading-none">{action.btnText}</span>
+                </div>
+
+                {/* Tooltip on hover */}
+                <div className="
+                  absolute bottom-full left-1/2 -translate-x-1/2 mb-2
+                  px-2 py-1 bg-gray-800 text-white text-xs rounded
+                  opacity-0 group-hover:opacity-100
+                  pointer-events-none transition-opacity
+                  whitespace-nowrap z-10
+                ">
+                  {action.description}
+                </div>
+              </button>
+            ))}
+          </div>
+        )
+      },
+    }
   ];
 
   const renderContentModal = (openActions) => {
@@ -280,7 +312,6 @@ export default function ManagementConnectionSocket() {
           <DisconnectForm
             data={openActions?.row}
             onAgree={(formData) => {
-              console.log("DisconnectForm", formData);
               setOpenActions({ ...openActions, isOpen: false });
             }}
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
@@ -327,71 +358,13 @@ export default function ManagementConnectionSocket() {
     emitSocketEvent("REQ_MSG_ADMIN", {
       referrer: formData.judge_permission,
       socket_id : formData.socket_id, 
-      room_id: formData.room_id
+      room_id: formData.room_id,
+      device_name: formData.device_name,
+      accepted: formData.accepted,
+      status: formData.status,
+
     });
   }
-
-  // Lắng nghe response từ server khi fetch danh sách thiết bị
-  useSocketEvent("RES_ROOM_ADMIN", (response) => {
-    console.log("Receive from server:", response);
-
-    // Kiểm tra nếu response từ ADMIN_FETCH_CONN
-    if (response.path === "ADMIN_FETCH_CONN" && response.status === 200) {
-      // Chuyển đổi MapConn object thành array
-      const deviceList = response.data.ls_conn || {};
-      const devices = Object.values(deviceList).map((conn, index) => ({
-        order: index + 1,
-        device_name: conn.device_name || `Thiết bị ${conn.socket_id?.substring(0, 8)}`,
-        judge_permission: conn.referrer ? LIST_JUDGE_PRORMISSION.find((item) => item.key === Number(conn.referrer)).label : "Chưa gán",
-        device_code: conn.device_id || conn.socket_id,
-        device_ip: conn.client_ip || "N/A",
-        status: conn.connect_status_code === "CONNECTED" ? "active" : "inactive",
-        accepted: conn.register_status_code === "CONNECTED" ? "approved"
-                : conn.register_status_code === "PROCESSING" ? "pending"
-                : conn.register_status_code === "ADMIN" ? "admin"
-                : "rejected",
-        // Lưu thêm thông tin gốc để sử dụng cho các action
-        socket_id: conn.socket_id,
-        room_id: conn.room_id,
-        permission: conn.permission,
-        token: conn.token,
-        rawData: conn
-      }));
-
-      setData(devices);
-      setLoading(false);
-    }
-
-    // Xử lý response từ các action khác (APPROVED, REJECTED, DISCONNECT_CLIENT, etc.)
-    if (response.status === 200 && response.data?.ls_conn) {
-      // Refresh lại danh sách sau khi thực hiện action
-      const deviceList = response.data.ls_conn || {};
-      const devices = Object.values(deviceList).map((conn, index) => ({
-        order: index + 1,
-        device_name: conn.device_name || `Thiết bị ${conn.socket_id?.substring(0, 8)}`,
-        judge_permission: conn.referrer ? LIST_JUDGE_PRORMISSION.find((item) => item.key === Number(conn.referrer)).label : "Chưa gán",
-        device_code: conn.device_id || conn.socket_id,
-        device_ip: conn.client_ip || "N/A",
-        status: conn.connect_status_code === "CONNECTED" ? "active" : "inactive",
-        accepted: conn.register_status_code === "CONNECTED" ? "approved"
-                : conn.register_status_code === "PROCESSING" ? "pending"
-                : conn.register_status_code === "ADMIN" ? "admin"
-                : "rejected",
-        socket_id: conn.socket_id,
-        room_id: conn.room_id,
-        permission: conn.permission,
-        token: conn.token,
-        rawData: conn
-      }));
-      setData(devices);
-      setLoading(false);
-    }
-  });
-
-  // Lắng nghe response từ client khi fetch danh sách thiết bị
-  useSocketEvent("RES_MSG", (response) => {
-    console.log("Receive from client:", response);
-  });
 
   // Hàm refresh danh sách thiết bị
   const handleRefresh = () => {
@@ -488,6 +461,84 @@ export default function ManagementConnectionSocket() {
     }
   };
 
+  // Hàm tạo/sử dụng room
+  const handleCreateRoom = async(roomData) => {
+    // Lưu vào localStorage
+    localStorage.setItem("admin_room", JSON.stringify(roomData));
+    setCurrentRoom(roomData);
+    setShowCreateRoom(false);
+    // Kết nối đến room
+    setLoading(true);
+    try {
+        console.log("Bắt đầu tạo lại kết nối socket...");
+
+        // Bước 1: Ngắt kết nối hiện tại
+        console.log("1. Ngắt kết nối socket hiện tại...");
+        await dispatch(disconnectSocket());
+
+        // Đợi 500ms để đảm bảo socket đã ngắt hoàn toàn
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Bước 2: Tạo kết nối mới
+        console.log("2. Tạo kết nối socket mới...");
+        await dispatch(connectSocket('admin'));
+
+        // Đợi 500ms để socket kết nối
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Bước 3: Đăng ký lại admin vào room
+        console.log("3. Đăng ký admin vào room...");
+        if (currentRoom) {
+          emitSocketEvent("REGISTER_ROOM_ADMIN", {
+            room_id: currentRoom.room_id,
+            uuid_desktop: currentRoom.uuid_desktop,
+            permission: 9,
+          });
+        }
+
+        // Đợi 500ms rồi refresh
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Bước 4: Refresh danh sách
+        console.log("4. Refresh danh sách thiết bị...");
+        emitSocketEvent("ADMIN_FETCH_CONN", {});
+
+        console.log("Tạo lại kết nối socket thành công!");
+        alert("Tạo lại kết nối socket thành công!");
+
+    } catch (error) {
+      console.error("Lỗi khi tạo lại kết nối:", error);
+      alert("Lỗi khi tạo lại kết nối socket. Vui lòng thử lại.");
+    } finally {
+      setIsReconnecting(false);
+      setLoading(false);
+    }
+  };
+
+  // Hàm mở modal tạo room mới
+  const handleOpenCreateRoom = () => {
+    setShowCreateRoom(true);
+  };
+
+  // Hàm xóa room hiện tại
+  const handleDeleteRoom = () => {
+    const confirmDelete = window.confirm(
+      "Bạn có chắc chắn muốn xóa room hiện tại?\n\nSocket sẽ bị ngắt kết nối."
+    );
+    if (confirmDelete) {
+      localStorage.removeItem("admin_room");
+      setCurrentRoom(null);
+      setData([]);
+
+      // Disconnect socket
+      // dispatch(disconnectSocket());
+
+      // Hiển thị modal tạo room mới
+      setShowCreateRoom(true);
+      console.log("Deleted room");
+    }
+  };
+
   return (
     <div className="w-full h-autooverflow-auto">
       {/* Room Info Bar */}
@@ -575,17 +626,16 @@ export default function ManagementConnectionSocket() {
         loading={loading}
         page={page}
         onPageChange={setPage}
-        onRowDoubleClick={(row) => {
-          console.log("Double clicked row:", row);
-          setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
-        }}
+        // onRowDoubleClick={(row) => {
+        //   setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
+        // }}
       />
       {/* Action Modals */}
       <Modal
         isOpen={openActions?.isOpen || false}
         onClose={() => setOpenActions({ ...openActions, isOpen: false })}
-        title={listActions.find((e) => e.key === openActions?.key)?.titleModal || "Cập nhật thông tin kết nối"}
-        headerClass={listActions.find((e) => e.key === openActions?.key)?.color}
+        title={getActionConfig(openActions?.key)?.titleModal || "Cập nhật thông tin kết nối"}
+        headerClass={getActionConfig(openActions?.key)?.color}
       >
         {renderContentModal(openActions)}
       </Modal>

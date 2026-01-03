@@ -10,15 +10,13 @@ export default function UpdateForm({ data, onAgree, onGoBack }) {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    defaultValues: data || null,
+    defaultValues: {...data, judge_permission: data?.referrer ?? 1} || null,
   });
 
   const onSubmit = (formData) => {
     // Xử lý dữ liệu gửi đi
     console.log("Dữ liệu gửi đi:", formData);
-    setTimeout(() => {
-      onAgree(formData);
-    }, 1500);
+    onAgree(formData);
   };
 
   return (

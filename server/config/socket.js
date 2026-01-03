@@ -87,8 +87,8 @@ InitSocket = async (io) => {
                 const admin = MapConn[`${socket.id}`];
                 MapConn[`${socket.id}`] = {
                     ...admin,
-                    connect_status_code: STATE_SOCKET.CONNECTED.CODE, 
-                    connect_status_name: STATE_SOCKET.CONNECTED.NAME, 
+                    connect_status_code: getConnectStatusCode('active'), 
+                    connect_status_name: getConnectStatusName('active'), 
                     register_status_code: 'ADMIN',
                     register_status_name: 'ADMIN',
                     referrer: 6,
@@ -141,10 +141,10 @@ InitSocket = async (io) => {
                 device_id: input.device_id,
                 socket_id: socket.id,
                 permission: 1,
-                connect_status_code: STATE_SOCKET.CONNECTED.CODE, 
-                connect_status_name: STATE_SOCKET.CONNECTED.NAME, 
-                register_status_code: STATE_REG_CONN.PROCESSING.CODE,
-                register_status_name: STATE_REG_CONN.PROCESSING.NAME,
+                connect_status_code: getConnectStatusCode('active'), 
+                connect_status_name: getConnectStatusName('active'), 
+                register_status_code: getRegisterStatusCode('pending'),
+                register_status_name: getRegisterStatusName('pending'),
                 socket_id: socket.id, 
                 token: null
             }
@@ -200,10 +200,10 @@ InitSocket = async (io) => {
                 const upt_client ={
                     ...client,
                     referrer: 0, // chưa gán vị trí giám định | chờ phân công
-                    connect_status_code: STATE_SOCKET.CONNECTED.CODE, 
-                    connect_status_name: STATE_SOCKET.CONNECTED.NAME, 
-                    register_status_code: STATE_REG_CONN.CONNECTED.CODE,
-                    register_status_name: STATE_REG_CONN.CONNECTED.NAME,
+                    connect_status_code: getConnectStatusCode('active'), 
+                    connect_status_name: getConnectStatusName('active'), 
+                    register_status_code: getRegisterStatusCode('approved'),
+                    register_status_name: getRegisterStatusName('approved'),
                     token: token
                 }
                 MapConn[`${input.socket_id}`] = upt_client
@@ -242,10 +242,10 @@ InitSocket = async (io) => {
             }
             const upt_client ={
                 ...client,
-                connect_status_code: STATE_SOCKET.CONNECTED.CODE, 
-                connect_status_name: STATE_SOCKET.CONNECTED.NAME, 
-                register_status_code: STATE_REG_CONN.PROCESSING.CODE,
-                register_status_name: STATE_REG_CONN.PROCESSING.NAME,
+                connect_status_code: getConnectStatusCode('active'), 
+                connect_status_name: getConnectStatusCode('active'), 
+                register_status_code: getRegisterStatusCode('pending'),
+                register_status_name: getRegisterStatusCode('pending'),
                 permission: 0,
                 token: null
             }
@@ -283,10 +283,10 @@ InitSocket = async (io) => {
             }
             const upt_client ={
                 ...client,
-                connect_status_code: STATE_SOCKET.DISCONNECT.CODE, 
-                connect_status_name: STATE_SOCKET.DISCONNECT.NAME, 
-                register_status_code: STATE_REG_CONN.DISCONNECT.CODE,
-                register_status_name: STATE_REG_CONN.DISCONNECT.NAME,
+                connect_status_code: getConnectStatusCode('inactive'), 
+                connect_status_name: getConnectStatusCode('inactive'), 
+                register_status_code: getRegisterStatusCode('rejected'),
+                register_status_name: getRegisterStatusName('rejected'),
                 permission: 0,
                 token: null
             }
@@ -538,8 +538,14 @@ InitSocket = async (io) => {
                 console.log('Cập nhật thông tin giám định');
                 MapConn[`${socket_id}`] = {
                     ...MapConn[`${socket_id}`],
-                    referrer: referrer
-                }
+                    referrer: referrer,
+                    device_name: input.device_name ?? rc_socket.device_name,
+                    register_status_code: getRegisterStatusCode(input.accepted) ?? rc_socket.register_status_code,
+                    register_status_name: getRegisterStatusName(input.accepted) ?? rc_socket.register_status_name,
+                    connect_status_code: getConnectStatusCode(input.status) ?? rc_socket.connect_status_code,
+                    connect_status_name: getConnectStatusName(input.status) ?? rc_socket.connect_status_name,
+                  }
+
                 // gửi Admin
                 io.to(input?.room_id).emit('RES_ROOM_ADMIN', {
                     status: 200,
@@ -590,7 +596,55 @@ InitSocket = async (io) => {
         });
     
     });
+    // hàm common register_status_code
+    const getRegisterStatusCode = (code) => {
+        switch (code) {
+            case 'approved':
+                return STATE_REG_CONN.CONNECTED.CODE;
+            case 'pending':
+                return STATE_REG_CONN.PROCESSING.CODE;
+            case 'rejected':
+                return STATE_REG_CONN.DISCONNECT.CODE;
+            default:
+                return STATE_REG_CONN.PAUSED.CODE;
+        }
+    }
 
+    const getRegisterStatusName = (code) => {
+        switch (code) { 
+            case 'approved':
+                return STATE_REG_CONN.CONNECTED.NAME;
+            case 'pending':
+                return STATE_REG_CONN.PROCESSING.NAME;
+            case 'rejected':
+                return STATE_REG_CONN.DISCONNECT.NAME;
+            default:
+                return STATE_REG_CONN.PAUSED.NAME;
+        }
+    }
+
+    // hàm common connect_status_code
+    const getConnectStatusCode = (code) => {
+        switch (code) {
+            case 'active':
+                return STATE_SOCKET.CONNECTED.CODE;
+            case 'inactive':
+                return STATE_SOCKET.DISCONNECT.CODE;
+            default:
+                return STATE_SOCKET.DISCONNECT.CODE;
+        }
+    }
+
+    const getConnectStatusName = (code) => {
+        switch (code) { 
+            case 'active':
+                return STATE_SOCKET.CONNECTED.NAME;
+            case 'inactive':
+                return STATE_SOCKET.DISCONNECT.NAME;
+            default:
+                return STATE_SOCKET.DISCONNECT.NAME;
+        }
+    }
 
     // Ngắt kết nối một socket theo socketId
     const disconnectBySocketId = (socketId) => {
@@ -613,6 +667,7 @@ InitSocket = async (io) => {
         console.log(`Đã ngắt kết nối tất cả socket trong phòng: ${room_id}`);
     };
 }
+
 module.exports = {
     InitSocket
 };

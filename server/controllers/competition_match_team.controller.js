@@ -273,7 +273,33 @@ class CompetitionMatchTeamController {
             });
         }
     }
+
+    async saveResultTeam(req, res) {
+        try {
+            const { match_id, scores, config_system } = req.body;
+            if (!match_id || !scores || !config_system) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Thiếu thông tin bắt buộc."
+                });
+            }
+            const result = await dbCompetitionMatchTeamService.saveResultTeam(match_id, scores, config_system);
+            res.json({
+                success: true,
+                message: "Lưu kết quả thành công.",
+                data: result
+            });
+        } catch (error) {
+            console.error('Error saveResultTeam:', error);
+            res.status(500).json({
+                success: false,
+                message: "Hệ thống xử lý lỗi.",
+                error: error.message
+            });
+        }
+    }
 }
+
 
 const instance = new CompetitionMatchTeamController();
 module.exports = instance;

@@ -11,8 +11,6 @@ import { fetchConfigSystem, updateConfigSystem } from "../../../config/redux/con
 import * as XLSX from 'xlsx';
 
 // Component RoundHistoryCard - Không dùng cho format DOL/SOL/TUV/DAL
-// (Component này dành cho format DK với Giáp Đỏ/Xanh)
-
 export default function CompetitionDataDetailOrther() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -46,20 +44,15 @@ export default function CompetitionDataDetailOrther() {
       if (response?.data?.success && response?.data?.data) {
         const data = response.data.data;
         setSheetData(data);
-
         if (data.data && data.data.length > 0) {
           // Phát hiện format từ cell đầu tiên
           const formatType = data.data[0][0]; // 'DK', 'DOL', 'SOL', 'TUV', 'DAL'
-          console.log('📋 Format detected:', formatType);
-
           // Lấy danh sách matches/teams từ database
           let matchesResponse = await axios.get(`http://localhost:6789/api/competition-match-team/by-dk/${id}`);
           let matches = matchesResponse.data.success ? matchesResponse.data.data : [];
-          console.log('matches: ', matches);
-
           // Xử lý theo format
           setHeaders(data.data[0]);
-          setRows(matches);          
+          setRows(matches?.map((m) => ({ ...m, match_id: m.id })));          
         }
       }
     } catch (error) {
@@ -72,7 +65,6 @@ export default function CompetitionDataDetailOrther() {
 
 // Tìm kiếm
   const handleSearch = (text) => {
-    console.log('Tìm kiếm:', text);
     fetchData()
     // TODO: Implement search logic
   };
@@ -127,9 +119,9 @@ export default function CompetitionDataDetailOrther() {
       case "FIN": // Kết thúc
         return [Constants.ACTION_MATCH_RESULT];
       case "IN": // Đang diễn ra
-        return [Constants.ACTION_MATCH_START, Constants.ACTION_MATCH_RESULT];
+        return [Constants.ACTION_MATCH_START];
       case "WAI": // Chờ
-        return [Constants.ACTION_MATCH_START, Constants.ACTION_MATCH_RESULT, Constants.ACTION_UPDATE, Constants.ACTION_DELETE];
+        return [Constants.ACTION_MATCH_START, Constants.ACTION_UPDATE, Constants.ACTION_DELETE];
       default:
         return [Constants.ACTION_UPDATE, Constants.ACTION_DELETE];
     }
@@ -287,16 +279,16 @@ export default function CompetitionDataDetailOrther() {
       const excelRows = athletes.map((athlete, idx) => [
         formatType,
         formData.match_no || '',
-        athlete.name || '',
-        athlete.unit || '',
+        athlete.athlete_name || '',
+        athlete.athlete_unit || '',
         matchType
       ]);
 
       const newTeamObject = {
         match_no: formData.match_no || '',
         athletes: athletes,
-        match_name: athletes.map(a => a.name).filter(n => n).join(', '),
-        team_name: athletes.map(a => a.unit).filter(u => u).join(', '),
+        match_name: athletes.map(a => a.athlete_name).filter(n => n).join(', '),
+        team_name: athletes.map(a => a.athlete_unit).filter(u => u).join(', '),
         match_type: matchType,
         match_status: formData.match_status || 'WAI',
         match_id: null,
@@ -333,8 +325,8 @@ export default function CompetitionDataDetailOrther() {
       const excelRows = athletes.map((athlete, idx) => [
         formatType,
         formData.match_no || row.match_no,
-        athlete.name || '',
-        athlete.unit || '',
+        athlete.athlete_name || '',
+        athlete.athlete_unit || '',
         matchType
       ]);
 
@@ -378,30 +370,45 @@ export default function CompetitionDataDetailOrther() {
   const handleDelete = async () => {
     try {
       const teamToDelete = openActions.row;
+      const match_type = teamToDelete.match_type;
+      const match_no = teamToDelete.match_no;
+      const match_id = teamToDelete.match_id;
+      const row_index = Number(teamToDelete.row_index) + 1;
+      if(match_type == 'SOL' || match_type == 'TUV' ){
+        // xoá dữ liệu 2 rows liên tục 
+        const updated = sheetData?.data.filter((row, index) => {
+          return index !== row_index && index !== row_index + 1;
+        });
+        // sắp xếp match_no lại 
+        await axios.put(`http://localhost:6789/api/competition-dk/${id}`,{
+          sheet_name: sheetData.sheet_name , file_name: sheetData.file_name, data: updated
+        });
+      } else if(match_type == 'DOL'){
+        // xoá dữ liệu 1 rows
+        const updated = sheetData?.data.filter((row, index) => {
+          return index !== row_index;
+        });
+        await axios.put(`http://localhost:6789/api/competition-dk/${id}`,{
+          sheet_name: sheetData.sheet_name , file_name: sheetData.file_name, data: updated
+        });
 
-      // Xóa team khỏi danh sách
-      const teamIndex = rows.findIndex(r => r.row_index === teamToDelete.row_index);
-      const newRows = rows.filter((_, index) => index !== teamIndex);
+      } else if(match_type == 'DAL'){
+        // xoá dữ liệu 4 rows liên tục
+        const updated = sheetData?.data.filter((row, index) => {
+          return index !== row_index && index !== row_index + 1 && index !== row_index + 2 && index !== row_index + 3;
+        });
+        await axios.put(`http://localhost:6789/api/competition-dk/${id}`,{
+          sheet_name: sheetData.sheet_name , file_name: sheetData.file_name, data: updated
+        });
+      }
 
-      // Tính lại row_index cho các team
-      let currentExcelRow = 0;
-      const updatedRows = newRows.map((team, index) => {
-        const numRows = team.raw_data?.length || team.athletes?.length || 1;
-        const updatedTeam = {
-          ...team,
-          row_index: currentExcelRow,
-          team_row_indices: Array.from({ length: numRows }, (_, i) => currentExcelRow + i)
-        };
-        currentExcelRow += numRows;
-        return updatedTeam;
-      });
+      // gọi lại dữ liệu 
+      await fetchData();
 
-      // Tạo lại Excel data
-      const allExcelRows = updatedRows.flatMap(r => r.raw_data || []);
-      const newData = [headers, ...allExcelRows];
+      // xoá competition-match-team theo id 
+      await axios.delete(`http://localhost:6789/api/competition-match-team/${match_id}`);
 
-      await saveDataToServer(newData);
-      setRows(updatedRows);
+      await fetchData()
       setOpenActions({ ...openActions, isOpen: false });
       alert('Xóa thành công!');
     } catch (error) {
@@ -412,11 +419,11 @@ export default function CompetitionDataDetailOrther() {
 
   // Gọi API để lưu dữ liệu
   const saveDataToServer = async (newData) => {
-    await axios.put(`http://localhost:6789/api/competition-dk/${id}`, {
-      sheet_name: sheetData.sheet_name,
-      file_name: sheetData.file_name,
-      data: newData
-    });
+    // await axios.put(`http://localhost:6789/api/competition-dk/${id}`, {
+    //   sheet_name: sheetData.sheet_name,
+    //   file_name: sheetData.file_name,
+    //   data: newData
+    // });
   };
 
   // Xử lý vào trận - Chỉ cho format DOL/SOL/TUV/DAL
@@ -424,20 +431,18 @@ export default function CompetitionDataDetailOrther() {
     try {
       console.log('🚀 CompetitionDataDetailOrther - handleMatchStart - row:', row)
       console.log('🚀 CompetitionDataDetailOrther - handleMatchStart - configSystem:', configSystem);
-
       // Nếu chưa có match_id, tạo team mới
       if (!row.match_id) {
         const createPayload = {
           competition_dk_id: id,
           match_no: row?.match_no,
-          row_index: row?.row_index,
           match_name: row?.match_name,
-          team_name: row?.team_name,
           match_type: row?.match_type,
-          athletes: row?.athletes || [],
-          config_system: configSystem?.data || {}
+          team_name: row?.team_name,
+          athletes: row?.athletes?.map(a => ({ name: a.athlete_name, unit: a.athlete_unit })) || [],
+          config_system: configSystem?.data || {},
+          row_index: row?.row_index
         };
-
         const createResponse = await axios.post('http://localhost:6789/api/competition-match-team', createPayload);
         row.match_id = createResponse.data.data.id;
       }
@@ -460,13 +465,14 @@ export default function CompetitionDataDetailOrther() {
         ten_mon_thi: configSystem?.data?.bo_mon || '',
         config_system: configSystem?.data || {},
         competition_dk_id: id,
-        row_index: row?.row_index,
+        row_index: row?.row_index,  
+        scores: row?.scores || {}
       };
 
       console.log('🚀 CompetitionDataDetailOrther - Navigating with matchData:', matchData);
 
       // Chuyển sang màn hình thi đấu với state
-      navigate('/scoreboard/vovinam', {
+      navigate('/scoreboard/vovinam-score', {
         state: {
           matchData,
           returnUrl: `/management/competition-data-other/${id}`
@@ -541,6 +547,72 @@ export default function CompetitionDataDetailOrther() {
     }
   };
 
+  // Xử lý thêm mới // modal đang lỗi | api đang lỗi
+  // const handleCreate = async (formData) => {
+  //   try {
+  //     // Tìm row_index lớn nhất hiện tại
+  //     const maxRowIndex = rows.reduce((max, row) => Math.max(max, row.row_index || 0), 0);
+  //     const newRowIndex = maxRowIndex + 1;
+
+  //     // Tạo team mới trong database
+  //     const createPayload = {
+  //       competition_dk_id: id,
+  //       match_no: formData.match_no,
+  //       match_name: formData.match_name,
+  //       match_type: formData.match_type || formData.match_name,
+  //       team_name: formData.team_name,
+  //       athletes: formData.athletes
+  //         .filter(a => a.athlete_name && a.athlete_name.trim())
+  //         .map(a => ({ name: a.athlete_name, unit: a.athlete_unit })),
+  //       config_system: configSystem?.data || {},
+  //       row_index: newRowIndex
+  //     };
+
+  //     const createResponse = await axios.post('http://localhost:6789/api/competition-match-team', createPayload);
+
+  //     if (createResponse.data.success) {
+  //       alert('Thêm mới thành công!');
+  //       // cập nhật lại 
+  //       //  const row_index = Number(teamToDelete.row_index) + 1;
+  //       // if(match_type == 'SOL' || match_type == 'TUV' ){
+  //       //   // xoá dữ liệu 2 rows liên tục 
+  //       //   const updated = sheetData?.data.filter((row, index) => {
+  //       //     return index !== row_index && index !== row_index + 1;
+  //       //   });
+  //       //   // sắp xếp match_no lại 
+  //       //   await axios.put(`http://localhost:6789/api/competition-dk/${id}`,{
+  //       //     sheet_name: sheetData.sheet_name , file_name: sheetData.file_name, data: updated
+  //       //   });
+  //       // } else if(match_type == 'DOL'){
+  //       //   // xoá dữ liệu 1 rows
+  //       //   const updated = sheetData?.data.filter((row, index) => {
+  //       //     return index !== row_index;
+  //       //   });
+  //       //   await axios.put(`http://localhost:6789/api/competition-dk/${id}`,{
+  //       //     sheet_name: sheetData.sheet_name , file_name: sheetData.file_name, data: updated
+  //       //   });
+
+  //       // } else if(match_type == 'DAL'){
+  //       //   // xoá dữ liệu 4 rows liên tục
+  //       //   const updated = sheetData?.data.filter((row, index) => {
+  //       //     return index !== row_index && index !== row_index + 1 && index !== row_index + 2 && index !== row_index + 3;
+  //       //   });
+  //       //   await axios.put(`http://localhost:6789/api/competition-dk/${id}`,{
+  //       //     sheet_name: sheetData.sheet_name , file_name: sheetData.file_name, data: updated
+  //       //   });
+  //       // }
+
+  //       await fetchData(); // Reload data
+  //       setOpenActions({ ...openActions, isOpen: false });
+  //     } else {
+  //       alert('Thêm mới thất bại!');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error creating:', error);
+  //     alert('Lỗi khi thêm mới: ' + (error.response?.data?.message || error.message));
+  //   }
+  // };
+
   // Render nội dung modal - Format DOL/SOL/TUV/DAL
   const renderContentModal = (openActions) => {
     switch (openActions?.key) {
@@ -548,8 +620,10 @@ export default function CompetitionDataDetailOrther() {
         return <ActionConfirm message={`Bắt đầu trận ${openActions.row?.match_no}?`} onConfirm={() => handleMatchStart(openActions.row)} onCancel={() => setOpenActions({ ...openActions, isOpen: false })} />;
       case Constants.ACTION_MATCH_RESULT:
         return <ResultForm row={openActions.row} onSubmit={handleResult} onCancel={() => setOpenActions({ ...openActions, isOpen: false })} />;
+      // case Constants.ACTION_CREATE:
+      //   return <DataFormOther headers={headers} row={null} onSubmit={handleCreate} onCancel={() => setOpenActions({ ...openActions, isOpen: false })} isCreate={true} sheetData ={sheetData}/>;
       case Constants.ACTION_UPDATE:
-        return <DataFormOther headers={headers} row={openActions.row} onSubmit={handleUpdate} onCancel={() => setOpenActions({ ...openActions, isOpen: false })} />;
+        return <DataFormOther headers={headers} row={openActions.row} onSubmit={handleUpdate} onCancel={() => setOpenActions({ ...openActions, isOpen: false })}  />;
       case Constants.ACTION_DELETE:
         return <DeleteConfirm onConfirm={handleDelete} onCancel={() => setOpenActions({ ...openActions, isOpen: false })} />;
       default:
@@ -612,9 +686,19 @@ export default function CompetitionDataDetailOrther() {
           </span>
         </div>
 
-        <div className="flex items-center justify-between mb-4">
+        {/* <div className="flex items-center justify-between mb-4 gap-4">
           <SearchInput value={search} onChange={setSearch} onSearch={handleSearch} placeholder="Tìm kiếm..." />
-        </div>
+          <Button
+            variant="primary"
+            onClick={() => setOpenActions({ isOpen: true, key: Constants.ACTION_CREATE, row: null })}
+            className="flex items-center gap-2 whitespace-nowrap"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+            </svg>
+            Thêm mới
+          </Button>
+        </div> */}
       </div>
 
       {/* Bảng dữ liệu */}
@@ -640,7 +724,7 @@ export default function CompetitionDataDetailOrther() {
             {/* Header - Căn giữa */}
             <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
               <h2 className="text-2xl font-bold text-white">
-                KẾT QUẢ TRẬN ĐẤU
+                KẾT QUẢ
               </h2>
               <button
                 onClick={() => setOpenActions({ ...openActions, isOpen: false })}
@@ -676,10 +760,49 @@ export default function CompetitionDataDetailOrther() {
             {/* Header - Căn giữa */}
             <div className="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
               <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
+                {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                </svg> */}
+                CẬP NHẬT THÔNG TIN
+              </h2>
+              <button
+                onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                className="text-white hover:text-gray-300 transition-colors absolute right-6"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
                 </svg>
-                CẬP NHẬT TRẬN ĐẤU
+              </button>
+            </div>
+
+            {/* Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {renderContentModal(openActions)}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Thêm mới */}
+      {openActions?.isOpen && openActions?.key === Constants.ACTION_CREATE && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
+          <div className="bg-white rounded-2xl shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+                THÊM MỚI TRẬN ĐẤU
               </h2>
               <button
                 onClick={() => setOpenActions({ ...openActions, isOpen: false })}
@@ -756,7 +879,10 @@ function DeleteConfirm({ onConfirm, onCancel }) {
 }
 
 // Component Form cho format DOL/SOL/TUV/DAL
-function DataFormOther({ headers, row = null, onSubmit, onCancel }) {
+function DataFormOther({ headers, row = null, onSubmit, onCancel, isCreate = false, sheetData }) {
+  // match_type
+  const match_type = sheetData?.data[0][0] || 'DOL';
+
   // Xác định số VĐV từ row hiện tại hoặc match_type
   const getNumAthletesByType = (type) => {
     if (type === 'DOL') return 1;
@@ -765,15 +891,17 @@ function DataFormOther({ headers, row = null, onSubmit, onCancel }) {
     return 1;
   };
 
-  const initialMatchType = row?.match_type || 'DOL';
-  const initialNumAthletes = row?.athletes?.length || getNumAthletesByType(initialMatchType);
+  const initialMatchType = row?.match_type ?? match_type ?? 'DOL';
+  const initialNumAthletes = row?.athletes?.length ?? getNumAthletesByType(initialMatchType);
 
   const [numAthletes, setNumAthletes] = React.useState(initialNumAthletes);
   const [formData, setFormData] = React.useState({
-    match_no: row?.match_no || '',
+    match_no: row?.match_no  ?? sheetData.match_no ?? '',
+    match_name: row?.match_name ?? sheetData.match_name ?? '',
     match_type: initialMatchType,
     match_status: row?.match_status || 'WAI',
-    athletes: row?.athletes || Array(initialNumAthletes).fill(null).map(() => ({ name: '', unit: '' }))
+    team_name: row?.team_name ?? sheetData.match_no ?? '',
+    athletes: row?.athletes || Array(initialNumAthletes).fill(null).map(() => ({ athlete_name: '', athlete_unit: '' }))
   });
 
   // Cập nhật số VĐV khi thay đổi loại nội dung
@@ -794,7 +922,6 @@ function DataFormOther({ headers, row = null, onSubmit, onCancel }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     // Validation
     if (!formData.match_no) {
       alert('Vui lòng điền Mã số!');
@@ -802,7 +929,7 @@ function DataFormOther({ headers, row = null, onSubmit, onCancel }) {
     }
 
     // Kiểm tra ít nhất 1 VĐV có tên
-    const hasAthlete = formData.athletes.some(a => a.name && a.name.trim());
+    const hasAthlete = formData.athletes.some(a => a.athlete_name && a.athlete_name.trim());
     if (!hasAthlete) {
       alert('Vui lòng điền ít nhất 1 VĐV!');
       return;
@@ -822,108 +949,86 @@ function DataFormOther({ headers, row = null, onSubmit, onCancel }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Trường trạng thái */}
-      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-        <label className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-          Trạng thái trận đấu
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {/* STT */}
+
+      {/* STT - Nội dung thi nằm chung hàng */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            STT <span className="text-red-500">*</span>
+          </label>
+          <input
+            readOnly={!isCreate}
+            id='match_no'
+            type="text"
+            value={formData.match_no}
+            onChange={(e) => setFormData({ ...formData, match_no: e.target.value })}
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Nhập STT"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Nội dung thi
+          </label>
+          <input
+            readOnly={!isCreate}
+            id="match_name"
+            type="text"
+            value={formData.match_name || ''}
+            onChange={(e) => setFormData({ ...formData, match_name: e.target.value })}
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Nhập nội dung thi"
+          />
+        </div>
+      </div>
+    
+      {/* Đơn vị */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          Đơn vị
         </label>
-        <select
-          value={formData.match_status}
-          onChange={(e) => setFormData({ ...formData, match_status: e.target.value })}
-          className={`w-full px-4 py-3 border-2 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${getStatusColor(formData.match_status)}`}
-        >
-          <option value="WAI">⏳ Chờ thi đấu</option>
-          <option value="IN">▶️ Đang diễn ra</option>
-          <option value="FIN">✅ Kết thúc</option>
-          <option value="CAN">❌ Hủy bỏ</option>
-        </select>
+        <input
+          type="text"
+          value={formData.team_name}
+          onChange={(e) => {
+            // Cập nhật đơn vị cho tất cả VĐV
+            const newAthletes = formData.athletes.map(a => ({ ...a, athlete_unit: e.target.value }));
+            setFormData({ ...formData, athletes: newAthletes, team_name: e.target.value });
+          }}
+          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="Nhập đơn vị"
+        />
       </div>
 
-      {/* Thông tin trận đấu */}
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Mã số <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.match_no}
-              onChange={(e) => setFormData({ ...formData, match_no: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Nhập mã số"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Loại nội dung <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={formData.match_type}
-              onChange={(e) => handleMatchTypeChange(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold"
-            >
-              <option value="DOL">DOL - Đối luyện (1 VĐV)</option>
-              <option value="SOL">SOL - Song luyện (2 VĐV)</option>
-              <option value="TUV">TUV - Tự vệ (2 VĐV)</option>
-              <option value="DAL">DAL - Đả luyện (4 VĐV)</option>
-            </select>
-            <p className="text-xs text-gray-500 mt-1">
-              Số VĐV sẽ tự động thay đổi theo loại nội dung
-            </p>
-          </div>
-        </div>
-
-        {/* Hiển thị số VĐV */}
-        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-semibold text-gray-700">
-              Số lượng VĐV tham gia
-            </label>
-            <span className="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold text-lg">
-              {numAthletes} VĐV
-            </span>
-          </div>
-        </div>
-
-        {/* Danh sách VĐV */}
+      {/* Danh sách VĐV */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-3">
+          Danh sách VĐV <span className="text-red-500">*</span>
+        </label>
         <div className="space-y-3">
-          <label className="block text-sm font-semibold text-gray-700">
-            Thông tin VĐV <span className="text-red-500">*</span>
-          </label>
           {formData.athletes.map((athlete, idx) => (
-            <div key={idx} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white text-sm font-bold">
-                  {idx + 1}
-                </span>
-                <span className="font-semibold text-gray-700">VĐV {idx + 1}</span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
-                    Họ tên
-                  </label>
-                  <input
-                    type="text"
-                    value={athlete.name}
-                    onChange={(e) => handleAthleteChange(idx, 'name', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Nhập họ tên VĐV"
-                  />
+            <div key={idx} className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border-2 border-blue-200 hover:border-blue-400 transition-all">
+              <div className="flex items-start gap-3">
+                {/* Số thứ tự */}
+                <div className="flex-shrink-0">
+                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white text-base font-bold shadow-lg">
+                    {idx + 1}
+                  </span>
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
-                    Đơn vị
+
+                {/* Thông tin VĐV */}
+                <div className="flex-1">
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                    Họ tên VĐV {idx + 1}
                   </label>
                   <input
                     type="text"
-                    value={athlete.unit}
-                    onChange={(e) => handleAthleteChange(idx, 'unit', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Nhập đơn vị"
+                    value={athlete.athlete_name}
+                    onChange={(e) => handleAthleteChange(idx, 'athlete_name', e.target.value)}
+                    className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium"
+                    placeholder={`Nhập họ tên VĐV ${idx + 1}`}
                   />
                 </div>
               </div>
@@ -932,8 +1037,25 @@ function DataFormOther({ headers, row = null, onSubmit, onCancel }) {
         </div>
       </div>
 
+      {/* Trạng thái */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          Trạng thái <span className="text-red-500">*</span>
+        </label>
+        <select
+          value={formData.match_status}
+          onChange={(e) => setFormData({ ...formData, match_status: e.target.value })}
+          className={`w-full px-4 py-3 border-2 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${getStatusColor(formData.match_status)}`}
+        >
+          <option value="WAI">Chờ thi đấu</option>
+          <option value="IN">Đang diễn ra</option>
+          <option value="FIN">Kết thúc</option>
+          <option value="CAN">Hủy bỏ</option>
+        </select>
+      </div>
+
       {/* Buttons */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+      <div className="flex justify-end gap-3 pt-4 border-t-2 border-gray-200">
         <Button variant="outline" onClick={onCancel}>
           Hủy
         </Button>
@@ -965,59 +1087,206 @@ function ActionConfirm({ message, onConfirm, onCancel }) {
 
 // Component form kết quả cho format DOL/SOL/TUV/DAL
 function ResultForm({ row, onSubmit, onCancel }) {
-  const [formData, setFormData] = React.useState({
-    score: 0,
-    notes: ''
-  });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
+  const scores = row?.scores || {};
+  const soGiamDinh = row?.config_system?.so_giam_dinh || 3;
+  const hasScores = scores && Object.keys(scores).length > 0;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-        <h3 className="text-xl font-bold text-gray-800 mb-6">Nhập kết quả</h3>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Điểm số
-            </label>
-            <input
-              type="number"
-              value={formData.score}
-              onChange={(e) => setFormData({ ...formData, score: parseFloat(e.target.value) || 0 })}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-center text-2xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="0"
-              step="0.01"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Ghi chú
-            </label>
-            <textarea
-              value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Nhập ghi chú (nếu có)"
-              rows={3}
-            />
-          </div>
+    <div className="space-y-6">
+      {/* Match Info */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-5 rounded-xl shadow-lg border-2 border-blue-400">
+        <div className="text-white space-y-2">
+          <p className="text-center font-bold text-xl">
+            {row?.match_name || row?.match_type}
+          </p>
+          <p className="text-center font-semibold text-lg">
+            {row?.team_name}
+          </p>
+          <p className="text-center text-sm opacity-90">
+            STT: {row?.match_no}
+          </p>
         </div>
       </div>
 
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-        <Button variant="outline" onClick={onCancel}>
-          Hủy
-        </Button>
-        <Button variant="primary" type="submit">
-          Lưu kết quả
+      {hasScores ? (
+        <>
+          {/* Scores Display */}
+          <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-gray-200">
+            <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">
+              KẾT QUẢ THI
+            </h3>
+
+            {/* Judge Scores Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+              {/* Render JudgeScores */}
+
+              {(() => {
+                // Tính toán selectedMaxIndex và selectedMinIndex một lần duy nhất
+                let selectedMaxIndex = -1;
+                let selectedMinIndex = -1;
+
+                if (soGiamDinh === 5) {
+                  const allScores = [
+                    scores.judge1 || 0,
+                    scores.judge2 || 0,
+                    scores.judge3 || 0,
+                    scores.judge4 || 0,
+                    scores.judge5 || 0
+                  ];
+
+                  const maxScore = Math.max(...allScores);
+                  const minScore = Math.min(...allScores);
+                  const hasNonZeroScores = allScores.some(s => s > 0);
+
+                  if (hasNonZeroScores) {
+                    // Tìm tất cả các index có điểm cao nhất
+                    const maxIndices = allScores
+                      .map((score, idx) => ({ score: Number(score), idx }))
+                      .filter(item => item.score === Number(maxScore))
+                      .map(item => item.idx);
+
+                    // Tìm tất cả các index có điểm thấp nhất
+                    const minIndices = allScores
+                      .map((score, idx) => ({ score: Number(score), idx }))
+                      .filter(item => item.score === Number(minScore) && item.score > 0)
+                      .map(item => item.idx);
+
+                    // Random chọn 1 index từ danh sách điểm cao nhất
+                    if (maxIndices.length > 0) {
+                      selectedMaxIndex = maxIndices.length > 1
+                        ? maxIndices[Math.floor(Math.random() * maxIndices.length)]
+                        : maxIndices[0];
+                    }
+
+                    // Random chọn 1 index từ danh sách điểm thấp nhất
+                    if (minIndices.length > 0) {
+                      selectedMinIndex = minIndices.length > 1
+                        ? minIndices[Math.floor(Math.random() * minIndices.length)]
+                        : minIndices[0];
+                    }
+                  }
+                }
+
+                // Render các judge scores
+                return Array.from({ length: soGiamDinh }).map((_, index) => {
+                  const judgeIndex = index + 1;
+                  const judgeScore = scores[`judge${judgeIndex}`] || 0;
+
+                  const isHighest = index === selectedMaxIndex;
+                  const isLowest = index === selectedMinIndex;
+                  const isGrayed = isHighest || isLowest;
+
+                  const cardBgColor = isGrayed
+                    ? "bg-gradient-to-br from-gray-200 to-gray-300"
+                    : "bg-gradient-to-br from-sky-50 to-sky-100";
+                  const borderColor = isGrayed
+                    ? "border-gray-400"
+                    : "border-sky-300";
+                  const textColor = isGrayed
+                    ? "text-gray-700"
+                    : "text-sky-800";
+                  const scoreColor = isGrayed
+                    ? "text-gray-800"
+                    : "text-sky-900";
+
+                  return (
+                    <div key={judgeIndex} className="relative group">
+                      <div className={`${cardBgColor} p-4 rounded-xl border-2 ${borderColor} shadow-md`}>
+                        <div className="text-center">
+                          <p className={`text-xs font-bold ${textColor} mb-2`}>
+                            GIÁM ĐỊNH {judgeIndex}
+                          </p>
+                          <p className={`text-3xl font-black ${scoreColor}`}>
+                            {judgeScore}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
+
+              {/* Total Score */}
+              <div className="relative group">
+                <div className="bg-gradient-to-br from-orange-400 via-orange-500 to-red-600 p-4 rounded-xl border-4 border-yellow-400 shadow-2xl h-full flex flex-col items-center justify-center">
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-orange-600 px-3 py-1 rounded-full border-2 border-yellow-300 shadow-lg">
+                    <p className="text-xs font-black tracking-widest text-white">TỔNG</p>
+                  </div>
+                  <p className="text-4xl font-black text-white drop-shadow-2xl mt-2">
+                    {scores.total || 0}
+                  </p>
+
+                  {/* Decorative stars */}
+                  <div className="absolute top-1 left-1 text-yellow-300 text-sm">⭐</div>
+                  <div className="absolute top-1 right-1 text-yellow-300 text-sm">⭐</div>
+                  <div className="absolute bottom-1 left-1 text-yellow-300 text-sm">⭐</div>
+                  <div className="absolute bottom-1 right-1 text-yellow-300 text-sm">⭐</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Score Details Table */}
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b-2 border-gray-300">
+                    <th className="text-left py-2 px-3 font-bold text-gray-700">Giám định</th>
+                    <th className="text-center py-2 px-3 font-bold text-gray-700">Điểm</th>
+                  </tr>
+                </thead>
+                <tbody>
+              {Array.from({ length: soGiamDinh }).map((_, index) => (
+                    <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
+                      <td className="py-2 px-3 font-semibold text-gray-700">
+                        Giám định {index +1}
+                      </td>
+                      <td className="py-2 px-3 text-center font-bold text-sky-700">
+                        {scores[`judge${index +1}`] || 0}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="bg-orange-100 border-t-2 border-orange-300">
+                    <td className="py-3 px-3 font-black text-gray-800 text-lg">
+                      TỔNG ĐIỂM
+                    </td>
+                    <td className="py-3 px-3 text-center font-black text-orange-700 text-2xl">
+                      {scores.total || 0}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Status Badge */}
+          <div className="flex justify-center">
+            <div className="bg-gradient-to-r from-green-500 to-green-700 px-6 py-3 !rounded shadow-lg border-2 border-green-300">
+              <p className="text-white font-bold text-lg flex items-center gap-2">
+                HOÀN THÀNH
+              </p>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg">
+          <div className="flex items-center gap-3">
+            <div>
+              <p className="text-lg font-bold text-yellow-800">Chưa có kết quả</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Close Button */}
+      <div className="flex justify-center pt-4 border-t-2 border-gray-200">
+        <Button
+          variant="outline"
+          onClick={onCancel}
+          className="min-w-40 bg-gray-500 hover:bg-gray-600 text-white"
+        >
+          Đóng
         </Button>
       </div>
-    </form>
+    </div>
   );
 }

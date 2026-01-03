@@ -171,6 +171,7 @@ class DBCompetitionMatchTeamService {
                 if (team.config_system) {
                     team.config_system = JSON.parse(team.config_system);
                 }
+                team.scores = team.scores ? JSON.parse(team.scores) : {};
 
                 // Lấy athletes
                 const athleteQuery = `SELECT * FROM competition_match_team_athlete WHERE team_id = ? ORDER BY athlete_order`;
@@ -200,6 +201,7 @@ class DBCompetitionMatchTeamService {
                     if (team.config_system) {
                         team.config_system = JSON.parse(team.config_system);
                     }
+                    team.scores = team.scores ? JSON.parse(team.scores) : {};
 
                     const athleteQuery = `SELECT * FROM competition_match_team_athlete WHERE team_id = ? ORDER BY athlete_order`;
                     this.db.all(athleteQuery, [team.id], (err, athletes) => {
@@ -295,6 +297,17 @@ class DBCompetitionMatchTeamService {
             this.db.all(query, [team_id], (err, rows) => {
                 if (err) return reject(err);
                 resolve(rows);
+            });
+        });
+    }
+    // thực hiện lưu kết quả thi đấu 
+    saveResultTeam(match_id, scores, config_system) {
+        // scores là một object
+        return new Promise((resolve, reject) => {
+            const query = `UPDATE competition_match_team SET scores = ?, match_status = 'FIN', config_system = ? , updated_at = datetime('now') WHERE id = ?`;
+            this.db.run(query, [JSON.stringify(scores),  JSON.stringify(config_system), match_id], function (err) {
+                if (err) return reject(err);
+                resolve(this.changes);
             });
         });
     }

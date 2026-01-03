@@ -6,42 +6,168 @@ import Modal from "../../../components/Modal";
 import DisconnectForm from "./Forms/DisconnectForm";
 import NotificationForm from "./Forms/NotificationForm";
 import UpdateForm from "./Forms/UpdateForm";
-import { Constants } from "../../../common/Constants";
+import CreateRoomForm from "./Forms/CreateRoomForm";
+import { Constants, LIST_JUDGE_PRORMISSION } from "../../../common/Constants";
 import Utils from "../../../common/Utils";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useSocketEvent, emitSocketEvent } from "../../../config/hooks/useSocketEvents";
+import { socketClient } from "../../../config/routes";
+import { connectSocket, disconnectSocket, setupSocketListeners, setConnected } from "../../../config/redux/reducers/socket-reducer";
+import { useStore } from "react-redux";
 
-export default function index() {
+export default function ManagementConnectionSocket() {
   // @ts-ignore
   const socket = useSelector((state) => state.socket);
-  useEffect(() => {}, []);
+  const dispatch = useDispatch();
+  const store = useStore();
 
   const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [openActions, setOpenActions] = useState(null);
+  const [isReconnecting, setIsReconnecting] = useState(false);
+  const [showCreateRoom, setShowCreateRoom] = useState(false);
+  const [currentRoom, setCurrentRoom] = useState(null);
 
-  // Fetch danh sách thiết bị khi component mount hoặc page thay đổi
+  // Khởi tạo socket khi component mount
   useEffect(() => {
+    const initSocket = async () => {
+      try {
+        // Kiểm tra xem socket đã connected chưa
+        console.log("🔍 Checking socket status:", socket.connected);
+
+        if (!socket.connected) {
+          console.log("Khởi tạo socket connection...");
+          await dispatch(connectSocket('admin'));
+
+          // Setup socket event listeners để auto-update Redux state
+          console.log("Setting up socket event listeners...");
+          setupSocketListeners(store);
+        } else {
+          console.log("Socket already connected");
+          await dispatch(connectSocket('admin'));
+        }
+
+        // Load room từ localStorage
+        const savedRoom = localStorage.getItem("admin_room");
+        if (savedRoom) {
+          try {
+            const roomData = JSON.parse(savedRoom);
+            setCurrentRoom(roomData);
+
+            console.log("Loaded room from localStorage:", roomData);
+
+            // Đợi một chút để đảm bảo socket đã sẵn sàng
+            await new Promise((resolve) => setTimeout(resolve, 300));
+
+            // Auto connect với room đã lưu
+            setLoading(true);
+            console.log("Registering admin to room...");
+            emitSocketEvent("REGISTER_ROOM_ADMIN", {
+              room_id: roomData.room_id,
+              uuid_desktop: roomData.uuid_desktop,
+              permission: 9,
+            });
+          } catch (error) {
+            console.error("Error loading saved room:", error);
+            // Nếu có lỗi, hiển thị modal tạo room
+            setShowCreateRoom(true);
+          }
+        } else {
+          // Chưa có room, hiển thị modal tạo room
+          console.log("No saved room found, showing create room modal");
+          setShowCreateRoom(true);
+        }
+      } catch (error) {
+        console.error("Error initializing socket:", error);
+        setShowCreateRoom(true);
+      }
+    };
+
+    initSocket();
+
+    // Cleanup function
+    return () => {
+      // Không disconnect socket khi unmount vì có thể cần dùng ở component khác
+    };
+  }, [dispatch, store]); // Chỉ chạy 1 lần khi mount
+
+  // Hàm tạo/sử dụng room
+  const handleCreateRoom = async(roomData) => {
+    // Lưu vào localStorage
+    localStorage.setItem("admin_room", JSON.stringify(roomData));
+    setCurrentRoom(roomData);
+    setShowCreateRoom(false);
+    // Kết nối đến room
     setLoading(true);
+    try {
+        console.log("Bắt đầu tạo lại kết nối socket...");
 
-    // emitSocketEvent("ADMIN_FETCH_CONN", {});
-    // Khởi tạo REGISTER_ROOM_ADMIN
-    // emitSocketEvent("REGISTER_ROOM_ADMIN", {
-    //   room_id: "1AZJM9JL8D", // tự tạo 
-    //   uuid_desktop: "CO2GJ74NMD6M", // lấy từ  thiết bị  
-    //   permission: 9,
-    // });
+        // Bước 1: Ngắt kết nối hiện tại
+        console.log("1. Ngắt kết nối socket hiện tại...");
+        await dispatch(disconnectSocket());
 
-  }, [page]);
+        // Đợi 500ms để đảm bảo socket đã ngắt hoàn toàn
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
-  // Button khởi tạo kết nối socket theo emit REGISTER_ROOM_ADMIN 
-  const handleInitConnection = () => {
-    emitSocketEvent("REGISTER_ROOM_ADMIN", {
-      room_id: "1AZJM9JL8D", // tự tạo 
-      uuid_desktop: "CO2GJ74NMD6M", // lấy từ  thiết bị  
-      permission: 9,
-    });
+        // Bước 2: Tạo kết nối mới
+        console.log("2. Tạo kết nối socket mới...");
+        await dispatch(connectSocket('admin'));
+
+        // Đợi 500ms để socket kết nối
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Bước 3: Đăng ký lại admin vào room
+        console.log("3. Đăng ký admin vào room...");
+        if (currentRoom) {
+          emitSocketEvent("REGISTER_ROOM_ADMIN", {
+            room_id: currentRoom.room_id,
+            uuid_desktop: currentRoom.uuid_desktop,
+            permission: 9,
+          });
+        }
+
+        // Đợi 500ms rồi refresh
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Bước 4: Refresh danh sách
+        console.log("4. Refresh danh sách thiết bị...");
+        emitSocketEvent("ADMIN_FETCH_CONN", {});
+
+        console.log("Tạo lại kết nối socket thành công!");
+        alert("Tạo lại kết nối socket thành công!");
+
+    } catch (error) {
+      console.error("Lỗi khi tạo lại kết nối:", error);
+      alert("Lỗi khi tạo lại kết nối socket. Vui lòng thử lại.");
+    } finally {
+      setIsReconnecting(false);
+      setLoading(false);
+    }
+  };
+
+  // Hàm mở modal tạo room mới
+  const handleOpenCreateRoom = () => {
+    setShowCreateRoom(true);
+  };
+
+  // Hàm xóa room hiện tại
+  const handleDeleteRoom = () => {
+    const confirmDelete = window.confirm(
+      "Bạn có chắc chắn muốn xóa room hiện tại?\n\nSocket sẽ bị ngắt kết nối."
+    );
+    if (confirmDelete) {
+      localStorage.removeItem("admin_room");
+      setCurrentRoom(null);
+      setData([]);
+
+      // Disconnect socket
+      // dispatch(disconnectSocket());
+
+      // Hiển thị modal tạo room mới
+      setShowCreateRoom(true);
+      console.log("Deleted room");
+    }
   };
 
   const listActions = [
@@ -50,15 +176,7 @@ export default function index() {
       titleModal: "Kích hoạt thiết bị",
       color: "bg-[#FAD7AC]",
       description: "Kích hoạt thiết bị mobile",
-      callback: (row) => {
-        // Phê duyệt kết nối thiết bị
-        if (row.socket_id && row.room_id) {
-          emitSocketEvent("APPROVED", {
-            socket_id: row.socket_id,
-            room_id: row.room_id
-          });
-        }
-      },
+      callback: (row) => onApproveInfoClient(row),
     },
     {
       key: Constants.ACTION_CONNECT_GD,
@@ -183,10 +301,7 @@ export default function index() {
         return (
           <UpdateForm
             data={openActions?.row}
-            onAgree={(formData) => {
-              console.log("UpdateForm", formData);
-              setOpenActions({ ...openActions, isOpen: false });
-            }}
+            onAgree={(formData) => onUpdateInfoClient(formData, openActions)}
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
         );
@@ -194,6 +309,27 @@ export default function index() {
         return null;
     }
   };
+
+  // 1. Kích hoạt client/mobile
+  const onApproveInfoClient = (row) => {
+    // Phê duyệt kết nối thiết bị
+    if ( row && row?.socket_id && row?.room_id) {
+      emitSocketEvent("APPROVED", {
+        socket_id: row.socket_id,
+        room_id: row.room_id
+      });
+    }
+  };
+
+  // 2. Cập nhật thông tin kết nối client/mobile
+  const onUpdateInfoClient = (formData , openActions)=>{
+    setOpenActions({ ...openActions, isOpen: false });
+    emitSocketEvent("REQ_MSG_ADMIN", {
+      referrer: formData.judge_permission,
+      socket_id : formData.socket_id, 
+      room_id: formData.room_id
+    });
+  }
 
   // Lắng nghe response từ server khi fetch danh sách thiết bị
   useSocketEvent("RES_ROOM_ADMIN", (response) => {
@@ -206,7 +342,7 @@ export default function index() {
       const devices = Object.values(deviceList).map((conn, index) => ({
         order: index + 1,
         device_name: conn.device_name || `Thiết bị ${conn.socket_id?.substring(0, 8)}`,
-        judge_permission: conn.referrer ? `GD${conn.referrer}` : "Chưa gán",
+        judge_permission: conn.referrer ? LIST_JUDGE_PRORMISSION.find((item) => item.key === Number(conn.referrer)).label : "Chưa gán",
         device_code: conn.device_id || conn.socket_id,
         device_ip: conn.client_ip || "N/A",
         status: conn.connect_status_code === "CONNECTED" ? "active" : "inactive",
@@ -233,7 +369,7 @@ export default function index() {
       const devices = Object.values(deviceList).map((conn, index) => ({
         order: index + 1,
         device_name: conn.device_name || `Thiết bị ${conn.socket_id?.substring(0, 8)}`,
-        judge_permission: conn.referrer ? `GD${conn.referrer}` : "Chưa gán",
+        judge_permission: conn.referrer ? LIST_JUDGE_PRORMISSION.find((item) => item.key === Number(conn.referrer)).label : "Chưa gán",
         device_code: conn.device_id || conn.socket_id,
         device_ip: conn.client_ip || "N/A",
         status: conn.connect_status_code === "CONNECTED" ? "active" : "inactive",
@@ -247,33 +383,191 @@ export default function index() {
         token: conn.token,
         rawData: conn
       }));
-
       setData(devices);
+      setLoading(false);
     }
   });
 
-  useSocketEvent("RES_MSG", (data) => {
-    console.log("Receive from client:", data);
+  // Lắng nghe response từ client khi fetch danh sách thiết bị
+  useSocketEvent("RES_MSG", (response) => {
+    console.log("Receive from client:", response);
   });
 
   // Hàm refresh danh sách thiết bị
   const handleRefresh = () => {
     setLoading(true);
     emitSocketEvent("ADMIN_FETCH_CONN", {});
+    setLoading(false);
+  };
+
+  // Hàm ngắt tất cả kết nối thiết bị
+  const handleTurnOffAll = () => {
+    if (data.length === 0) {
+      alert("Không có thiết bị nào để ngắt kết nối");
+      return;
+    }
+
+    const confirmDisconnect = window.confirm(
+      `Bạn có chắc chắn muốn ngắt kết nối tất cả ${data.length} thiết bị?`
+    );
+
+    if (confirmDisconnect) {
+      setLoading(true);
+      // Ngắt kết nối từng thiết bị
+      data.forEach((device) => {
+        if (device.socket_id && device.room_id) {
+          emitSocketEvent("DISCONNECT_CLIENT", {
+            socket_id: device.socket_id,
+            room_id: device.room_id,
+          });
+        }
+      });
+
+      // Refresh lại danh sách sau 1 giây 
+      setTimeout(() => { setData([]) }, 1000);
+      // khi socket mất kết nối thì cập nhật lại state 
+      dispatch(setConnected({ connected: false, socketId: null }));
+      setLoading(false);
+    }
+  };
+
+  // Hàm tạo lại kết nối socket
+  const handleRecreateConnection = async () => {
+    const confirmReconnect = window.confirm(
+      "Bạn có chắc chắn muốn tạo lại kết nối socket?\n\nSocket hiện tại sẽ bị ngắt và tạo lại kết nối mới."
+    );
+
+    if (confirmReconnect) {
+      setIsReconnecting(true);
+      setLoading(true);
+
+      try {
+        console.log("Bắt đầu tạo lại kết nối socket...");
+
+        // Bước 1: Ngắt kết nối hiện tại
+        console.log("1. Ngắt kết nối socket hiện tại...");
+        await dispatch(disconnectSocket());
+
+        // Đợi 500ms để đảm bảo socket đã ngắt hoàn toàn
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Bước 2: Tạo kết nối mới
+        console.log("2. Tạo kết nối socket mới...");
+        await dispatch(connectSocket('admin'));
+
+        // Đợi 500ms để socket kết nối
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Bước 3: Đăng ký lại admin vào room
+        console.log("3. Đăng ký admin vào room...");
+        if (currentRoom) {
+          emitSocketEvent("REGISTER_ROOM_ADMIN", {
+            room_id: currentRoom.room_id,
+            uuid_desktop: currentRoom.uuid_desktop,
+            permission: 9,
+          });
+        }
+
+        // Đợi 500ms rồi refresh
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Bước 4: Refresh danh sách
+        console.log("4. Refresh danh sách thiết bị...");
+        emitSocketEvent("ADMIN_FETCH_CONN", {});
+
+        console.log("Tạo lại kết nối socket thành công!");
+        alert("Tạo lại kết nối socket thành công!");
+
+      } catch (error) {
+        console.error("Lỗi khi tạo lại kết nối:", error);
+        alert("Lỗi khi tạo lại kết nối socket. Vui lòng thử lại.");
+      } finally {
+        setIsReconnecting(false);
+        setLoading(false);
+      }
+    }
   };
 
   return (
     <div className="w-full h-autooverflow-auto">
-      <div className="flex justify-end items-center gap-2 mb-1">
-        <Button variant="primary" className="min-w-28">
-          Cập nhật license
-        </Button>
-        <Button variant="primary" className="min-w-28">
-          Mã kích hoạt điện thoại
-        </Button>
-        <Button variant="primary" className="min-w-28" onClick={handleRefresh} disabled={loading}>
-          {loading ? "Đang tải..." : "Tải lại"}
-        </Button>
+      {/* Room Info Bar */}
+      {currentRoom && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div>
+                <span className="text-xs text-gray-500">Máy chủ:</span>
+                <span className="ml-2 font-mono font-bold text-blue-700">{currentRoom.room_id}</span>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500">Mã thiết bị:</span>
+                <span className="ml-2 font-mono font-bold text-blue-700">{currentRoom.uuid_desktop}</span>
+              </div>
+              <div className="text-sm text-gray-600">
+                <span className="text-xs text-gray-500"> Trạng thái:</span>
+
+                {socket.connected ? (
+                  <span className="ml-2 font-mono font-bold text-green-600">Đang kết nối</span>
+                ) : (
+                  <span className="ml-2 font-mono font-bold text-red-600">Không kết nối</span>
+                )}
+              </div>
+              {/* <div>
+                <span className="text-xs text-gray-500">Server:</span>
+                <span className="ml-2 font-mono text-sm text-gray-700">{currentRoom.server_url}</span>
+              </div> */}
+            </div>
+            {/* <div className="flex gap-2">
+              
+              <Button
+                variant="danger"
+                className="min-w-24"
+                onClick={handleDeleteRoom}
+              >
+                Xoá kết nối hiện tại
+              </Button>
+            </div> */}
+          </div>
+        </div>
+      )}
+
+      <div className="flex justify-between items-center gap-2 mb-1">
+        {/* Left side buttons */}
+        <div className="flex items-center gap-2">
+          <Button
+            variant="danger"
+            className="min-w-32"
+            onClick={handleTurnOffAll}
+            disabled={loading || data.length === 0}
+          >
+            Tắt tất cả kết nối ({data.length})
+          </Button>
+         
+          
+        </div>
+
+        {/* Right side buttons */}
+        <div className="flex items-center gap-2">
+          <Button variant={socket.connected ? "primary" : "secondary" } className="min-w-28">
+            Cập nhật license
+          </Button>
+          <Button
+            variant={socket.connected ? "warning" : "success" }
+            className="min-w-32"
+            onClick={handleRecreateConnection}
+            disabled={isReconnecting || loading || !currentRoom}
+          >
+            {isReconnecting ? "Đang tạo lại..." : "Tạo lại kết nối"}
+          </Button>
+          <Button 
+            variant={socket.connected ? "primary" : "secondary" }
+            className="min-w-28" onClick={handleOpenCreateRoom}>
+            Scan QR
+          </Button>
+          <Button variant={socket.connected ? "primary" : "secondary" } className="min-w-28" onClick={handleRefresh} disabled={loading}>
+            {loading ? "Đang tải..." : "Làm mới"}
+          </Button>
+        </div>
       </div>
       <CustomTable
         columns={columns}
@@ -286,6 +580,7 @@ export default function index() {
           setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
         }}
       />
+      {/* Action Modals */}
       <Modal
         isOpen={openActions?.isOpen || false}
         onClose={() => setOpenActions({ ...openActions, isOpen: false })}
@@ -293,6 +588,34 @@ export default function index() {
         headerClass={listActions.find((e) => e.key === openActions?.key)?.color}
       >
         {renderContentModal(openActions)}
+      </Modal>
+
+      {/* Create Room Modal */}
+      <Modal
+        isOpen={showCreateRoom}
+        onClose={() => {
+          // Chỉ cho phép đóng nếu đã có room
+          if (currentRoom) {
+            setShowCreateRoom(false);
+          } else {
+            alert("Vui lòng tạo room để tiếp tục!");
+          }
+        }}
+        title="Quản lý máy chủ"
+        headerClass="bg-blue-500"
+        width="1200px"
+      >
+        <CreateRoomForm
+          onSubmit={handleCreateRoom}
+          onClose={() => {
+            if (currentRoom) {
+              setShowCreateRoom(false);
+            } else {
+              alert("Vui lòng tạo room để tiếp tục!");
+            }
+          }}
+          existingRoom={currentRoom}
+        />
       </Modal>
     </div>
   );

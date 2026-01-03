@@ -83,8 +83,8 @@ const AdminLayout = ({ children }) => {
 
   return (
     <div className="h-screen flex flex-col">
-      <Navbar />
-      <div className="mt-14" />
+      {/* <Navbar /> */}
+      <div className="" />
       {isActive ? (
         <Fragment>
           <div className="flex flex-1 overflow-hidden relative">

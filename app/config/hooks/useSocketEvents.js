@@ -1,6 +1,6 @@
-// src/hooks/useSocketEvents.js
+// Custom hooks for Socket.IO events
 import { useEffect } from 'react';
-import socketClient from '../socket/socketClient';
+import socketClient from '../socket/SocketClient';
 
 // Lắng nghe topic
 export function useSocketEvent(event, callback) {

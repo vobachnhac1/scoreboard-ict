@@ -3,7 +3,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import ScoreBoard from '../views/ScoreBoard';
 
 // Config Socket.IO
-import SocketClient from './socket/SocketClient';
+import socketClient from './socket/SocketClient';
 import Versus from '../views/Versus';
 import { useHotkeys } from 'react-hotkeys-hook';
 import PlayerList from '../views/PlayerList';
@@ -35,7 +35,8 @@ import TestError from '../views/TestError';
 // Import Error Boundary
 import ErrorBoundary from '../components/ErrorBoundary';
 
-// export const socketClient = new SocketClient().connect();
+// Export socketClient singleton để sử dụng ở các component khác
+export { socketClient };
 
 // Tạo component App
 const Routers = () => {

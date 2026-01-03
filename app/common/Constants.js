@@ -30,13 +30,13 @@ export const LIST_STATUS_ATHLETE = [
 ];
 
 export const LIST_JUDGE_PRORMISSION = [
-  { key: "GD1", label: "Giám định 1" },
-  { key: "GD2", label: "Giám định 2" },
-  { key: "GD3", label: "Giám định 3" },
-  { key: "GD4", label: "Giám định 4" },
-  { key: "GD5", label: "Giám định 5" },
-  { key: "GD6", label: "Giám định 6" },
-  { key: "GD7", label: "Giám định 7" },
+  { key: 1, label: "Giám định 1" },
+  { key: 2, label: "Giám định 2" },
+  { key: 3, label: "Giám định 3" },
+  { key: 4, label: "Giám định 4" },
+  { key: 5, label: "Giám định 5" },
+  { key: 6, label: "Giám định 6" },
+  { key: 7, label: "Giám định 7" },
 ];
 
 export const LIST_STATUS = [

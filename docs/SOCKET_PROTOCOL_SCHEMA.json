@@ -1,0 +1,291 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Socket.IO Protocol Schema",
+  "description": "JSON Schema for Socket.IO events between Mobile Client and Server",
+  
+  "definitions": {
+    "REGISTER": {
+      "type": "object",
+      "description": "Mobile registers to room after scanning QR code",
+      "properties": {
+        "room_id": {
+          "type": "string",
+          "description": "Room ID from QR code",
+          "example": "1AZJM9JL8D"
+        },
+        "referrer": {
+          "type": "integer",
+          "description": "Judge position (1-7)",
+          "minimum": 1,
+          "maximum": 7,
+          "example": 1
+        },
+        "device_id": {
+          "type": "string",
+          "description": "Device unique identifier",
+          "example": "CO2GJ74NMD6M"
+        },
+        "device_name": {
+          "type": "string",
+          "description": "Device name (optional)",
+          "example": "iPhone 13 Pro"
+        }
+      },
+      "required": ["room_id", "referrer", "device_id"]
+    },
+
+    "REQ_MSG": {
+      "type": "object",
+      "description": "Mobile sends score to server",
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Authentication token from approval",
+          "example": "a1b2c3d4e5f6789..."
+        },
+        "score": {
+          "type": "object",
+          "properties": {
+            "blue": {
+              "type": "integer",
+              "description": "Blue team score (0-3)",
+              "minimum": 0,
+              "maximum": 3,
+              "example": 1
+            },
+            "red": {
+              "type": "integer",
+              "description": "Red team score (0-3)",
+              "minimum": 0,
+              "maximum": 3,
+              "example": 0
+            }
+          },
+          "required": ["blue", "red"]
+        }
+      },
+      "required": ["key", "score"]
+    },
+
+    "RES_MSG_INIT": {
+      "type": "object",
+      "description": "Server response on initial connection",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "INIT"
+        },
+        "status": {
+          "type": "integer",
+          "const": 200
+        },
+        "message": {
+          "type": "string",
+          "example": "Kết nối thành công"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "socket_id": {
+              "type": "string",
+              "description": "Socket ID assigned by server"
+            },
+            "permission": {
+              "type": "integer",
+              "const": 0,
+              "description": "Initial permission (0 = guest)"
+            },
+            "token": {
+              "type": "null",
+              "description": "No token yet"
+            },
+            "room_id": { "type": "null" },
+            "device_id": { "type": "null" },
+            "referrer": { "type": "integer", "const": 0 },
+            "connect_status_code": { "type": "null" },
+            "connect_status_name": { "type": "null" },
+            "register_status_code": { "type": "null" },
+            "register_status_name": { "type": "null" }
+          },
+          "required": ["socket_id", "permission", "token"]
+        }
+      },
+      "required": ["type", "status", "message", "data"]
+    },
+
+    "RES_MSG_REGISTER": {
+      "type": "object",
+      "description": "Server response after registration",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "REGISTER"
+        },
+        "status": {
+          "type": "integer",
+          "const": 200
+        },
+        "message": {
+          "type": "string",
+          "example": "Đăng ký thành công, chờ phê duyệt"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "room_id": { "type": "string" },
+            "device_id": { "type": "string" },
+            "referrer": { "type": "integer", "minimum": 1, "maximum": 7 },
+            "socket_id": { "type": "string" },
+            "permission": { "type": "integer", "const": 1 },
+            "connect_status_code": { "type": "string", "const": "CONNECTED" },
+            "connect_status_name": { "type": "string", "const": "Đã kết nối" },
+            "register_status_code": { "type": "string", "const": "PROCESSING" },
+            "register_status_name": { "type": "string", "const": "Đã kết nối và chờ duyệt" },
+            "token": { "type": "null" }
+          },
+          "required": ["room_id", "socket_id", "token"]
+        }
+      },
+      "required": ["type", "status", "message", "data"]
+    },
+
+    "RES_MSG_APPROVE": {
+      "type": "object",
+      "description": "Server response after admin approval",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "APPROVE_CONNECT"
+        },
+        "status": {
+          "type": "integer",
+          "const": 200
+        },
+        "message": {
+          "type": "string",
+          "example": "Đã phê duyệt kết nối"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "room_id": { "type": "string" },
+            "device_id": { "type": "string" },
+            "socket_id": { "type": "string" },
+            "permission": { "type": "integer", "const": 1 },
+            "connect_status_code": { "type": "string", "const": "CONNECTED" },
+            "register_status_code": { "type": "string", "const": "CONNECTED" },
+            "register_status_name": { "type": "string", "const": "Đã kết nối và được duyệt" },
+            "token": {
+              "type": "string",
+              "description": "Authentication token (64 chars hex)",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "required": ["token"]
+        }
+      },
+      "required": ["type", "status", "message", "data"]
+    },
+
+    "RES_MSG_REJECT": {
+      "type": "object",
+      "description": "Server response after admin rejection",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "APPROVE_CONNECT"
+        },
+        "status": {
+          "type": "integer",
+          "const": 200
+        },
+        "message": {
+          "type": "string",
+          "example": "Đã từ chối kết nối"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "connect_status_code": { "type": "string", "const": "CONNECTED" },
+            "register_status_code": { "type": "string", "const": "PROCESSING" },
+            "permission": { "type": "integer", "const": 0 },
+            "token": { "type": "null" }
+          },
+          "required": ["token"]
+        }
+      },
+      "required": ["type", "status", "message", "data"]
+    },
+
+    "RES_MSG_DISCONNECT": {
+      "type": "object",
+      "description": "Server response when admin disconnects client",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "DISCONNECT_CLIENT"
+        },
+        "status": {
+          "type": "integer",
+          "const": 200
+        },
+        "message": {
+          "type": "string",
+          "example": "Đã ngắt kết nối client"
+        },
+        "data": {
+          "type": "null"
+        }
+      },
+      "required": ["type", "status", "message", "data"]
+    },
+
+    "QR_CODE_DATA": {
+      "type": "object",
+      "description": "QR Code data structure",
+      "properties": {
+        "room_id": {
+          "type": "string",
+          "description": "Room ID",
+          "example": "1AZJM9JL8D"
+        },
+        "referrer": {
+          "type": "integer",
+          "description": "Judge position",
+          "minimum": 1,
+          "maximum": 7,
+          "example": 1
+        },
+        "server_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Socket.IO server URL",
+          "example": "http://localhost:6789"
+        }
+      },
+      "required": ["room_id", "referrer", "server_url"]
+    }
+  },
+
+  "examples": {
+    "mobile_register": {
+      "room_id": "1AZJM9JL8D",
+      "referrer": 1,
+      "device_id": "CO2GJ74NMD6M",
+      "device_name": "iPhone 13 Pro"
+    },
+    "mobile_send_score": {
+      "key": "a1b2c3d4e5f6789abcdef0123456789abcdef0123456789abcdef0123456789",
+      "score": {
+        "blue": 1,
+        "red": 0
+      }
+    },
+    "qr_code": {
+      "room_id": "1AZJM9JL8D",
+      "referrer": 1,
+      "server_url": "http://localhost:6789"
+    }
+  }
+}
+

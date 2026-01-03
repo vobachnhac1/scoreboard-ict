@@ -93,6 +93,8 @@ InitSocket = async (io) => {
                     register_status_name: 'ADMIN',
                     referrer: 6,
                     socket_id: socket.id, 
+                    room_id: input?.room_id,
+                    uuid_desktop: input?.uuid_desktop,
                     token: null
                 }
                 // Phản hồi Admin
@@ -138,7 +140,7 @@ InitSocket = async (io) => {
                 referrer: input.referrer,
                 device_id: input.device_id,
                 socket_id: socket.id,
-                permiession: 1,
+                permission: 1,
                 connect_status_code: STATE_SOCKET.CONNECTED.CODE, 
                 connect_status_name: STATE_SOCKET.CONNECTED.NAME, 
                 register_status_code: STATE_REG_CONN.PROCESSING.CODE,
@@ -150,6 +152,7 @@ InitSocket = async (io) => {
             socket.join(input?.room_id);
             console.log(`MOBILE ${socket.id} đã tham gia phòng ${input?.room_id}`);
 
+            MapConn[`${socket.id}`] = upt_client
             io.to(input?.room_id).emit('RES_ROOM_ADMIN', {
                 status: 200,
                 message: 'Thực hiện thành công',
@@ -196,7 +199,7 @@ InitSocket = async (io) => {
                 }
                 const upt_client ={
                     ...client,
-                    referrer: 0,
+                    referrer: 0, // chưa gán vị trí giám định | chờ phân công
                     connect_status_code: STATE_SOCKET.CONNECTED.CODE, 
                     connect_status_name: STATE_SOCKET.CONNECTED.NAME, 
                     register_status_code: STATE_REG_CONN.CONNECTED.CODE,
@@ -528,33 +531,29 @@ InitSocket = async (io) => {
 
         // 8. Nhận tin nhắn từ admin
         socket.on(CONSTANT.REQ_MSG_ADMIN, (input) => {
-            // cập nhật thông tin
-            // vị trí giám định
-            const {referrer, socket_id } = input;
-            const rc_socket = list_connect.find((item) => item.socket_id === socket_id);
+            // cập nhật thông tin | vị trí giám định
+            const {referrer, socket_id, room_id } = input;
+            const rc_socket = MapConn[`${socket_id}`];
             if(rc_socket){
-                list_connect = list_connect.map((item) => {
-                    if (item.socket_id === socket_id) {
-                        return {...item, referrer: referrer};
-                    }
-                    return item;
-                });
+                console.log('Cập nhật thông tin giám định');
+                MapConn[`${socket_id}`] = {
+                    ...MapConn[`${socket_id}`],
+                    referrer: referrer
+                }
+                // gửi Admin
                 io.to(input?.room_id).emit('RES_ROOM_ADMIN', {
                     status: 200,
                     message: 'Thực hiện thành công',
                     data: {
                         room_id: input?.room_id,
-                        list_connect: list_connect
+                        ls_conn: MapConn
                     }
                 });
-
+                // gửi Mobile
                 io.to(socket_id).emit('RES_MSG', {
                     status: 200,
                     message: 'Thực hiện thành công',
-                    data: {
-                        ...rc_socket,
-                        referrer: referrer
-                    }
+                    data: MapConn[`${socket_id}`] 
                 });
             }
         });

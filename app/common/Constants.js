@@ -41,7 +41,7 @@ export const LIST_JUDGE_PRORMISSION = [
 
 export const LIST_STATUS = [
   { key: "active", label: "Đang kết nối" },
-  { key: "inactive", label: "Ngắt kế nối" },
+  { key: "inactive", label: "Ngắt kết nối" },
 ];
 
 export const LIST_APPROVAL_STATUS = [
@@ -66,3 +66,9 @@ export const LIST_GENDER = [
   { key: "M", label: "Nam" },
   { key: "F", label: "Nữ" },
 ];
+
+export const MSG_TP_CLIENT = {
+  SCORE_RED: 'SCORE_RED',
+  SCORE_BLUE: 'SCORE_BLUE',
+  SCORE_QUYEN: 'SCORE_QUYEN',
+}

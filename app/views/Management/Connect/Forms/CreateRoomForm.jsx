@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Button from "../../../../components/Button";
 import QRCode from "qrcode";
+import axios from 'axios'
 
 export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
   const [roomId, setRoomId] = useState("");
@@ -39,22 +40,20 @@ export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
 
   const generateQRCode = async () => {
     try {
-      const qrData = {
-        room_id: roomId,
-        server_url: serverUrl,
-        type: "admin"
-      };
-
-      const url = await QRCode.toDataURL(JSON.stringify(qrData), {
-        width: 300,
-        margin: 2,
-        color: {
-          dark: "#000000",
-          light: "#FFFFFF"
-        }
-      });
-
-      setQrCodeUrl(url);
+      // gọi API  get-qr-active
+        let config = {
+          method: 'get',
+          maxBodyLength: Infinity,
+          baseURL: "http://localhost:6789/api/config/get-qr-active",
+          params: {
+            room_id: roomId
+          },
+        };
+      const response = await axios.request(config);
+      if(response.status == 200){
+        setQrCodeUrl(response.data.data.base64QR);
+      }
+      
     } catch (error) {
       console.error("Error generating QR code:", error);
     }

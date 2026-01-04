@@ -10,6 +10,13 @@ const CONSTANT = {
     REJECTED: 'REJECTED',
     DISCONNECTED: 'DISCONNECTED',
     DISCONNECT_CLIENT: 'DISCONNECT_CLIENT',
+
+    SCORE_RED: 'SCORE_RED',
+    SCORE_BLUE: 'SCORE_BLUE',
+    SCORE_QUYEN: 'SCORE_QUYEN',
+    DK_INFO: 'DK_INFO',
+    QUYEN_INFO: 'QUYEN_INFO',
+    INFO_REF: 'INFO_REF', // gửi thông tin Giám định về cho các thiết bị khác trong cùng phòng thi đấu
 }
 const DATABASE_JS = "database.json";
 

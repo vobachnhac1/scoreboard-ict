@@ -2,7 +2,6 @@ const os = require('os');
 const si = require('systeminformation');
 
 
-
 // Khởi tạo cấu hình
 InitProject = () => {
     // lấy maccaddress | license

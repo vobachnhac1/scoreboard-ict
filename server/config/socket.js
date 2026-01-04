@@ -536,6 +536,7 @@ InitSocket = async (io) => {
             const rc_socket = MapConn[`${socket_id}`];
             if(rc_socket){
                 console.log('Cập nhật thông tin giám định');
+                const token = crypto.randomBytes(32).toString('hex');
                 MapConn[`${socket_id}`] = {
                     ...MapConn[`${socket_id}`],
                     referrer: referrer,
@@ -544,22 +545,34 @@ InitSocket = async (io) => {
                     register_status_name: getRegisterStatusName(input.accepted) ?? rc_socket.register_status_name,
                     connect_status_code: getConnectStatusCode(input.status) ?? rc_socket.connect_status_code,
                     connect_status_name: getConnectStatusName(input.status) ?? rc_socket.connect_status_name,
+                    token: input.accepted == 'approved' ? token : null,
+                    room_id: room_id
                   }
-
+                
                 // gửi Admin
-                io.to(input?.room_id).emit('RES_ROOM_ADMIN', {
+                io.to(room_id).emit('RES_ROOM_ADMIN', {
                     status: 200,
                     message: 'Thực hiện thành công',
                     data: {
-                        room_id: input?.room_id,
+                        room_id: room_id,
                         ls_conn: MapConn
                     }
                 });
                 // gửi Mobile
+                let sendTp = null;
+                if(input.accepted == 'approved'){
+                    sendTp = RES_TYPE.APPROVE_CONNECT;
+                }else if(input.accepted == 'rejected'){
+                    sendTp = RES_TYPE.REJECT_CONNECT;
+                }else if(input.accepted == 'pending'){
+                    sendTp = RES_TYPE.REJECT_CONNECT;
+                }
+
                 io.to(socket_id).emit('RES_MSG', {
                     status: 200,
                     message: 'Thực hiện thành công',
-                    data: MapConn[`${socket_id}`] 
+                    data: MapConn[`${socket_id}`],
+                    type: sendTp
                 });
             }
         });
@@ -575,6 +588,119 @@ InitSocket = async (io) => {
                 }
             })
         })
+
+        // 10. RED: lắng nghe điểm đỏ
+        socket.on(CONSTANT.SCORE_RED, (input) => {
+            console.log('Điểm đỏ: ', input);
+            // nếu thực hiện thì sẽ gây đồng phạm
+            // io.to(client.room_id).emit(CONSTANT.SCORE_RED, input);
+
+            const client = MapConn[`${socket.id}`];
+            // gửi Admin
+            io.to(client?.room_id).emit(CONSTANT.SCORE_RED, {
+                type: CONSTANT.SCORE_RED,
+                status: 200,
+                message: 'Thực hiện thành công',
+                data: {
+                    score: input.score, 
+                    referrer: client.referrer,
+                }
+            })
+        })
+
+        // 11. BLUE: lắng nghe điểm xanh
+        socket.on(CONSTANT.SCORE_BLUE, (input) => {
+            console.log('Điểm xanh: ', input);
+            // io.to(client.room_id).emit(CONSTANT.SCORE_BLUE, input);
+            const client = MapConn[`${socket.id}`];
+            // gửi Admin
+            io.to(client?.room_id).emit(CONSTANT.SCORE_BLUE, {
+                type: CONSTANT.SCORE_BLUE,
+                status: 200,
+                message: 'Thực hiện thành công',
+                data: {
+                    score: input.score, 
+                    referrer: client.referrer,
+                }
+            })
+        })
+
+        // 12. QUYEN: lắng nghe điểm quyền
+        socket.on(CONSTANT.SCORE_QUYEN, (input) => {
+            console.log('Điểm quyền: ', input);
+            // io.to(client.room_id).emit(CONSTANT.SCORE_QUYEN, input);
+            const client = MapConn[`${socket.id}`];
+            // gửi Admin
+            io.to(client?.room_id).emit(CONSTANT.SCORE_QUYEN, {
+                type: CONSTANT.SCORE_QUYEN,
+                status: 200,
+                message: 'Thực hiện thành công',
+                data: {
+                    score: input.score, 
+                    referrer: client.referrer,
+                }
+            })
+        })
+
+        // 13. DK_INFO: lắng nghe thông tin đk
+        socket.on(CONSTANT.DK_INFO, (input) => {
+            console.log('DK_INFO: ', input);
+            // io.to(client.room_id).emit(CONSTANT.DK_INFO, input);
+            const client = MapConn[`${socket.id}`];
+            // gửi Admin
+            io.to(client?.room_id).emit(CONSTANT.DK_INFO, {
+                type: CONSTANT.DK_INFO,
+                status: 200,
+                message: 'Thực hiện thành công',
+                data: input
+            });
+
+            // gửi cho từng client
+            MapConn.forEach((item) => {
+                if(item.room_id == client.room_id){
+                    io.to(item.socket_id).emit(CONSTANT.INFO_REF, {
+                        type: CONSTANT.INFO_REF,
+                        status: 200,
+                        message: 'Thực hiện thành công',
+                        data: {
+                            referrer: item.referrer,
+                        }
+                    });
+                }
+            })
+        })
+
+        // 14. QUYEN_INFO: lắng nghe thông tin quyền
+        socket.on(CONSTANT.QUYEN_INFO, (input) => {
+            console.log('QUYEN_INFO: ', input);
+            // io.to(client.room_id).emit(CONSTANT.QUYEN_INFO, input);
+            const client = MapConn[`${socket.id}`];
+            // gửi Admin
+            io.to(client?.room_id).emit(CONSTANT.QUYEN_INFO, {
+                type: CONSTANT.QUYEN_INFO,
+                status: 200,
+                message: 'Thực hiện thành công',
+                data: input
+            });
+            
+            // gửi cho từng client
+            MapConn.forEach((item) => {
+                if(item.room_id == client.room_id){
+                    io.to(item.socket_id).emit(CONSTANT.INFO_REF, {
+                        type: CONSTANT.INFO_REF,
+                        status: 200,
+                        message: 'Thực hiện thành công',
+                        data: {
+                            referrer: item.referrer,
+                        }
+                    });
+                }
+            })
+
+
+        })
+
+
 
         // 6. Khi client ngắt kết nối
         socket.on('disconnect', () => {

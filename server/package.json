@@ -1,0 +1,28 @@
+{
+  "name": "scoreboard-ict-server",
+  "version": "1.0.0",
+  "description": "Backend API for Scoreboard ICT",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "migrate": "node scripts/migrate.js"
+  },
+  "keywords": [
+    "scoreboard",
+    "vovinam",
+    "api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "mysql2": "^3.6.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
+

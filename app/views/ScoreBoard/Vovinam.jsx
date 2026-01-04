@@ -6,6 +6,9 @@ import axios from "axios";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import useConfirmModal from "../../hooks/useConfirmModal";
 
+import { useSocketEvent, emitSocketEvent } from "../../config/hooks/useSocketEvents";
+import {MSG_TP_CLIENT} from '../../common/Constants'
+
 const Vovinam = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -197,6 +200,13 @@ const Vovinam = () => {
     redScoreRef.current = redScore;
     blueScoreRef.current = blueScore;
   }, [redScore, blueScore]);
+    // thực listen
+    useSocketEvent(MSG_TP_CLIENT.SCORE_RED, (response) => {
+      console.log("SCORE_RED:", response);
+    });
+    useSocketEvent(MSG_TP_CLIENT.SCORE_BLUE, (response) => {
+      console.log("SCORE_BLUE:", response);
+    });  
 
   // Function để lưu button permissions về server
   const saveButtonPermissions = async () => {
@@ -303,19 +313,30 @@ const Vovinam = () => {
       }
     } catch (error) {
       console.error('Error fetching competition data:', error);
+    }finally {
     }
   }, [matchInfo.competition_dk_id, matchInfo.row_index]);
 
   // Debug log và setup polling
   useEffect(() => {
-    console.log("matchInfo: ", matchInfo);
-    console.log("returnUrl: ", returnUrl);
     // Fetch logos và config từ API
     fetchLogos();
 
     // Fetch dữ liệu competition lần đầu
     fetchCompetitionData();
-
+    // TODO: Gửi thông tin về server
+    emitSocketEvent('DK_INFO',{
+      match_id: matchData.match_id,
+      match_no: 'Trận '+ matchData.match_no,
+      ten_giai_dau: matchData.ten_giai_dau,
+      ten_mon_thi: matchData.ten_mon_thi,
+      match_name: matchData.match_name,
+      red: matchInfo?.red ?? { name: '', unit: ''},
+      blue: matchInfo?.blue ?? { name: '', unit: ''},
+      round: currentRound > (matchInfo.so_hiep || 3)
+            ? `Hiệp phụ ${currentRound - (matchInfo.so_hiep || 3)}`
+            : `Hiệp ${currentRound}`
+    });
     // Setup polling để cập nhật dữ liệu mỗi 5 giây
     const pollingInterval = setInterval(() => {
       fetchCompetitionData();
@@ -740,13 +761,13 @@ const Vovinam = () => {
     const extraRounds = matchInfo.so_hiep_phu || 0;
     const totalRounds = totalMainRounds + extraRounds;
 
+
     // Lưu history sau mỗi hiệp
     handleSaveHistory();
 
     // Sử dụng refs để lấy điểm số mới nhất
     const currentRedScore = redScoreRef.current;
     const currentBlueScore = blueScoreRef.current;
-
     if (currentRound < totalMainRounds) {
       // Vẫn còn hiệp chính -> nghỉ giữa hiệp
       startBreakTime();
@@ -773,6 +794,19 @@ const Vovinam = () => {
       isHandlingRound.current = false;
       btnFinishMatch(currentRedScore, currentBlueScore);
     }
+    // TODO: Gửi thông tin về server
+    emitSocketEvent('DK_INFO',{
+      match_id: matchData.match_id,
+      match_no: 'Trận '+ matchData.match_no,
+      ten_giai_dau: matchData.ten_giai_dau,
+      ten_mon_thi: matchData.ten_mon_thi,
+      match_name: matchData.match_name,
+      red: matchInfo?.red ?? { name: '', unit: ''},
+      blue: matchInfo?.blue ?? { name: '', unit: ''},
+      round: currentRound > (matchInfo.so_hiep || 3)
+            ? `Hiệp phụ ${currentRound - (matchInfo.so_hiep || 3)}`
+            : `Hiệp ${currentRound}`
+    });
   };
 
   // Toggle timer (từ Timer.jsx)

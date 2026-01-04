@@ -84,7 +84,8 @@ class AdminController {
 
     async getQRActiveDevice (req, res) {
         try {
-            const result  = await AdminService.connect_active_device();
+            const room_id = req.query.room_id;
+            const result  = await AdminService.connect_active_device(room_id);
             res.status(200).json({
                 success: true,
                 message: "Thực hiện thành công",
@@ -103,7 +104,8 @@ class AdminController {
 
     async getQRRegisterReferrer (req, res) {
         try {
-            const result  = await AdminService.connect_register_device();
+            const room_id = req.query.room_id;
+            const result  = await AdminService.connect_register_device(room_id);
             res.status(200).json({
                 success: true,
                 message: "Thực hiện thành công",

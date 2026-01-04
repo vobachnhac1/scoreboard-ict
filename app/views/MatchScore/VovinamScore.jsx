@@ -9,6 +9,9 @@ import Modal from "../../components/Modal";
 import VovinamScoreForm from "./Forms/VovinamScoreForm";
 import axios from "axios";
 import useConfirmModal from "../../hooks/useConfirmModal";
+import { useSocketEvent, emitSocketEvent } from "../../config/hooks/useSocketEvents";
+import {MSG_TP_CLIENT} from '../../common/Constants'
+
 
 export default function VovinamScore() {
   const { modalProps, showConfirm, showAlert, showWarning, showError, showSuccess } = useConfirmModal();
@@ -18,7 +21,6 @@ export default function VovinamScore() {
   const matchData = location.state?.matchData || {};
   const configSystem = location.state?.matchData?.config_system || {};
   const returnUrl = location.state?.returnUrl || "/management/competition-data";
-
 
   const extractCompetitionIdFromUrl = (url) => {
     // URL format: /management/competition-data/:id
@@ -57,6 +59,15 @@ export default function VovinamScore() {
         });
       }
     }
+
+    emitSocketEvent('QUYEN_INFO',{
+      match_id: matchData.match_id,
+      ten_giai_dau: matchData.ten_giai_dau,
+      ten_mon_thi: matchData.ten_mon_thi,
+      match_name: matchData.match_name,
+      team_name: matchData.team_name,
+    });
+
     const handleKeyPress = (e) => {
       if (e.key === 'F5') {
         e.preventDefault();
@@ -67,6 +78,7 @@ export default function VovinamScore() {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
+
   useEffect(() => {
     // kiểm tra empty object matchData.scores
     if(matchData.scores && Object.keys(matchData.scores).length > 0){
@@ -159,7 +171,6 @@ export default function VovinamScore() {
       delete scores.total;
       delete scores.hidden;
       const scoresArray = Object.values(scores).filter(score => Number(score) !== 0).sort((a, b) => Number(a) - Number(b));
-      console.log('scoresArray: ', scoresArray);
       const total = scoresArray.slice(1, -1).reduce((acc, score) => Number(acc) + Number(score), 0);
       let selectedMaxIndex = -1;
       let selectedMinIndex = -1;
@@ -315,7 +326,6 @@ export default function VovinamScore() {
   }
 
   // Thực hiện tạo file excel kết quả
-
   const RenderContentModal = () => {
     return <VovinamScoreForm type={"other"} 
       soGiamDinh={configSystem.so_giam_dinh}
@@ -326,6 +336,18 @@ export default function VovinamScore() {
       }}
       onGoBack={() => setOpenModal(false)} />;
   };
+
+  // lắng nghe điểm quyền
+  useSocketEvent(MSG_TP_CLIENT.SCORE_QUYEN, (response) => {
+    if(response?.data?.referrer){
+       setScores({
+        ...scores,
+        [`judge${response?.data?.referrer}`]: response?.data?.score
+      })
+    }
+  });
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-6 text-white flex flex-col items-center">

@@ -100,7 +100,7 @@ export default function ManagementConnectionSocket() {
     if (response.path === "ADMIN_FETCH_CONN" && response.status === 200) {
       // Chuyển đổi MapConn object thành array
       const deviceList = response.data.ls_conn || {};
-      const devices = Object.values(deviceList)?.filter(ele=> ele?.register_status_code !=='ADMIN').map((conn, index) => ({
+      const devices = Object.values(deviceList)?.filter(ele=> ele?.register_status_code !=='ADMIN' && ele.client_ip != '::1').map((conn, index) => ({
         order: index + 1,
         device_name: conn.device_name || `Thiết bị ${conn.socket_id?.substring(0, 8)}`,
         judge_permission: conn.referrer ? LIST_JUDGE_PRORMISSION.find((item) => item.key === Number(conn.referrer)).label : "Chưa gán",
@@ -214,9 +214,9 @@ export default function ManagementConnectionSocket() {
 
   const columns = [
     { title: "STT", key: "order" },
-    { title: "Tên thiết bị", key: "device_name" },
+    // { title: "Tên thiết bị", key: "device_name" },
     { title: "Quyền giám định", key: "judge_permission", render: (row) => Utils.getJudgePermissionLabel(row.judge_permission) },
-    { title: "Mã thiết bị", key: "device_code" },
+    // { title: "Mã thiết bị", key: "device_code" },
     { title: "IP thiết bị", key: "device_ip" },
     { title: "Trạng thái", key: "status", render: (row) => <div className="text-nowrap">{Utils.getStatusLabel(row.status)}</div> },
     { title: "Chấp thuận", key: "accepted", render: (row) => Utils.getApprovalStatusLabel(row.accepted) },
@@ -538,6 +538,7 @@ export default function ManagementConnectionSocket() {
       console.log("Deleted room");
     }
   };
+
 
   return (
     <div className="w-full h-autooverflow-auto">

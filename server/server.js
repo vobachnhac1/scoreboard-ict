@@ -4,7 +4,10 @@ const { Server } = require('socket.io');
 const path = require('path');
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: { origin: "*", methods: ['*'] },
+  transports: ["websocket"], // optional: ép luôn server
+});
 
 // Import Library
 const {InitSocket} = require('./config/socket');
@@ -52,6 +55,6 @@ FetchInitApp()
 
 // Khởi chạy server Restful API
 const PORT = process.env.PORT || 6789;
-server.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0",() => {
     console.log(`Server đang chạy tại http://localhost:${PORT}`);
 });

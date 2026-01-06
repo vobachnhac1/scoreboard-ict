@@ -102,7 +102,7 @@ class Admin {
     }
 
     // 5. Tạo QR kích hoạt + kết nối 
-    connect_active_device = async ()=>{
+    connect_active_device = async (room_id)=>{
         try {
             const uuid_desktop = await getUUID()
             const ip = await getIP()
@@ -113,7 +113,7 @@ class Admin {
                 register_connect: false,
                 domain: ip,
                 port: 6789,
-                room_id: license_info.room_code,
+                room_id: room_id,
                 uuid_desktop: license_info.uuid_desktop, 
                 key_license: license_info.key_license, 
             };
@@ -130,7 +130,7 @@ class Admin {
     }
     
     // 6. Tạo QR đăng ký Giám định + kết nối 
-    connect_register_device = async ()=>{
+    connect_register_device = async (room_id)=>{
         try {
             const uuid_desktop = await getUUID()
             const ip = await getIP()
@@ -142,7 +142,7 @@ class Admin {
                 referrer: 0,
                 domain: ip,
                 port: 6789,
-                room_id: license_info.room_code,
+                room_id: room_id,
                 uuid_desktop: license_info.uuid_desktop, 
                 key_license: license_info.key_license, 
             };
@@ -158,14 +158,7 @@ class Admin {
         }
     }
 
-
-
     // ------------- CLIENT ----------------//
-
-
-
-
-
     // Kiểm tra license key nếu có
     // verify_license_key = async (body)=>{
     //     const uuid_desktop = await getUUID();

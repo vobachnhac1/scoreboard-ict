@@ -1,8 +1,39 @@
 import React from "react";
 
-export default function Header({ title, desc, logos }) {
+/**
+ * Header Component
+ * @param {string} title - Main title text
+ * @param {string} desc - Description text
+ * @param {Array} logos - Array of logo objects
+ * @param {Object} config - Configuration object for styling
+ * @param {string} config.titleColor - Title text color (Tailwind class or gradient)
+ * @param {string} config.descColor - Description text color (Tailwind class)
+ * @param {string} config.backgroundColor - Background color (Tailwind class)
+ * @param {string} config.decorativeLineColors - Decorative line gradient colors
+ */
+export default function Header({
+  title,
+  desc,
+  logos,
+  config = {}
+}) {
+  // Default configuration
+  const defaultConfig = {
+    titleColor: "bg-gradient-to-r from-white via-white to-white bg-clip-text text-transparent",
+    descColor: "text-yellow-300",
+    backgroundColor: "bg-gradient-to-r from-transparent via-white/10 to-transparent",
+    decorativeLineColors: {
+      left: "from-transparent to-yellow-500",
+      center: "from-yellow-500 via-yellow-500 to-yellow-500",
+      right: "from-yellow-500 to-transparent"
+    }
+  };
+
+  // Merge config with defaults
+  const finalConfig = { ...defaultConfig, ...config };
+
   return (
-    <div className="text-center text-white mb-8 w-full max-w-6xl">
+    <div className="text-center text-white mb-3 w-full max-w-6xl">
       {/* Logo Vovinam - 6 ô vuông */}
       {/* <div className="flex justify-center items-center gap-3 mb-6">
         <div className="flex gap-2">
@@ -29,7 +60,7 @@ export default function Header({ title, desc, logos }) {
       </div> */}
       {/* Thiết kế hiển thị danh sách Logo - Căn giữa hàng ngang */}
       {logos.length > 0 && (
-        <div className="w-full max-w-7xl mx-auto mb-6 mt-6">
+        <div className="w-full max-w-7xl mx-auto mb-6 mt-0">
           <div className="flex justify-center items-center gap-8 px-8">
             {logos.map((logo, index) => (
               <div
@@ -52,20 +83,20 @@ export default function Header({ title, desc, logos }) {
       )}
 
       {/* Title */}
-      <div className="bg-gradient-to-r from-transparent via-white/10 to-transparent py-4 px-6 rounded-xl backdrop-blur-sm">
-        <h1 className="text-4xl font-black tracking-wider mb-2 bg-gradient-to-r from-yellow-400 via-red-500 to-blue-500 bg-clip-text text-transparent drop-shadow-2xl">
+      <div className={`${finalConfig.backgroundColor} py-4 px-6 rounded-xl backdrop-blur-sm`}>
+        <h1 className={`text-4xl font-black tracking-wider mb-2 ${finalConfig.titleColor} drop-shadow-2xl`}>
           {title}
         </h1>
-        <p className="text-xl font-bold tracking-wide text-yellow-300 drop-shadow-lg">
+        <p className={`text-xl font-bold tracking-wide ${finalConfig.descColor} drop-shadow-lg`}>
           {desc}
         </p>
       </div>
 
       {/* Decorative line */}
       <div className="mt-4 flex justify-center gap-2">
-        <div className="h-1 w-20 bg-gradient-to-r from-transparent to-yellow-500 rounded-full"></div>
-        <div className="h-1 w-20 bg-gradient-to-r from-yellow-500 via-red-500 to-blue-500 rounded-full"></div>
-        <div className="h-1 w-20 bg-gradient-to-r from-blue-500 to-transparent rounded-full"></div>
+        <div className={`h-1 w-20 bg-gradient-to-r ${finalConfig.decorativeLineColors.left} rounded-full`}></div>
+        <div className={`h-1 w-20 bg-gradient-to-r ${finalConfig.decorativeLineColors.center} rounded-full`}></div>
+        <div className={`h-1 w-20 bg-gradient-to-r ${finalConfig.decorativeLineColors.right} rounded-full`}></div>
       </div>
     </div>
   );

@@ -47,21 +47,22 @@ InitSocket = async (io) => {
 
     // Lưu danh sách kết nối hiện tại permission = 6(Admin) | permission = 0(Client)
     let MapConn ={};
-
+    let MapConnAll = {}
     io.on('connection', (socket) => {
         console.log('\nMột client đã kết nối:', socket.id);
+        // admin
+        const admin = MapConn[`${socket.id}`];        
         const init = { 
-            room_id: null,
-            client_ip: null,
+            room_id: admin?.room_id ?? null,
+            client_ip: socket.handshake.address.split('::ffff:').pop(),
             uuid_desktop: null,
             device_id: null,
             device_name: null,
 
-            connect_status_code: null,
-            connect_status_name: null,
-            register_status_code: null,
-            register_status_name: null,
-
+            connect_status_code: STATE_SOCKET.CONNECTED.CODE,
+            connect_status_name: STATE_SOCKET.CONNECTED.NAME,
+            register_status_code: STATE_SOCKET.DISCONNECT.CODE,
+            register_status_name: STATE_SOCKET.DISCONNECT.NAME,
             referrer: 0,
             socket_id: socket.id,
             permission: 0,
@@ -69,8 +70,17 @@ InitSocket = async (io) => {
         }   
         list_connect.push(init);
         MapConn[`${socket.id}`] = init
+
         console.log('MapConn: ', MapConn);
-        
+        io.emit('RES_ROOM_ADMIN', {
+            status: 200,
+            message: 'Thực hiện thành công',
+            path:  "ADMIN_FETCH_CONN",
+            data: {
+                ls_conn: MapConn
+            }
+        });
+
         io.to(socket.id).emit('RES_MSG', {
             type: RES_TYPE.INIT,
             status: 200,
@@ -80,6 +90,7 @@ InitSocket = async (io) => {
 
         // 1. Admin tạo một phòng để kết nối
         socket.on(CONSTANT.REGISTER_ROOM_ADMIN, (input) => {
+            console.log('|------ INPUT REGISTER_ROOM_ADMIN: ', input);
             if(input?.room_id){
                 socket.join(input?.room_id);
                 console.log(`${socket.id}(Admin) đã tham gia phòng ${input?.room_id}`);
@@ -135,7 +146,8 @@ InitSocket = async (io) => {
                 return;
             }
             const upt_client = {
-                ...client,
+                ...client,  
+                client_ip: input.ip,
                 room_id: input.room_id,
                 referrer: input.referrer,
                 device_id: input.device_id,
@@ -313,6 +325,7 @@ InitSocket = async (io) => {
                         ls_conn: MapConn
                 }
             });
+
             socket.emit('RES_MSG', {
                 status: 200,
                 message: 'Đã ngắt kết nối',
@@ -656,7 +669,7 @@ InitSocket = async (io) => {
             });
 
             // gửi cho từng client
-            MapConn.forEach((item) => {
+            Object.values(MapConn).forEach((item) => {
                 if(item.room_id == client.room_id){
                     io.to(item.socket_id).emit(CONSTANT.INFO_REF, {
                         type: CONSTANT.INFO_REF,
@@ -684,7 +697,7 @@ InitSocket = async (io) => {
             });
             
             // gửi cho từng client
-            MapConn.forEach((item) => {
+            Object.values(MapConn).forEach((item) => {
                 if(item.room_id == client.room_id){
                     io.to(item.socket_id).emit(CONSTANT.INFO_REF, {
                         type: CONSTANT.INFO_REF,
@@ -700,6 +713,70 @@ InitSocket = async (io) => {
 
         })
 
+        // 15. SET_PERMISSION_REF: cấp quyền chấm điểm, và phân luôn giám định 
+        socket.on(CONSTANT.SET_PERMISSION_REF, (input) => {
+            console.log('SET_PERMISSION_REF: ', input);
+            const {room_id, socket_id, referrer, accepted, status} = input;
+            const client = MapConn[`${input.socket_id}`];
+            const admin = MapConn[`${socket.id}`];
+            // kiểm tra admin có join room hay chưa
+            if(admin.room_id != room_id){
+                admin.room_id = room_id;
+                admin.register_status_code = 'ADMIN';
+                admin.register_status_name = 'ADMIN';
+                admin.connect_status_code = 'CONNECTED';
+                admin.connect_status_name = 'Đã kết nối';
+                admin.referrer = 6;
+                admin.permission = 9;
+                admin.token = null;
+                socket.join(room_id);
+                MapConn[`${socket.id}`] = admin
+                console.log(`[SET_PERMISSION_REF] - ADMIN ${socket.id} đã tham gia phòng ${room_id}`);
+            }
+            if(!client){
+                io.to(input?.room_id).emit('RES_ROOM_ADMIN', {
+                    status: 400,
+                    message: 'Thực hiện lỗi',
+                    data: {
+                        room_id: input?.room_id,
+                        ls_conn: MapConn
+                    }
+                });
+                return;
+            }
+            console.log('Cập nhật thông tin giám định');
+            const token = crypto.randomBytes(32).toString('hex');
+            const upt_client ={
+                ...client,
+                referrer: referrer,
+                permission: 1,
+                register_status_code: getRegisterStatusCode(accepted),
+                register_status_name: getRegisterStatusName(accepted),
+                connect_status_code: getConnectStatusCode(status), 
+                connect_status_name: getConnectStatusName(status),
+                token: token
+            }
+            MapConn[`${socket_id}`] = upt_client
+
+            // gửi admin
+            io.to(room_id).emit('RES_ROOM_ADMIN', {
+                path: CONSTANT.ADMIN_FETCH_CONN,
+                status: 200,
+                message: 'Thực hiện thành công',
+                data: {
+                    room_id: room_id,
+                    ls_conn: MapConn
+                }
+            });   
+
+            // gửi client
+            io.to(socket_id).emit('RES_MSG', {
+                status: 200,
+                message: 'Đã phê duyệt kết nối',
+                type: RES_TYPE.APPROVE_CONNECT, 
+                data: upt_client
+            });
+        });
 
 
         // 6. Khi client ngắt kết nối
@@ -720,7 +797,7 @@ InitSocket = async (io) => {
             }
             console.log('MapConn: ', MapConn);
         });
-    
+     
     });
     // hàm common register_status_code
     const getRegisterStatusCode = (code) => {

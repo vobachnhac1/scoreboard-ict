@@ -4,7 +4,7 @@ const { STATE_ACTIVE } = require('../../constants');
 const init_config_db = require('../init-config')
 
 // cho phép hiển thị
-const allow = ['thoi_gian_tinh_diem', 'he_diem','cau_hinh_hinh_thuc_quyen', 'cau_hinh_hinh_thuc_doikhang'];
+const allow = ['thoi_gian_tinh_diem', 'he_diem','cau_hinh_hinh_thuc_quyen', 'cau_hinh_hinh_thuc_doikhang', 'ten_giai_dau', 'mo_ta_giai_dau'];
 
 class Client {
     verify_active = async ( body )=>{
@@ -94,9 +94,19 @@ class Client {
     get_config_system = async ()=>{
         try {
             const res_config  = await init_config_db.getAllKeyValueByKey('system');
+            // Danh sách các trường là string (không convert sang number)
+            const stringFields = [
+                'ten_giai_dau',
+                'mo_ta_giai_dau'
+            ];
             let config = {};
             res_config.filter((ele)=> allow.includes(ele.child_key)).forEach(element => {
-                config[`${element.child_key}`] = Number(element.value);
+                // Nếu là string field thì giữ nguyên, còn lại convert sang number
+                if (stringFields.includes(element.child_key)) {
+                    config[`${element.child_key}`] = element.value;
+                } else {
+                    config[`${element.child_key}`] = Number(element.value);
+                }
             });
             return config
         } catch (error) {
@@ -104,7 +114,6 @@ class Client {
             return {}
         }
     }
-
 }
 const instances = new Client()
 module.exports = instances;

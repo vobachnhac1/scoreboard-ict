@@ -41,7 +41,7 @@ export { socketClient };
 // Tạo component App
 const Routers = () => {
   const navigate = useNavigate();
-  useHotkeys('F1', () => navigate('/'));
+  // useHotkeys('F1', () => navigate('/'));
 
   const routes = [
     // { path: '/', element: <Home />, sidebar: false },

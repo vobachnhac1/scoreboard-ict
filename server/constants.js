@@ -17,6 +17,7 @@ const CONSTANT = {
     DK_INFO: 'DK_INFO',
     QUYEN_INFO: 'QUYEN_INFO',
     INFO_REF: 'INFO_REF', // gửi thông tin Giám định về cho các thiết bị khác trong cùng phòng thi đấu
+    SET_PERMISSION_REF: 'SET_PERMISSION_REF',
 }
 const DATABASE_JS = "database.json";
 

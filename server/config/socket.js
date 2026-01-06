@@ -1,5 +1,6 @@
 const { CONSTANT, RES_TYPE, STATE_SOCKET, STATE_REG_CONN } = require('../constants');
 const crypto = require('crypto');
+const init_config_db = require('../services/init-config');
 
 InitSocket = async (io) => {
 /// ---------------------- SOCKET IO ---------------------- ///
@@ -8,19 +9,34 @@ InitSocket = async (io) => {
     let list_room = []; //  danh sách phòng
     let isCounting = false; // biến kiểm tra trạng thái đếm
 
-    // đỏ   
+    // đỏ (cho REQ_MSG - legacy)
     let socketSetDo1 = new Set();
     let socketSetDo2 = new Set();
     let socketSetDo3 = new Set();
 
-    // xanh   
+    // xanh (cho REQ_MSG - legacy)
     let socketSetXanh1 = new Set();
     let socketSetXanh2 = new Set();
     let socketSetXanh3 = new Set();
 
+    // Mới: Sets cho SCORE_RED và SCORE_BLUE
+    // Structure: Map<referrer, Map<score, Set<socket_id>>>
+    let redScoreSets = {
+        1: new Set(), // score = 1 (vàng)
+        2: new Set(), // score = 2 (xanh lá)
+        3: new Set()  // score = 3 (đỏ)
+    };
+    let blueScoreSets = {
+        1: new Set(), // score = 1 (vàng)
+        2: new Set(), // score = 2 (xanh lá)
+        3: new Set()  // score = 3 (đỏ)
+    };
+    let isCountingRed = false;
+    let isCountingBlue = false;
+
     let config = {
         cau_hinh_lay_diem_thap : true, // 3 giám định: 1 giám định cho điểm 1 và 1 giám định cho điểm 2 => lấy điểm 1
-        thoi_gian_nhay_diem:        1000, // miliseconds
+        thoi_gian_tinh_diem:        1000, // miliseconds
         thoi_gian_hiep:             90, // giây
         thoi_gian_nghi_giua_hiep:   30, // giây
         thoi_gian_y_te:             120, // giây
@@ -48,6 +64,27 @@ InitSocket = async (io) => {
     // Lưu danh sách kết nối hiện tại permission = 6(Admin) | permission = 0(Client)
     let MapConn ={};
     let MapConnAll = {}
+    let connAdmin = {}
+    // thực hiện gọi API lấy cấu hình admin 
+    const fetchAdminConfig = async () => {
+        try {
+            const res_config  = await init_config_db.getAllKeyValueByKey('system');
+            let config = {};
+            res_config.forEach(element => {
+                config[`${element.child_key}`] = element.value;
+            });
+            return config
+        } catch (error) {
+            console.log('[fetchAdminConfig] error: ', error);
+            return {}
+        }
+    }
+    // gán vào cấu hình 
+    fetchAdminConfig().then((res) => {
+        config = {cau_hinh_lay_diem_thap : true, ...res};
+        console.log('fetchAdminConfig config: ', config);
+    })
+
     io.on('connection', (socket) => {
         console.log('\nMột client đã kết nối:', socket.id);
         // admin
@@ -70,7 +107,7 @@ InitSocket = async (io) => {
         }   
         list_connect.push(init);
         MapConn[`${socket.id}`] = init
-
+        connAdmin = init
         console.log('MapConn: ', MapConn);
         io.emit('RES_ROOM_ADMIN', {
             status: 200,
@@ -108,6 +145,7 @@ InitSocket = async (io) => {
                     uuid_desktop: input?.uuid_desktop,
                     token: null
                 }
+                connAdmin = MapConn[`${socket.id}`]
                 // Phản hồi Admin
                 io.to(input?.room_id).emit('RES_ROOM_ADMIN', {
                     path: CONSTANT.REGISTER_ROOM_ADMIN,
@@ -135,8 +173,8 @@ InitSocket = async (io) => {
                 });
                 return
             }
-            if(client.token){
-                console.log('client.token: ', client.token);
+            if(client?.token){
+                console.log('client.token: ', client?.token);
                 io.to(input?.socket_id).emit('RES_MSG', {
                     status: 200,
                     message: 'Đã phê duyệt kết nối',
@@ -199,8 +237,8 @@ InitSocket = async (io) => {
                 });
                 return;
             }else{
-                if(client.token){
-                    console.log('client.token: ', client.token);
+                if(client?.token){
+                    console.log('client.token: ', client?.token);
                     io.to(input?.socket_id).emit('RES_MSG', {
                         status: 200,
                         message: 'Đã phê duyệt kết nối',
@@ -517,7 +555,7 @@ InitSocket = async (io) => {
                     socketSetDo2.clear();
                     socketSetDo3.clear();
                     isCounting = false;
-                }, config.thoi_gian_nhay_diem);
+                }, config.thoi_gian_tinh_diem);
             }else{
                 // Nếu đang đếm thì chỉ thêm socket.id
                 if(blue == 1){
@@ -602,40 +640,265 @@ InitSocket = async (io) => {
             })
         })
 
+        // Helper function: Tính điểm dựa trên Sets
+        const calculateScore = (scoreSets, soGiamDinh, cauHinhLayDiemThap) => {
+            let finalScore = 0;
+            let finalRowIndex = -1; // -1 = không có điểm, 0 = vàng, 1 = xanh lá, 2 = đỏ
+
+            const size1 = scoreSets[1].size;
+            const size2 = scoreSets[2].size;
+            const size3 = scoreSets[3].size;
+
+            console.log(`📊 Tính điểm: size1=${size1}, size2=${size2}, size3=${size3}, soGiamDinh=${soGiamDinh}`);
+
+            if (soGiamDinh == 3) {
+                // Logic cơ bản: >= 2 giám định đồng ý
+                if (size1 >= 2) {
+                    finalScore = 1;
+                    finalRowIndex = 0; // vàng
+                    console.log(`✅ Đạt đa số: +1 điểm (row vàng)`);
+                } else if (size2 >= 2) {
+                    finalScore = 2;
+                    finalRowIndex = 1; // xanh lá
+                    console.log(`✅ Đạt đa số: +2 điểm (row xanh lá)`);
+                } else if (size3 >= 2) {
+                    finalScore = 3;
+                    finalRowIndex = 2; // đỏ
+                    console.log(`✅ Đạt đa số: +3 điểm (row đỏ)`);
+                }
+
+                // Logic điểm thấp
+                if (cauHinhLayDiemThap && finalScore === 0) {
+                    // 1 GĐ cho 1 điểm + 1 GĐ cho 2 điểm → lấy 1 điểm
+                    if ((size1 == 1 && size2 == 1 && size3 == 0) ||
+                        (size1 == 1 && size2 == 1 && size3 == 1)) {
+                        finalScore = 1;
+                        finalRowIndex = 0; // vàng
+                        console.log(`✅ Điểm thấp: +1 điểm (row vàng)`);
+                    }
+                    // 1 GĐ cho 2 điểm + 1 GĐ cho 3 điểm → lấy 2 điểm
+                    else if (size1 == 0 && size2 == 1 && size3 == 1) {
+                        finalScore = 2;
+                        finalRowIndex = 1; // xanh lá
+                        console.log(`✅ Điểm thấp: +2 điểm (row xanh lá)`);
+                    }
+                }
+            } else if (soGiamDinh == 5) {
+                // Logic cơ bản: >= 3 giám định đồng ý
+                if (size1 >= 3) {
+                    finalScore = 1;
+                    finalRowIndex = 0; // vàng
+                    console.log(`✅ Đạt đa số: +1 điểm (row vàng)`);
+                } else if (size2 >= 3) {
+                    finalScore = 2;
+                    finalRowIndex = 1; // xanh lá
+                    console.log(`✅ Đạt đa số: +2 điểm (row xanh lá)`);
+                } else if (size3 >= 3) {
+                    finalScore = 3;
+                    finalRowIndex = 2; // đỏ
+                    console.log(`✅ Đạt đa số: +3 điểm (row đỏ)`);
+                }
+
+                // Logic điểm thấp
+                if (cauHinhLayDiemThap && finalScore === 0) {
+                    // 2 GĐ cho 1 điểm + 1 GĐ cho 2 điểm → lấy 1 điểm
+                    // hoặc 1 GĐ cho 1 điểm + 1 GĐ cho 2 điểm + 1 GĐ cho 3 điểm → lấy 1 điểm
+                    if ((size1 == 2 && size2 == 1 && size3 == 0) ||
+                        (size1 == 1 && size2 == 1 && size3 == 1)) {
+                        finalScore = 1;
+                        finalRowIndex = 0; // vàng
+                        console.log(`✅ Điểm thấp: +1 điểm (row vàng)`);
+                    }
+                    // 2 GĐ cho 2 điểm + 1 GĐ cho 3 điểm → lấy 2 điểm
+                    // hoặc 1 GĐ cho 2 điểm + 2 GĐ cho 3 điểm → lấy 2 điểm
+                    // hoặc 1 GĐ cho 1 điểm + 2 GĐ cho 2 điểm → lấy 2 điểm
+                    else if ((size1 == 0 && size2 == 2 && size3 == 1) ||
+                             (size1 == 1 && size2 == 2 && size3 == 0) ||
+                             (size1 == 1 && size2 == 1 && size3 == 2)) {
+                        finalScore = 2;
+                        finalRowIndex = 1; // xanh lá
+                        console.log(`✅ Điểm thấp: +2 điểm (row xanh lá)`);
+                    }
+                }
+            }
+
+            return { point: finalScore, rowIndex: finalRowIndex };
+        };
+
         // 10. RED: lắng nghe điểm đỏ
         socket.on(CONSTANT.SCORE_RED, (input) => {
-            console.log('Điểm đỏ: ', input);
-            // nếu thực hiện thì sẽ gây đồng phạm
-            // io.to(client.room_id).emit(CONSTANT.SCORE_RED, input);
+            console.log('🔴 Điểm đỏ nhận được: ', input);
 
             const client = MapConn[`${socket.id}`];
-            // gửi Admin
-            io.to(client?.room_id).emit(CONSTANT.SCORE_RED, {
+            if (!client || !client.token) {
+                console.log('❌ Client chưa được xác thực');
+                return;
+            }
+
+            const { score } = input; // score: 1, 2, hoặc 3
+            const referrer = client.referrer; // 1-5
+            const room_id = client.room_id ?? connAdmin?.room_id;
+
+            console.log(`📥 RF${referrer} cho ĐỎ ${score} điểm`);
+
+            // Emit ngay để hiển thị hiệu ứng nháy
+            io.to(room_id).emit(CONSTANT.SCORE_RED, {
                 type: CONSTANT.SCORE_RED,
                 status: 200,
-                message: 'Thực hiện thành công',
+                message: 'Nhận tín hiệu từ giám định',
                 data: {
-                    score: input.score, 
-                    referrer: client.referrer,
+                    score: score,
+                    referrer: referrer,
+                    point: 0 // Chưa tính điểm, chỉ hiển thị nháy
                 }
-            })
+            });
+
+            // Thêm vào Set tương ứng
+            if (score >= 1 && score <= 3) {
+                redScoreSets[score].add(socket.id);
+            }
+
+            // Nếu chưa đếm thì bắt đầu đếm
+            if (!isCountingRed) {
+                isCountingRed = true;
+                console.log(`⏱️ Bắt đầu đếm ĐỎ trong ${config.thoi_gian_tinh_diem}ms`);
+
+                setTimeout(() => {
+                    console.log(`\n📊 Kết thúc đếm ĐỎ:`);
+                    console.log(`   - Điểm 1 (vàng): ${redScoreSets[1].size} GĐ`);
+                    console.log(`   - Điểm 2 (xanh lá): ${redScoreSets[2].size} GĐ`);
+                    console.log(`   - Điểm 3 (đỏ): ${redScoreSets[3].size} GĐ`);
+
+                    // Tính điểm
+                    const result = calculateScore(
+                        redScoreSets,
+                        config.so_giam_dinh,
+                        config.cau_hinh_lay_diem_thap
+                    );
+
+                    console.log(`🎯 Kết quả: ${result.point} điểm (row ${result.rowIndex})`);
+
+                    // Nếu có điểm thì emit kết quả
+                    if (result.point > 0) {
+
+                        // Emit SCORE_RESULT về tất cả client trong room
+                        io.to(room_id).emit('SCORE_RESULT', {
+                            type: 'SCORE_RESULT',
+                            status: 200,
+                            message: `ĐỎ được +${result.point} điểm`,
+                            data: {
+                                team: 'red',
+                                point: result.point,
+                                details: {
+                                    size1: redScoreSets[1].size,
+                                    size2: redScoreSets[2].size,
+                                    size3: redScoreSets[3].size
+                                }
+                            }
+                        });
+
+                        console.log(`✅ ĐỎ: +${result.point} điểm`);
+                    } else {
+                        console.log(`❌ ĐỎ: Không đủ điều kiện cộng điểm`);
+                    }
+
+                    // Reset
+                    redScoreSets[1].clear();
+                    redScoreSets[2].clear();
+                    redScoreSets[3].clear();
+                    isCountingRed = false;
+                    console.log(`🔄 Reset ĐỎ, sẵn sàng chu kỳ mới\n`);
+                }, config.thoi_gian_tinh_diem);
+            } else {
+                console.log(`⏳ Đang đếm ĐỎ, thêm vào Set hiện tại`);
+            }
         })
 
         // 11. BLUE: lắng nghe điểm xanh
         socket.on(CONSTANT.SCORE_BLUE, (input) => {
-            console.log('Điểm xanh: ', input);
-            // io.to(client.room_id).emit(CONSTANT.SCORE_BLUE, input);
+            console.log('🔵 Điểm xanh nhận được: ', input);
+
             const client = MapConn[`${socket.id}`];
-            // gửi Admin
-            io.to(client?.room_id).emit(CONSTANT.SCORE_BLUE, {
+            if (!client || !client.token) {
+                console.log('❌ Client chưa được xác thực');
+                return;
+            }
+
+            const { score } = input; // score: 1, 2, hoặc 3
+            const referrer = client.referrer; // 1-5
+            const room_id = client.room_id ?? connAdmin?.room_id;
+
+            console.log(`📥 RF${referrer} cho XANH ${score} điểm`);
+
+            // Emit ngay để hiển thị hiệu ứng nháy
+            io.to(room_id).emit(CONSTANT.SCORE_BLUE, {
                 type: CONSTANT.SCORE_BLUE,
                 status: 200,
-                message: 'Thực hiện thành công',
+                message: 'Nhận tín hiệu từ giám định',
                 data: {
-                    score: input.score, 
-                    referrer: client.referrer,
+                    score: score,
+                    referrer: referrer,
+                    point: 0 // Chưa tính điểm, chỉ hiển thị nháy
                 }
-            })
+            });
+
+            // Thêm vào Set tương ứng
+            if (score >= 1 && score <= 3) {
+                blueScoreSets[score].add(socket.id);
+            }
+
+            // Nếu chưa đếm thì bắt đầu đếm
+            if (!isCountingBlue) {
+                isCountingBlue = true;
+                console.log(`⏱️ Bắt đầu đếm XANH trong ${config.thoi_gian_tinh_diem}ms`);
+
+                setTimeout(() => {
+                    console.log(`\n📊 Kết thúc đếm XANH:`);
+                    console.log(`   - Điểm 1 (vàng): ${blueScoreSets[1].size} GĐ`);
+                    console.log(`   - Điểm 2 (xanh lá): ${blueScoreSets[2].size} GĐ`);
+                    console.log(`   - Điểm 3 (đỏ): ${blueScoreSets[3].size} GĐ`);
+
+                    // Tính điểm
+                    const result = calculateScore(
+                        blueScoreSets,
+                        config.so_giam_dinh,
+                        config.cau_hinh_lay_diem_thap
+                    );
+
+                    console.log(`🎯 Kết quả: ${result.point} điểm (row ${result.rowIndex})`);
+
+                    // Nếu có điểm thì emit kết quả
+                    if (result.point > 0) {
+                        // Emit SCORE_RESULT về tất cả client trong room
+                        io.to(room_id).emit('SCORE_RESULT', {
+                            type: 'SCORE_RESULT',
+                            status: 200,
+                            message: `XANH được +${result.point} điểm`,
+                            data: {
+                                team: 'blue',
+                                point: result.point,
+                                details: {
+                                    size1: blueScoreSets[1].size,
+                                    size2: blueScoreSets[2].size,
+                                    size3: blueScoreSets[3].size
+                                }
+                            }
+                        });
+                        console.log(`✅ XANH: +${result.point} điểm.`);
+                    } else {
+                        console.log(`❌ XANH: Không đủ điều kiện cộng điểm`);
+                    }
+
+                    // Reset
+                    blueScoreSets[1].clear();
+                    blueScoreSets[2].clear();
+                    blueScoreSets[3].clear();
+                    isCountingBlue = false;
+                    console.log(`🔄 Reset XANH, sẵn sàng chu kỳ mới\n`);
+                }, config.thoi_gian_tinh_diem);
+            } else {
+                console.log(`⏳ Đang đếm XANH, thêm vào Set hiện tại`);
+            }
         })
 
         // 12. QUYEN: lắng nghe điểm quyền
@@ -644,7 +907,7 @@ InitSocket = async (io) => {
             // io.to(client.room_id).emit(CONSTANT.SCORE_QUYEN, input);
             const client = MapConn[`${socket.id}`];
             // gửi Admin
-            io.to(client?.room_id).emit(CONSTANT.SCORE_QUYEN, {
+            io.to(client?.room_id ?? connAdmin?.room_id).emit(CONSTANT.SCORE_QUYEN, {
                 type: CONSTANT.SCORE_QUYEN,
                 status: 200,
                 message: 'Thực hiện thành công',

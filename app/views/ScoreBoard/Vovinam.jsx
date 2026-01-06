@@ -1,17 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useHotkeys } from "react-hotkeys-hook";
 import axios from "axios";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import useConfirmModal from "../../hooks/useConfirmModal";
+import ConnectionManagerModal from "../MatchScore/components/ConnectionManagerModal";
+import RefereeStatusBar from "../MatchScore/components/RefereeStatusBar";
 
 import { useSocketEvent, emitSocketEvent } from "../../config/hooks/useSocketEvents";
 import {MSG_TP_CLIENT} from '../../common/Constants'
+import { connectSocket, disconnectSocket } from "../../config/redux/reducers/socket-reducer";
+import { initSocket as initSocketUtil } from "../../utils/socketUtils";
 
 const Vovinam = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
+  const socket = useSelector((state) => state.socket);
 
   // Lấy dữ liệu từ state
   const matchData = location.state?.matchData || {};
@@ -20,6 +26,12 @@ const Vovinam = () => {
 
   // Custom hook cho modal
   const { modalProps, showConfirm, showAlert, showWarning, showError, showSuccess } = useConfirmModal();
+
+  // Connection manager states
+  const [showConnectionModal, setShowConnectionModal] = useState(false);
+  const [showRefConnectionState, setShowRefConnectionState] = useState(true);
+  const [referrerDevices, setReferrerDevices] = useState([]);
+  const [currentRoom, setCurrentRoom] = useState(null);
 
   // Fetch button permissions từ API
 
@@ -57,7 +69,12 @@ const Vovinam = () => {
   const [disableBlueButtons, setDisableBlueButtons] = useState(false);
 
   // State hiển thị controls (toggle bằng F6)
-  const [showControls, setShowControls] = useState(true);
+  const [showControls, setShowControls] = useState(false);
+
+  // State cho hiệu ứng nháy RF khi nhận tín hiệu từ giám định
+  // Structure: { red: { 0: false, 1: false, ... }, blue: { 0: false, 1: false, ... } }
+  // index tương ứng với RF (0 = RF1, 1 = RF2, ...)
+  const [flashingRefs, setFlashingRefs] = useState({ red: {}, blue: {} });
 
   // State cho button permissions
   const [buttonPermissions, setButtonPermissions] = useState({
@@ -200,13 +217,213 @@ const Vovinam = () => {
     redScoreRef.current = redScore;
     blueScoreRef.current = blueScore;
   }, [redScore, blueScore]);
-    // thực listen
-    useSocketEvent(MSG_TP_CLIENT.SCORE_RED, (response) => {
-      console.log("SCORE_RED:", response);
-    });
-    useSocketEvent(MSG_TP_CLIENT.SCORE_BLUE, (response) => {
+  // thực listen
+  useSocketEvent(MSG_TP_CLIENT.SCORE_RED, (response) => {
+    // khi nhận tín hiệu referrer  tương đương với RF và score  tương đương với indexx => nháy RF1 index==0 đỏ từ bg-yellow-200 -> bg-yellow-800
+    console.log("SCORE_RED:", response);
+    if(!isRunning) return; 
+    // Trigger hiệu ứng nháy cho RF tương ứng
+    if (response && typeof response.data.referrer !== 'undefined') {
+      const {score, referrer } = response.data;
+
+      const refIndex = Number(referrer) - 1; // 0 = RF1, 1 = RF2, ...
+
+      // Bật hiệu ứng nháy
+      setFlashingRefs(prev => ({
+        ...prev,
+        red: { ...prev.red, [refIndex]: Number(score) - 1 }
+      }));
+
+      // Tắt hiệu ứng sau thời gian tính điểm
+      const thoiGianTinhDiem = matchInfo.thoi_gian_tinh_diem || 1000; // ms
+      setTimeout(() => {
+        setFlashingRefs(prev => ({
+          ...prev,
+          red: { ...prev.red, [refIndex]: -1 }
+        }));
+      }, thoiGianTinhDiem);
+    }
+  });
+
+  useSocketEvent(MSG_TP_CLIENT.SCORE_BLUE, (response) => {
       console.log("SCORE_BLUE:", response);
-    });  
+      if(!isRunning) return; 
+      // Trigger hiệu ứng nháy cho RF tương ứng
+      if (response && typeof response.data.referrer !== 'undefined') {
+        const {score, referrer } = response.data;
+        const refIndex = Number(response.data.referrer) - 1; // 0 = RF1, 1 = RF2, ...
+        // score => 1: nhảy vàng | 2: nhảy xanh lá | 3: nhảy đỏ
+
+        // Bật hiệu ứng nháy
+        setFlashingRefs(prev => ({
+          ...prev,
+          blue: { ...prev.blue, [refIndex]: Number(score) - 1 }
+        }));
+
+        // Tắt hiệu ứng sau thời gian tính điểm
+        const thoiGianTinhDiem = matchInfo.thoi_gian_tinh_diem || 1000; // ms
+        setTimeout(() => {
+          setFlashingRefs(prev => ({
+            ...prev,
+            blue: { ...prev.blue, [refIndex]: -1 }
+          }));
+        }, thoiGianTinhDiem);
+      }
+  });
+  // SCORE_RESULT
+  useSocketEvent(MSG_TP_CLIENT.SCORE_RESULT, (response)=>{
+    console.log("SCORE_RESULT:", response);
+    if(!isRunning) return; 
+    if(response?.data?.team == 'red'){
+      redScoreRef.current += response.data.point;
+      setRedScore(redScoreRef.current);
+    }else if(response?.data?.team == 'blue'){
+      blueScoreRef.current += response.data.point;
+      setBlueScore(blueScoreRef.current);
+    }
+  })
+
+  // ========== Socket Connection Management ==========
+
+  // Hàm khởi tạo socket connection
+  const initSocket = async (forceReConnection = false) => {
+    const connected = await initSocketUtil({
+      dispatch,
+      connectSocket,
+      socket,
+      role: 'admin',
+      onSuccess: () => {
+        console.log("✅ Socket initialized successfully in Vovinam");
+      },
+      onError: (error) => {
+        console.error("❌ Socket initialization failed:", error);
+        showError("Không thể kết nối socket. Vui lòng thử lại.");
+      },
+      forceReConnection: forceReConnection,
+      disconnectSocket: disconnectSocket
+    });
+
+    if (connected) {
+      try {
+        const savedRoom = localStorage.getItem("admin_room");
+        if (savedRoom) {
+          const roomData = JSON.parse(savedRoom);
+          setCurrentRoom(roomData);
+          console.log("Loaded room from localStorage:", roomData);
+
+          await new Promise((resolve) => setTimeout(resolve, 300));
+
+          emitSocketEvent("REGISTER_ROOM_ADMIN", {
+            room_id: roomData.room_id,
+            uuid_desktop: roomData.uuid_desktop,
+            permission: 9,
+          });
+        }
+      } catch (error) {
+        console.error("Error loading saved room:", error);
+      }
+    }
+  };
+
+  // Lắng nghe response từ server khi fetch danh sách thiết bị
+  useSocketEvent("RES_ROOM_ADMIN", (response) => {
+    console.log("Receive from server RES_ROOM_ADMIN:", response);
+    if (response.path === "ADMIN_FETCH_CONN" && response.status === 200) {
+      const devices = Object.values(response.data.ls_conn);
+      console.log('devices: ', devices);
+
+      const transformedDevices = devices
+        .filter(device => (device.register_status_code !== 'ADMIN' && device?.client_ip != '::1'))
+        .map((device, index) => ({
+          referrer: device.referrer,
+          device_name: device.device_name,
+          device_ip: device.client_ip || 'N/A',
+          connected: device.connect_status_code === 'CONNECTED',
+          socket_id: device.socket_id,
+          room_id: device.room_id,
+          ready: device.referrer != 0 && device.register_status_code === 'CONNECTED'
+        }));
+
+      setReferrerDevices(transformedDevices);
+      console.log('transformedDevices: ', transformedDevices);
+    }
+  });
+
+  // Fetch devices khi mở Connection Manager Modal
+  useEffect(() => {
+    if (showConnectionModal) {
+      console.log("Connection Manager Modal opened, fetching devices...");
+      handleRefreshDevices();
+    }
+  }, [showConnectionModal]);
+
+  // Connection Manager handlers
+  const handleRefreshDevices = () => {
+    console.log("Refreshing devices...");
+    emitSocketEvent("ADMIN_FETCH_CONN", {});
+  };
+
+  const handleReconnect = (device) => {
+    console.log("Reconnecting device:", device);
+    // Implement reconnect logic if needed
+  };
+
+  const handleDisconnect = (device) => {
+    console.log("Disconnecting device:", device);
+    // Implement disconnect logic if needed
+  };
+
+  const generateQR = async () => {
+    try {
+      const savedRoom = localStorage.getItem("admin_room");
+      if (!savedRoom) {
+        showError("Không tìm thấy thông tin phòng. Vui lòng kết nối lại.");
+        return null;
+      }
+      const roomData = JSON.parse(savedRoom);
+
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        baseURL: "http://localhost:6789/api/config/get-qr-active",
+        params: {
+          room_id: roomData.room_id
+        },
+      };
+
+      const response = await axios.request(config);
+      if (response.status == 200) {
+        console.log("QR Code generated successfully");
+        return response.data.data.base64QR;
+      }
+    } catch (error) {
+      console.error("Error generating QR code:", error);
+      showError("Không thể tạo mã QR. Vui lòng thử lại.");
+      return null;
+    }
+  };
+
+  const handleReConnectionSocket = async () => {
+    const confirmReconnect = window.confirm(
+      "Bạn có chắc chắn muốn tạo lại kết nối socket?\n\nSocket hiện tại sẽ bị ngắt và tạo lại kết nối mới."
+    );
+    if (confirmReconnect) {
+      await initSocket(true);
+    }
+  };
+
+  const onSetPermissionRef = (input) => {
+    const { referrer, socket_id, room_id } = input;
+    emitSocketEvent("SET_PERMISSION_REF", {
+      room_id: room_id ?? currentRoom.room_id,
+      socket_id: socket_id,
+      referrer: referrer.toString(),
+      accepted: referrer == 0 ? 'pending' : 'approved',
+      status: 'active',
+    });
+  };
+
+  // ========== End Socket Connection Management ==========
 
   // Function để lưu button permissions về server
   const saveButtonPermissions = async () => {
@@ -319,11 +536,15 @@ const Vovinam = () => {
 
   // Debug log và setup polling
   useEffect(() => {
+    // Initialize socket connection
+    initSocket();
+
     // Fetch logos và config từ API
     fetchLogos();
 
     // Fetch dữ liệu competition lần đầu
     fetchCompetitionData();
+
     // TODO: Gửi thông tin về server
     emitSocketEvent('DK_INFO',{
       match_id: matchData.match_id,
@@ -337,6 +558,17 @@ const Vovinam = () => {
             ? `Hiệp phụ ${currentRound - (matchInfo.so_hiep || 3)}`
             : `Hiệp ${currentRound}`
     });
+
+    // Load current room
+    const savedRoom = localStorage.getItem("admin_room");
+    if (savedRoom) {
+      const roomData = JSON.parse(savedRoom);
+      setCurrentRoom(roomData);
+    }
+
+    // Fetch devices list
+    emitSocketEvent("ADMIN_FETCH_CONN", {});
+
     // Setup polling để cập nhật dữ liệu mỗi 5 giây
     const pollingInterval = setInterval(() => {
       fetchCompetitionData();
@@ -370,7 +602,7 @@ const Vovinam = () => {
 
   // Tự động tạm dừng timer khi mở modal hoặc đã chọn winner
   useEffect(() => {
-    const shouldPause = showConfigModal || showHistoryModal || showWinnerModal || announcedWinner !== null;
+    const shouldPause = showConnectionModal ||  showConfigModal || showHistoryModal || showWinnerModal || announcedWinner !== null;
 
     // CHỈ TẠM DỪNG, KHÔNG TỰ ĐỘNG RESUME
     if (shouldPause && isRunning && !isMedicalTime) {
@@ -392,7 +624,20 @@ const Vovinam = () => {
       const key = e.key.toLowerCase();
       const handlers = handlersRef.current;
 
-      // ========== CHỈ CHO PHÉP F5 VÀ F6 KHI ĐANG MỞ MODAL ==========
+      if(e.key === 'Escape'){
+        e.preventDefault();
+        btnGoBack()
+        return;
+      }
+
+      // ========== CHỈ CHO PHÉP F1, F5, F6, F7 KHI ĐANG MỞ MODAL ==========
+      // F1: Connection Manager Modal
+      if (e.key === 'F1') {
+        e.preventDefault();
+        setShowConnectionModal(prev => !prev);
+        return;
+      }
+
       // F5 và F6 luôn hoạt động để mở/đóng modal
       if (e.key === 'F5') { // Cấu hình
         e.preventDefault();
@@ -402,10 +647,14 @@ const Vovinam = () => {
         e.preventDefault();
         setShowHistoryModal(prev => !prev);
         return;
+      } else if (e.key === 'F7') { // Toggle Referee Connection State
+        e.preventDefault();
+        setShowRefConnectionState(prev => !prev);
+        return;
       }
 
       // ========== TẮT TẤT CẢ HOTKEY KHÁC KHI ĐANG MỞ MODAL ==========
-      if (showConfigModal || showHistoryModal) {
+      if (showConfigModal || showHistoryModal || showConnectionModal) {
         return;
       }
 
@@ -433,11 +682,11 @@ const Vovinam = () => {
       }
 
       // F10: Hiển thị button
-      if (e.key === 'F10') {
-        e.preventDefault();
-        setShowControls(prev => !prev);
-        return;
-      }
+      // if (e.key === 'F10') {
+      //   e.preventDefault();
+      //   setShowControls(prev => !prev);
+      //   return;
+      // }
 
       // ========== PHÍM TẮT ĐỎ ==========
       // Điểm số ĐỎ
@@ -1160,27 +1409,38 @@ const Vovinam = () => {
     }, 100); // 100ms = 0.1s
   };
 
-  // Hàm chọn người thắng (chỉ hiển thị thông tin, không lưu kết quả)
-  const renderGDScores = (colors) => (
-    <div className="grid grid-cols-5 gap-1 mt-2 w-full text-black text-center text-sm font-bold">
-      {colors.map((colorRow, rowIndex) =>
-        colorRow.map((gd, i) => (
-          <div
-            key={`${rowIndex}-${i}`}
-            className={`py-1 px-2 ${
-              rowIndex === 0
-                ? "bg-yellow-200"
-                : rowIndex === 1
-                ? "bg-green-200"
-                : "bg-rose-200"
-            }`}
-          >
-            {gd}
-          </div>
-        ))
-      )}
-    </div>
-  );
+  // Hàm render điểm giám định với hiệu ứng nháy
+  const renderGDScores = (colors, team) => {
+    const teamFlashing = flashingRefs[team] || {};
+    const numGrid = matchInfo.so_giam_dinh == 5? 'grid-cols-5' : 'grid-cols-3'
+    return (
+      <div className={`grid ${numGrid} gap-1 mt-2 w-full text-black text-center text-sm font-bold`}>
+        {colors.map((colorRow, rowIndex) =>
+          colorRow.map((gd, i) => {
+            // Kiểm tra xem RF này có đang nháy không
+            const isFlashing = teamFlashing[i] === rowIndex;
+            // Xác định màu nền base
+            let baseColor = "";
+            if (rowIndex === 0) {
+              baseColor = !isFlashing ? "bg-yellow-800" : "bg-yellow-200";
+            } else if (rowIndex === 1) {
+              baseColor = !isFlashing ? "bg-green-800" : "bg-green-200";
+            } else {
+              baseColor = !isFlashing ? "bg-rose-800" : "bg-rose-200";
+            }
+            return (
+              <div
+                key={`${rowIndex}-${i}`}
+                className={`py-1 px-2 ${baseColor}`}
+              >
+                {gd}
+              </div>
+            );
+          })
+        )}
+      </div>
+    );
+  };
 
   // Hàm lưu kết quả trận đấu
   const saveMatchResult = async (winner, winnerText) => {
@@ -1255,17 +1515,17 @@ const Vovinam = () => {
   const getButtonClassName = (team, baseColor, isDisabled) => {
     const disabled = team === "red" ? disableRedButtons : disableBlueButtons;
     if (disabled || isDisabled) {
-      return "bg-gray-400 cursor-not-allowed text-gray-600 font-bold py-1 transition-colors";
+      return "bg-gray-400 cursor-not-allowed text-gray-600 font-bold py-0.5 text-[10px] transition-colors";
     }
-    return `${baseColor} font-bold py-1 transition-colors`;
+    return `${baseColor} font-bold py-0.5 text-[10px] transition-colors`;
   };
 
   const getActionButtonClassName = (team, baseColor, isDisabled) => {
     const disabled = team === "red" ? disableRedButtons : disableBlueButtons;
     if (disabled || isDisabled) {
-      return "bg-gray-400 cursor-not-allowed text-gray-600 font-bold py-2 transition-colors text-xs";
+      return "bg-gray-400 cursor-not-allowed text-gray-600 font-bold py-1 transition-colors text-[10px]";
     }
-    return `${baseColor} font-bold py-2 transition-colors text-xs`;
+    return `${baseColor} font-bold py-1 transition-colors text-[10px]`;
   };
 
   // Helper function để extract competition_dk_id từ returnUrl
@@ -2029,7 +2289,7 @@ const Vovinam = () => {
               </div>
             </div>
           </div>
-          {renderGDScores(generateGdData())}
+          {renderGDScores(generateGdData(), 'red')}
           {/* Thông tin nhắc nhở, cảnh cáo, đòn chân - ĐỎ */}
           <div className="mt-4 space-y-2">
             <div className=" text-black font-bold text-start flex flex-row">
@@ -2182,7 +2442,7 @@ const Vovinam = () => {
               </div>
             </div>
           </div>
-          {renderGDScores(generateGdData())}
+          {renderGDScores(generateGdData(), 'blue')}
 
           {/* Thông tin nhắc nhở, cảnh cáo, đòn chân - XANH */}
           <div className="mt-4 space-y-2">
@@ -2201,450 +2461,451 @@ const Vovinam = () => {
         </div>
       </div>
 
-      {/* Bộ button thao tác */}
-      {showControls && (
-      <>
-      <div className="mt-8 w-full max-w-7xl">
-        <div className="bg-gray-800 p-1">
-          {/* Grid layout: 2 cột cho Đỏ và Xanh */}
-          <div className="grid grid-cols-2 gap-6">
-            {/* Cột ĐỎ */}
-            <div className="flex flex-col">
-              {/* Container cho Điểm số và Hành động - dùng flex để tự động dồn */}
-              <div className="flex flex-col gap-1 flex-1">
-                {/* Điểm số ĐỎ - Grid 5 cột, mỗi cột có 2 buttons (+/-) */}
-                <div className="bg-gray-700 p-1 ">
-                  <div className="grid grid-cols-5 gap-1">
-                    {/* Cột 1: +1/-1 */}
-                    {buttonPermissions.hien_thi_button_diem_1 && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleScoreChange("red", 1)}
-                          disabled={disableRedButtons}
-                          className={`font-bold py-1 transition-colors ${
-                            disableRedButtons
-                              ? 'bg-gray-400 cursor-not-allowed text-gray-600'
-                              : 'bg-red-600 hover:bg-red-700 text-white'
-                          }`}
-                        >
-                          +1
-                        </button>
-                        <button
-                          onClick={() => handleScoreChange("red", -1)}
-                          disabled={disableRedButtons}
-                          className={`font-bold py-1 transition-colors ${
-                            disableRedButtons
-                              ? 'bg-gray-400 cursor-not-allowed text-gray-600'
-                              : 'bg-red-800 hover:bg-red-900 text-white'
-                          }`}
-                        >
-                          -1
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Cột 2: +2/-2 */}
-                    {buttonPermissions.hien_thi_button_diem_2 && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleScoreChange("red", 2)}
-                          disabled={disableRedButtons}
-                          className={getButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
-                        >
-                          +2
-                        </button>
-                        <button
-                          onClick={() => handleScoreChange("red", -2)}
-                          disabled={disableRedButtons}
-                          className={getButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
-                        >
-                          -2
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Cột 3: +3/-3 */}
-                    {buttonPermissions.hien_thi_button_diem_3 && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleScoreChange("red", 3)}
-                          disabled={disableRedButtons}
-                          className={getButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
-                        >
-                          +3
-                        </button>
-                        <button
-                          onClick={() => handleScoreChange("red", -3)}
-                          disabled={disableRedButtons}
-                          className={getButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
-                        >
-                          -3
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Cột 4: +5/-5 */}
-                    {buttonPermissions.hien_thi_button_diem_5 && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleScoreChange("red", 5)}
-                          disabled={disableRedButtons}
-                          className={getButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
-                        >
-                          +5
-                        </button>
-                        <button
-                          onClick={() => handleScoreChange("red", -5)}
-                          disabled={disableRedButtons}
-                          className={getButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
-                        >
-                          -5
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Cột 5: +10/-10 */}
-                    {buttonPermissions.hien_thi_button_diem_10 && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleScoreChange("red", 10)}
-                          disabled={disableRedButtons}
-                          className={getButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
-                        >
-                          +10
-                        </button>
-                        <button
-                          onClick={() => handleScoreChange("red", -10)}
-                          disabled={disableRedButtons}
-                          className={getButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
-                        >
-                          -10
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Hành động ĐỎ - Grid 5 cột */}
-                <div className="bg-gray-700 p-1 ">
-                  <div className="grid grid-cols-5 gap-1">
-                    {/* Cột 1: Nhắc nhở +/- */}
-                    {buttonPermissions.hien_thi_button_nhac_nho && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleRemind("red", 1)}
-                          disabled={disableRedButtons}
-                          className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
-                        >
-                          Nhắc nhở +
-                        </button>
-                        <button
-                          onClick={() => handleRemind("red", -1)}
-                          disabled={disableRedButtons}
-                          className={getActionButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
-                        >
-                          Nhắc nhở -
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Cột 2: Cảnh cáo +/- */}
-                    {buttonPermissions.hien_thi_button_canh_cao && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleWarn("red", 1)}
-                          disabled={disableRedButtons}
-                          className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
-                        >
-                          Cảnh cáo +
-                        </button>
-                        <button
-                          onClick={() => handleWarn("red", -1)}
-                          disabled={disableRedButtons}
-                          className={getActionButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
-                        >
-                          Cảnh cáo -
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Cột 3: Đòn chân +/- */}
-                    {buttonPermissions.hien_thi_button_don_chan && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleKick("red", 1)}
-                          disabled={disableRedButtons}
-                          className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
-                        >
-                          Đ.Chân +
-                        </button>
-                        <button
-                          onClick={() => handleKick("red", -1)}
-                          disabled={disableRedButtons}
-                          className={getActionButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
-                        >
-                          Đ.Chân -
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Cột 4: Biên/Ngã */}
-                    <div className="flex flex-col gap-1">
-                      {buttonPermissions.hien_thi_button_bien && (
-                        <button
-                          onClick={() => handleBien("red")}
-                          disabled={disableRedButtons}
-                          className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
-                        >
-                          Biên
-                        </button>
+      {/* Bộ button thao tác - Only show when Fixed Summary Bar is hidden */}
+      {showControls && !showRefConnectionState && (
+        <>
+        <div className="mt-4 w-full max-w-5xl">
+          <div className="bg-gray-800 p-1">
+            {/* Grid layout: 2 cột cho Đỏ và Xanh */}
+            <div className="grid grid-cols-2 gap-3">
+              {/* Cột ĐỎ */}
+              <div className="flex flex-col">
+                {/* Container cho Điểm số và Hành động - dùng flex để tự động dồn */}
+                <div className="flex flex-col gap-1 flex-1">
+                  {/* Điểm số ĐỎ - Grid 5 cột, mỗi cột có 2 buttons (+/-) */}
+                  <div className="bg-gray-700 p-0.5">
+                    <div className="grid grid-cols-5 gap-0.5">
+                      {/* Cột 1: +1/-1 */}
+                      {buttonPermissions.hien_thi_button_diem_1 && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleScoreChange("red", 1)}
+                            disabled={disableRedButtons}
+                            className={`font-bold py-0.5 text-[10px] transition-colors ${
+                              disableRedButtons
+                                ? 'bg-gray-400 cursor-not-allowed text-gray-600'
+                                : 'bg-red-600 hover:bg-red-700 text-white'
+                            }`}
+                          >
+                            +1
+                          </button>
+                          <button
+                            onClick={() => handleScoreChange("red", -1)}
+                            disabled={disableRedButtons}
+                            className={`font-bold py-0.5 text-[10px] transition-colors ${
+                              disableRedButtons
+                                ? 'bg-gray-400 cursor-not-allowed text-gray-600'
+                                : 'bg-red-800 hover:bg-red-900 text-white'
+                            }`}
+                          >
+                            -1
+                          </button>
+                        </div>
                       )}
-                      {buttonPermissions.hien_thi_button_nga && (
-                        <button
-                          onClick={() => handleNga("red")}
-                          disabled={disableRedButtons}
-                          className={getActionButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
-                        >
-                          Ngã
-                        </button>
+
+                      {/* Cột 2: +2/-2 */}
+                      {buttonPermissions.hien_thi_button_diem_2 && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleScoreChange("red", 2)}
+                            disabled={disableRedButtons}
+                            className={getButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                          >
+                            +2
+                          </button>
+                          <button
+                            onClick={() => handleScoreChange("red", -2)}
+                            disabled={disableRedButtons}
+                            className={getButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                          >
+                            -2
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Cột 3: +3/-3 */}
+                      {buttonPermissions.hien_thi_button_diem_3 && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleScoreChange("red", 3)}
+                            disabled={disableRedButtons}
+                            className={getButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                          >
+                            +3
+                          </button>
+                          <button
+                            onClick={() => handleScoreChange("red", -3)}
+                            disabled={disableRedButtons}
+                            className={getButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                          >
+                            -3
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Cột 4: +5/-5 */}
+                      {buttonPermissions.hien_thi_button_diem_5 && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleScoreChange("red", 5)}
+                            disabled={disableRedButtons}
+                            className={getButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                          >
+                            +5
+                          </button>
+                          <button
+                            onClick={() => handleScoreChange("red", -5)}
+                            disabled={disableRedButtons}
+                            className={getButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                          >
+                            -5
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Cột 5: +10/-10 */}
+                      {buttonPermissions.hien_thi_button_diem_10 && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleScoreChange("red", 10)}
+                            disabled={disableRedButtons}
+                            className={getButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                          >
+                            +10
+                          </button>
+                          <button
+                            onClick={() => handleScoreChange("red", -10)}
+                            disabled={disableRedButtons}
+                            className={getButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                          >
+                            -10
+                          </button>
+                        </div>
                       )}
                     </div>
+                  </div>
 
-                    {/* Cột 5: Y tế/Thắng */}
-                    <div className="flex flex-col gap-1">
-                      {buttonPermissions.hien_thi_button_y_te && (
-                        <button
-                          onClick={() => handleMedical("red")}
-                          disabled={disableRedButtons}
-                          className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
-                        >
-                          🏥 Y TẾ
-                        </button>
+                  {/* Hành động ĐỎ - Grid 5 cột */}
+                  <div className="bg-gray-700 p-0.5">
+                    <div className="grid grid-cols-5 gap-0.5">
+                      {/* Cột 1: Nhắc nhở +/- */}
+                      {buttonPermissions.hien_thi_button_nhac_nho && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleRemind("red", 1)}
+                            disabled={disableRedButtons}
+                            className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                          >
+                            Nhắc nhở +
+                          </button>
+                          <button
+                            onClick={() => handleRemind("red", -1)}
+                            disabled={disableRedButtons}
+                            className={getActionButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                          >
+                            Nhắc nhở -
+                          </button>
+                        </div>
                       )}
-                      {buttonPermissions.hien_thi_button_thang && (
-                        <button
-                          onClick={() => handleWinner("red")}
-                          disabled={disableRedButtons}
-                          className={getActionButtonClassName("red", "bg-yellow-600 hover:bg-yellow-500 text-white")}
-                        >
-                          🏆 THẮNG
-                        </button>
+
+                      {/* Cột 2: Cảnh cáo +/- */}
+                      {buttonPermissions.hien_thi_button_canh_cao && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleWarn("red", 1)}
+                            disabled={disableRedButtons}
+                            className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                          >
+                            Cảnh cáo +
+                          </button>
+                          <button
+                            onClick={() => handleWarn("red", -1)}
+                            disabled={disableRedButtons}
+                            className={getActionButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                          >
+                            Cảnh cáo -
+                          </button>
+                        </div>
                       )}
+
+                      {/* Cột 3: Đòn chân +/- */}
+                      {buttonPermissions.hien_thi_button_don_chan && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleKick("red", 1)}
+                            disabled={disableRedButtons}
+                            className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                          >
+                            Đ.Chân +
+                          </button>
+                          <button
+                            onClick={() => handleKick("red", -1)}
+                            disabled={disableRedButtons}
+                            className={getActionButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                          >
+                            Đ.Chân -
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Cột 4: Biên/Ngã */}
+                      <div className="flex flex-col gap-0.5">
+                        {buttonPermissions.hien_thi_button_bien && (
+                          <button
+                            onClick={() => handleBien("red")}
+                            disabled={disableRedButtons}
+                            className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                          >
+                            Biên
+                          </button>
+                        )}
+                        {buttonPermissions.hien_thi_button_nga && (
+                          <button
+                            onClick={() => handleNga("red")}
+                            disabled={disableRedButtons}
+                            className={getActionButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                          >
+                            Ngã
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Cột 5: Y tế/Thắng */}
+                      <div className="flex flex-col gap-0.5">
+                        {buttonPermissions.hien_thi_button_y_te && (
+                          <button
+                            onClick={() => handleMedical("red")}
+                            disabled={disableRedButtons}
+                            className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                          >
+                            🏥 Y TẾ
+                          </button>
+                        )}
+                        {buttonPermissions.hien_thi_button_thang && (
+                          <button
+                            onClick={() => handleWinner("red")}
+                            disabled={disableRedButtons}
+                            className={getActionButtonClassName("red", "bg-yellow-600 hover:bg-yellow-500 text-white")}
+                          >
+                            🏆 THẮNG
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Cột XANH */}
-            <div className="flex flex-col items-end">
-              {/* Container cho Điểm số và Hành động - dùng flex để tự động dồn */}
-              <div className="flex flex-col gap-1 flex-1 w-full">
-                {/* Điểm số XANH - Grid 5 cột, mỗi cột có 2 buttons (+/-) */}
-                <div className="bg-gray-700 p-1 ">
-                  <div className="grid grid-cols-5 gap-1" dir="rtl">
-                    {/* Cột 5: +1/-1 */}
-                    {buttonPermissions.hien_thi_button_diem_1 && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleScoreChange("blue", 1)}
-                          disabled={disableBlueButtons}
-                          className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
-                        >
-                          1+
-                        </button>
-                        <button
-                          onClick={() => handleScoreChange("blue", -1)}
-                          disabled={disableBlueButtons}
-                          className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
-                        >
-                          1-
-                        </button>
-                      </div>
-                    )}
-                    {/* Cột 4: +2/-2 */}
-                    {buttonPermissions.hien_thi_button_diem_2 && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleScoreChange("blue", 2)}
-                          disabled={disableBlueButtons}
-                          className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
-                        >
-                          2+
-                        </button>
-                        <button
-                          onClick={() => handleScoreChange("blue", -2)}
-                          disabled={disableBlueButtons}
-                          className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
-                        >
-                          2-
-                        </button>
-                      </div>
-                    )}
-                    {/* Cột 3: +3/-3 */}
-                    {buttonPermissions.hien_thi_button_diem_3 && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleScoreChange("blue", 3)}
-                          disabled={disableBlueButtons}
-                          className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
-                        >
-                          3+
-                        </button>
-                        <button
-                          onClick={() => handleScoreChange("blue", -3)}
-                          disabled={disableBlueButtons}
-                          className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
-                        >
-                          3-
-                        </button>
-                      </div>
-                    )}
-                    {/* Cột 2: +5/-5 */}
-                    {buttonPermissions.hien_thi_button_diem_5 && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleScoreChange("blue", 5)}
-                          disabled={disableBlueButtons}
-                          className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
-                        >
-                          5+
-                        </button>
-                        <button
-                          onClick={() => handleScoreChange("blue", -5)}
-                          disabled={disableBlueButtons}
-                          className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
-                        >
-                          5-
-                        </button>
-                      </div>
-                    )}
-                    {/* Cột 1: +10/-10 (đảo ngược cho XANH) */}
-                    {buttonPermissions.hien_thi_button_diem_10 && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleScoreChange("blue", 10)}
-                          disabled={disableBlueButtons}
-                          className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
-                        >
-                          10+
-                        </button>
-                        <button
-                          onClick={() => handleScoreChange("blue", -10)}
-                          disabled={disableBlueButtons}
-                          className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
-                        >
-                          10-
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Hành động XANH - Grid 5 cột */}
-                <div className="bg-gray-700 p-1 ">
-                  <div className="grid grid-cols-5 gap-1" dir="rtl">
-                    {/* Cột 1: Nhắc nhở +/- */}
-                    {buttonPermissions.hien_thi_button_nhac_nho && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleRemind("blue", 1)}
-                          disabled={disableBlueButtons}
-                          className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
-                        >
-                          + Nhắc nhở
-                        </button>
-                        <button
-                          onClick={() => handleRemind("blue", -1)}
-                          disabled={disableBlueButtons}
-                          className={getActionButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
-                        >
-                          - Nhắc nhở
-                        </button>
-                      </div>
-                    )}
-                    {/* Cột 2: Cảnh cáo +/- */}
-                    {buttonPermissions.hien_thi_button_canh_cao && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleWarn("blue", 1)}
-                          disabled={disableBlueButtons}
-                          className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
-                        >
-                          + Cảnh cáo
-                        </button>
-                        <button
-                          onClick={() => handleWarn("blue", -1)}
-                          disabled={disableBlueButtons}
-                          className={getActionButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
-                        >
-                          - Cảnh cáo
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Cột 3: Đòn chân +/- */}
-                    {buttonPermissions.hien_thi_button_don_chan && (
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => handleKick("blue", 1)}
-                          disabled={disableBlueButtons}
-                          className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
-                        >
-                          + Đ.Chân
-                        </button>
-                        <button
-                          onClick={() => handleKick("blue", -1)}
-                          disabled={disableBlueButtons}
-                          className={getActionButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
-                        >
-                          - Đ.Chân
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Cột 4: Biên/Ngã */}
-                    <div className="flex flex-col gap-1">
-                      {buttonPermissions.hien_thi_button_bien && (
-                        <button
-                          onClick={() => handleBien("blue")}
-                          disabled={disableBlueButtons}
-                          className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
-                        >
-                          Biên
-                        </button>
+              {/* Cột XANH */}
+              <div className="flex flex-col items-end">
+                {/* Container cho Điểm số và Hành động - dùng flex để tự động dồn */}
+                <div className="flex flex-col gap-0.5 flex-1 w-full">
+                  {/* Điểm số XANH - Grid 5 cột, mỗi cột có 2 buttons (+/-) */}
+                  <div className="bg-gray-700 p-0.5">
+                    <div className="grid grid-cols-5 gap-0.5" dir="rtl">
+                      {/* Cột 5: +1/-1 */}
+                      {buttonPermissions.hien_thi_button_diem_1 && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleScoreChange("blue", 1)}
+                            disabled={disableBlueButtons}
+                            className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                          >
+                            1+
+                          </button>
+                          <button
+                            onClick={() => handleScoreChange("blue", -1)}
+                            disabled={disableBlueButtons}
+                            className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                          >
+                            1-
+                          </button>
+                        </div>
                       )}
-                      {buttonPermissions.hien_thi_button_nga && (
-                        <button
-                          onClick={() => handleNga("blue")}
-                          disabled={disableBlueButtons}
-                          className={getActionButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
-                        >
-                          Ngã
-                        </button>
+                      {/* Cột 4: +2/-2 */}
+                      {buttonPermissions.hien_thi_button_diem_2 && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleScoreChange("blue", 2)}
+                            disabled={disableBlueButtons}
+                            className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                          >
+                            2+
+                          </button>
+                          <button
+                            onClick={() => handleScoreChange("blue", -2)}
+                            disabled={disableBlueButtons}
+                            className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                          >
+                            2-
+                          </button>
+                        </div>
+                      )}
+                      {/* Cột 3: +3/-3 */}
+                      {buttonPermissions.hien_thi_button_diem_3 && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleScoreChange("blue", 3)}
+                            disabled={disableBlueButtons}
+                            className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                          >
+                            3+
+                          </button>
+                          <button
+                            onClick={() => handleScoreChange("blue", -3)}
+                            disabled={disableBlueButtons}
+                            className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                          >
+                            3-
+                          </button>
+                        </div>
+                      )}
+                      {/* Cột 2: +5/-5 */}
+                      {buttonPermissions.hien_thi_button_diem_5 && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleScoreChange("blue", 5)}
+                            disabled={disableBlueButtons}
+                            className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                          >
+                            5+
+                          </button>
+                          <button
+                            onClick={() => handleScoreChange("blue", -5)}
+                            disabled={disableBlueButtons}
+                            className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                          >
+                            5-
+                          </button>
+                        </div>
+                      )}
+                      {/* Cột 1: +10/-10 (đảo ngược cho XANH) */}
+                      {buttonPermissions.hien_thi_button_diem_10 && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleScoreChange("blue", 10)}
+                            disabled={disableBlueButtons}
+                            className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                          >
+                            10+
+                          </button>
+                          <button
+                            onClick={() => handleScoreChange("blue", -10)}
+                            disabled={disableBlueButtons}
+                            className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                          >
+                            10-
+                          </button>
+                        </div>
                       )}
                     </div>
+                  </div>
 
-                    {/* Cột 5: Y tế/Thắng */}
-                    <div className="flex flex-col gap-1">
-                      {buttonPermissions.hien_thi_button_y_te && (
-                        <button
-                          onClick={() => handleMedical("blue")}
-                          disabled={disableBlueButtons}
-                          className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
-                        >
-                         Y TẾ
-                        </button>
+                  {/* Hành động XANH - Grid 5 cột */}
+                  <div className="bg-gray-700 p-0.5">
+                    <div className="grid grid-cols-5 gap-0.5" dir="rtl">
+                      {/* Cột 1: Nhắc nhở +/- */}
+                      {buttonPermissions.hien_thi_button_nhac_nho && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleRemind("blue", 1)}
+                            disabled={disableBlueButtons}
+                            className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                          >
+                            + Nhắc nhở
+                          </button>
+                          <button
+                            onClick={() => handleRemind("blue", -1)}
+                            disabled={disableBlueButtons}
+                            className={getActionButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                          >
+                            - Nhắc nhở
+                          </button>
+                        </div>
                       )}
-                      {buttonPermissions.hien_thi_button_thang && (
-                        <button
-                          onClick={() => handleWinner("blue")}
-                          disabled={disableBlueButtons}
-                          className={getActionButtonClassName("blue", "bg-yellow-600 hover:bg-yellow-500 text-white")}
-                        >
-                          🏆 THẮNG
-                        </button>
+                      {/* Cột 2: Cảnh cáo +/- */}
+                      {buttonPermissions.hien_thi_button_canh_cao && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleWarn("blue", 1)}
+                            disabled={disableBlueButtons}
+                            className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                          >
+                            + Cảnh cáo
+                          </button>
+                          <button
+                            onClick={() => handleWarn("blue", -1)}
+                            disabled={disableBlueButtons}
+                            className={getActionButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                          >
+                            - Cảnh cáo
+                          </button>
+                        </div>
                       )}
+
+                      {/* Cột 3: Đòn chân +/- */}
+                      {buttonPermissions.hien_thi_button_don_chan && (
+                        <div className="flex flex-col gap-0.5">
+                          <button
+                            onClick={() => handleKick("blue", 1)}
+                            disabled={disableBlueButtons}
+                            className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                          >
+                            + Đ.Chân
+                          </button>
+                          <button
+                            onClick={() => handleKick("blue", -1)}
+                            disabled={disableBlueButtons}
+                            className={getActionButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                          >
+                            - Đ.Chân
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Cột 4: Biên/Ngã */}
+                      <div className="flex flex-col gap-0.5">
+                        {buttonPermissions.hien_thi_button_bien && (
+                          <button
+                            onClick={() => handleBien("blue")}
+                            disabled={disableBlueButtons}
+                            className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                          >
+                            Biên
+                          </button>
+                        )}
+                        {buttonPermissions.hien_thi_button_nga && (
+                          <button
+                            onClick={() => handleNga("blue")}
+                            disabled={disableBlueButtons}
+                            className={getActionButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                          >
+                            Ngã
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Cột 5: Y tế/Thắng */}
+                      <div className="flex flex-col gap-0.5">
+                        {buttonPermissions.hien_thi_button_y_te && (
+                          <button
+                            onClick={() => handleMedical("blue")}
+                            disabled={disableBlueButtons}
+                            className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                          >
+                          Y TẾ
+                          </button>
+                        )}
+                        {buttonPermissions.hien_thi_button_thang && (
+                          <button
+                            onClick={() => handleWinner("blue")}
+                            disabled={disableBlueButtons}
+                            className={getActionButtonClassName("blue", "bg-yellow-600 hover:bg-yellow-500 text-white")}
+                          >
+                            🏆 THẮNG
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2652,213 +2913,216 @@ const Vovinam = () => {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Timer controls */}
-      <div className="flex gap-4 mt-4">
-        {/* Nút kết thúc thời gian y tế */}
-        {isMedicalTime && (
-          <button
-            onClick={() => {
-              clearInterval(timerRef.current);
-              setIsMedicalTime(false);
-              setMedicalTeam(null);
-              setMedicalTimeLeft(0);
-              console.log("✅ Kết thúc thời gian y tế");
-            }}
-            className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-bold text-lg transition-colors min-w-[200px] animate-pulse"
-          >
-            🏥 Kết thúc Y tế
-          </button>
-        )}
-
-        {/* <button
-          onClick={toggleTimer}
-          className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-bold text-lg transition-colors min-w-[150px]"
-        >
-          {isRunning ? 'Tạm dừng' : 'Bắt đầu'}
-        </button> */}
-        {/* Nút quay lại */}
-        {buttonPermissions.hien_thi_button_quay_lai && (
-          <button
-            onClick={btnGoBack}
-            className=" bg-gray-700 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors z-10 text-lg"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Thoát
-          </button>
-        )}
-        {buttonPermissions.hien_thi_button_reset && (
-          <button
-            onClick={resetTimer}
-            className="bg-gray-700 hover:bg-yellow-700 text-white px-8 py-3 rounded-lg font-bold text-lg transition-colors min-w-[150px]"
-          >
-            Reset
-          </button>
-        )}
-        {/* Nút Undo */}
-        {/* <button
-          onClick={undoLastAction}
-          disabled={actionHistory.length === 0}
-          className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-8 py-3 rounded-lg font-bold text-lg transition-colors min-w-[150px]"
-        >
-          Hoàn tác ({actionHistory.length})
-        </button> */}
-
-        {/* Nút Lịch sử và Cấu hình */}
-        <div className=" flex gap-3 z-10">
-          {buttonPermissions.hien_thi_button_lich_su && (
+        {/* Timer controls */}
+        <div className="flex gap-2 mt-2">
+          {/* Nút kết thúc thời gian y tế */}
+          {isMedicalTime && (
             <button
-              onClick={btnShowHistory}
-              className="bg-gray-700 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors text-lg"
+              onClick={() => {
+                clearInterval(timerRef.current);
+                setIsMedicalTime(false);
+                setMedicalTeam(null);
+                setMedicalTimeLeft(0);
+                console.log("✅ Kết thúc thời gian y tế");
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-lg font-bold text-[10px] transition-colors min-w-[120px] animate-pulse"
+            >
+              🏥 Y tế
+            </button>
+          )}
+
+          {/* <button
+            onClick={toggleTimer}
+            className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-bold text-lg transition-colors min-w-[150px]"
+          >
+            {isRunning ? 'Tạm dừng' : 'Bắt đầu'}
+          </button> */}
+          {/* Nút quay lại */}
+          {buttonPermissions.hien_thi_button_quay_lai && (
+            <button
+              onClick={btnGoBack}
+              className=" bg-gray-700 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors z-10 text-[10px]"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
+                className="h-3 w-3"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
                 <path
                   fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                  d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
                   clipRule="evenodd"
                 />
               </svg>
-              Lịch sử ({actionHistory.length})
+              Thoát
             </button>
           )}
-          {buttonPermissions.hien_thi_button_cau_hinh && (
+          {buttonPermissions.hien_thi_button_reset && (
             <button
-              onClick={btnSetting}
-              className="bg-gray-700 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors text-lg"
+              onClick={resetTimer}
+              className="bg-gray-700 hover:bg-yellow-700 text-white px-4 py-1.5 rounded-lg font-bold text-[10px] transition-colors min-w-[80px]"
+            >
+              Reset
+            </button>
+          )}
+          {/* Nút Undo */}
+          {/* <button
+            onClick={undoLastAction}
+            disabled={actionHistory.length === 0}
+            className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-8 py-3 rounded-lg font-bold text-lg transition-colors min-w-[150px]"
+          >
+            Hoàn tác ({actionHistory.length})
+          </button> */}
+
+          {/* Nút Lịch sử và Cấu hình */}
+          <div className=" flex gap-1.5 z-10">
+            {buttonPermissions.hien_thi_button_lich_su && (
+              <button
+                onClick={btnShowHistory}
+                className="bg-gray-700 hover:bg-yellow-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors text-[10px]"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-3 w-3"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Lịch sử ({actionHistory.length})
+              </button>
+            )}
+            {buttonPermissions.hien_thi_button_cau_hinh && (
+              <button
+                onClick={btnSetting}
+                className="bg-gray-700 hover:bg-yellow-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors text-[10px]"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-3 w-3"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Cấu hình
+              </button>
+            )}
+
+            {/* Nút Kết thúc */}
+            {buttonPermissions.hien_thi_button_ket_thuc && (
+              <button
+                onClick={btnFinishMatch}
+                className="bg-gray-700 hover:bg-yellow-700 text-white px-4 py-1.5 rounded-lg flex items-center gap-1 transition-all text-[10px] shadow-lg hover:shadow-xl"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-3 w-3"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Kết thúc
+              </button>
+            )}
+          </div>
+
+          {/* Nút quay lại trận trước */}
+          {buttonPermissions.hien_thi_button_tran_truoc && (
+            <button
+              onClick={btnPreviousMatch}
+              className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-1.5 rounded-lg flex items-center gap-1 transition-all text-[10px] shadow-lg hover:shadow-xl"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
+                className="h-3 w-3"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
                 <path
                   fillRule="evenodd"
-                  d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
                   clipRule="evenodd"
                 />
               </svg>
-              Cấu hình
+              Trận trước
             </button>
           )}
 
-          {/* Nút Kết thúc */}
-          {buttonPermissions.hien_thi_button_ket_thuc && (
+          {/* Nút trận kế tiếp */}
+          {buttonPermissions.hien_thi_button_tran_tiep_theo && (
             <button
-              onClick={btnFinishMatch}
-              className="bg-gray-700 hover:bg-yellow-700 text-white px-8 py-3 rounded-lg flex items-center gap-2 transition-all text-lg shadow-lg hover:shadow-xl"
+              onClick={btnNextMatch}
+              className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-1.5 rounded-lg flex items-center gap-1 transition-all text-[10px] shadow-lg hover:shadow-xl"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
+                className="h-3 w-3"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
                 <path
                   fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                   clipRule="evenodd"
                 />
               </svg>
-              Kết thúc
+              Trận sau
             </button>
           )}
+
         </div>
-
-        {/* Nút quay lại trận trước */}
-        {buttonPermissions.hien_thi_button_tran_truoc && (
-          <button
-            onClick={btnPreviousMatch}
-            className="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded-lg flex items-center gap-2 transition-all text-lg shadow-lg hover:shadow-xl"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Trận trước
-          </button>
-        )}
-
-        {/* Nút trận kế tiếp */}
-        {buttonPermissions.hien_thi_button_tran_tiep_theo && (
-          <button
-            onClick={btnNextMatch}
-            className="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded-lg flex items-center gap-2 transition-all text-lg shadow-lg hover:shadow-xl"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Trận sau
-          </button>
-        )}
-
-      </div>
-      </>
+        </>
       )}
 
-      {/* Hint text */}
-      <div className="absolute bottom-6 text-gray-400 text-sm text-center">
-        <div className="mb-2">
-          <kbd className="px-2 py-1 bg-gray-700">Space</kbd> Bắt đầu/Tạm dừng |
-          <kbd className="px-2 py-1 bg-gray-700 ml-2">Ctrl+Z</kbd> Hoàn tác |
-          <kbd className="px-2 py-1 bg-gray-700 ml-2">F5</kbd> Cấu hình |
-          <kbd className="px-2 py-1 bg-gray-700 ml-2">F6</kbd> Lịch sử |
-          <kbd className="px-2 py-1 bg-gray-700 ml-2">F10</kbd> {showControls ? 'Ẩn' : 'Hiện'} controls
+      {/* Hint text - Only show when Fixed Summary Bar is hidden */}
+      {/* {!showRefConnectionState && (
+        <div className="absolute bottom-6 text-gray-400 text-sm text-center">
+          <div className="mb-2">
+            <kbd className="px-2 py-1 bg-gray-700">Space</kbd> Bắt đầu/Tạm dừng |
+            <kbd className="px-2 py-1 bg-gray-700 ml-2">Ctrl+Z</kbd> Hoàn tác |
+            <kbd className="px-2 py-1 bg-gray-700 ml-2">F1</kbd> Kết nối |
+            <kbd className="px-2 py-1 bg-gray-700 ml-2">F5</kbd> Cấu hình |
+            <kbd className="px-2 py-1 bg-gray-700 ml-2">F6</kbd> Lịch sử |
+            <kbd className="px-2 py-1 bg-gray-700 ml-2">F7</kbd> Giám định |
+            <kbd className="px-2 py-1 bg-gray-700 ml-2">F10</kbd> {showControls ? 'Ẩn' : 'Hiện'} controls
+          </div>
+          <div className="text-xs">
+            <span className="text-red-400">ĐỎ:</span>
+            <kbd className="px-1 py-0.5 bg-gray-700 ml-1">Q/W/E</kbd> +1/+2/+3 |
+            <kbd className="px-1 py-0.5 bg-gray-700 ml-1">A/S/D</kbd> -1/-2/-3 |
+            <kbd className="px-1 py-0.5 bg-gray-700 ml-1">R/F</kbd> Nhắc nhở |
+            <kbd className="px-1 py-0.5 bg-gray-700 ml-1">Z/X</kbd> Cảnh cáo |
+            <kbd className="px-1 py-0.5 bg-gray-700 ml-1">T</kbd> Thắng |
+            <kbd className="px-1 py-0.5 bg-gray-700 ml-1">C</kbd> Y tế
+            <span className="mx-2">|</span>
+            <span className="text-blue-400">XANH:</span>
+            <kbd className="px-1 py-0.5 bg-gray-700 ml-1">P/O/I</kbd> +1/+2/+3 |
+            <kbd className="px-1 py-0.5 bg-gray-700 ml-1">L/K/J</kbd> -1/-2/-3 |
+            <kbd className="px-1 py-0.5 bg-gray-700 ml-1">U/H</kbd> Nhắc nhở |
+            <kbd className="px-1 py-0.5 bg-gray-700 ml-1">M/N</kbd> Cảnh cáo |
+            <kbd className="px-1 py-0.5 bg-gray-700 ml-1">Y</kbd> Thắng |
+            <kbd className="px-1 py-0.5 bg-gray-700 ml-1">B</kbd> Y tế
+            <span className="mx-2">|</span>
+            <kbd className="px-1 py-0.5 bg-gray-700">G</kbd> Reset
+          </div>
         </div>
-        <div className="text-xs">
-          <span className="text-red-400">ĐỎ:</span>
-          <kbd className="px-1 py-0.5 bg-gray-700 ml-1">Q/W/E</kbd> +1/+2/+3 |
-          <kbd className="px-1 py-0.5 bg-gray-700 ml-1">A/S/D</kbd> -1/-2/-3 |
-          <kbd className="px-1 py-0.5 bg-gray-700 ml-1">R/F</kbd> Nhắc nhở |
-          <kbd className="px-1 py-0.5 bg-gray-700 ml-1">Z/X</kbd> Cảnh cáo |
-          <kbd className="px-1 py-0.5 bg-gray-700 ml-1">T</kbd> Thắng |
-          <kbd className="px-1 py-0.5 bg-gray-700 ml-1">C</kbd> Y tế
-          <span className="mx-2">|</span>
-          <span className="text-blue-400">XANH:</span>
-          <kbd className="px-1 py-0.5 bg-gray-700 ml-1">P/O/I</kbd> +1/+2/+3 |
-          <kbd className="px-1 py-0.5 bg-gray-700 ml-1">L/K/J</kbd> -1/-2/-3 |
-          <kbd className="px-1 py-0.5 bg-gray-700 ml-1">U/H</kbd> Nhắc nhở |
-          <kbd className="px-1 py-0.5 bg-gray-700 ml-1">M/N</kbd> Cảnh cáo |
-          <kbd className="px-1 py-0.5 bg-gray-700 ml-1">Y</kbd> Thắng |
-          <kbd className="px-1 py-0.5 bg-gray-700 ml-1">B</kbd> Y tế
-          <span className="mx-2">|</span>
-          <kbd className="px-1 py-0.5 bg-gray-700">G</kbd> Reset
-        </div>
-      </div>
+      )} */}
 
       {/* Modal Lịch sử */}
       {showHistoryModal && (
@@ -4111,6 +4375,726 @@ const Vovinam = () => {
                 >
                   Xác nhận & Kết thúc
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Connection Manager Modal */}
+      <ConnectionManagerModal
+        isOpen={showConnectionModal}
+        onClose={() => setShowConnectionModal(false)}
+        devices={referrerDevices}
+        configSystem={matchInfo.config_system || {}}
+        onReconnect={handleReconnect}
+        onDisconnect={handleDisconnect}
+        onRefresh={handleRefreshDevices}
+        onInitSocket={handleReConnectionSocket}
+        onGenerateQR={generateQR}
+        onSetPermissionRef={onSetPermissionRef}
+      />
+
+      {/* Referee Status Bar */}
+      {/* {showRefConnectionState && (
+        <RefereeStatusBar
+          devices={referrerDevices}
+          so_giam_dinh={matchInfo.config_system?.so_giam_dinh || 3}
+        />
+      )} */}
+
+      {/* Fixed Summary Bar at Bottom */}
+      {showRefConnectionState && (
+        <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-gray-800 to-gray-900 border-t-2 border-gray-700 shadow-2xl z-40 max-h-[30vh] overflow-y-auto">
+          <div className="max-w-7xl mx-auto px-6 py-2">
+            {/* Row 1: Buttons */}
+              <div className="mt-4 w-full max-w-5xl">
+                <div className="bg-gray-800 p-1">
+                  {/* Grid layout: 2 cột cho Đỏ và Xanh */}
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Cột ĐỎ */}
+                    <div className="flex flex-col">
+                      {/* Container cho Điểm số và Hành động - dùng flex để tự động dồn */}
+                      <div className="flex flex-col gap-0.5 flex-1">
+                        {/* Điểm số ĐỎ - Grid 5 cột, mỗi cột có 2 buttons (+/-) */}
+                        <div className="bg-gray-700 p-0.5 flex-1 w-full">
+                          <div className="grid grid-cols-5 gap-0.5">
+                            {/* Cột 1: +1/-1 */}
+                            {buttonPermissions.hien_thi_button_diem_1 && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleScoreChange("red", 1)}
+                                  disabled={disableRedButtons}
+                                  className={`font-bold py-0.5 text-[10px] transition-colors ${
+                                    disableRedButtons
+                                      ? 'bg-gray-400 cursor-not-allowed text-gray-600'
+                                      : 'bg-red-600 hover:bg-red-700 text-white'
+                                  }`}
+                                >
+                                  +1
+                                </button>
+                                <button
+                                  onClick={() => handleScoreChange("red", -1)}
+                                  disabled={disableRedButtons}
+                                  className={`font-bold py-0.5 text-[10px] transition-colors ${
+                                    disableRedButtons
+                                      ? 'bg-gray-400 cursor-not-allowed text-gray-600'
+                                      : 'bg-red-800 hover:bg-red-900 text-white'
+                                  }`}
+                                >
+                                  -1
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Cột 2: +2/-2 */}
+                            {buttonPermissions.hien_thi_button_diem_2 && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleScoreChange("red", 2)}
+                                  disabled={disableRedButtons}
+                                  className={getButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                                >
+                                  +2
+                                </button>
+                                <button
+                                  onClick={() => handleScoreChange("red", -2)}
+                                  disabled={disableRedButtons}
+                                  className={getButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                                >
+                                  -2
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Cột 3: +3/-3 */}
+                            {buttonPermissions.hien_thi_button_diem_3 && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleScoreChange("red", 3)}
+                                  disabled={disableRedButtons}
+                                  className={getButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                                >
+                                  +3
+                                </button>
+                                <button
+                                  onClick={() => handleScoreChange("red", -3)}
+                                  disabled={disableRedButtons}
+                                  className={getButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                                >
+                                  -3
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Cột 4: +5/-5 */}
+                            {buttonPermissions.hien_thi_button_diem_5 && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleScoreChange("red", 5)}
+                                  disabled={disableRedButtons}
+                                  className={getButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                                >
+                                  +5
+                                </button>
+                                <button
+                                  onClick={() => handleScoreChange("red", -5)}
+                                  disabled={disableRedButtons}
+                                  className={getButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                                >
+                                  -5
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Cột 5: +10/-10 */}
+                            {buttonPermissions.hien_thi_button_diem_10 && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleScoreChange("red", 10)}
+                                  disabled={disableRedButtons}
+                                  className={getButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                                >
+                                  +10
+                                </button>
+                                <button
+                                  onClick={() => handleScoreChange("red", -10)}
+                                  disabled={disableRedButtons}
+                                  className={getButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                                >
+                                  -10
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Hành động ĐỎ - Grid 5 cột */}
+                        <div className="bg-gray-700 p-0.5">
+                          <div className="grid grid-cols-5 gap-0.5">
+                            {/* Cột 1: Nhắc nhở +/- */}
+                            {buttonPermissions.hien_thi_button_nhac_nho && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleRemind("red", 1)}
+                                  disabled={disableRedButtons}
+                                  className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                                >
+                                  Nhắc nhở +
+                                </button>
+                                <button
+                                  onClick={() => handleRemind("red", -1)}
+                                  disabled={disableRedButtons}
+                                  className={getActionButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                                >
+                                  Nhắc nhở -
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Cột 2: Cảnh cáo +/- */}
+                            {buttonPermissions.hien_thi_button_canh_cao && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleWarn("red", 1)}
+                                  disabled={disableRedButtons}
+                                  className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                                >
+                                  Cảnh cáo +
+                                </button>
+                                <button
+                                  onClick={() => handleWarn("red", -1)}
+                                  disabled={disableRedButtons}
+                                  className={getActionButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                                >
+                                  Cảnh cáo -
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Cột 3: Đòn chân +/- */}
+                            {buttonPermissions.hien_thi_button_don_chan && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleKick("red", 1)}
+                                  disabled={disableRedButtons}
+                                  className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                                >
+                                  Đ.Chân +
+                                </button>
+                                <button
+                                  onClick={() => handleKick("red", -1)}
+                                  disabled={disableRedButtons}
+                                  className={getActionButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                                >
+                                  Đ.Chân -
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Cột 4: Biên/Ngã */}
+                            <div className="flex flex-col gap-0.5">
+                              {buttonPermissions.hien_thi_button_bien && (
+                                <button
+                                  onClick={() => handleBien("red")}
+                                  disabled={disableRedButtons}
+                                  className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                                >
+                                  Biên
+                                </button>
+                              )}
+                              {buttonPermissions.hien_thi_button_nga && (
+                                <button
+                                  onClick={() => handleNga("red")}
+                                  disabled={disableRedButtons}
+                                  className={getActionButtonClassName("red", "bg-red-800 hover:bg-red-900 text-white")}
+                                >
+                                  Ngã
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Cột 5: Y tế/Thắng */}
+                            <div className="flex flex-col gap-0.5">
+                              {buttonPermissions.hien_thi_button_y_te && (
+                                <button
+                                  onClick={() => handleMedical("red")}
+                                  disabled={disableRedButtons}
+                                  className={getActionButtonClassName("red", "bg-red-600 hover:bg-red-700 text-white")}
+                                >
+                                  🏥 Y TẾ
+                                </button>
+                              )}
+                              {buttonPermissions.hien_thi_button_thang && (
+                                <button
+                                  onClick={() => handleWinner("red")}
+                                  disabled={disableRedButtons}
+                                  className={getActionButtonClassName("red", "bg-yellow-600 hover:bg-yellow-500 text-white")}
+                                >
+                                  🏆 THẮNG
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Cột XANH */}
+                    <div className="flex flex-col items-end">
+                      {/* Container cho Điểm số và Hành động - dùng flex để tự động dồn */}
+                      <div className="flex flex-col gap-0.5 flex-1 w-full">
+                        {/* Điểm số XANH - Grid 5 cột, mỗi cột có 2 buttons (+/-) */}
+                        <div className="bg-gray-700 p-0.5">
+                          <div className="grid grid-cols-5 gap-0.5" dir="rtl">
+                            {/* Cột 5: +1/-1 */}
+                            {buttonPermissions.hien_thi_button_diem_1 && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleScoreChange("blue", 1)}
+                                  disabled={disableBlueButtons}
+                                  className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                                >
+                                  1+
+                                </button>
+                                <button
+                                  onClick={() => handleScoreChange("blue", -1)}
+                                  disabled={disableBlueButtons}
+                                  className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                                >
+                                  1-
+                                </button>
+                              </div>
+                            )}
+                            {/* Cột 4: +2/-2 */}
+                            {buttonPermissions.hien_thi_button_diem_2 && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleScoreChange("blue", 2)}
+                                  disabled={disableBlueButtons}
+                                  className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                                >
+                                  2+
+                                </button>
+                                <button
+                                  onClick={() => handleScoreChange("blue", -2)}
+                                  disabled={disableBlueButtons}
+                                  className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                                >
+                                  2-
+                                </button>
+                              </div>
+                            )}
+                            {/* Cột 3: +3/-3 */}
+                            {buttonPermissions.hien_thi_button_diem_3 && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleScoreChange("blue", 3)}
+                                  disabled={disableBlueButtons}
+                                  className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                                >
+                                  3+
+                                </button>
+                                <button
+                                  onClick={() => handleScoreChange("blue", -3)}
+                                  disabled={disableBlueButtons}
+                                  className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                                >
+                                  3-
+                                </button>
+                              </div>
+                            )}
+                            {/* Cột 2: +5/-5 */}
+                            {buttonPermissions.hien_thi_button_diem_5 && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleScoreChange("blue", 5)}
+                                  disabled={disableBlueButtons}
+                                  className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                                >
+                                  5+
+                                </button>
+                                <button
+                                  onClick={() => handleScoreChange("blue", -5)}
+                                  disabled={disableBlueButtons}
+                                  className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                                >
+                                  5-
+                                </button>
+                              </div>
+                            )}
+                            {/* Cột 1: +10/-10 (đảo ngược cho XANH) */}
+                            {buttonPermissions.hien_thi_button_diem_10 && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleScoreChange("blue", 10)}
+                                  disabled={disableBlueButtons}
+                                  className={getButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                                >
+                                  10+
+                                </button>
+                                <button
+                                  onClick={() => handleScoreChange("blue", -10)}
+                                  disabled={disableBlueButtons}
+                                  className={getButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                                >
+                                  10-
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Hành động XANH - Grid 5 cột */}
+                        <div className="bg-gray-700 p-0.5">
+                          <div className="grid grid-cols-5 gap-0.5" dir="rtl">
+                            {/* Cột 1: Nhắc nhở +/- */}
+                            {buttonPermissions.hien_thi_button_nhac_nho && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleRemind("blue", 1)}
+                                  disabled={disableBlueButtons}
+                                  className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                                >
+                                  + Nhắc nhở
+                                </button>
+                                <button
+                                  onClick={() => handleRemind("blue", -1)}
+                                  disabled={disableBlueButtons}
+                                  className={getActionButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                                >
+                                  - Nhắc nhở
+                                </button>
+                              </div>
+                            )}
+                            {/* Cột 2: Cảnh cáo +/- */}
+                            {buttonPermissions.hien_thi_button_canh_cao && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleWarn("blue", 1)}
+                                  disabled={disableBlueButtons}
+                                  className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                                >
+                                  + Cảnh cáo
+                                </button>
+                                <button
+                                  onClick={() => handleWarn("blue", -1)}
+                                  disabled={disableBlueButtons}
+                                  className={getActionButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                                >
+                                  - Cảnh cáo
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Cột 3: Đòn chân +/- */}
+                            {buttonPermissions.hien_thi_button_don_chan && (
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  onClick={() => handleKick("blue", 1)}
+                                  disabled={disableBlueButtons}
+                                  className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                                >
+                                  + Đ.Chân
+                                </button>
+                                <button
+                                  onClick={() => handleKick("blue", -1)}
+                                  disabled={disableBlueButtons}
+                                  className={getActionButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                                >
+                                  - Đ.Chân
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Cột 4: Biên/Ngã */}
+                            <div className="flex flex-col gap-0.5">
+                              {buttonPermissions.hien_thi_button_bien && (
+                                <button
+                                  onClick={() => handleBien("blue")}
+                                  disabled={disableBlueButtons}
+                                  className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                                >
+                                  Biên
+                                </button>
+                              )}
+                              {buttonPermissions.hien_thi_button_nga && (
+                                <button
+                                  onClick={() => handleNga("blue")}
+                                  disabled={disableBlueButtons}
+                                  className={getActionButtonClassName("blue", "bg-blue-800 hover:bg-blue-900 text-white")}
+                                >
+                                  Ngã
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Cột 5: Y tế/Thắng */}
+                            <div className="flex flex-col gap-0.5">
+                              {buttonPermissions.hien_thi_button_y_te && (
+                                <button
+                                  onClick={() => handleMedical("blue")}
+                                  disabled={disableBlueButtons}
+                                  className={getActionButtonClassName("blue", "bg-blue-600 hover:bg-blue-700 text-white")}
+                                >
+                                Y TẾ
+                                </button>
+                              )}
+                              {buttonPermissions.hien_thi_button_thang && (
+                                <button
+                                  onClick={() => handleWinner("blue")}
+                                  disabled={disableBlueButtons}
+                                  className={getActionButtonClassName("blue", "bg-yellow-600 hover:bg-yellow-500 text-white")}
+                                >
+                                  🏆 THẮNG
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Timer controls */}
+              <div className="flex items-center justify-center  w-full gap-2 mt-2 mb-3">
+                {/* Nút kết thúc thời gian y tế */}
+                {isMedicalTime && (
+                  <button
+                    onClick={() => {
+                      clearInterval(timerRef.current);
+                      setIsMedicalTime(false);
+                      setMedicalTeam(null);
+                      setMedicalTimeLeft(0);
+                      console.log("✅ Kết thúc thời gian y tế");
+                    }}
+                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-lg font-bold text-[10px] transition-colors min-w-[120px] animate-pulse"
+                  >
+                    🏥 Y tế
+                  </button>
+                )}
+
+                {/* <button
+                  onClick={toggleTimer}
+                  className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-bold text-lg transition-colors min-w-[150px]"
+                >
+                  {isRunning ? 'Tạm dừng' : 'Bắt đầu'}
+                </button> */}
+                {/* Nút quay lại */}
+                {buttonPermissions.hien_thi_button_quay_lai && (
+                  <button
+                    onClick={btnGoBack}
+                    className=" bg-gray-700 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors z-10 text-[10px]"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-3 w-3"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Thoát
+                  </button>
+                )}
+                {buttonPermissions.hien_thi_button_reset && (
+                  <button
+                    onClick={resetTimer}
+                    className="bg-gray-700 hover:bg-yellow-700 text-white px-4 py-1.5 rounded-lg font-bold text-[10px] transition-colors min-w-[80px]"
+                  >
+                    Reset
+                  </button>
+                )}
+                {/* Nút Undo */}
+                {/* <button
+                  onClick={undoLastAction}
+                  disabled={actionHistory.length === 0}
+                  className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-8 py-3 rounded-lg font-bold text-lg transition-colors min-w-[150px]"
+                >
+                  Hoàn tác ({actionHistory.length})
+                </button> */}
+
+                {/* Nút Lịch sử và Cấu hình */}
+                <div className=" flex gap-1.5 z-10">
+                  {buttonPermissions.hien_thi_button_lich_su && (
+                    <button
+                      onClick={btnShowHistory}
+                      className="bg-gray-700 hover:bg-yellow-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors text-[10px]"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-3 w-3"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Lịch sử ({actionHistory.length})
+                    </button>
+                  )}
+                  {buttonPermissions.hien_thi_button_cau_hinh && (
+                    <button
+                      onClick={btnSetting}
+                      className="bg-gray-700 hover:bg-yellow-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors text-[10px]"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-3 w-3"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Cấu hình
+                    </button>
+                  )}
+
+                  {/* Nút Kết thúc */}
+                  {buttonPermissions.hien_thi_button_ket_thuc && (
+                    <button
+                      onClick={btnFinishMatch}
+                      className="bg-gray-700 hover:bg-yellow-700 text-white px-4 py-1.5 rounded-lg flex items-center gap-1 transition-all text-[10px] shadow-lg hover:shadow-xl"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-3 w-3"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Kết thúc
+                    </button>
+                  )}
+                </div>
+
+                {/* Nút quay lại trận trước */}
+                {buttonPermissions.hien_thi_button_tran_truoc && (
+                  <button
+                    onClick={btnPreviousMatch}
+                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-1.5 rounded-lg flex items-center gap-1 transition-all text-[10px] shadow-lg hover:shadow-xl"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-3 w-3"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Trận trước
+                  </button>
+                )}
+
+                {/* Nút trận kế tiếp */}
+                {buttonPermissions.hien_thi_button_tran_tiep_theo && (
+                  <button
+                    onClick={btnNextMatch}
+                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-1.5 rounded-lg flex items-center gap-1 transition-all text-[10px] shadow-lg hover:shadow-xl"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-3 w-3"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Trận sau
+                  </button>
+                )}
+
+              </div>
+              {/* Row 2: Statistics and Ready Indicator */}
+              <div className="flex items-center justify-between text-xs mb-2 ">
+                {/* Left: Statistics */}
+                <div className="flex items-center gap-6">
+                  <span className="text-gray-400">
+                    Tổng số: <span className="text-white font-bold text-sm">{matchInfo.config_system?.so_giam_dinh || 3}</span>
+                  </span>
+                  <span className="text-gray-400">
+                    Sẵn sàng: <span className="text-green-400 font-bold text-sm">
+                      {referrerDevices.filter(s => s.ready).length}
+                    </span>
+                  </span>
+                  <span className="text-gray-400">
+                    Đã kết nối: <span className="text-yellow-400 font-bold text-sm">
+                      {referrerDevices.filter(s => s.connected && !s.ready).length}
+                    </span>
+                  </span>
+                  <span className="text-gray-400">
+                    Chưa kết nối: <span className="text-red-400 font-bold text-sm">
+                      {referrerDevices.filter(s => !s.connected).length}
+                    </span>
+                  </span>
+                </div>
+                {/* Right: Ready Indicator */}
+                {referrerDevices.filter(s => s.ready).length === (matchInfo.config_system?.so_giam_dinh || 3) ? (
+                  <div className="flex items-center gap-2 bg-green-500/20 border border-green-500 rounded px-4 py-1.5">
+                    <span className="text-green-400 font-bold">✓ Tất cả sẵn sàng</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 bg-yellow-500/20 border border-yellow-500 rounded px-4 py-1.5 animate-pulse">
+                    <span className="text-yellow-400 font-bold">⚠ Chưa đủ giám định</span>
+                  </div>
+                )}
+              </div>
+
+            {/* Row 3: Hint text - Always visible */}
+            <div className="text-gray-400 text-xs border-t border-gray-700 pt-2">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-[10px]">Space</kbd> Bắt đầu/Tạm dừng |
+                <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-[10px]">Ctrl+Z</kbd> Hoàn tác |
+                <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-[10px]">F1</kbd> Kết nối |
+                <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-[10px]">F5</kbd> Cấu hình |
+                <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-[10px]">F6</kbd> Lịch sử |
+                <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-[10px]">F7</kbd> Kết nối GĐ  |
+                {/* <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-[10px]">F10</kbd> {showControls ? 'Ẩn' : 'Hiện'} controls */}
+              </div>
+              <div className="flex items-center justify-center gap-1 text-[10px]">
+                <span className="text-red-400">ĐỎ:</span>
+                <kbd className="px-1 py-0.5 bg-gray-700 rounded">Q/W/E</kbd> +1/+2/+3 |
+                <kbd className="px-1 py-0.5 bg-gray-700 rounded">A/S/D</kbd> -1/-2/-3 |
+                <kbd className="px-1 py-0.5 bg-gray-700 rounded">R/F</kbd> Nhắc nhở |
+                <kbd className="px-1 py-0.5 bg-gray-700 rounded">Z/X</kbd> Cảnh cáo |
+                <kbd className="px-1 py-0.5 bg-gray-700 rounded">T</kbd> Thắng |
+                <kbd className="px-1 py-0.5 bg-gray-700 rounded">C</kbd> Y tế
+                <span className="mx-1">|</span>
+                <span className="text-blue-400">XANH:</span>
+                <kbd className="px-1 py-0.5 bg-gray-700 rounded">P/O/I</kbd> +1/+2/+3 |
+                <kbd className="px-1 py-0.5 bg-gray-700 rounded">L/K/J</kbd> -1/-2/-3 |
+                <kbd className="px-1 py-0.5 bg-gray-700 rounded">U/H</kbd> Nhắc nhở |
+                <kbd className="px-1 py-0.5 bg-gray-700 rounded">M/N</kbd> Cảnh cáo |
+                <kbd className="px-1 py-0.5 bg-gray-700 rounded">Y</kbd> Thắng |
+                <kbd className="px-1 py-0.5 bg-gray-700 rounded">B</kbd> Y tế
+                <span className="mx-1">|</span>
+                <kbd className="px-1 py-0.5 bg-gray-700 rounded">G</kbd> Reset
               </div>
             </div>
           </div>

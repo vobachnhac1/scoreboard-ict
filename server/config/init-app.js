@@ -137,8 +137,6 @@ const FetchInitApp = async  ()=>{
     console.log('list_config_system: ', list_config_system.length);
     console.log('list_competition_system: ', list_competition_system.length);
     console.log('state_init: ', state_init);
-
-
     // admin.generateQRRegisterReferrer()
 
 }

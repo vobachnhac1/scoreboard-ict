@@ -56,7 +56,21 @@ InitSocket(io);
 // Khởi tạo database.
 
 // Gọi khi khởi tạo ứng dụng
-FetchInitApp()
+// lăng nghe process.env.USER_DATA_PATH có giá trị thì FetchInitApp 
+// nếu không thì lăng nghe sự thay đổi của process.env.USER_DATA_PATH
+console.log('process.env.USER_DATA_PATH: ', process.env.USER_DATA_PATH);
+
+if(process.env.USER_DATA_PATH){
+    FetchInitApp()
+}else{
+    console.log('Chờ userDataPath...');
+    let interval = setInterval(() => {
+        if (process.env.USER_DATA_PATH) {
+            clearInterval(interval);
+            FetchInitApp();
+        }
+    }, 1000);
+}
 
 
 // Error handlers
@@ -91,6 +105,10 @@ FetchInitApp()
 
 // app.listen(6789, () => console.log('API running on port 6789 🔥'));
 
-server.listen(6789, () => {
-  console.log(`Server đang chạy tại http://localhost:${6789}`);
+// server.listen(6789, () => {
+//   console.log(`Server đang chạy tại http://localhost:${6789}`);
+// });
+
+server.listen(6789, "0.0.0.0",() => {
+    console.log(`Server đang chạy tại http://localhost:${6789}`);
 });

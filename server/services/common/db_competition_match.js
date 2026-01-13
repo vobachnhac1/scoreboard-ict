@@ -32,23 +32,23 @@ class DBCompetitionMatchService {
                 )
             `);
 
-            // Migration: Thêm cột match_name nếu chưa có
-            this.db.run(`
-                ALTER TABLE competition_match ADD COLUMN match_name TEXT
-            `, (err) => {
-                if (err && !err.message.includes('duplicate column name')) {
-                    console.error('Error adding match_name column:', err);
-                }
-            });
+            // Migration: Thêm cột match_name nếu chưa có (better-sqlite3 style)
+            // try {
+            //     this.db.run(`ALTER TABLE competition_match ADD COLUMN match_name TEXT`);
+            // } catch (err) {
+            //     if (!err.message.includes('duplicate column name')) {
+            //         console.error('Error adding match_name column:', err);
+            //     }
+            // }
 
-            // Migration: Thêm cột team_name nếu chưa có
-            this.db.run(`
-                ALTER TABLE competition_match ADD COLUMN team_name TEXT
-            `, (err) => {
-                if (err && !err.message.includes('duplicate column name')) {
-                    console.error('Error adding team_name column:', err);
-                }
-            });
+            // Migration: Thêm cột team_name nếu chưa có (better-sqlite3 style)
+            // try {
+            //     this.db.run(`ALTER TABLE competition_match ADD COLUMN team_name TEXT`);
+            // } catch (err) {
+            //     if (!err.message.includes('duplicate column name')) {
+            //         console.error('Error adding team_name column:', err);
+            //     }
+            // }
 
             // Bảng competition_match_history - Lịch sử kết quả thi đấu
             this.db.run(`

@@ -6,7 +6,7 @@
   "description": "Phần mềm chấm điểm thi đấu Võ Hiện Đại",
   "main": "electron.js",
   "build": {
-    "productName": "VHDScoreBoard",
+    "productName": "VO HIEN DAI SCOREBOARD",
     "appId": "com.dht.scoreboard",
     "copyright": "Copyright (C) 2026 Võ Hiện Đại JSC",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
@@ -27,7 +27,8 @@
       "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
     ],
     "asarUnpack": [
-      "node_modules/better-sqlite3/**/*"
+      "node_modules/better-sqlite3/**/*",
+      "server/**/*"
     ],
     "mac": {
       "target": [
@@ -84,7 +85,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "ScoreBoard",
+      "shortcutName": "VÕ HIỆN ĐẠI",
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
       "installerHeaderIcon": "build/icon.ico",
@@ -108,13 +109,16 @@
     "prebuild:mac:universal": "npm run build && npm run rebuild:native:universal",
     "prebuild:win": "npm run build && npm run rebuild:native",
     "dist:win": "npm run prebuild:win && electron-builder --win",
+    "dist:win:skip-rebuild": "npm run build && electron-builder --win --dir",
     "dist:win:portable": "npm run prebuild:win && electron-builder --win=portable",
     "dist:win:nsis": "npm run prebuild:win && electron-builder --win=nsis",
     "dist:mac": "npm run prebuild:mac && electron-builder --mac",
     "dist:mac:x64": "npm run prebuild:mac && electron-builder --mac --x64",
     "dist:mac:arm64": "npm run prebuild:mac && electron-builder --mac --arm64",
     "dist:mac:universal": "npm run prebuild:mac:universal && electron-builder --mac --universal",
-    "fix-install": "./node_modules/.bin/electron-rebuild && node node_modules/java/postInstall.js"
+    "fix-install": "./node_modules/.bin/electron-rebuild && node node_modules/java/postInstall.js",
+    "mac": "yarn electron-builder --mac",
+    "win": "yarn electron-builder --win=nsis"
   },
   "devDependencies": {
     "@babel/core": "7.24.5",

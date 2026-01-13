@@ -54,7 +54,7 @@ const AdminLayout = ({ children }) => {
           name: "Cấu hình hệ thống",
           href: "/management/general-setting/config-system",
           icon: ServerStackIcon
-        },
+        }
       ],
     },
     // {

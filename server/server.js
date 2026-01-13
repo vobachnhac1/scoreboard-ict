@@ -48,9 +48,20 @@ app.use('/api', competitionMatchRoutes);
 InitSocket(io);
 
 // Khởi tạo database.
+console.log('process.env.USER_DATA_PATH: ', process.env.USER_DATA_PATH);
 
-// Gọi khi khởi tạo ứng dụng
-FetchInitApp()
+if(process.env.USER_DATA_PATH){
+    FetchInitApp()
+}else{
+    console.log('Chờ userDataPath...');
+    let interval = setInterval(() => {
+        if (process.env.USER_DATA_PATH) {
+            clearInterval(interval);
+            FetchInitApp();
+        }
+    }, 1000);
+}
+
 
 
 // Khởi chạy server Restful API

@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import logoVoHienDai from '../../assets/logo_vohiendai.jpg';
 
 const Sidebar = ({ navigation, collapsed = false }) => {
   const location = useLocation();
@@ -97,14 +98,21 @@ const Sidebar = ({ navigation, collapsed = false }) => {
       <div className="flex h-20 items-center justify-center border-b border-gray-200 mb-4">
         <div className="text-center">
           <div className="flex items-center justify-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
+            {/* <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
               <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
               </svg>
+            </div> */}
+            <div className="inline-flex items-start justify-start rounded-2xl  ">
+              <img
+                src={logoVoHienDai}
+                alt="Logo Võ Hiện Đại"
+                className="w-12 h-12"
+              />
             </div>
             {!collapsed && (
               <div className="text-left">
-                <h1 className="text-xl font-black text-gray-900 tracking-tight">SCOREBOARD</h1>
+                <h1 className="text-xl font-black text-gray-900 tracking-tight">VÕ HIỆN ĐẠI</h1>
                 <p className="text-xs text-gray-500 font-semibold">Quản lý thi đấu</p>
               </div>
             )}

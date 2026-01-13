@@ -1,6 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import {
+   LinkIcon,
+} from "@heroicons/react/24/outline";
+import logoVoHienDai from '../../assets/logo_vohiendai.jpg';
 export default function Dashboard() {
   const navigate = useNavigate();
 
@@ -29,14 +32,14 @@ export default function Dashboard() {
     //   gradient: 'from-orange-500 to-orange-600',
     //   stats: { label: 'Trận đấu', value: '48' }
     // },
-    // {
-    //   title: 'Chấm điểm',
-    //   description: 'Nhập điểm cho các trận đấu đang diễn ra',
-    //   icon: '✍️',
-    //   href: '/scoreboard/vovinam-score',
-    //   gradient: 'from-blue-500 to-blue-600',
-    //   stats: { label: 'Đang thi', value: '3' }
-    // }
+    {
+      title: 'Quản lý kết nối',
+      description: 'Quản lý cấp quyền những thiết bị đang kết nối',
+      icon: <LinkIcon className="w-8 h-8 text-white" />,
+      href: '/management/connect',
+      gradient: 'from-blue-500 to-blue-600',
+      stats: { label: 'Kết nối', value: '0' }
+    }
   ];
 
   return (
@@ -46,10 +49,12 @@ export default function Dashboard() {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-blue-600/10 to-blue-600/10"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-600 rounded-2xl shadow-2xl mb-6 animate-bounce">
-              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-              </svg>
+            <div className="inline-flex items-center justify-center mb-6">
+              <img
+                src={logoVoHienDai}
+                alt="Logo Võ Hiện Đại"
+                className="w-20 h-20 object-contain rounded-2xl shadow-2xl hover:scale-110 transition-transform duration-300"
+              />
             </div>
             <h1 className="text-5xl font-black text-gray-900 mb-4 tracking-tight">
               HỆ THỐNG QUẢN LÝ THI ĐẤU
@@ -82,7 +87,7 @@ export default function Dashboard() {
           <p className="text-gray-600">Khám phá các tính năng mạnh mẽ của hệ thống</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${features?.length} gap-6`}>
           {features.map((feature, index) => (
             <div
               key={index}
@@ -110,9 +115,9 @@ export default function Dashboard() {
 
                 {/* Stats */}
                 <div className={`flex items-center justify-between pt-4 border-t border-gray-100`}>
-                  <span className="text-xs text-gray-500 font-semibold">{feature.stats.label}</span>
+                  <span className="text-xs text-gray-500 font-semibold">{feature?.stats?.label}</span>
                   <span className={`text-2xl font-black bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent`}>
-                    {feature.stats.value}
+                    {feature?.stats?.value}
                   </span>
                 </div>
 

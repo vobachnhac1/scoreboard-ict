@@ -27,6 +27,21 @@ const Vovinam = () => {
   // Custom hook cho modal
   const { modalProps, showConfirm, showAlert, showWarning, showError, showSuccess } = useConfirmModal();
 
+  // Helper function để lấy flag image
+  const getFlagImage = (country) => {
+    const countryName = country || 'Vietnam';
+    try {
+      return require(`../../assets/flags/${countryName}.png`);
+    } catch (error) {
+      // Fallback to Vietnam if country flag not found
+      try {
+        return require(`../../assets/flags/Vietnam.png`);
+      } catch (e) {
+        return null;
+      }
+    }
+  };
+
   // Connection manager states
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [showRefConnectionState, setShowRefConnectionState] = useState(true);
@@ -2278,8 +2293,18 @@ const Vovinam = () => {
               {redScore}
             </div>
             <div className="flex justify-between items-center w-full mt-4">
-              <div className="h-20 w-20 bg-slate-400 mr-4 flex justify-center items-center text-sm ">
-                LOGO
+              <div className="h-20 w-20 mr-4 flex justify-center items-center overflow-hidden rounded-lg shadow-lg">
+                {getFlagImage(matchInfo.red?.country) ? (
+                  <img
+                    src={getFlagImage(matchInfo.red?.country)}
+                    alt={matchInfo.red?.country || 'Vietnam'}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="bg-slate-400 w-full h-full flex items-center justify-center text-xs">
+                    FLAG
+                  </div>
+                )}
               </div>
               <div className="font-semibold text-lg flex-1 text-white">
                 <p className="text-xl">{matchInfo.red?.name || "VĐV ĐỎ"}</p>
@@ -2437,8 +2462,18 @@ const Vovinam = () => {
                   {matchInfo.blue?.unit || ""}
                 </p>
               </div>
-              <div className="h-20 w-20 bg-slate-400 ml-4 flex justify-center items-center text-sm ">
-                LOGO
+              <div className="h-20 w-20 ml-4 flex justify-center items-center overflow-hidden rounded-lg shadow-lg">
+                {getFlagImage(matchInfo.blue?.country) ? (
+                  <img
+                    src={getFlagImage(matchInfo.blue?.country)}
+                    alt={matchInfo.blue?.country || 'Vietnam'}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="bg-slate-400 w-full h-full flex items-center justify-center text-xs">
+                    FLAG
+                  </div>
+                )}
               </div>
             </div>
           </div>

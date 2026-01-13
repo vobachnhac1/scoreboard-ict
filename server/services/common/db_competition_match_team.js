@@ -1,6 +1,5 @@
-const sqlite3 = require('sqlite3').verbose();
+const { BetterSQLiteWrapper } = require('./db_better_sqlite3');
 const { DB_SCHEME } = require('./constant_sql');
-const { configureSQLite } = require('./db_config');
 
 /**
  * Service quản lý team matches (SOL/TUV/DAL/DOL/ORTHER)
@@ -10,7 +9,7 @@ const { configureSQLite } = require('./db_config');
  */
 class DBCompetitionMatchTeamService {
     constructor() {
-        this.db = configureSQLite(new sqlite3.Database(DB_SCHEME));
+        this.db = new BetterSQLiteWrapper(DB_SCHEME);
         this.db.serialize(() => {
             // Bảng competition_match_team - Thông tin team
             this.db.run(`

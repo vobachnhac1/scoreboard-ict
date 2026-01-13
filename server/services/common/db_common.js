@@ -1,18 +1,18 @@
-const sqlite3 = require('sqlite3').verbose();
+const { BetterSQLiteWrapper } = require('./db_better_sqlite3');
 const fs = require('fs');
 const {DB_SCHEME, TABLE} = require('./constant_sql')
 
 // commons
 class DBCommonsService {
     constructor() {
-        this.db = new sqlite3.Database(DB_SCHEME);
+        this.db = new BetterSQLiteWrapper(DB_SCHEME);
         this.db.serialize(() => {
-            this.db.run(TABLE.CRE_COM); 
+            this.db.run(TABLE.CRE_COM);
             this.getAllCommon().then(data=>{
                 if(data.length == 0){
-                    
+
                     const stmt = this.db.prepare(`INSERT INTO commons (category_type, key, value, description, num_member) VALUES (?, ?, ?, ?, ?)`);
-                    const data = [
+                    const initialData = [
                         // Giới tính
                         ['gender','M','Nam', 'Giới tính', 0],
                         ['gender','F','Nữ', 'Giới tính', 0],
@@ -23,44 +23,43 @@ class DBCommonsService {
                         ['champ_comp_type','QU','Quyền', 'Quyền',0],
 
                         // Loại thi đấu quyền
-                        ['qu_type','DON','Đơn luyện', '', 1], 
-                        ['qu_type','DAL','Đa luyện', '', 4], 
-                        ['qu_type','DDO','Đồng đội', '', 6],  
-                        ['qu_type','TUV','Tự vệ', '', 2], 
-                        ['qu_type','SON','Song luyện', '', 2], 
-                        ['qu_type','VON','Võ nhạc', '', 6], 
-                        ['qu_type','OTH','Khác', '', 1], 
+                        ['qu_type','DON','Đơn luyện', '', 1],
+                        ['qu_type','DAL','Đa luyện', '', 4],
+                        ['qu_type','DDO','Đồng đội', '', 6],
+                        ['qu_type','TUV','Tự vệ', '', 2],
+                        ['qu_type','SON','Song luyện', '', 2],
+                        ['qu_type','VON','Võ nhạc', '', 6],
+                        ['qu_type','OTH','Khác', '', 1],
 
                         // Trạng thái giải đấu
-                        ['champion_type','NEW','Tạo mới', '', 0], 
-                        ['champion_type','PRO','Chờ đăng ký', '', 0], 
-                        ['champion_type','COM','Hoàn thiện đăng ký', '', 0],   
-                        ['champion_type','RAN','Bốc thăm', '', 0], 
-                        ['champion_type','IN','Đang diễn ra', '', 0], 
-                        ['champion_type','FIN','Kết thúc', '', 0], 
-                        ['champion_type','CAN','Huỷ', '', 0], 
-                        ['champion_type','PEN','Tạm hoãn', '', 0],  
-                        ['champion_type','OTH','Khác', '', 0], 
+                        ['champion_type','NEW','Tạo mới', '', 0],
+                        ['champion_type','PRO','Chờ đăng ký', '', 0],
+                        ['champion_type','COM','Hoàn thiện đăng ký', '', 0],
+                        ['champion_type','RAN','Bốc thăm', '', 0],
+                        ['champion_type','IN','Đang diễn ra', '', 0],
+                        ['champion_type','FIN','Kết thúc', '', 0],
+                        ['champion_type','CAN','Huỷ', '', 0],
+                        ['champion_type','PEN','Tạm hoãn', '', 0],
+                        ['champion_type','OTH','Khác', '', 0],
 
                         // trạng thái trận đấu
-                        ['match_type','WAI','Chờ', '', 0], 
-                        ['match_type','IN','Đang diễn ra', '', 0], 
-                        ['match_type','FIN','Kết thúc', '', 0], 
-                        ['match_type','CAN','Huỷ', '', 0], 
-                        ['match_type','OTH','Khác', '', 0], 
+                        ['match_type','WAI','Chờ', '', 0],
+                        ['match_type','IN','Đang diễn ra', '', 0],
+                        ['match_type','FIN','Kết thúc', '', 0],
+                        ['match_type','CAN','Huỷ', '', 0],
+                        ['match_type','OTH','Khác', '', 0],
 
-                        // 
+                        //
 
                     ];
-                    data.forEach(([category_type, key, value, description, num_member]) => {
-                        stmt.run(category_type, key, value, description, num_member); 
+                    initialData.forEach(([category_type, key, value, description, num_member]) => {
+                        stmt.run(category_type, key, value, description, num_member);
                     });
-                    stmt.finalize();
                 }
             }).catch(err=>console.log(err));
 
         })
- 
+
     }
 
     getAllCommon(){

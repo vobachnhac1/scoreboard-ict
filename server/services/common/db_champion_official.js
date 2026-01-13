@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
+const { BetterSQLiteWrapper } = require('./db_better_sqlite3');
 const fs = require('fs');
 const {DB_SCHEME, TABLE} = require('./constant_sql')
 
@@ -6,7 +6,7 @@ const {DB_SCHEME, TABLE} = require('./constant_sql')
 /// Bảng VĐV thi
 class DBChampionEventService {
     constructor() {
-        this.db = new sqlite3.Database(DB_SCHEME);
+        this.db = new BetterSQLiteWrapper(DB_SCHEME);
         this.db.serialize(() => {
             this.db.run(TABLE.CRE_CHP_EVT);
         })

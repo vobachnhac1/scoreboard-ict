@@ -1,13 +1,13 @@
-const sqlite3 = require('sqlite3').verbose();
+const { BetterSQLiteWrapper } = require('./db_better_sqlite3');
 const fs = require('fs');
 const {DB_SCHEME, TABLE} = require('./constant_sql')
 
 // champion
 class DBChampionService {
     constructor() {
-        this.db = new sqlite3.Database(DB_SCHEME);
+        this.db = new BetterSQLiteWrapper(DB_SCHEME);
         this.db.serialize(() => {
-            this.db.run(TABLE.CRE_CHP); 
+            this.db.run(TABLE.CRE_CHP);
         })
     }
 

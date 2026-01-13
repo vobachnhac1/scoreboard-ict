@@ -2,6 +2,35 @@ const { CONSTANT, RES_TYPE, STATE_SOCKET, STATE_REG_CONN } = require('../constan
 const crypto = require('crypto');
 const init_config_db = require('../services/init-config');
 
+// Wrapper function để bọc socket handlers với try/catch
+const safeSocketHandler = (handlerName, handler) => {
+    return async function(...args) {
+        try {
+            await handler.apply(this, args);
+        } catch (error) {
+            console.error(`❌ Error in socket handler [${handlerName}]:`, {
+                error: error.message,
+                stack: error.stack,
+                timestamp: new Date().toISOString()
+            });
+
+            // Không crash server, chỉ log error
+            // Có thể emit error về client nếu cần
+            try {
+                if (this && this.emit) {
+                    this.emit('RES_MSG', {
+                        status: 500,
+                        message: `Lỗi server khi xử lý ${handlerName}`,
+                        error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+                    });
+                }
+            } catch (emitError) {
+                console.error(`❌ Error khi emit error message:`, emitError);
+            }
+        }
+    };
+};
+
 InitSocket = async (io) => {
 /// ---------------------- SOCKET IO ---------------------- ///
     // permission: 1: cho phép gửi tin nhắn, 9: admin | 8: view client
@@ -126,21 +155,21 @@ InitSocket = async (io) => {
         })
 
         // 1. Admin tạo một phòng để kết nối
-        socket.on(CONSTANT.REGISTER_ROOM_ADMIN, (input) => {
+        socket.on(CONSTANT.REGISTER_ROOM_ADMIN, safeSocketHandler('REGISTER_ROOM_ADMIN', (input) => {
             console.log('|------ INPUT REGISTER_ROOM_ADMIN: ', input);
             if(input?.room_id){
                 socket.join(input?.room_id);
                 console.log(`${socket.id}(Admin) đã tham gia phòng ${input?.room_id}`);
-                // cập nhật dữ liệu 
+                // cập nhật dữ liệu
                 const admin = MapConn[`${socket.id}`];
                 MapConn[`${socket.id}`] = {
                     ...admin,
-                    connect_status_code: getConnectStatusCode('active'), 
-                    connect_status_name: getConnectStatusName('active'), 
+                    connect_status_code: getConnectStatusCode('active'),
+                    connect_status_name: getConnectStatusName('active'),
                     register_status_code: 'ADMIN',
                     register_status_name: 'ADMIN',
                     referrer: 6,
-                    socket_id: socket.id, 
+                    socket_id: socket.id,
                     room_id: input?.room_id,
                     uuid_desktop: input?.uuid_desktop,
                     token: null
@@ -157,10 +186,10 @@ InitSocket = async (io) => {
                     }
                 });
             }
-        });
+        }));
 
         // 2. client gửi thông tin sau khi kết nối đến phòng bước 1
-        socket.on(CONSTANT.REGISTER, (input) => {
+        socket.on(CONSTANT.REGISTER, safeSocketHandler('REGISTER', (input) => {
             console.log('|------ INPUT REGISTER: ', input);
             const roomExists = io.sockets.adapter.rooms.has(input.room_id);
             const client = MapConn[`${socket.id}`]
@@ -218,11 +247,11 @@ InitSocket = async (io) => {
                 message: 'Đăng ký thành công, chờ phê duyệt',
                 data: upt_client
             });
-            
-        });
+
+        }));
 
         // 3. Admin phê duyệt kết nối
-        socket.on(CONSTANT.APPROVED, (input) => {
+        socket.on(CONSTANT.APPROVED, safeSocketHandler('APPROVED', (input) => {
             console.log('|------ INPUT APPROVED: ', input);
             const token = crypto.randomBytes(32).toString('hex');
             const client = MapConn[`${input.socket_id}`]
@@ -272,11 +301,11 @@ InitSocket = async (io) => {
                         ls_conn: MapConn
                     }
                 });
-            }            
-        });
+            }
+        }));
 
-        // 4. Admin từ chối kết nối         
-        socket.on(CONSTANT.REJECTED, (input) => { 
+        // 4. Admin từ chối kết nối
+        socket.on(CONSTANT.REJECTED, safeSocketHandler('REJECTED', (input) => {
             console.log('|------ INPUT REJECTED: ', input);
             const client = MapConn[`${input.socket_id}`];
             if(!client){
@@ -313,11 +342,11 @@ InitSocket = async (io) => {
                     room_id: input?.room_id,
                     ls_conn: MapConn
                 }
-            });        
-        });
+            });
+        }));
 
         // 5. Admin ngắt kết nối client
-        socket.on(CONSTANT.DISCONNECT_CLIENT, (input) => {
+        socket.on(CONSTANT.DISCONNECT_CLIENT, safeSocketHandler('DISCONNECT_CLIENT', (input) => {
             console.log('|------ INPUT DISCONNECT_CLIENT: ', input);
             const client = MapConn[`${input.socket_id}`];
             if(!client){
@@ -369,10 +398,10 @@ InitSocket = async (io) => {
                 message: 'Đã ngắt kết nối',
                 data: upt_client
             });
-        });
+        }));
 
         // 7. Nhận tin nhắn từ client
-        socket.on(CONSTANT.REQ_MSG, (input) => {
+        socket.on(CONSTANT.REQ_MSG, safeSocketHandler('REQ_MSG', (input) => {
             // Nếu chưa đếm thì bắt đầu đếm
             const {score:{blue,red}, key} = input;
             if(!key){
@@ -578,10 +607,10 @@ InitSocket = async (io) => {
                     socketSetDo3.add(socket.id);
                 }
             }
-        });
+        }));
 
         // 8. Nhận tin nhắn từ admin
-        socket.on(CONSTANT.REQ_MSG_ADMIN, (input) => {
+        socket.on(CONSTANT.REQ_MSG_ADMIN, safeSocketHandler('REQ_MSG_ADMIN', (input) => {
             // cập nhật thông tin | vị trí giám định
             const {referrer, socket_id, room_id } = input;
             const rc_socket = MapConn[`${socket_id}`];
@@ -626,10 +655,10 @@ InitSocket = async (io) => {
                     type: sendTp
                 });
             }
-        });
+        }));
 
         // 9. Admin:  Lấy thông tin kết nối socket
-        socket.on(CONSTANT.ADMIN_FETCH_CONN, ()=>{
+        socket.on(CONSTANT.ADMIN_FETCH_CONN, safeSocketHandler('ADMIN_FETCH_CONN', () => {
             socket.emit('RES_ROOM_ADMIN',{
                 path: CONSTANT.ADMIN_FETCH_CONN,
                 status: 200,
@@ -638,7 +667,7 @@ InitSocket = async (io) => {
                     ls_conn: MapConn
                 }
             })
-        })
+        }))
 
         // Helper function: Tính điểm dựa trên Sets
         const calculateScore = (scoreSets, soGiamDinh, cauHinhLayDiemThap) => {
@@ -726,7 +755,7 @@ InitSocket = async (io) => {
         };
 
         // 10. RED: lắng nghe điểm đỏ
-        socket.on(CONSTANT.SCORE_RED, (input) => {
+        socket.on(CONSTANT.SCORE_RED, safeSocketHandler('SCORE_RED', (input) => {
             console.log('🔴 Điểm đỏ nhận được: ', input);
 
             const client = MapConn[`${socket.id}`];
@@ -812,10 +841,10 @@ InitSocket = async (io) => {
             } else {
                 console.log(`⏳ Đang đếm ĐỎ, thêm vào Set hiện tại`);
             }
-        })
+        }))
 
         // 11. BLUE: lắng nghe điểm xanh
-        socket.on(CONSTANT.SCORE_BLUE, (input) => {
+        socket.on(CONSTANT.SCORE_BLUE, safeSocketHandler('SCORE_BLUE', (input) => {
             console.log('🔵 Điểm xanh nhận được: ', input);
 
             const client = MapConn[`${socket.id}`];
@@ -899,10 +928,10 @@ InitSocket = async (io) => {
             } else {
                 console.log(`⏳ Đang đếm XANH, thêm vào Set hiện tại`);
             }
-        })
+        }))
 
         // 12. QUYEN: lắng nghe điểm quyền
-        socket.on(CONSTANT.SCORE_QUYEN, (input) => {
+        socket.on(CONSTANT.SCORE_QUYEN, safeSocketHandler('SCORE_QUYEN', (input) => {
             console.log('Điểm quyền: ', input);
             // io.to(client.room_id).emit(CONSTANT.SCORE_QUYEN, input);
             const client = MapConn[`${socket.id}`];
@@ -916,10 +945,10 @@ InitSocket = async (io) => {
                     referrer: client.referrer,
                 }
             })
-        })
+        }))
 
         // 13. DK_INFO: lắng nghe thông tin đk
-        socket.on(CONSTANT.DK_INFO, (input) => {
+        socket.on(CONSTANT.DK_INFO, safeSocketHandler('DK_INFO', (input) => {
             console.log('DK_INFO: ', input);
             // io.to(client.room_id).emit(CONSTANT.DK_INFO, input);
             const client = MapConn[`${socket.id}`];
@@ -944,10 +973,10 @@ InitSocket = async (io) => {
                     });
                 }
             })
-        })
+        }))
 
         // 14. QUYEN_INFO: lắng nghe thông tin quyền
-        socket.on(CONSTANT.QUYEN_INFO, (input) => {
+        socket.on(CONSTANT.QUYEN_INFO, safeSocketHandler('QUYEN_INFO', (input) => {
             console.log('QUYEN_INFO: ', input);
             // io.to(client.room_id).emit(CONSTANT.QUYEN_INFO, input);
             const client = MapConn[`${socket.id}`];
@@ -973,11 +1002,14 @@ InitSocket = async (io) => {
                 }
             })
 
+        }))
 
-        })
-
-        // 15. SET_PERMISSION_REF: cấp quyền chấm điểm, và phân luôn giám định 
-        socket.on(CONSTANT.SET_PERMISSION_REF, (input) => {
+        // 15. SET_PERMISSION_REF: cấp quyền chấm điểm, và phân luôn giám định
+        socket.on(CONSTANT.SET_PERMISSION_REF, safeSocketHandler('SET_PERMISSION_REF', (input) => {
+            fetchAdminConfig().then((res) => {
+                config = {cau_hinh_lay_diem_thap : true, ...res};
+                console.log('fetchAdminConfig config: ', config);
+            })
             console.log('SET_PERMISSION_REF: ', input);
             const {room_id, socket_id, referrer, accepted, status} = input;
             const client = MapConn[`${input.socket_id}`];
@@ -1039,11 +1071,34 @@ InitSocket = async (io) => {
                 type: RES_TYPE.APPROVE_CONNECT, 
                 data: upt_client
             });
-        });
+        }));
+
+        // 16. lấy thông tin cấu hình: gửi all client
+        socket.on(CONSTANT.GET_CONFIG, safeSocketHandler('GET_CONFIG', (input) => {
+            fetchAdminConfig().then((res) => {
+                config = {cau_hinh_lay_diem_thap : true, ...res};
+                console.log('fetchAdminConfig config: ', config);
+            })
+            socket.join(connAdmin?.room_id);
+            io.to(connAdmin.room_id).emit(CONSTANT.GET_CONFIG, {
+                type: CONSTANT.GET_CONFIG,
+                status: 200,
+                message: 'Thực hiện thành công',
+                data: {
+                    he_diem: Number(config.he_diem),
+                    room_id: connAdmin.room_id,
+                    thoi_gian_tinh_diem: Number(config.thoi_gian_tinh_diem),
+                    cau_hinh_hinh_thuc_quyen: Number(config.cau_hinh_hinh_thuc_quyen),
+                    cau_hinh_hinh_thuc_doikhang: Number(config.cau_hinh_hinh_thuc_doikhang),
+                    ten_giai_dau: config.ten_giai_dau,
+                    mo_ta_giai_dau: config.mo_ta_giai_dau,
+                }
+            });
+        }))
 
 
         // 6. Khi client ngắt kết nối
-        socket.on('disconnect', () => {
+        socket.on('disconnect', safeSocketHandler('disconnect', () => {
             const client = MapConn[`${socket.id}`];
             if(!client){
                 disconnectBySocketId(socket.id);
@@ -1059,8 +1114,8 @@ InitSocket = async (io) => {
                 delete  MapConn[`${socket.id}`];
             }
             console.log('MapConn: ', MapConn);
-        });
-     
+        }));
+
     });
     // hàm common register_status_code
     const getRegisterStatusCode = (code) => {

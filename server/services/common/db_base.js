@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
+const { BetterSQLiteWrapper } = require('./db_better_sqlite3');
 const fs = require('fs');
 
 // age_group / competition_type / competition_event

@@ -1,9 +1,9 @@
-const sqlite3 = require('sqlite3').verbose();
+const { BetterSQLiteWrapper } = require('../common/db_better_sqlite3');
 const {DB_SCHEME, TABLE} = require('../common/constant_sql')
 
 class LicenseService {
     constructor() {
-        this.db = new sqlite3.Database(DB_SCHEME);
+        this.db = new BetterSQLiteWrapper(DB_SCHEME);
         this.db.serialize(() => {
             this.db.run(`
                 CREATE TABLE IF NOT EXISTS license (

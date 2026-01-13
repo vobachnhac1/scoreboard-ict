@@ -3,30 +3,117 @@
   "author": "NhacVB",
   "version": "1.0.0",
   "license": "DHT-NHACVB",
-  "description": "Phần mềm chấm điểm phiên bản nâng cấp",
+  "description": "Phần mềm chấm điểm thi đấu Võ Hiện Đại",
   "main": "electron.js",
   "build": {
-    "productName": "ScoreBoard Version 2.0",
+    "productName": "VHDScoreBoard",
     "appId": "com.dht.scoreboard",
-    "copyright": "Copyright (C) 2024 DHT JSC",
-    "artifactName": "ScoreBoard.exe",
+    "copyright": "Copyright (C) 2026 Võ Hiện Đại JSC",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "files": [
+      "**/*",
+      "!**/*.ts",
+      "!*.map",
+      "!node_modules/**/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!node_modules/*.d.ts",
+      "!node_modules/.bin",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+      "!**/{appveyor.yml,.travis.yml,circle.yml}",
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+    ],
+    "asarUnpack": [
+      "node_modules/better-sqlite3/**/*"
+    ],
     "mac": {
-      "target": "dmg",
-      "icon": "build/icon.png"
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "icon": "build/icon.icns",
+      "category": "public.app-category.sports",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "type": "distribution"
+    },
+    "dmg": {
+      "title": "${productName} ${version}",
+      "icon": "build/icon.icns",
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "window": {
+        "width": 540,
+        "height": 380
+      }
     },
     "win": {
       "target": [
-        "portable"
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
       ],
-      "icon": "build/icon.ico"
-    }
+      "icon": "build/icon.ico",
+      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "ScoreBoard",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": true,
+      "license": "LICENSE"
+    },
+    "portable": {
+      "artifactName": "VHDScoreBoard-Portable.exe"
+    },
+    "npmRebuild": true
   },
   "scripts": {
     "start": "electron .",
     "dev": "concurrently \"webpack --watch\" \"electron .\"",
-    "build": "rimraf ./public && mkdir public && webpack --progress -p",
-    "dist:win": "electron-builder --win=portable",
-    "dist:mac": "electron-builder --mac --universal",
+    "build": "rimraf ./public && mkdir public && webpack --mode production --progress",
+    "check": "node scripts/check-build-ready.js",
+    "rebuild:native": "node scripts/rebuild-native.js",
+    "rebuild:native:universal": "node scripts/rebuild-native.js --universal",
+    "prebuild:mac": "npm run build && npm run rebuild:native",
+    "prebuild:mac:universal": "npm run build && npm run rebuild:native:universal",
+    "prebuild:win": "npm run build && npm run rebuild:native",
+    "dist:win": "npm run prebuild:win && electron-builder --win",
+    "dist:win:portable": "npm run prebuild:win && electron-builder --win=portable",
+    "dist:win:nsis": "npm run prebuild:win && electron-builder --win=nsis",
+    "dist:mac": "npm run prebuild:mac && electron-builder --mac",
+    "dist:mac:x64": "npm run prebuild:mac && electron-builder --mac --x64",
+    "dist:mac:arm64": "npm run prebuild:mac && electron-builder --mac --arm64",
+    "dist:mac:universal": "npm run prebuild:mac:universal && electron-builder --mac --universal",
     "fix-install": "./node_modules/.bin/electron-rebuild && node node_modules/java/postInstall.js"
   },
   "devDependencies": {
@@ -44,6 +131,7 @@
     "electron": "^30.0.4",
     "electron-builder": "^24.13.3",
     "electron-devtools-assembler": "^1.2.0",
+    "electron-icon-builder": "^2.0.1",
     "electron-rebuild": "^3.2.9",
     "extract-text-webpack-plugin": "3.0.2",
     "file-loader": "6.2.0",
@@ -111,7 +199,7 @@
     "sass-loader": "^14.2.1",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.7.4",
-    "sqlite3": "^5.1.7",
+    "better-sqlite3": "^11.7.0",
     "systeminformation": "^5.25.11",
     "tailwindcss": "^3.4.3",
     "uuid": "^11.1.0",

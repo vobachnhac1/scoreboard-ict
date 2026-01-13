@@ -133,7 +133,7 @@ export default function ConfigSystem() {
   const [logoInput, setLogoInput] = useState('');  
   const [editingIndex, setEditingIndex] = useState(null);
   const [loadingLogos, setLoadingLogos] = useState(false);
-  const [uploadMode, setUploadMode] = useState('url'); // 'url' hoặc 'file'
+  const [uploadMode, setUploadMode] = useState('file'); // 'url' hoặc 'file'
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -408,7 +408,7 @@ export default function ConfigSystem() {
 
       {/* Chọn chế độ upload */}
       <div className="mb-4 flex gap-4">
-        <label className="flex items-center gap-2 cursor-pointer">
+        {/* <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="radio"
             name="uploadMode"
@@ -418,7 +418,7 @@ export default function ConfigSystem() {
             className="w-4 h-4"
           />
           <span className="text-sm font-medium">Nhập URL</span>
-        </label>
+        </label> */}
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="radio"

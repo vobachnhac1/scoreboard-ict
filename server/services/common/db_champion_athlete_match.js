@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
+const { BetterSQLiteWrapper } = require('../common/db_better_sqlite3');
 const fs = require('fs');
 const {DB_SCHEME, TABLE} = require('../common/constant_sql')
 
@@ -12,7 +12,7 @@ const {DB_SCHEME, TABLE} = require('../common/constant_sql')
  */
 class DBAthMatchService {
     constructor() {
-        this.db = new sqlite3.Database(DB_SCHEME);
+        this.db = new BetterSQLiteWrapper(DB_SCHEME);
         this.db.serialize(() => {
             this.db.run(TABLE.CRE_CHP_ATH_MAT); 
             this.db.run(TABLE.CRE_CHP_ATH_MAT_HIS); 

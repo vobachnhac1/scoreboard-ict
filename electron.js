@@ -7,12 +7,12 @@ const server = require('./app');
 const path = require('path');
 const url = require('url');
 
-try {
-  require('electron-reloader')(module);
-} catch (err) {
-    console.log('Reload failed:', err);
-
-}
+// Tạm thời tắt electron-reloader để test migration
+// try {
+//   require('electron-reloader')(module);
+// } catch (err) {
+//     console.log('Reload failed:', err);
+// }
 
 let mainWindow;
 
@@ -59,7 +59,7 @@ function createWindow() {
   // }));
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // Register
 

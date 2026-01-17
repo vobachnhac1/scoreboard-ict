@@ -1,0 +1,75 @@
+-- -- Migration: Thêm cấu hình quyền hiển thị buttons
+-- -- Date: 2025-12-25
+-- -- Description: Thêm các trường cấu hình quyền hiển thị buttons trên màn hình Vovinam
+
+-- -- Thêm các trường quyền hiển thị buttons - Điểm số
+-- ALTER TABLE config_system 
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_diem_1 BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button +1/-1 điểm',
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_diem_2 BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button +2/-2 điểm',
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_diem_3 BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button +3/-3 điểm',
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_diem_5 BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button +5/-5 điểm',
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_diem_10 BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button +10/-10 điểm';
+
+-- -- Thêm các trường quyền hiển thị buttons - Hành động
+-- ALTER TABLE config_system 
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_nhac_nho BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button Nhắc nhở',
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_canh_cao BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button Cảnh cáo',
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_don_chan BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button Đòn chân',
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_bien BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button Biên',
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_nga BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button Ngã',
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_y_te BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button Y tế',
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_thang BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button Thắng';
+
+-- -- Thêm các trường quyền hiển thị buttons - Điều khiển
+-- ALTER TABLE config_system 
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_quay_lai BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button Quay lại',
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_reset BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button Reset',
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_lich_su BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button Lịch sử',
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_cau_hinh BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button Cấu hình',
+-- ADD COLUMN IF NOT EXISTS hien_thi_button_ket_thuc BOOLEAN DEFAULT TRUE COMMENT 'Hiển thị button Kết thúc';
+
+-- -- Cập nhật giá trị mặc định cho bản ghi hiện có (nếu có)
+-- UPDATE config_system 
+-- SET 
+--   hien_thi_button_diem_1 = COALESCE(hien_thi_button_diem_1, TRUE),
+--   hien_thi_button_diem_2 = COALESCE(hien_thi_button_diem_2, TRUE),
+--   hien_thi_button_diem_3 = COALESCE(hien_thi_button_diem_3, TRUE),
+--   hien_thi_button_diem_5 = COALESCE(hien_thi_button_diem_5, TRUE),
+--   hien_thi_button_diem_10 = COALESCE(hien_thi_button_diem_10, TRUE),
+--   hien_thi_button_nhac_nho = COALESCE(hien_thi_button_nhac_nho, TRUE),
+--   hien_thi_button_canh_cao = COALESCE(hien_thi_button_canh_cao, TRUE),
+--   hien_thi_button_don_chan = COALESCE(hien_thi_button_don_chan, TRUE),
+--   hien_thi_button_bien = COALESCE(hien_thi_button_bien, TRUE),
+--   hien_thi_button_nga = COALESCE(hien_thi_button_nga, TRUE),
+--   hien_thi_button_y_te = COALESCE(hien_thi_button_y_te, TRUE),
+--   hien_thi_button_thang = COALESCE(hien_thi_button_thang, TRUE),
+--   hien_thi_button_quay_lai = COALESCE(hien_thi_button_quay_lai, TRUE),
+--   hien_thi_button_reset = COALESCE(hien_thi_button_reset, TRUE),
+--   hien_thi_button_lich_su = COALESCE(hien_thi_button_lich_su, TRUE),
+--   hien_thi_button_cau_hinh = COALESCE(hien_thi_button_cau_hinh, TRUE),
+--   hien_thi_button_ket_thuc = COALESCE(hien_thi_button_ket_thuc, TRUE)
+-- WHERE id IS NOT NULL;
+
+-- -- Kiểm tra kết quả
+-- SELECT 
+--   'Button Permissions' as category,
+--   hien_thi_button_diem_1,
+--   hien_thi_button_diem_2,
+--   hien_thi_button_diem_3,
+--   hien_thi_button_diem_5,
+--   hien_thi_button_diem_10,
+--   hien_thi_button_nhac_nho,
+--   hien_thi_button_canh_cao,
+--   hien_thi_button_don_chan,
+--   hien_thi_button_bien,
+--   hien_thi_button_nga,
+--   hien_thi_button_y_te,
+--   hien_thi_button_thang,
+--   hien_thi_button_quay_lai,
+--   hien_thi_button_reset,
+--   hien_thi_button_lich_su,
+--   hien_thi_button_cau_hinh,
+--   hien_thi_button_ket_thuc
+-- FROM config_system
+-- LIMIT 1;
+

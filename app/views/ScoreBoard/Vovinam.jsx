@@ -29,14 +29,42 @@ const Vovinam = () => {
 
   // Helper function để lấy flag image
   const getFlagImage = (country) => {
-    const countryName = country || 'Vietnam';
+    // Nếu country rỗng hoặc undefined, dùng Vietnam
+    let countryName = country && country.trim() !== '' ? country : 'Vietnam';
+
+    // Capitalize first letter (vietnam -> Vietnam)
+    countryName = countryName.charAt(0).toUpperCase() + countryName.slice(1).toLowerCase();
+
+    // Sử dụng dynamic import với context
+    // Webpack sẽ bundle tất cả file .png trong thư mục flags
     try {
-      return require(`../../assets/flags/${countryName}.png`);
+      const images = require.context('../../assets/flags', false, /\.png$/);
+      const imagePath = `./${countryName}.png`;
+
+      // DEBUG: Log available flags
+      console.log('🔍 Available flags:', images.keys());
+      console.log('🔍 Looking for:', imagePath);
+      console.log('🔍 Country input:', country);
+      console.log('🔍 Country normalized:', countryName);
+
+      // Kiểm tra xem file có tồn tại không
+      if (images.keys().includes(imagePath)) {
+        console.log('✅ Flag found:', imagePath);
+        return images(imagePath);
+      } else {
+        // Fallback về Vietnam
+        console.log(`❌ Flag not found for: ${countryName}, using Vietnam`);
+        console.log('🔍 Trying Vietnam.png...');
+        return images('./Vietnam.png');
+      }
     } catch (error) {
-      // Fallback to Vietnam if country flag not found
+      console.error('❌ Error loading flag:', error);
+      // Fallback cuối cùng
       try {
-        return require(`../../assets/flags/Vietnam.png`);
+        const images = require.context('../../assets/flags', false, /\.png$/);
+        return images('./Vietnam.png');
       } catch (e) {
+        console.error('❌ Fatal error loading Vietnam.png:', e);
         return null;
       }
     }
@@ -2252,7 +2280,7 @@ const Vovinam = () => {
                 style={{ minWidth: "75px", maxWidth: "75px" }}
               >
                 <img
-                  src={logo.url}
+                  src={logo.url.startsWith('http') ? logo.url : `http://localhost:6789${logo.url}`}
                   alt={`Logo ${index + 1}`}
                   className="h-20 w-auto object-contain"
                   onError={(e) => {
@@ -2293,19 +2321,22 @@ const Vovinam = () => {
               {redScore}
             </div>
             <div className="flex justify-between items-center w-full mt-4">
-              <div className="h-20 w-20 mr-4 flex justify-center items-center overflow-hidden rounded-lg shadow-lg">
-                {getFlagImage(matchInfo.red?.country) ? (
-                  <img
-                    src={getFlagImage(matchInfo.red?.country)}
-                    alt={matchInfo.red?.country || 'Vietnam'}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="bg-slate-400 w-full h-full flex items-center justify-center text-xs">
-                    FLAG
-                  </div>
-                )}
-              </div>
+              {/* <div className="h-20 w-20 mr-4 flex justify-center items-center overflow-hidden rounded-lg shadow-lg bg-white">
+                <img
+                  src={getFlagImage(matchInfo.red?.country)}
+                  alt={matchInfo.red?.country || 'Vietnam'}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Nếu lỗi load ảnh, thử load Vietnam
+                    try {
+                      const images = require.context('../../assets/flags', false, /\.png$/);
+                      e.target.src = images('./Vietnam.png');
+                    } catch (err) {
+                      console.error('Error loading fallback flag:', err);
+                    }
+                  }}
+                />
+              </div> */}
               <div className="font-semibold text-lg flex-1 text-white">
                 <p className="text-xl">{matchInfo.red?.name || "VĐV ĐỎ"}</p>
                 <p className="text-base">
@@ -2462,19 +2493,22 @@ const Vovinam = () => {
                   {matchInfo.blue?.unit || ""}
                 </p>
               </div>
-              <div className="h-20 w-20 ml-4 flex justify-center items-center overflow-hidden rounded-lg shadow-lg">
-                {getFlagImage(matchInfo.blue?.country) ? (
-                  <img
-                    src={getFlagImage(matchInfo.blue?.country)}
-                    alt={matchInfo.blue?.country || 'Vietnam'}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="bg-slate-400 w-full h-full flex items-center justify-center text-xs">
-                    FLAG
-                  </div>
-                )}
-              </div>
+              {/* <div className="h-20 w-20 ml-4 flex justify-center items-center overflow-hidden rounded-lg shadow-lg bg-white">
+                <img
+                  src={getFlagImage(matchInfo.blue?.country)}
+                  alt={matchInfo.blue?.country || 'Vietnam'}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Nếu lỗi load ảnh, thử load Vietnam
+                    try {
+                      const images = require.context('../../assets/flags', false, /\.png$/);
+                      e.target.src = images('./Vietnam.png');
+                    } catch (err) {
+                      console.error('Error loading fallback flag:', err);
+                    }
+                  }}
+                />
+              </div> */}
             </div>
           </div>
           {renderGDScores(generateGdData(), 'blue')}

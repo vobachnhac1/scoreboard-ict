@@ -1014,6 +1014,14 @@ InitSocket = async (io) => {
             const {room_id, socket_id, referrer, accepted, status} = input;
             const client = MapConn[`${input.socket_id}`];
             const admin = MapConn[`${socket.id}`];
+            const __room_id = room_id ?? admin.room_id ?? client.room_id;
+
+
+            // // kiểm tra room_id trong socket 
+            // const token = crypto.randomBytes(32).toString('hex');
+            // const client = MapConn[`${input.socket_id}`]
+            socket.join(__room_id);
+            
             // kiểm tra admin có join room hay chưa
             if(admin.room_id != room_id){
                 admin.room_id = room_id;
@@ -1029,11 +1037,11 @@ InitSocket = async (io) => {
                 console.log(`[SET_PERMISSION_REF] - ADMIN ${socket.id} đã tham gia phòng ${room_id}`);
             }
             if(!client){
-                io.to(input?.room_id).emit('RES_ROOM_ADMIN', {
+                io.to(__room_id).emit('RES_ROOM_ADMIN', {
                     status: 400,
                     message: 'Thực hiện lỗi',
                     data: {
-                        room_id: input?.room_id,
+                        room_id: __room_id,
                         ls_conn: MapConn
                     }
                 });
@@ -1049,17 +1057,18 @@ InitSocket = async (io) => {
                 register_status_name: getRegisterStatusName(accepted),
                 connect_status_code: getConnectStatusCode(status), 
                 connect_status_name: getConnectStatusName(status),
-                token: token
+                token: token,
+                room_id: __room_id
             }
             MapConn[`${socket_id}`] = upt_client
 
             // gửi admin
-            io.to(room_id).emit('RES_ROOM_ADMIN', {
+            io.to(__room_id).emit('RES_ROOM_ADMIN', {
                 path: CONSTANT.ADMIN_FETCH_CONN,
                 status: 200,
                 message: 'Thực hiện thành công',
                 data: {
-                    room_id: room_id,
+                    room_id: __room_id,
                     ls_conn: MapConn
                 }
             });   

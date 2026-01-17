@@ -83,10 +83,10 @@ class InitConfigService {
                     const stmt = this.db.prepare("INSERT INTO config_values (key, child_key, value) VALUES (?, ?, ?)");
                     const data = [
                         // ===== THÔNG TIN GIẢI ĐẤU =====
-                        ['system', 'ten_giai_dau', 'Giải Vô địch Vovinam Toàn quốc 2025'],
-                        ['system', 'bo_mon', 'Vovinam'],
-                        ['system', 'thoi_gian_bat_dau', '2025-01-15'],
-                        ['system', 'thoi_gian_ket_thuc', '2025-01-20'],
+                        ['system', 'ten_giai_dau', 'GIẢI CÚP VÕ HIỆN ĐẠI NĂM 2026'],
+                        ['system', 'bo_mon', 'VÕ HIỆN ĐẠI'],
+                        ['system', 'thoi_gian_bat_dau', '2026-01-17'],
+                        ['system', 'thoi_gian_ket_thuc', '2026-01-18'],
                         ['system', 'mo_ta_giai_dau', 'Giải đấu quy tụ các võ sĩ xuất sắc nhất cả nước'],
 
                         // ===== CÀI ĐẶT CHUNG =====
@@ -109,10 +109,10 @@ class InitConfigService {
                         ['system', 'cau_hinh_hinh_thuc_doikhang', '1'],  // 1: Có | 0: Không
 
                         // ===== CÀI ĐẶT THỜI GIAN =====
-                        ['system', 'thoi_gian_tinh_diem', '180'],
-                        ['system', 'thoi_gian_thi_dau', '120'],
-                        ['system', 'thoi_gian_nghi', '60'],
-                        ['system', 'thoi_gian_hiep_phu', '90'],
+                        ['system', 'thoi_gian_tinh_diem', '1000'],
+                        ['system', 'thoi_gian_thi_dau', '90'],
+                        ['system', 'thoi_gian_nghi', '45'],
+                        ['system', 'thoi_gian_hiep_phu', '60'],
                         ['system', 'thoi_gian_y_te', '120'],
 
                         // ===== ĐIỂM ÁP DỤNG =====
@@ -122,7 +122,7 @@ class InitConfigService {
                         ['system', 'che_do_app', '1'], // chế độ chỉ dùng Thi đối kháng đơn giản | Thi quyền đơn giản
 
                         // ===== COMPETITION (Legacy - Giữ lại để tương thích) =====
-                        ['competition', 'ten_giai', 'GIẢI VÔ ĐỊCH THỂ DỤC THỂ THAO NĂM 2025'],
+                        ['competition', 'ten_giai', 'GIẢI CÚP VÕ HIỆN ĐẠI NĂM 2026'],
                         ['competition', 'thoi_gian_bat_dau', '07-07-2025'],
                         ['competition', 'thoi_gian_ket_thuc', '10-07-2025'],
                         ['competition', 'dia_diem', 'QUẬN BÌNH TÂN, HỒ CHÍ MINH'],

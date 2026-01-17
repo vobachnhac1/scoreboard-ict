@@ -517,7 +517,7 @@ export default function ConfigSystem() {
               {/* Preview ảnh */}
               <div className="w-20 h-20 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
                 <img
-                  src={logo.url}
+                  src={logo.url.startsWith('http') ? logo.url : `http://localhost:6789${logo.url}`}
                   alt={`Logo ${index + 1}`}
                   className="max-w-full max-h-full object-contain"
                   onError={(e) => {

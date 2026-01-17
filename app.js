@@ -6,6 +6,7 @@ const logger = require('morgan');
 const cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser');
+const fs = require('fs');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
@@ -27,7 +28,25 @@ const competitionMatchTeamRoutes = require('./server/routes/competition_match_te
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'server/uploads')));
+
+// Serve uploads từ USER_DATA_PATH (khi build) hoặc local (khi dev)
+const uploadsDir = process.env.USER_DATA_PATH
+  ? path.join(process.env.USER_DATA_PATH, 'uploads')
+  : path.join(__dirname, 'server/uploads');
+
+// Tạo thư mục uploads nếu chưa tồn tại
+const logosDir = path.join(uploadsDir, 'logos');
+if (!fs.existsSync(logosDir)) {
+  try {
+    fs.mkdirSync(logosDir, { recursive: true });
+    console.log('✅ Created uploads directory:', logosDir);
+  } catch (error) {
+    console.error('❌ Error creating uploads directory:', error);
+  }
+}
+
+console.log('📁 Uploads directory:', uploadsDir);
+app.use('/uploads', express.static(uploadsDir));
 
 // allow cors
 app.use(cors());

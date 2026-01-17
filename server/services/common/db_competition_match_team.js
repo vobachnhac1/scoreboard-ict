@@ -95,27 +95,24 @@ class DBCompetitionMatchTeamService {
                         VALUES (?, ?, ?, ?)
                     `;
 
-                    const stmt = db.prepare(athleteQuery);
-                    let athleteCount = 0;
-                    let hasError = false;
+                    try {
+                        const stmt = db.prepare(athleteQuery);
 
-                    athletes.forEach((athlete, index) => {
-                        stmt.run([teamId, athlete.name || '', athlete.unit || '', index + 1], (err) => {
-                            if (err && !hasError) {
-                                hasError = true;
-                                console.error('Error inserting athlete:', err);
-                                stmt.finalize();
-                                return reject(err);
-                            }
-                            athleteCount++;
-                            if (athleteCount === athletes.length && !hasError) {
-                                stmt.finalize((err) => {
-                                    if (err) return reject(err);
-                                    resolve(teamId);
-                                });
-                            }
+                        athletes.forEach((athlete, index) => {
+                            stmt.run(
+                                teamId,
+                                athlete.name || '',
+                                athlete.unit || '',
+                                index + 1
+                            );
                         });
-                    });
+
+                        stmt.finalize();
+                        resolve(teamId);
+                    } catch (err) {
+                        console.error('Error inserting athletes:', err);
+                        return reject(err);
+                    }
                 } else {
                     resolve(teamId);
                 }

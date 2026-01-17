@@ -468,6 +468,69 @@ export default function CompetitionManagement() {
 
           {/* Tab 2: Quản lý dữ liệu */}
           <TabPanel>
+            {/* Header với button refresh */}
+            <div className="mb-6 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-600 bg-clip-text text-transparent">
+                    Dữ liệu đã lưu
+                  </h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Quản lý và xem chi tiết các file đã upload
+                  </p>
+                </div>
+
+                {/* Badge số lượng */}
+                {!loadingData && savedData.length > 0 && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-blue-100 rounded-xl border-2 border-blue-200">
+                    <svg
+                      className="w-5 h-5 text-blue-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                    <div>
+                      <p className="text-xs text-blue-600 font-semibold uppercase">Tổng số</p>
+                      <p className="text-lg font-bold text-blue-700">{savedData.length}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={fetchSavedData}
+                disabled={loadingData}
+                className="group relative overflow-hidden flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              >
+                {/* Button shine effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 transform -skew-x-12 group-hover:translate-x-full transition-all duration-700"></div>
+
+                <svg
+                  className={`w-5 h-5 ${loadingData ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-500`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                <span className="relative z-10">
+                  {loadingData ? 'Đang tải...' : 'Làm mới'}
+                </span>
+              </button>
+            </div>
+
             <div className="space-y-4">
               {loadingData ? (
                 <div className="text-center py-8">
@@ -475,86 +538,212 @@ export default function CompetitionManagement() {
                   <p className="mt-2 text-gray-600">Đang tải dữ liệu...</p>
                 </div>
               ) : savedData.length === 0 ? (
-                <div className="text-center py-12 bg-gray-50 rounded-lg">
-                  <svg
-                    className="mx-auto h-12 w-12 text-gray-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                    />
-                  </svg>
-                  <p className="mt-2 text-sm text-gray-600">
-                    Chưa có dữ liệu nào được lưu
-                  </p>
+                <div className="relative text-center py-16 bg-gradient-to-br from-blue-50 via-blue-50 to-blue-50 rounded-2xl border-2 border-dashed border-blue-200 overflow-hidden">
+                  {/* Animated background circles */}
+                  <div className="absolute top-0 left-0 w-32 h-32 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+                  <div className="absolute bottom-0 right-0 w-32 h-32 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse" style={{animationDelay: '1s'}}></div>
+
+                  <div className="relative z-10">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full mb-4 shadow-lg">
+                      <svg
+                        className="h-10 w-10 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                        />
+                      </svg>
+                    </div>
+                    <p className="mt-4 text-xl font-bold text-gray-800">
+                      Chưa có dữ liệu nào được lưu
+                    </p>
+                    <p className="mt-2 text-sm text-gray-600">
+                      Hãy upload file Excel để bắt đầu quản lý dữ liệu
+                    </p>
+                  </div>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          ID
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Sheet Name
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          File Name
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Số dòng
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Ngày tạo
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Thao tác
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {savedData.map((item) => (
-                        <tr key={item.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                            {item.id}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-blue-600">
-                            {item.sheet_name}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                            {item.file_name || "-"}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                            {item.data?.length || 0}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                            {new Date(item.created_at).toLocaleString('vi-VN')}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm space-x-2">
-                            <button
-                              onClick={() => handleViewDetail(item)}
-                              className="text-blue-600 hover:text-blue-900 font-medium"
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {savedData.map((item, index) => (
+                    <div
+                      key={item.id}
+                      className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-transparent overflow-hidden transform hover:-translate-y-2"
+                      style={{
+                        animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`
+                      }}
+                    >
+                      {/* Gradient Border Effect */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" style={{padding: '2px'}}>
+                        <div className="bg-white rounded-2xl h-full w-full"></div>
+                      </div>
+
+                      {/* Card Content */}
+                      <div className="relative z-10">
+                        {/* Card Header với gradient nổi bật */}
+                        <div className="relative bg-gradient-to-br from-blue-500 via-blue-600 to-blue-600 px-6 py-5 overflow-hidden">
+                          {/* Animated background pattern */}
+                          <div className="absolute inset-0 opacity-20">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full transform translate-x-16 -translate-y-16"></div>
+                            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full transform -translate-x-12 translate-y-12"></div>
+                          </div>
+
+                          <div className="relative flex items-start justify-between">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                <span className="text-xs font-medium text-blue-100 uppercase tracking-wider">
+                                  Hoạt động
+                                </span>
+                              </div>
+                              <h3 className="text-xl font-bold text-white truncate mb-1 group-hover:scale-105 transition-transform duration-300">
+                                {item.sheet_name}
+                              </h3>
+                              <p className="text-xs text-blue-100 font-medium">
+                                ID: #{item.id}
+                              </p>
+                            </div>
+                            <div className="flex-shrink-0 ml-4">
+                              <div className="bg-white/25 backdrop-blur-md rounded-xl px-4 py-2 shadow-lg border border-white/30">
+                                <div className="text-center">
+                                  <p className="text-2xl font-bold text-white">
+                                    {item.data?.length > 0 ? item.data?.length - 1 : 0  }
+                                  </p>
+                                  <p className="text-xs text-blue-100 font-medium">
+                                    dòng
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Card Body */}
+                        <div className="px-6 py-5 space-y-4 bg-gradient-to-br from-gray-50 to-white">
+                          {/* File Name */}
+                          <div className="group/item flex items-start gap-3 p-3 rounded-xl hover:bg-blue-50 transition-all duration-300">
+                            <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-100 rounded-lg flex items-center justify-center group-hover/item:scale-110 transition-transform duration-300">
+                              <svg
+                                className="w-5 h-5 text-blue-600"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                />
+                              </svg>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">
+                                Tên file
+                              </p>
+                              <p className="text-sm text-gray-900 font-medium truncate" title={item.file_name}>
+                                {item.file_name || "Không có tên file"}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Created Date */}
+                          <div className="group/item flex items-start gap-3 p-3 rounded-xl hover:bg-blue-50 transition-all duration-300">
+                            <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-100 to-pink-100 rounded-lg flex items-center justify-center group-hover/item:scale-110 transition-transform duration-300">
+                              <svg
+                                className="w-5 h-5 text-blue-600"
+                                fill="none" 
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                />
+                              </svg>
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">
+                                Ngày tạo
+                              </p>
+                              <p className="text-sm text-gray-900 font-medium">
+                                {new Date(item.created_at).toLocaleString('vi-VN', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Card Footer - Actions */}
+                      <div className="relative px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-200">
+                        <div className="flex gap-3">
+                          <button
+                            onClick={() => handleViewDetail(item)}
+                            className="group/btn flex-1 relative overflow-hidden flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-bold rounded-xl transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105"
+                          >
+                            {/* Button shine effect */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover/btn:opacity-30 transform -skew-x-12 group-hover/btn:translate-x-full transition-all duration-700"></div>
+
+                            <svg
+                              className="w-5 h-5 group-hover/btn:rotate-12 transition-transform duration-300"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
                             >
-                              Xem chi tiết
-                            </button>
-                            <span className="text-gray-300">|</span>
-                            <button
-                              onClick={() => handleDelete(item.id)}
-                              className="text-red-600 hover:text-red-900 font-medium"
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                              />
+                            </svg>
+                            <span className="relative z-10">Xem chi tiết</span>
+                          </button>
+
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="group/btn relative overflow-hidden flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white text-sm font-bold rounded-xl transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105"
+                          >
+                            {/* Button shine effect */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover/btn:opacity-30 transform -skew-x-12 group-hover/btn:translate-x-full transition-all duration-700"></div>
+
+                            <svg
+                              className="w-5 h-5 group-hover/btn:rotate-12 transition-transform duration-300"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
                             >
-                              Xóa
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
+                            </svg>
+                            <span className="relative z-10">Xóa</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -645,7 +834,7 @@ export default function CompetitionManagement() {
                       const formatColors = {
                         'SOL': 'bg-blue-100 text-blue-800',
                         'TUV': 'bg-green-100 text-green-800',
-                        'DAL': 'bg-purple-100 text-purple-800',
+                        'DAL': 'bg-blue-100 text-blue-800',
                         'DOL': 'bg-orange-100 text-orange-800',
                         'DK': 'bg-red-100 text-red-800'
                       };
@@ -842,14 +1031,14 @@ export default function CompetitionManagement() {
                           const bgColors = {
                             'SOL': 'bg-blue-50',
                             'TUV': 'bg-green-50',
-                            'DAL': 'bg-purple-50',
+                            'DAL': 'bg-blue-50',
                             'DOL': 'bg-orange-50',
                             'DK': 'bg-red-50'
                           };
                           const borderColors = {
                             'SOL': 'border-l-4 border-blue-400',
                             'TUV': 'border-l-4 border-green-400',
-                            'DAL': 'border-l-4 border-purple-400',
+                            'DAL': 'border-l-4 border-blue-400',
                             'DOL': 'border-l-4 border-orange-400',
                             'DK': 'border-l-4 border-red-400'
                           };
@@ -883,7 +1072,7 @@ export default function CompetitionManagement() {
                             >
                               {/* Team Number */}
                               <td className="px-4 py-4 whitespace-nowrap text-sm font-bold text-gray-700 border-r border-gray-300">
-                                <div className="team-badge flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg">
+                                <div className="team-badge flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg">
                                   {team.teamNo}
                                 </div>
                               </td>
@@ -900,7 +1089,7 @@ export default function CompetitionManagement() {
                                 <span className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-md ${
                                   matchType === 'SOL' ? 'bg-blue-500 text-white' :
                                   matchType === 'TUV' ? 'bg-green-500 text-white' :
-                                  matchType === 'DAL' ? 'bg-purple-500 text-white' :
+                                  matchType === 'DAL' ? 'bg-blue-500 text-white' :
                                   matchType === 'DOL' ? 'bg-orange-500 text-white' :
                                   'bg-gray-500 text-white'
                                 }`}>
@@ -934,7 +1123,7 @@ export default function CompetitionManagement() {
                                     <div className="text-xs text-gray-500 font-medium">
                                       Tổng số VĐV:
                                     </div>
-                                    <div className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold">
+                                    <div className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">
                                       {team.athletes.length}
                                     </div>
                                   </div>
@@ -980,7 +1169,7 @@ export default function CompetitionManagement() {
                       <span className="text-gray-600">Tự vệ (2 VĐV)</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-1 rounded bg-purple-100 text-purple-800 font-semibold">DAL</span>
+                      <span className="px-2 py-1 rounded bg-blue-100 text-blue-800 font-semibold">DAL</span>
                       <span className="text-gray-600">Đại luyện (4 VĐV)</span>
                     </div>
                     <div className="flex items-center gap-2">

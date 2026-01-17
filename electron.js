@@ -102,7 +102,7 @@ app.on('ready', createWindow);
 //   // globalShortcut.register('F2', () => {
 //   //   mainWindow.loadURL('http://localhost:6789/#/versus');
 //   // });
-// });
+  // });
 
 function startServer() {
   const subprocess = fork('./app.js'); // hoặc file Node.js của bạn

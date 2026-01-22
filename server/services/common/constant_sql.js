@@ -12,8 +12,9 @@ const getDbPath = () => {
         return cachedDbPath;
     }
 
-    // Lấy userData path từ environment variable (được set từ electron.js)
-    const userDataPath = process.env.USER_DATA_PATH;
+    // Chỉ dùng USER_DATA_PATH trong production
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const userDataPath = isDevelopment ? null : process.env.USER_DATA_PATH;
 
     if (userDataPath) {
         // Production: Lưu database trong userData folder

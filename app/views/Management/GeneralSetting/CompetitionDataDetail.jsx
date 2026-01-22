@@ -153,6 +153,327 @@ function RoundHistoryCard({ round, roundIndex, logs }) {
   );
 }
 
+// Component Card cho mỗi trận đấu
+function MatchCard({ row, listActions, getActionsByStatus, onDoubleClick, viewMode = 'grid' }) {
+  const status = row.match_status || 'WAI';
+  const statusConfig = {
+    'WAI': {
+      label: 'Chờ',
+      color: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+        </svg>
+      )
+    },
+    'IN': {
+      label: 'Đang diễn ra',
+      color: 'bg-blue-100 text-blue-800 border-blue-300',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+        </svg>
+      )
+    },
+    'FIN': {
+      label: 'Kết thúc',
+      color: 'bg-green-100 text-green-800 border-green-300',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+        </svg>
+      )
+    },
+    'CAN': {
+      label: 'Hủy',
+      color: 'bg-red-100 text-red-800 border-red-300',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+        </svg>
+      )
+    }
+  };
+
+  const currentStatus = statusConfig[status] || statusConfig['WAI'];
+  const availableActions = getActionsByStatus(status);
+
+  // Xác định màu nổi bật theo VĐV thắng
+  const winner = row.winner?.toUpperCase();
+  let cardBorderClass = 'border-gray-200';
+  let cardBgClass = 'bg-white';
+  let cardGlowClass = '';
+
+  if (status === 'FIN' && winner) {
+    if (winner === 'RED') {
+      cardBorderClass = 'border-red-400 border-2';
+      cardBgClass = 'bg-gradient-to-br from-red-50 via-white to-red-50';
+      cardGlowClass = 'shadow-red-200 shadow-lg';
+    } else if (winner === 'BLUE') {
+      cardBorderClass = 'border-blue-400 border-2';
+      cardBgClass = 'bg-gradient-to-br from-blue-50 via-white to-blue-50';
+      cardGlowClass = 'shadow-blue-200 shadow-lg';
+    }
+  }
+
+  // List View - Compact horizontal layout
+  if (viewMode === 'list') {
+    return (
+      <div
+        className={`${cardBgClass} rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border ${cardBorderClass} ${cardGlowClass} overflow-hidden group relative`}
+        onDoubleClick={() => onDoubleClick(row)}
+      >
+        {/* Winner Badge cho List View */}
+        {status === 'FIN' && winner && (
+          <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-bold shadow-md ${
+            winner === 'RED'
+              ? 'bg-red-500 text-white'
+              : 'bg-blue-500 text-white'
+          }`}>
+            🏆 {winner === 'RED' ? 'ĐỎ THẮNG' : 'XANH THẮNG'}
+          </div>
+        )}
+        <div className="flex items-center gap-4 p-4">
+          {/* Trận số */}
+          <div className="flex-shrink-0">
+            <div className="bg-blue-600 text-white rounded-lg px-4 py-2 font-bold text-base shadow-md min-w-[80px] text-center">
+              Trận {row.data[0]}
+            </div>
+          </div>
+
+          {/* Giáp Đỏ */}
+          <div className={`flex-1 min-w-0 transition-all duration-300 ${
+            status === 'FIN' && winner === 'RED' ? 'scale-105' : ''
+          }`}>
+            <div className="flex items-center gap-2 mb-1">
+              <div className={`w-2 h-2 bg-red-600 rounded-full ${status === 'FIN' && winner === 'RED' ? 'animate-pulse' : ''}`}></div>
+              <span className="text-xs font-semibold text-red-700 uppercase">Đỏ</span>
+              {status === 'FIN' && winner === 'RED' && (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              )}
+            </div>
+            <div className={`font-bold truncate ${
+              status === 'FIN' && winner === 'RED' ? 'text-red-700 text-lg' : 'text-red-900'
+            }`}>
+              {row.data[3] || '-'}
+            </div>
+            <div className="text-sm text-red-700 truncate">{row.data[4] || '-'}</div>
+          </div>
+
+          {/* VS */}
+          <div className="flex-shrink-0 text-gray-400 font-bold text-lg">VS</div>
+
+          {/* Giáp Xanh */}
+          <div className={`flex-1 min-w-0 transition-all duration-300 ${
+            status === 'FIN' && winner === 'BLUE' ? 'scale-105' : ''
+          }`}>
+            <div className="flex items-center gap-2 mb-1">
+              <div className={`w-2 h-2 bg-blue-600 rounded-full ${status === 'FIN' && winner === 'BLUE' ? 'animate-pulse' : ''}`}></div>
+              <span className="text-xs font-semibold text-blue-700 uppercase">Xanh</span>
+              {status === 'FIN' && winner === 'BLUE' && (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              )}
+            </div>
+            <div className={`font-bold truncate ${
+              status === 'FIN' && winner === 'BLUE' ? 'text-blue-700 text-lg' : 'text-blue-900'
+            }`}>
+              {row.data[6] || '-'}
+            </div>
+            <div className="text-sm text-blue-700 truncate">{row.data[7] || '-'}</div>
+          </div>
+
+          {/* Trạng thái */}
+          <div className="flex-shrink-0">
+            <div className={`px-3 py-1.5 rounded-lg font-semibold text-xs border-2 ${currentStatus.color} flex items-center gap-1.5 whitespace-nowrap`}>
+              <span>{currentStatus.icon}</span>
+              <span>{currentStatus.label}</span>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex-shrink-0 flex items-center gap-2">
+            {listActions
+              .filter((action) => availableActions.includes(action.key))
+              .map((action) => (
+                <button
+                  onClick={() => action.callback(row)}
+                  key={action.key}
+                  className={`
+                    flex items-center gap-1.5
+                    px-2.5 py-1.5
+                    rounded-lg
+                    text-xs font-semibold
+                    shadow-sm hover:shadow-md
+                    transform hover:scale-105
+                    transition-all duration-200
+                    whitespace-nowrap
+                    ${action.color}
+                  `}
+                >
+                  {action.icon}
+                  <span className="hidden xl:inline">{action.btnText}</span>
+                </button>
+              ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Grid View - Original card layout
+  return (
+    <div
+      className={`${cardBgClass} rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border ${cardBorderClass} ${cardGlowClass} overflow-hidden group relative`}
+      onDoubleClick={() => onDoubleClick(row)}
+    >
+      {/* Winner Badge cho Grid View */}
+      {status === 'FIN' && winner && (
+        <div className={`absolute top-3 right-3 z-10 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5 ${
+          winner === 'RED'
+            ? 'bg-gradient-to-r from-red-500 to-red-600 text-white'
+            : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
+        }`}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+          <span>{winner === 'RED' ? 'ĐỎ THẮNG' : 'XANH THẮNG'}</span>
+        </div>
+      )}
+
+      {/* Header - Trận số và Trạng thái */}
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-3 border-b border-gray-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-blue-600 text-white rounded-lg px-3 py-1.5 font-bold text-sm shadow-md">
+              Trận {row.data[0]}
+            </div>
+            <div className="text-sm text-gray-600">
+              <span className="font-medium">{row.data[1]}</span>
+              {row.data[2] && <span className="ml-2 text-gray-400">• {row.data[2]}</span>}
+            </div>
+          </div>
+          <div className={`px-3 py-1.5 rounded-lg font-semibold text-xs border-2 ${currentStatus.color} flex items-center gap-1.5`}>
+            <span>{currentStatus.icon}</span>
+            <span>{currentStatus.label}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Body - Thông tin VĐV */}
+      <div className="p-5">
+        <div className="grid grid-cols-2 gap-6 mb-5">
+          {/* Giáp Đỏ */}
+          <div className={`bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4 border-2 shadow-sm transition-all duration-300 ${
+            status === 'FIN' && winner === 'RED'
+              ? 'border-red-500 ring-4 ring-red-200 scale-105'
+              : 'border-red-200'
+          }`}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className={`w-3 h-3 bg-red-600 rounded-full ${status === 'FIN' && winner === 'RED' ? 'animate-pulse' : ''}`}></div>
+              <h3 className="text-sm font-bold text-red-700 uppercase tracking-wide">Giáp Đỏ</h3>
+              {status === 'FIN' && winner === 'RED' && (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500 ml-auto" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              )}
+            </div>
+            <div className="space-y-2">
+              <div className={`font-bold text-lg leading-tight ${
+                status === 'FIN' && winner === 'RED' ? 'text-red-700 text-xl' : 'text-red-900'
+              }`}>
+                {row.data[3] || '-'}
+              </div>
+              <div className="text-sm text-red-700 font-medium">
+                {row.data[4] || '-'}
+              </div>
+              {row.data[5] && (
+                <div className="text-xs text-red-600 bg-red-200 rounded px-2 py-1 inline-block">
+                  {row.data[5]}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Giáp Xanh */}
+          <div className={`bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border-2 shadow-sm transition-all duration-300 ${
+            status === 'FIN' && winner === 'BLUE'
+              ? 'border-blue-500 ring-4 ring-blue-200 scale-105'
+              : 'border-blue-200'
+          }`}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className={`w-3 h-3 bg-blue-600 rounded-full ${status === 'FIN' && winner === 'BLUE' ? 'animate-pulse' : ''}`}></div>
+              <h3 className="text-sm font-bold text-blue-700 uppercase tracking-wide">Giáp Xanh</h3>
+              {status === 'FIN' && winner === 'BLUE' && (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500 ml-auto" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              )}
+            </div>
+            <div className="space-y-2">
+              <div className={`font-bold text-lg leading-tight ${
+                status === 'FIN' && winner === 'BLUE' ? 'text-blue-700 text-xl' : 'text-blue-900'
+              }`}>
+                {row.data[6] || '-'}
+              </div>
+              <div className="text-sm text-blue-700 font-medium">
+                {row.data[7] || '-'}
+              </div>
+              {row.data[8] && (
+                <div className="text-xs text-blue-600 bg-blue-200 rounded px-2 py-1 inline-block">
+                  {row.data[8]}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* VĐV thắng */}
+        {row.winner_text && (
+          <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 border-2 border-yellow-300 rounded-lg p-3 mb-4">
+            <div className="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-600" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+              <span className="text-sm font-semibold text-yellow-800">Người thắng:</span>
+              <span className="text-sm font-bold text-yellow-900">{row.winner_text}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Actions */}
+        <div className="flex items-center justify-center gap-2 flex-wrap pt-3 border-t border-gray-200">
+          {listActions
+            .filter((action) => availableActions.includes(action.key))
+            .map((action) => (
+              <button
+                onClick={() => action.callback(row)}
+                key={action.key}
+                className={`
+                  flex items-center gap-1.5
+                  px-3 py-2
+                  rounded-lg
+                  text-xs font-semibold
+                  shadow-md hover:shadow-lg
+                  transform hover:scale-105
+                  transition-all duration-200
+                  whitespace-nowrap
+                  ${action.color}
+                `}
+              >
+                {action.icon}
+                <span>{action.btnText}</span>
+              </button>
+            ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CompetitionDataDetail() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -167,6 +488,22 @@ export default function CompetitionDataDetail() {
 
   // State cho modal actions
   const [openActions, setOpenActions] = useState(null);
+
+  // State cho filter và view
+  const [filterStatus, setFilterStatus] = useState('ALL'); // ALL, WAI, IN, FIN, CAN
+  const [sortBy, setSortBy] = useState('match_no'); // match_no, status, name
+  const [viewMode, setViewMode] = useState('grid'); // grid, list
+  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Scroll to top handler
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Ref để lưu hàm exportToExcel từ HistoryView
   const exportToExcelRef = React.useRef(null);
@@ -248,7 +585,12 @@ export default function CompetitionDataDetail() {
     {
       key: Constants.ACTION_MATCH_START,
       btnText: 'Vào trận',
-      color: 'bg-[#CCE5FF]',
+      color: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+        </svg>
+      ),
       description: 'Vào trận',
       callback: (row) => {
         setOpenActions({ isOpen: true, key: Constants.ACTION_MATCH_START, row: row });
@@ -257,7 +599,12 @@ export default function CompetitionDataDetail() {
     {
       key: Constants.ACTION_MATCH_RESULT,
       btnText: 'Kết quả',
-      color: 'bg-[#FAD7AC]',
+      color: 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white hover:from-yellow-600 hover:to-yellow-700',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      ),
       description: 'Kết quả',
       callback: (row) => {
         setOpenActions({ isOpen: true, key: Constants.ACTION_MATCH_RESULT, row: row });
@@ -266,7 +613,12 @@ export default function CompetitionDataDetail() {
     {
       key: Constants.ACTION_MATCH_CONFIG,
       btnText: 'Cấu hình',
-      color: 'bg-[#FFFF88]',
+      color: 'bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+        </svg>
+      ),
       description: 'Cấu hình hệ thống',
       callback: (row) => {
         setOpenActions({ isOpen: true, key: Constants.ACTION_MATCH_CONFIG, row: row });
@@ -275,7 +627,12 @@ export default function CompetitionDataDetail() {
     {
       key: Constants.ACTION_MATCH_HISTORY,
       btnText: 'Lịch sử',
-      color: 'bg-[#CDEB8B]',
+      color: 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+        </svg>
+      ),
       description: 'Lịch sử thi đấu',
       callback: (row) => {
         setOpenActions({ isOpen: true, key: Constants.ACTION_MATCH_HISTORY, row: row });
@@ -284,7 +641,12 @@ export default function CompetitionDataDetail() {
     {
       key: Constants.ACTION_UPDATE,
       btnText: 'Cập nhật',
-      color: 'bg-[#E0E0E0]',
+      color: 'bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-600 hover:to-gray-700',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+        </svg>
+      ),
       description: 'Cập nhật dữ liệu',
       callback: (row) => {
         setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
@@ -293,7 +655,12 @@ export default function CompetitionDataDetail() {
     {
       key: Constants.ACTION_DELETE,
       btnText: 'Xóa',
-      color: 'bg-[#FFCCCC]',
+      color: 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+        </svg>
+      ),
       description: 'Xác nhận xóa',
       callback: (row) => {
         setOpenActions({ isOpen: true, key: Constants.ACTION_DELETE, row: row });
@@ -439,18 +806,28 @@ export default function CompetitionDataDetail() {
       render: (row) => {
         const availableActions = getActionsByStatus(row.match_status || 'WAI');
         return (
-          <div className="flex items-center justify-center gap-1.5">
+          <div className="flex items-center justify-center gap-2 flex-wrap">
             {listActions
               .filter((action) => availableActions.includes(action.key))
               .map((action) => (
-                <Button
-                  variant="none"
-                  className={`!rounded !px-2 !py-1 !text-xs !font-medium ${action.color} hover:opacity-80 transition-opacity whitespace-nowrap`}
+                <button
                   onClick={() => action.callback(row)}
                   key={action.key}
+                  className={`
+                    flex items-center gap-1.5
+                    px-3 py-1.5
+                    rounded-lg
+                    text-xs font-semibold
+                    shadow-md hover:shadow-lg
+                    transform hover:scale-105
+                    transition-all duration-200
+                    whitespace-nowrap
+                    ${action.color}
+                  `}
                 >
-                  {action.btnText}
-                </Button>
+                  {action.icon}
+                  <span>{action.btnText}</span>
+                </button>
               ))}
           </div>
         );
@@ -491,6 +868,60 @@ export default function CompetitionDataDetail() {
       winner: null
     };
   });
+
+  // Filter data theo status
+  const filteredData = tableData.filter(row => {
+    // Filter theo status
+    if (filterStatus !== 'ALL' && row.match_status !== filterStatus) {
+      return false;
+    }
+
+    // Filter theo search
+    if (search) {
+      const searchLower = search.toLowerCase();
+      const matchNo = String(row.data[0] || '').toLowerCase();
+      const redName = String(row.data[3] || '').toLowerCase();
+      const blueName = String(row.data[6] || '').toLowerCase();
+      const redUnit = String(row.data[4] || '').toLowerCase();
+      const blueUnit = String(row.data[7] || '').toLowerCase();
+
+      return matchNo.includes(searchLower) ||
+             redName.includes(searchLower) ||
+             blueName.includes(searchLower) ||
+             redUnit.includes(searchLower) ||
+             blueUnit.includes(searchLower);
+    }
+
+    return true;
+  });
+
+  // Sort data
+  const sortedData = [...filteredData].sort((a, b) => {
+    switch (sortBy) {
+      case 'match_no':
+        return Number(a.data[0]) - Number(b.data[0]);
+      case 'status':
+        const statusOrder = { 'IN': 0, 'WAI': 1, 'FIN': 2, 'CAN': 3 };
+        return (statusOrder[a.match_status] || 99) - (statusOrder[b.match_status] || 99);
+      case 'red_name':
+        return String(a.data[3] || '').localeCompare(String(b.data[3] || ''));
+      case 'blue_name':
+        return String(a.data[6] || '').localeCompare(String(b.data[6] || ''));
+      default:
+        return 0;
+    }
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = sortedData.slice(startIndex, endIndex);
+
+  // Reset page khi filter thay đổi
+  React.useEffect(() => {
+    setPage(1);
+  }, [filterStatus, search, sortBy]);
 
   // Xử lý thêm mới
   const handleInsert = async (formData) => {
@@ -913,26 +1344,291 @@ export default function CompetitionDataDetail() {
           </span>
         </div>
 
-        <div className="flex items-center justify-between mb-4">
-          <SearchInput value={search} onChange={setSearch} onSearch={handleSearch} placeholder="Tìm kiếm..." />
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-2 border-yellow-200 rounded-lg p-3 shadow-sm">
+            <div className="flex items-center gap-2 mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-700" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+              </svg>
+              <span className="text-xs font-semibold text-yellow-700 uppercase">Chờ</span>
+            </div>
+            <div className="text-2xl font-bold text-yellow-900">
+              {tableData.filter(r => r.match_status === 'WAI').length}
+            </div>
+          </div>
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg p-3 shadow-sm">
+            <div className="flex items-center gap-2 mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-700" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+              </svg>
+              <span className="text-xs font-semibold text-blue-700 uppercase">Đang đấu</span>
+            </div>
+            <div className="text-2xl font-bold text-blue-900">
+              {tableData.filter(r => r.match_status === 'IN').length}
+            </div>
+          </div>
+          <div className="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-lg p-3 shadow-sm">
+            <div className="flex items-center gap-2 mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-700" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-xs font-semibold text-green-700 uppercase">Kết thúc</span>
+            </div>
+            <div className="text-2xl font-bold text-green-900">
+              {tableData.filter(r => r.match_status === 'FIN').length}
+            </div>
+          </div>
+          <div className="bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200 rounded-lg p-3 shadow-sm">
+            <div className="flex items-center gap-2 mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-700" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <span className="text-xs font-semibold text-red-700 uppercase">Hủy</span>
+            </div>
+            <div className="text-2xl font-bold text-red-900">
+              {tableData.filter(r => r.match_status === 'CAN').length}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Bảng dữ liệu */}
-      <div className="overflow-x-auto overflow-y-visible shadow-sm border border-gray-200 ">
-        <div className="min-w-max">
-          <CustomTable
-            columns={columns}
-            data={tableData}
-            loading={loading}
-            page={page}
-            onPageChange={setPage}
-            onRowDoubleClick={(row) => {
-              setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
-            }}
-          />
+      {/* Toolbar - Filter, Sort, View Mode */}
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 mb-6 shadow-sm border border-gray-200">
+        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+          {/* Left: Search & Filter */}
+          <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full lg:w-auto">
+            {/* Search */}
+            <div className="flex-1 min-w-[200px]">
+              <SearchInput
+                value={search}
+                onChange={setSearch}
+                onSearch={handleSearch}
+                placeholder="Tìm kiếm trận, VĐV, đơn vị..."
+              />
+            </div>
+
+            {/* Filter Status */}
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="px-4 py-2 border min-w-[150px] border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            >
+              <option value="ALL">Tất cả trạng thái</option>
+              <option value="WAI">Chờ thi đấu</option>
+              <option value="IN">Đang diễn ra</option>
+              <option value="FIN">Kết thúc</option>
+              <option value="CAN">Hủy bỏ</option>
+            </select>
+
+            {/* Sort */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-4 py-2 border min-w-[150px] border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            >
+              <option value="match_no">Sắp xếp: Trận số</option>
+              <option value="status">Sắp xếp: Trạng thái</option>
+              {/* <option value="red_name">Sắp xếp: Giáp Đỏ</option>
+              <option value="blue_name">Sắp xếp: Giáp Xanh</option> */}
+            </select>
+          </div>
+
+          {/* Right: View Mode & Stats */}
+          <div className="flex items-center gap-3">
+            {/* Stats */}
+            <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-200">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-semibold text-blue-700">
+                {filteredData.length} / {tableData.length}
+              </span>
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-1 bg-white rounded-lg border border-gray-300 p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded transition-all ${
+                  viewMode === 'grid'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+                title="Grid View"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded transition-all ${
+                  viewMode === 'list'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+                title="List View"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Grid Cards */}
+      <div className="space-y-6">
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin h-8 w-8 border-b-2 border-blue-500"></div>
+            <p className="mt-2 text-gray-600">Đang tải dữ liệu...</p>
+          </div>
+        ) : filteredData.length === 0 ? (
+          <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+            <svg
+              className="mx-auto h-16 w-16 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <p className="mt-4 text-lg font-medium text-gray-600">Không tìm thấy trận đấu nào</p>
+            <p className="mt-1 text-sm text-gray-500">Thử thay đổi bộ lọc hoặc tìm kiếm</p>
+          </div>
+        ) : (
+          <>
+            {/* Cards Grid/List */}
+            <div className={
+              viewMode === 'grid'
+                ? 'grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4'
+                : 'space-y-3'
+            }>
+              {paginatedData.map((row) => (
+                <MatchCard
+                  key={row.key}
+                  row={row}
+                  listActions={listActions}
+                  getActionsByStatus={getActionsByStatus}
+                  onDoubleClick={(row) => {
+                    setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
+                  }}
+                  viewMode={viewMode}
+                />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
+                {/* Page Info */}
+                <div className="text-sm text-gray-600">
+                  Hiển thị <span className="font-semibold text-gray-900">{startIndex + 1}</span> - <span className="font-semibold text-gray-900">{Math.min(endIndex, filteredData.length)}</span> trong tổng số <span className="font-semibold text-gray-900">{filteredData.length}</span> trận
+                </div>
+
+                {/* Pagination Controls */}
+                <div className="flex items-center gap-2">
+                  {/* Previous Button */}
+                  <button
+                    onClick={() => setPage(page - 1)}
+                    disabled={page === 1}
+                    className={`px-3 py-2 rounded-lg font-medium text-sm transition-all ${
+                      page === 1
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600'
+                    }`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+
+                  {/* Page Numbers */}
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                      // Hiển thị: 1 ... current-1 current current+1 ... last
+                      if (
+                        pageNum === 1 ||
+                        pageNum === totalPages ||
+                        (pageNum >= page - 1 && pageNum <= page + 1)
+                      ) {
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setPage(pageNum)}
+                            className={`px-3 py-2 rounded-lg font-medium text-sm transition-all ${
+                              page === pageNum
+                                ? 'bg-blue-600 text-white shadow-md'
+                                : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      } else if (pageNum === page - 2 || pageNum === page + 2) {
+                        return <span key={pageNum} className="px-2 text-gray-400">...</span>;
+                      }
+                      return null;
+                    })}
+                  </div>
+
+                  {/* Next Button */}
+                  <button
+                    onClick={() => setPage(page + 1)}
+                    disabled={page === totalPages}
+                    className={`px-3 py-2 rounded-lg font-medium text-sm transition-all ${
+                      page === totalPages
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600'
+                    }`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Items per page */}
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value));
+                    setPage(1);
+                  }}
+                  className="px-3 py-2 border min-w-[150px] border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                >
+                  <option value={6}>6 / trang</option>
+                  <option value={12}>12 / trang</option>
+                  <option value={24}>24 / trang</option>
+                  <option value={48}>48 / trang</option>
+                </select>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-8 right-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-full shadow-2xl hover:shadow-xl hover:scale-110 transition-all duration-300 z-40 group"
+          title="Lên đầu trang"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 group-hover:animate-bounce" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+          </svg>
+        </button>
+      )}
 
       {/* Modal Config - Custom style giống Vovinam */}
       {openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_CONFIG && (
@@ -1213,10 +1909,10 @@ function DataForm({ headers, data = null, row = null, onSubmit, onCancel }) {
           onChange={(e) => setFormData({ ...formData, match_status: e.target.value })}
           className={`w-full px-4 py-3 border-2 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${getStatusColor(formData.match_status)}`}
         >
-          <option value="WAI">⏳ Chờ thi đấu</option>
-          <option value="IN">▶️ Đang diễn ra</option>
-          <option value="FIN">✅ Kết thúc</option>
-          <option value="CAN">❌ Hủy bỏ</option>
+          <option value="WAI">Chờ thi đấu</option>
+          <option value="IN">Đang diễn ra</option>
+          <option value="FIN">Kết thúc</option>
+          <option value="CAN">Hủy bỏ</option>
         </select>
       </div>
 

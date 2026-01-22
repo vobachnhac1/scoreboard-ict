@@ -156,15 +156,20 @@ export default function ManagementConnectionSocket() {
     console.log("Receive from client:", response);
   });
 
-  // Action configurations với icons và colors
+  // Action configurations với icons và colors - Redesigned
   const listActions = [
     {
       key: Constants.ACTION_CONNECT_KH,
       btnText: "Kích hoạt",
       titleModal: "Kích hoạt thiết bị",
-      icon: "✅",
-      color: "bg-amber-200",
-      hoverColor: "hover:bg-amber-300",
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+      ),
+      color: "bg-gradient-to-r from-green-400 to-green-500",
+      hoverColor: "hover:from-green-500 hover:to-green-600",
+      textColor: "text-white",
       description: "Kích hoạt thiết bị mobile",
       callback: (row) => onApproveInfoClient(row),
     },
@@ -172,12 +177,16 @@ export default function ManagementConnectionSocket() {
       key: Constants.ACTION_CONNECT_GD,
       titleModal: "Đăng ký giám định",
       btnText: "Đăng ký GĐ",
-      icon: "👤",
-      color: "bg-rose-200",
-      hoverColor: "hover:bg-rose-300",
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      ),
+      color: "bg-gradient-to-r from-blue-400 to-blue-500",
+      hoverColor: "hover:from-blue-500 hover:to-blue-600",
+      textColor: "text-white",
       description: "Đăng ký thiết bị với quyền giám định",
       callback: (row) => {
-        // setOpenActions({ isOpen: true, key: Constants.ACTION_CONNECT_GD, row: row });
         setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row })
       },
     },
@@ -185,9 +194,14 @@ export default function ManagementConnectionSocket() {
       key: Constants.ACTION_CONNECT_DIS,
       titleModal: "Ngắt kết nối",
       btnText: "Ngắt kết nối",
-      icon: "🔌",
-      color: "bg-cyan-200",
-      hoverColor: "hover:bg-cyan-300",
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      ),
+      color: "bg-gradient-to-r from-red-400 to-red-500",
+      hoverColor: "hover:from-red-500 hover:to-red-600",
+      textColor: "text-white",
       description: "Ngắt kết nối thiết bị",
       callback: (row) => {
         setOpenActions({ isOpen: true, key: Constants.ACTION_CONNECT_DIS, row: row });
@@ -197,9 +211,14 @@ export default function ManagementConnectionSocket() {
       key: Constants.ACTION_CONNECT_MSG,
       titleModal: "Gửi thông báo",
       btnText: "Gửi thông báo",
-      icon: "📢",
-      color: "bg-green-300",
-      hoverColor: "hover:bg-green-400",
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+        </svg>
+      ),
+      color: "bg-gradient-to-r from-purple-400 to-purple-500",
+      hoverColor: "hover:from-purple-500 hover:to-purple-600",
+      textColor: "text-white",
       description: "Gửi thông báo đến Giám định",
       callback: (row) => {
         setOpenActions({ isOpen: true, key: Constants.ACTION_CONNECT_MSG, row: row });
@@ -231,7 +250,7 @@ export default function ManagementConnectionSocket() {
       render: (row) =>{
         if(row?.accepted == "admin") return <div/>;
         return  (
-          <div className="flex items-center justify-center gap-1">
+          <div className="flex items-center justify-center gap-2">
             {listActions.map((action) => (
               <button
                 key={action.key}
@@ -241,28 +260,35 @@ export default function ManagementConnectionSocket() {
                 }}
                 className={`
                   group relative
-                  px-3 py-2 min-w-[4rem]
+                  flex items-center gap-1.5
+                  px-3 py-2
                   ${action.color} ${action.hoverColor}
-                  rounded-md
+                  ${action.textColor}
+                  rounded-lg
                   transition-all duration-200
-                  shadow-sm hover:shadow-md
-                  border border-gray-300
-                  font-medium text-sm
+                  shadow-md hover:shadow-lg
+                  font-semibold text-xs
+                  hover:scale-105
+                  active:scale-95
                 `}
                 title={action.description}
               >
-                <div className="flex flex-col items-center gap-0.5">
-                  {/* <span className="text-lg leading-none">{action.icon}</span> */}
-                  <span className="text-xs leading-none">{action.btnText}</span>
-                </div>
+                {/* Icon */}
+                <span className="flex-shrink-0">{action.icon}</span>
+
+                {/* Text */}
+                <span className="whitespace-nowrap">{action.btnText}</span>
 
                 {/* Tooltip on hover */}
                 <div className="
                   absolute bottom-full left-1/2 -translate-x-1/2 mb-2
-                  px-2 py-1 bg-gray-800 text-white text-xs rounded
+                  px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg
                   opacity-0 group-hover:opacity-100
-                  pointer-events-none transition-opacity
-                  whitespace-nowrap z-10
+                  pointer-events-none transition-opacity duration-200
+                  whitespace-nowrap z-50
+                  shadow-xl
+                  after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2
+                  after:border-4 after:border-transparent after:border-t-gray-900
                 ">
                   {action.description}
                 </div>
@@ -541,84 +567,121 @@ export default function ManagementConnectionSocket() {
 
 
   return (
-    <div className="w-full h-autooverflow-auto">
-      {/* Room Info Bar */}
+    <div className="w-full h-auto overflow-auto">
+      {/* Room Info Bar - Redesigned */}
       {currentRoom && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4 mb-4 shadow-sm">
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div>
-                <span className="text-xs text-gray-500">Máy chủ:</span>
-                <span className="ml-2 font-mono font-bold text-blue-700">{currentRoom.room_id}</span>
+            <div className="flex items-center gap-6">
+              {/* Server Icon & Info */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 font-medium">Máy chủ</div>
+                  <div className="font-mono font-bold text-blue-700 text-sm">{currentRoom.room_id}</div>
+                </div>
               </div>
-              <div>
-                <span className="text-xs text-gray-500">Mã thiết bị:</span>
-                <span className="ml-2 font-mono font-bold text-blue-700">{currentRoom.uuid_desktop}</span>
-              </div>
-              <div className="text-sm text-gray-600">
-                <span className="text-xs text-gray-500"> Trạng thái:</span>
 
+              {/* Device Icon & Info */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 font-medium">Mã thiết bị</div>
+                  <div className="font-mono font-bold text-purple-700 text-sm">{currentRoom.uuid_desktop}</div>
+                </div>
+              </div>
+
+              {/* Status Badge */}
+              <div className="flex items-center gap-3">
                 {socket.connected ? (
-                  <span className="ml-2 font-mono font-bold text-green-600">Đang kết nối</span>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-green-100 border-2 border-green-300 rounded-lg">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-xs font-bold text-green-700">Đang kết nối</span>
+                  </div>
                 ) : (
-                  <span className="ml-2 font-mono font-bold text-red-600">Không kết nối</span>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-red-100 border-2 border-red-300 rounded-lg">
+                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                    <span className="text-xs font-bold text-red-700">Không kết nối</span>
+                  </div>
                 )}
               </div>
-              {/* <div>
-                <span className="text-xs text-gray-500">Server:</span>
-                <span className="ml-2 font-mono text-sm text-gray-700">{currentRoom.server_url}</span>
-              </div> */}
             </div>
-            {/* <div className="flex gap-2">
-              
-              <Button
-                variant="danger"
-                className="min-w-24"
-                onClick={handleDeleteRoom}
-              >
-                Xoá kết nối hiện tại
-              </Button>
-            </div> */}
           </div>
         </div>
       )}
 
-      <div className="flex justify-between items-center gap-2 mb-1">
-        {/* Left side buttons */}
-        <div className="flex items-center gap-2">
-          <Button
-            variant="danger"
-            className="min-w-32"
-            onClick={handleTurnOffAll}
-            disabled={loading || data.length === 0}
-          >
-            Tắt tất cả kết nối ({data.length})
-          </Button>
-         
-          
-        </div>
+      {/* Action Toolbar - Redesigned */}
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 mb-4 shadow-sm border border-gray-200">
+        <div className="flex justify-between items-center gap-3">
+          {/* Left side - Stats & Danger Actions */}
+          <div className="flex items-center gap-3">
+            {/* Device Count Badge */}
+            <div className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-gray-300 rounded-lg shadow-sm">
+              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              <span className="text-sm font-bold text-gray-700">Thiết bị:</span>
+              <span className="text-sm font-bold text-blue-600">{data.length}</span>
+            </div>
 
-        {/* Right side buttons */}
-        <div className="flex items-center gap-2">
-          <Button variant={socket.connected ? "primary" : "secondary" } className="min-w-28">
-            Cập nhật license
-          </Button>
-          <Button
-            variant={socket.connected ? "warning" : "success" }
-            className="min-w-32"
-            onClick={handleRecreateConnection}
-            disabled={isReconnecting || loading || !currentRoom}
-          >
-            {isReconnecting ? "Đang tạo lại..." : "Tạo lại kết nối"}
-          </Button>
-          <Button 
-            variant={socket.connected ? "primary" : "secondary" }
-            className="min-w-28" onClick={handleOpenCreateRoom}>
-            Scan QR
-          </Button>
-          <Button variant={socket.connected ? "primary" : "secondary" } className="min-w-28" onClick={handleRefresh} disabled={loading}>
-            {loading ? "Đang tải..." : "Làm mới"}
-          </Button>
+            {/* Disconnect All Button */}
+            <button
+              onClick={handleTurnOffAll}
+              disabled={loading || data.length === 0}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+              </svg>
+              <span>Tắt tất cả</span>
+            </button>
+          </div>
+
+          {/* Right side - Action Buttons */}
+          <div className="flex items-center gap-2">
+            {/* Refresh Button */}
+            <button
+              onClick={handleRefresh}
+              disabled={loading}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+            >
+              <svg className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>{loading ? "Đang tải..." : "Làm mới"}</span>
+            </button>
+
+            {/* Scan QR Button */}
+            <button
+              onClick={handleOpenCreateRoom}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+              </svg>
+              <span>Scan QR</span>
+            </button>
+
+            {/* Reconnect Button */}
+            <button
+              onClick={handleRecreateConnection}
+              disabled={isReconnecting || loading || !currentRoom}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+            >
+              <svg className={`w-5 h-5 ${isReconnecting ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+              </svg>
+              <span>{isReconnecting ? "Đang tạo lại..." : "Tạo lại kết nối"}</span>
+            </button>
+          </div>
         </div>
       </div>
       <CustomTable

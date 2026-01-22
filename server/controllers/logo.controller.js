@@ -3,10 +3,24 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+// Helper function để lấy upload directory
+const getUploadDir = () => {
+  const isDevelopment = process.env.NODE_ENV === 'development';
+
+  if (isDevelopment) {
+    // Development: Lưu trong thư mục source code
+    return path.join(__dirname, '../uploads/logos');
+  } else {
+    // Production: Lưu trong USER_DATA_PATH
+    const baseDir = process.env.USER_DATA_PATH || path.join(__dirname, '..');
+    return path.join(baseDir, 'uploads', 'logos');
+  }
+};
+
 // Cấu hình multer để lưu file
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadDir = path.join(__dirname, '../uploads/logos');
+    const uploadDir = getUploadDir();
     // Tạo thư mục nếu chưa tồn tại
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
@@ -179,8 +193,8 @@ class LogoController {
         });
       }
 
-      // Tạo URL cho file đã upload
-      const fileUrl = `http://localhost:6789/uploads/logos/${req.file.filename}`;
+      // Tạo URL relative cho file đã upload (không hardcode localhost)
+      const fileUrl = `/uploads/logos/${req.file.filename}`;
 
       // Lấy position từ body hoặc mặc định
       const position = req.body.position || 0;

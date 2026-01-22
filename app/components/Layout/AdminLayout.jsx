@@ -82,34 +82,19 @@ const AdminLayout = ({ children }) => {
   ];
 
   return (
-    <div className="h-screen flex flex-col">
-      {/* <Navbar /> */}
-      <div className="" />
+    <div className="h-screen flex flex-col overflow-hidden">
       {isActive ? (
         <Fragment>
           <div className="flex flex-1 overflow-hidden relative">
-            <Sidebar navigation={navigation} collapsed={sidebarCollapsed} />
-
-            {/* Toggle Button */}
-            <button
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className={`fixed top-20 z-50 bg-white border-2 border-gray-200 rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group
-                ${sidebarCollapsed ? 'left-[72px]' : 'left-[280px] md:left-[280px]'}`}
-              title={sidebarCollapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
-            >
-              <svg
-                className={`w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-all duration-300 ${sidebarCollapsed ? 'rotate-0' : 'rotate-180'}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-              </svg>
-            </button>
+            <Sidebar
+              navigation={navigation}
+              collapsed={sidebarCollapsed}
+              onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+            />
 
             <div
               className={`flex-1 bg-gray-100 p-4 overflow-auto transition-all duration-300
-                ${sidebarCollapsed ? 'ml-16' : 'ml-16 md:ml-72'}`}
+                ${sidebarCollapsed ? 'ml-20' : 'ml-72'}`}
             >
               <Breadcrumb navigation={navigation} />
               {children}

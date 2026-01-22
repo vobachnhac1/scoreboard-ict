@@ -264,7 +264,11 @@ const Vovinam = () => {
   useSocketEvent(MSG_TP_CLIENT.SCORE_RED, (response) => {
     // khi nhận tín hiệu referrer  tương đương với RF và score  tương đương với indexx => nháy RF1 index==0 đỏ từ bg-yellow-200 -> bg-yellow-800
     console.log("SCORE_RED:", response);
-    if(!isRunning) return; 
+    // ⚠️ Không nhận event khi đang nghỉ giải lao hoặc không chạy
+    if(!isRunning || isBreakTime) {
+      console.log("❌ SCORE_RED bị chặn - isRunning:", isRunning, "isBreakTime:", isBreakTime);
+      return;
+    }
     // Trigger hiệu ứng nháy cho RF tương ứng
     if (response && typeof response.data.referrer !== 'undefined') {
       const {score, referrer } = response.data;
@@ -290,7 +294,11 @@ const Vovinam = () => {
 
   useSocketEvent(MSG_TP_CLIENT.SCORE_BLUE, (response) => {
       console.log("SCORE_BLUE:", response);
-      if(!isRunning) return; 
+      // ⚠️ Không nhận event khi đang nghỉ giải lao hoặc không chạy
+      if(!isRunning || isBreakTime) {
+        console.log("❌ SCORE_BLUE bị chặn - isRunning:", isRunning, "isBreakTime:", isBreakTime);
+        return;
+      }
       // Trigger hiệu ứng nháy cho RF tương ứng
       if (response && typeof response.data.referrer !== 'undefined') {
         const {score, referrer } = response.data;
@@ -316,7 +324,11 @@ const Vovinam = () => {
   // SCORE_RESULT
   useSocketEvent(MSG_TP_CLIENT.SCORE_RESULT, (response)=>{
     console.log("SCORE_RESULT:", response);
-    if(!isRunning) return; 
+    // ⚠️ Không nhận event khi đang nghỉ giải lao hoặc không chạy
+    if(!isRunning || isBreakTime) {
+      console.log("❌ SCORE_RESULT bị chặn - isRunning:", isRunning, "isBreakTime:", isBreakTime);
+      return;
+    }
     if(response?.data?.team == 'red'){
       redScoreRef.current += response.data.point;
       setRedScore(redScoreRef.current);

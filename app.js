@@ -30,10 +30,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve uploads từ USER_DATA_PATH (khi build) hoặc local (khi dev)
-const uploadsDir = process.env.USER_DATA_PATH
-  ? path.join(process.env.USER_DATA_PATH, 'uploads')
-  : path.join(__dirname, 'server/uploads');
+let uploadsDir;
 
+console.log('🔧 NODE_ENV:', process.env.NODE_ENV);
+
+if (process.env.NODE_ENV === 'development') {
+  uploadsDir = path.join(__dirname, 'server/uploads');
+  console.log('📁 Development mode - Using local uploads:', uploadsDir);
+} else {
+  uploadsDir = path.join(process.env.USER_DATA_PATH, 'uploads');
+  console.log('📁 Production mode - Using USER_DATA_PATH:', uploadsDir);
+}
 // Tạo thư mục uploads nếu chưa tồn tại
 const logosDir = path.join(uploadsDir, 'logos');
 if (!fs.existsSync(logosDir)) {
@@ -75,20 +82,27 @@ InitSocket(io);
 // Khởi tạo database.
 
 // Gọi khi khởi tạo ứng dụng
-// lăng nghe process.env.USER_DATA_PATH có giá trị thì FetchInitApp 
-// nếu không thì lăng nghe sự thay đổi của process.env.USER_DATA_PATH
-console.log('process.env.USER_DATA_PATH: ', process.env.USER_DATA_PATH);
+const isDevelopment = process.env.NODE_ENV === 'development';
 
-if(process.env.USER_DATA_PATH){
-    FetchInitApp()
-}else{
-    console.log('Chờ userDataPath...');
-    let interval = setInterval(() => {
-        if (process.env.USER_DATA_PATH) {
-            clearInterval(interval);
-            FetchInitApp();
-        }
-    }, 1000);
+if (isDevelopment) {
+    // Development: Khởi tạo ngay
+    console.log('🔧 Development mode - Initializing app immediately');
+    FetchInitApp();
+} else {
+    // Production: Đợi USER_DATA_PATH từ Electron
+    console.log('process.env.USER_DATA_PATH: ', process.env.USER_DATA_PATH);
+
+    if (process.env.USER_DATA_PATH) {
+        FetchInitApp();
+    } else {
+        console.log('Chờ userDataPath...');
+        let interval = setInterval(() => {
+            if (process.env.USER_DATA_PATH) {
+                clearInterval(interval);
+                FetchInitApp();
+            }
+        }, 1000);
+    }
 }
 
 
@@ -128,6 +142,6 @@ if(process.env.USER_DATA_PATH){
 //   console.log(`Server đang chạy tại http://localhost:${6789}`);
 // });
 
-server.listen(6789, "0.0.0.0",() => {
+server.listen(6789,() => {
     console.log(`Server đang chạy tại http://localhost:${6789}`);
 });

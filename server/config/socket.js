@@ -674,11 +674,12 @@ InitSocket = async (io) => {
             let finalScore = 0;
             let finalRowIndex = -1; // -1 = không có điểm, 0 = vàng, 1 = xanh lá, 2 = đỏ
 
-            const size1 = scoreSets[1].size;
-            const size2 = scoreSets[2].size;
-            const size3 = scoreSets[3].size;
+            const size1 = scoreSets[1].size; // điểm hệ 1
+            const size2 = scoreSets[2].size; // điểm hệ 2
+            const size3 = scoreSets[3].size; // điểm hệ 3
+            const totalReferees = size1 + size2 + size3;
 
-            console.log(`📊 Tính điểm: size1=${size1}, size2=${size2}, size3=${size3}, soGiamDinh=${soGiamDinh}`);
+            console.log(`📊 Tính điểm: size1=${size1}, size2=${size2}, size3=${size3}, soGiamDinh=${soGiamDinh}, totalReferees=${totalReferees}`);
 
             if (soGiamDinh == 3) {
                 // Logic cơ bản: >= 2 giám định đồng ý
@@ -695,21 +696,23 @@ InitSocket = async (io) => {
                     finalRowIndex = 2; // đỏ
                     console.log(`✅ Đạt đa số: +3 điểm (row đỏ)`);
                 }
-
-                // Logic điểm thấp
+                // Logic điểm thấp: Chỉ áp dụng khi size1 = 1 VÀ size2 = 1
                 if (cauHinhLayDiemThap && finalScore === 0) {
-                    // 1 GĐ cho 1 điểm + 1 GĐ cho 2 điểm → lấy 1 điểm
-                    if ((size1 == 1 && size2 == 1 && size3 == 0) ||
-                        (size1 == 1 && size2 == 1 && size3 == 1)) {
-                        finalScore = 1;
-                        finalRowIndex = 0; // vàng
-                        console.log(`✅ Điểm thấp: +1 điểm (row vàng)`);
-                    }
-                    // 1 GĐ cho 2 điểm + 1 GĐ cho 3 điểm → lấy 2 điểm
-                    else if (size1 == 0 && size2 == 1 && size3 == 1) {
-                        finalScore = 2;
-                        finalRowIndex = 1; // xanh lá
-                        console.log(`✅ Điểm thấp: +2 điểm (row xanh lá)`);
+                    // 1 GĐ cho điểm hệ 1 + 1 GĐ cho điểm hệ 2 → lấy điểm hệ 1 (điểm thấp)
+                    if (size1 == 1 && size2 == 1) {
+                        // ⚠️ KIỂM TRA: scoreSets[1] và scoreSets[2] phải có socket_id KHÁC NHAU
+                        const socket1 = Array.from(scoreSets[1])[0]; // socket_id của điểm hệ 1
+                        const socket2 = Array.from(scoreSets[2])[0]; // socket_id của điểm hệ 2
+
+                        if (socket1 !== socket2) {
+                            // 2 socket_id khác nhau → OK, tính điểm thấp
+                            finalScore = 1;
+                            finalRowIndex = 0; // vàng
+                            console.log(`✅ Điểm thấp: +1 điểm (row vàng) - size1=1, size2=1, socket khác nhau`);
+                        } else {
+                            // Cùng socket_id → KHÔNG tính điểm
+                            console.log(`❌ Điểm thấp: Không tính - scoreSets[1] và scoreSets[2] có cùng socket_id`);
+                        }
                     }
                 }
             } else if (soGiamDinh == 5) {
@@ -727,49 +730,47 @@ InitSocket = async (io) => {
                     finalRowIndex = 2; // đỏ
                     console.log(`✅ Đạt đa số: +3 điểm (row đỏ)`);
                 }
-
-                // Logic điểm thấp
+                // Logic điểm thấp: Chỉ áp dụng khi size1 = 1 VÀ size2 = 1 VÀ totalReferees >= 3
                 if (cauHinhLayDiemThap && finalScore === 0) {
-                    // 2 GĐ cho 1 điểm + 1 GĐ cho 2 điểm → lấy 1 điểm
-                    // hoặc 1 GĐ cho 1 điểm + 1 GĐ cho 2 điểm + 1 GĐ cho 3 điểm → lấy 1 điểm
-                    if ((size1 == 2 && size2 == 1 && size3 == 0) ||
-                        (size1 == 1 && size2 == 1 && size3 == 1)) {
-                        finalScore = 1;
-                        finalRowIndex = 0; // vàng
-                        console.log(`✅ Điểm thấp: +1 điểm (row vàng)`);
-                    }
-                    // 2 GĐ cho 2 điểm + 1 GĐ cho 3 điểm → lấy 2 điểm
-                    // hoặc 1 GĐ cho 2 điểm + 2 GĐ cho 3 điểm → lấy 2 điểm
-                    // hoặc 1 GĐ cho 1 điểm + 2 GĐ cho 2 điểm → lấy 2 điểm
-                    else if ((size1 == 0 && size2 == 2 && size3 == 1) ||
-                             (size1 == 1 && size2 == 2 && size3 == 0) ||
-                             (size1 == 1 && size2 == 1 && size3 == 2)) {
-                        finalScore = 2;
-                        finalRowIndex = 1; // xanh lá
-                        console.log(`✅ Điểm thấp: +2 điểm (row xanh lá)`);
+                    // ⚠️ KIỂM TRA: Với 5 GĐ, cần ít nhất 3 GĐ gửi điểm
+                    if (totalReferees < 3) {
+                        console.log(`❌ Điểm thấp (5 GĐ): Không đủ giám định - totalReferees=${totalReferees} < 3`);
+                    } else if (size1 >= 1 && size2 >= 1) {
+                        // ⚠️ KIỂM TRA: Loại bỏ socket trùng lặp giữa scoreSets[1] và scoreSets[2]
+                        const socket1 = Array.from(scoreSets[1]); // array socket_id của điểm hệ 1
+                        const socket2 = Array.from(scoreSets[2]); // array socket_id của điểm hệ 2
+
+                        // Loại bỏ các socket trong socket2 nếu đã tồn tại trong socket1
+                        const socket2Filtered = socket2.filter(s => !socket1.includes(s));
+                        // Tính tổng số socket sau khi loại bỏ trùng lặp
+                        const totalUniqueReferees = socket1.length + socket2Filtered.length;
+                        console.log(`🔍 Kiểm tra socket: socket1=${socket1.length}, socket2=${socket2.length}, socket2_filtered=${socket2Filtered.length}, total_unique=${totalUniqueReferees}`);
+                        // Nếu tổng số socket unique >= 3 → tính điểm thấp
+                        if (totalUniqueReferees >= 3) {
+                            finalScore = 1;
+                            finalRowIndex = 0; // vàng
+                            console.log(`✅ Điểm thấp (5 GĐ): +1 điểm - socket1=${socket1.length}, socket2_filtered=${socket2Filtered.length}, total_unique=${totalUniqueReferees} >= 3`);
+                        } else {
+                            console.log(`❌ Điểm thấp (5 GĐ): Không đủ socket unique - total_unique=${totalUniqueReferees} < 3`);
+                        }
                     }
                 }
             }
-
             return { point: finalScore, rowIndex: finalRowIndex };
         };
 
         // 10. RED: lắng nghe điểm đỏ
         socket.on(CONSTANT.SCORE_RED, safeSocketHandler('SCORE_RED', (input) => {
             console.log('🔴 Điểm đỏ nhận được: ', input);
-
             const client = MapConn[`${socket.id}`];
             if (!client || !client.token) {
                 console.log('❌ Client chưa được xác thực');
                 return;
             }
-
             const { score } = input; // score: 1, 2, hoặc 3
             const referrer = client.referrer; // 1-5
             const room_id = client.room_id ?? connAdmin?.room_id;
-
             console.log(`📥 RF${referrer} cho ĐỎ ${score} điểm`);
-
             // Emit ngay để hiển thị hiệu ứng nháy
             io.to(room_id).emit(CONSTANT.SCORE_RED, {
                 type: CONSTANT.SCORE_RED,

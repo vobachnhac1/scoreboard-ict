@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import logoVoHienDai from '../../assets/logo_vohiendai.jpg';
 
-const Sidebar = ({ navigation, collapsed = false }) => {
+const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
   const location = useLocation();
 
   const isActive = (href) => location.pathname === href || location.pathname.startsWith(href + "/");
@@ -93,34 +93,30 @@ const Sidebar = ({ navigation, collapsed = false }) => {
   );
 
   return (
-    <div className={`text-gray-900 h-screen px-3 fixed bg-gradient-to-b from-gray-50 to-white border-r border-gray-200 shadow-xl transition-all duration-300 ${collapsed ? 'w-16' : 'w-16 md:w-72'}`}>
+    <div className={`text-gray-900 h-screen px-3 fixed top-0 left-0 bg-gradient-to-b from-gray-50 to-white border-r border-gray-200 shadow-xl transition-all duration-300 flex flex-col overflow-x-hidden ${collapsed ? 'w-20' : 'w-72'}`}>
       {/* Logo & Brand */}
-      <div className="flex h-20 items-center justify-center border-b border-gray-200 mb-4">
+      <div className="flex h-20 items-center justify-center border-b border-gray-200 mb-4 flex-shrink-0">
         <div className="text-center">
           <div className="flex items-center justify-center gap-3">
-            {/* <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
-              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-              </svg>
-            </div> */}
-            <div className="inline-flex items-start justify-start rounded-2xl  ">
+            <div className="inline-flex items-start justify-start rounded-2xl flex-shrink-0">
               <img
                 src={logoVoHienDai}
                 alt="Logo Võ Hiện Đại"
-                className="w-12 h-12"
+                className="w-12 h-12 object-contain"
               />
             </div>
             {!collapsed && (
-              <div className="text-left">
-                <h1 className="text-xl font-black text-gray-900 tracking-tight">VÕ HIỆN ĐẠI</h1>
-                <p className="text-xs text-gray-500 font-semibold">Quản lý thi đấu</p>
+              <div className="text-left overflow-hidden">
+                <h1 className="text-xl font-black text-gray-900 tracking-tight whitespace-nowrap">VÕ HIỆN ĐẠI</h1>
+                <p className="text-xs text-gray-500 font-semibold whitespace-nowrap">Quản lý thi đấu</p>
               </div>
             )}
           </div>
         </div>
       </div>
 
-      <ul className="flex flex-col text-base space-y-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 120px)' }}>
+      {/* Navigation - Scrollable */}
+      <ul className="flex flex-col text-base space-y-2 overflow-y-auto overflow-x-hidden flex-1 pb-2" style={{ scrollbarWidth: 'thin' }}>
         {navigation.map((item, index) =>
           item.children ? (
             <Disclosure key={item.name} as="li" defaultOpen={!collapsed && (item.children.some((child) => isActive(child.href)) || isActive(item.href))} className="text-base">
@@ -175,7 +171,7 @@ const Sidebar = ({ navigation, collapsed = false }) => {
                     </DisclosureButton>
 
                     {!collapsed && (
-                      <DisclosurePanel as="ul" className="pl-3 md:pl-5 mt-2 flex flex-col space-y-1 text-base w-full" id={`panel-${item.name}`}>
+                      <DisclosurePanel as="ul" className="pl-5 mt-2 flex flex-col space-y-1 text-base w-full" id={`panel-${item.name}`}>
                         {item.children.map((child, childIndex) => (
                           <li key={child.name}>
                             <Link
@@ -224,6 +220,50 @@ const Sidebar = ({ navigation, collapsed = false }) => {
           )
         )}
       </ul>
+
+      {/* Toggle Button - At Bottom */}
+      {onToggle && (
+        <div className="flex-shrink-0 border-t border-gray-200 pt-3 pb-3 px-0">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onToggle();
+            }}
+            className="group w-full flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden cursor-pointer"
+            title={collapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
+            type="button"
+          >
+            {/* Animated background */}
+            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+
+            {/* Icon */}
+            <svg
+              className={`w-5 h-5 transition-transform duration-300 relative z-10 ${collapsed ? 'rotate-0' : 'rotate-180'}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            </svg>
+
+            {/* Text */}
+            {!collapsed && (
+              <span className="font-semibold text-sm relative z-10">
+                Thu gọn
+              </span>
+            )}
+
+            {/* Tooltip khi collapsed */}
+            {collapsed && (
+              <div className="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
+                Mở rộng sidebar
+              </div>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

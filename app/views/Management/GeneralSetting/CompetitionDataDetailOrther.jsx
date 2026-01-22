@@ -10,6 +10,234 @@ import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
 import { fetchConfigSystem, updateConfigSystem } from "../../../config/redux/controller/configSystemSlice";
 import * as XLSX from 'xlsx';
 
+// Component Card cho mỗi đội/VĐV thi đấu
+function TeamCard({ row, listActions, getActionsByStatus, onDoubleClick, viewMode = 'grid' }) {
+  const status = row.match_status || 'WAI';
+  const statusConfig = {
+    'WAI': {
+      label: 'Chờ',
+      color: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+        </svg>
+      )
+    },
+    'IN': {
+      label: 'Đang diễn ra',
+      color: 'bg-blue-100 text-blue-800 border-blue-300',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+        </svg>
+      )
+    },
+    'FIN': {
+      label: 'Kết thúc',
+      color: 'bg-green-100 text-green-800 border-green-300',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+        </svg>
+      )
+    },
+    'CAN': {
+      label: 'Hủy',
+      color: 'bg-red-100 text-red-800 border-red-300',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+        </svg>
+      )
+    }
+  };
+
+  const typeColors = {
+    'DOL': { bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-300', gradient: 'from-purple-50 to-purple-100', name: 'Đối Luyện' },
+    'SOL': { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-300', gradient: 'from-green-50 to-green-100', name: 'Song Luyện' },
+    'TUV': { bg: 'bg-orange-100', text: 'text-orange-700', border: 'border-orange-300', gradient: 'from-orange-50 to-orange-100', name: 'Tự Vệ' },
+    'DAL': { bg: 'bg-pink-100', text: 'text-pink-700', border: 'border-pink-300', gradient: 'from-pink-50 to-pink-100', name: 'Đả Luyện' }
+  };
+
+  const currentStatus = statusConfig[status] || statusConfig['WAI'];
+  const typeColor = typeColors[row.match_type] || typeColors['DOL'];
+  const availableActions = getActionsByStatus(status);
+
+  // List View - Compact horizontal layout
+  if (viewMode === 'list') {
+    return (
+      <div
+        className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 overflow-hidden group"
+        onDoubleClick={() => onDoubleClick(row)}
+      >
+        <div className="flex items-center gap-4 p-4">
+          {/* STT */}
+          <div className="flex-shrink-0">
+            <div className={`bg-gradient-to-r ${typeColor.gradient} ${typeColor.border} border-2 text-gray-800 rounded-lg px-4 py-2 font-bold text-base shadow-md min-w-[80px] text-center`}>
+              #{row.match_no}
+            </div>
+          </div>
+
+          {/* Nội dung thi */}
+          <div className="flex-shrink-0 min-w-[120px]">
+            <div className={`px-3 py-1.5 rounded-lg font-bold text-xs ${typeColor.bg} ${typeColor.text} border-2 ${typeColor.border}`}>
+              {row.match_name || typeColor.name}
+            </div>
+          </div>
+
+          {/* VĐV tham gia */}
+          <div className="flex-1 min-w-0">
+            <div className="text-xs text-gray-500 mb-1">VĐV tham gia:</div>
+            {row.athletes && row.athletes.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {row.athletes.slice(0, 3).map((athlete, idx) => (
+                  <div key={idx} className="flex items-center gap-1.5 bg-blue-50 px-2 py-1 rounded-lg">
+                    <span className="w-4 h-4 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center font-bold">
+                      {idx + 1}
+                    </span>
+                    <span className="font-semibold text-blue-700 text-sm truncate max-w-[150px]">
+                      {athlete.athlete_name}
+                    </span>
+                  </div>
+                ))}
+                {row.athletes.length > 3 && (
+                  <span className="text-xs text-gray-500 self-center">+{row.athletes.length - 3} khác</span>
+                )}
+              </div>
+            ) : (
+              <span className="text-gray-400 text-sm">Chưa có VĐV</span>
+            )}
+          </div>
+
+          {/* Đơn vị */}
+          <div className="flex-shrink-0 min-w-[120px]">
+            <div className="text-xs text-gray-500 mb-1">Đơn vị:</div>
+            <div className={`px-3 py-1 rounded-lg font-semibold text-sm ${typeColor.bg} ${typeColor.text}`}>
+              {row.team_name || '-'}
+            </div>
+          </div>
+
+          {/* Trạng thái */}
+          <div className="flex-shrink-0">
+            <div className={`px-3 py-1.5 rounded-lg font-semibold text-xs border-2 ${currentStatus.color} flex items-center gap-1.5 whitespace-nowrap`}>
+              <span>{currentStatus.icon}</span>
+              <span>{currentStatus.label}</span>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex-shrink-0 flex items-center gap-2">
+            {listActions
+              .filter((action) => availableActions.includes(action.key))
+              .map((action) => (
+                <button
+                  onClick={() => action.callback(row)}
+                  key={action.key}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200 whitespace-nowrap ${action.color}`}
+                >
+                  {action.icon}
+                  <span className="hidden xl:inline">{action.btnText}</span>
+                </button>
+              ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Grid View - Card layout
+  return (
+    <div
+      className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 overflow-hidden group"
+      onDoubleClick={() => onDoubleClick(row)}
+    >
+      {/* Header - STT và Trạng thái */}
+      <div className={`bg-gradient-to-r ${typeColor.gradient} px-4 py-3 border-b-2 ${typeColor.border}`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`${typeColor.bg} ${typeColor.text} border-2 ${typeColor.border} rounded-lg px-3 py-1.5 font-bold text-sm shadow-md`}>
+              #{row.match_no}
+            </div>
+            <div className={`px-3 py-1 rounded-lg font-bold text-xs ${typeColor.bg} ${typeColor.text}`}>
+              {row.match_name || typeColor.name}
+            </div>
+          </div>
+          <div className={`px-3 py-1.5 rounded-lg font-semibold text-xs border-2 ${currentStatus.color} flex items-center gap-1.5`}>
+            <span>{currentStatus.icon}</span>
+            <span>{currentStatus.label}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Body - Thông tin VĐV và Đơn vị */}
+      <div className="p-5">
+        {/* Đơn vị */}
+        <div className={`bg-gradient-to-br ${typeColor.gradient} rounded-xl p-4 border-2 ${typeColor.border} shadow-sm mb-4`}>
+          <div className="flex items-center gap-2 mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${typeColor.text}`} viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+            </svg>
+            <h3 className={`text-sm font-bold ${typeColor.text} uppercase tracking-wide`}>Đơn vị</h3>
+          </div>
+          <div className={`font-bold ${typeColor.text} text-lg`}>
+            {row.team_name || '-'}
+          </div>
+        </div>
+
+        {/* VĐV tham gia */}
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border-2 border-blue-200 shadow-sm mb-4">
+          <div className="flex items-center gap-2 mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-700" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+            </svg>
+            <h3 className="text-sm font-bold text-blue-700 uppercase tracking-wide">VĐV tham gia</h3>
+            {row.athletes && row.athletes.length > 0 && (
+              <span className="ml-auto bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                {row.athletes.length}
+              </span>
+            )}
+          </div>
+          <div className="space-y-2">
+            {row.athletes && row.athletes.length > 0 ? (
+              row.athletes.map((athlete, idx) => (
+                <div key={idx} className="flex items-center gap-3 bg-white rounded-lg p-2 shadow-sm">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center font-bold">
+                    {idx + 1}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-bold text-blue-900 truncate">{athlete.athlete_name || '-'}</div>
+                    {athlete.athlete_unit && (
+                      <div className="text-xs text-blue-600">{athlete.athlete_unit}</div>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center text-gray-400 py-2">Chưa có VĐV</div>
+            )}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-200">
+          {listActions
+            .filter((action) => availableActions.includes(action.key))
+            .map((action) => (
+              <button
+                onClick={() => action.callback(row)}
+                key={action.key}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 ${action.color}`}
+              >
+                {action.icon}
+                {action.btnText}
+              </button>
+            ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Component RoundHistoryCard - Không dùng cho format DOL/SOL/TUV/DAL
 export default function CompetitionDataDetailOrther() {
   const navigate = useNavigate();
@@ -28,6 +256,23 @@ export default function CompetitionDataDetailOrther() {
 
   // Ref để lưu hàm exportToExcel từ HistoryView
   const exportToExcelRef = React.useRef(null);
+
+  // State cho filter và view
+  const [filterStatus, setFilterStatus] = useState('ALL'); // ALL, WAI, IN, FIN, CAN
+  const [filterType, setFilterType] = useState('ALL'); // ALL, DOL, SOL, TUV, DAL
+  const [sortBy, setSortBy] = useState('match_no'); // match_no, status, type
+  const [viewMode, setViewMode] = useState('grid'); // grid, list
+  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Scroll to top handler
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Load dữ liệu khi component mount 
   const configSystem = useAppSelector((state) => state.configSystem);  
@@ -78,7 +323,12 @@ export default function CompetitionDataDetailOrther() {
     {
       key: Constants.ACTION_MATCH_START,
       btnText: 'Thi',
-      color: 'bg-blue-500 text-white hover:bg-blue-600',
+      color: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+        </svg>
+      ),
       description: 'Bắt đầu thi',
       callback: (row) => {
         handleMatchStart(row);
@@ -87,7 +337,12 @@ export default function CompetitionDataDetailOrther() {
     {
       key: Constants.ACTION_MATCH_RESULT,
       btnText: 'Kết quả',
-      color: 'bg-yellow-500 text-white hover:bg-yellow-600',
+      color: 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white hover:from-yellow-600 hover:to-yellow-700',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      ),
       description: 'Kết quả',
       callback: (row) => {
         setOpenActions({ isOpen: true, key: Constants.ACTION_MATCH_RESULT, row: row });
@@ -96,7 +351,12 @@ export default function CompetitionDataDetailOrther() {
     {
       key: Constants.ACTION_UPDATE,
       btnText: 'Cập nhật',
-      color: 'bg-green-500 text-white hover:bg-green-600',
+      color: 'bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-600 hover:to-gray-700',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+        </svg>
+      ),
       description: 'Cập nhật dữ liệu',
       callback: (row) => {
         setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
@@ -105,7 +365,12 @@ export default function CompetitionDataDetailOrther() {
     {
       key: Constants.ACTION_DELETE,
       btnText: 'Xóa',
-      color: 'bg-red-500 text-white hover:bg-red-600',
+      color: 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+        </svg>
+      ),
       description: 'Xác nhận xóa',
       callback: (row) => {
         setOpenActions({ isOpen: true, key: Constants.ACTION_DELETE, row: row });
@@ -631,6 +896,58 @@ export default function CompetitionDataDetailOrther() {
     }
   };
 
+  // Filter và Sort logic - Đặt trước các return statements
+  const filteredData = tableData.filter(row => {
+    // Filter by status
+    if (filterStatus !== 'ALL' && row.match_status !== filterStatus) return false;
+
+    // Filter by type
+    if (filterType !== 'ALL' && row.match_type !== filterType) return false;
+
+    // Search
+    if (search) {
+      const searchLower = search.toLowerCase();
+      const matchNo = String(row.match_no || '').toLowerCase();
+      const matchName = String(row.match_name || '').toLowerCase();
+      const teamName = String(row.team_name || '').toLowerCase();
+      const athleteNames = (row.athletes || []).map(a => String(a.athlete_name || '').toLowerCase()).join(' ');
+
+      return matchNo.includes(searchLower) ||
+             matchName.includes(searchLower) ||
+             teamName.includes(searchLower) ||
+             athleteNames.includes(searchLower);
+    }
+
+    return true;
+  });
+
+  // Sort
+  const sortedData = [...filteredData].sort((a, b) => {
+    switch (sortBy) {
+      case 'match_no':
+        return Number(a.match_no) - Number(b.match_no);
+      case 'status':
+        const statusOrder = { 'IN': 0, 'WAI': 1, 'FIN': 2, 'CAN': 3 };
+        return (statusOrder[a.match_status] || 99) - (statusOrder[b.match_status] || 99);
+      case 'type':
+        const typeOrder = { 'DOL': 0, 'SOL': 1, 'TUV': 2, 'DAL': 3 };
+        return (typeOrder[a.match_type] || 99) - (typeOrder[b.match_type] || 99);
+      default:
+        return 0;
+    }
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = sortedData.slice(startIndex, endIndex);
+
+  // Reset page khi filter thay đổi
+  React.useEffect(() => {
+    setPage(1);
+  }, [filterStatus, filterType, search]);
+
   if (loading) {
     return (
       <div className="p-6 bg-white  shadow">
@@ -666,7 +983,7 @@ export default function CompetitionDataDetailOrther() {
   }
 
   return (
-    <div className="p-6 bg-white  shadow">
+    <div className="p-6 bg-white shadow">
       {/* Header */}
       <div className="mb-6">
         <button
@@ -686,36 +1003,302 @@ export default function CompetitionDataDetailOrther() {
           </span>
         </div>
 
-        {/* <div className="flex items-center justify-between mb-4 gap-4">
-          <SearchInput value={search} onChange={setSearch} onSearch={handleSearch} placeholder="Tìm kiếm..." />
-          <Button
-            variant="primary"
-            onClick={() => setOpenActions({ isOpen: true, key: Constants.ACTION_CREATE, row: null })}
-            className="flex items-center gap-2 whitespace-nowrap"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-            </svg>
-            Thêm mới
-          </Button>
-        </div> */}
-      </div>
-
-      {/* Bảng dữ liệu */}
-      <div className="overflow-x-auto overflow-y-visible shadow-sm border border-gray-200 ">
-        <div className="min-w-max">
-          <CustomTable
-            columns={columns}
-            data={tableData}
-            loading={loading}
-            page={page}
-            onPageChange={setPage}
-            onRowDoubleClick={(row) => {
-              setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
-            }}
-          />
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-2 border-yellow-200 rounded-lg p-3 shadow-sm">
+            <div className="flex items-center gap-2 mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-700" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+              </svg>
+              <span className="text-xs font-semibold text-yellow-700 uppercase">Chờ</span>
+            </div>
+            <div className="text-2xl font-bold text-yellow-900">
+              {tableData.filter(r => r.match_status === 'WAI').length}
+            </div>
+          </div>
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg p-3 shadow-sm">
+            <div className="flex items-center gap-2 mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-700" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+              </svg>
+              <span className="text-xs font-semibold text-blue-700 uppercase">Đang thi</span>
+            </div>
+            <div className="text-2xl font-bold text-blue-900">
+              {tableData.filter(r => r.match_status === 'IN').length}
+            </div>
+          </div>
+          <div className="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-lg p-3 shadow-sm">
+            <div className="flex items-center gap-2 mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-700" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-xs font-semibold text-green-700 uppercase">Kết thúc</span>
+            </div>
+            <div className="text-2xl font-bold text-green-900">
+              {tableData.filter(r => r.match_status === 'FIN').length}
+            </div>
+          </div>
+          <div className="bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200 rounded-lg p-3 shadow-sm">
+            <div className="flex items-center gap-2 mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-700" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <span className="text-xs font-semibold text-red-700 uppercase">Hủy</span>
+            </div>
+            <div className="text-2xl font-bold text-red-900">
+              {tableData.filter(r => r.match_status === 'CAN').length}
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Toolbar - Filter, Sort, View Mode */}
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 mb-6 shadow-sm border border-gray-200">
+        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+          {/* Left: Search & Filter */}
+          <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full lg:w-auto">
+            {/* Search */}
+            <div className="flex-1 min-w-[200px]">
+              <SearchInput
+                value={search}
+                onChange={setSearch}
+                onSearch={handleSearch}
+                placeholder="Tìm kiếm STT, VĐV, đơn vị..."
+              />
+            </div>
+
+            {/* Filter Status */}
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="px-4 py-2 border min-w-[150px] border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            >
+              <option value="ALL">Tất cả trạng thái</option>
+              <option value="WAI">Chờ thi</option>
+              <option value="IN">Đang diễn ra</option>
+              <option value="FIN">Kết thúc</option>
+              <option value="CAN">Hủy bỏ</option>
+            </select>
+
+            {/* Filter Type */}
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="px-4 py-2 border min-w-[150px] border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            >
+              <option value="ALL">Tất cả nội dung</option>
+              <option value="DOL">Đối Luyện</option>
+              <option value="SOL">Song Luyện</option>
+              <option value="TUV">Tự Vệ</option>
+              <option value="DAL">Đả Luyện</option>
+            </select>
+
+            {/* Sort */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-4 py-2 border min-w-[150px] border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            >
+              <option value="match_no">Sắp xếp: STT</option>
+              <option value="status">Sắp xếp: Trạng thái</option>
+              <option value="type">Sắp xếp: Nội dung</option>
+            </select>
+          </div>
+
+          {/* Right: View Mode & Stats */}
+          <div className="flex items-center gap-3">
+            {/* Stats */}
+            <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-200">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-semibold text-blue-700">
+                {filteredData.length} / {tableData.length}
+              </span>
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-1 bg-white rounded-lg border border-gray-300 p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded transition-all ${
+                  viewMode === 'grid'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+                title="Grid View"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded transition-all ${
+                  viewMode === 'list'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+                title="List View"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Cards Grid/List */}
+      <div className="space-y-6">
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin h-8 w-8 border-b-2 border-blue-500"></div>
+            <p className="mt-2 text-gray-600">Đang tải dữ liệu...</p>
+          </div>
+        ) : filteredData.length === 0 ? (
+          <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+            <svg
+              className="mx-auto h-16 w-16 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <p className="mt-4 text-lg font-medium text-gray-600">Không tìm thấy dữ liệu nào</p>
+            <p className="mt-1 text-sm text-gray-500">Thử thay đổi bộ lọc hoặc tìm kiếm</p>
+          </div>
+        ) : (
+          <>
+            {/* Cards */}
+            <div className={
+              viewMode === 'grid'
+                ? 'grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4'
+                : 'space-y-3'
+            }>
+              {paginatedData.map((row) => (
+                <TeamCard
+                  key={row.match_id || row.match_no}
+                  row={row}
+                  listActions={listActions}
+                  getActionsByStatus={getActionsByStatus}
+                  onDoubleClick={(row) => {
+                    setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
+                  }}
+                  viewMode={viewMode}
+                />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
+                {/* Page Info */}
+                <div className="text-sm text-gray-600">
+                  Hiển thị <span className="font-semibold text-gray-900">{startIndex + 1}</span> - <span className="font-semibold text-gray-900">{Math.min(endIndex, filteredData.length)}</span> trong tổng số <span className="font-semibold text-gray-900">{filteredData.length}</span>
+                </div>
+
+                {/* Pagination Controls */}
+                <div className="flex items-center gap-2">
+                  {/* Previous Button */}
+                  <button
+                    onClick={() => setPage(page - 1)}
+                    disabled={page === 1}
+                    className={`px-3 py-2 rounded-lg font-medium text-sm transition-all ${
+                      page === 1
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600'
+                    }`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+
+                  {/* Page Numbers */}
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                      if (
+                        pageNum === 1 ||
+                        pageNum === totalPages ||
+                        (pageNum >= page - 1 && pageNum <= page + 1)
+                      ) {
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setPage(pageNum)}
+                            className={`px-3 py-2 rounded-lg font-medium text-sm transition-all ${
+                              page === pageNum
+                                ? 'bg-blue-600 text-white shadow-md'
+                                : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      } else if (pageNum === page - 2 || pageNum === page + 2) {
+                        return <span key={pageNum} className="px-2 text-gray-400">...</span>;
+                      }
+                      return null;
+                    })}
+                  </div>
+
+                  {/* Next Button */}
+                  <button
+                    onClick={() => setPage(page + 1)}
+                    disabled={page === totalPages}
+                    className={`px-3 py-2 rounded-lg font-medium text-sm transition-all ${
+                      page === totalPages
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600'
+                    }`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Items per page */}
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value));
+                    setPage(1);
+                  }}
+                  className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                >
+                  <option value={6}>6 / trang</option>
+                  <option value={12}>12 / trang</option>
+                  <option value={24}>24 / trang</option>
+                  <option value={48}>48 / trang</option>
+                </select>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-8 right-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-full shadow-2xl hover:shadow-xl hover:scale-110 transition-all duration-300 z-40 group"
+          title="Lên đầu trang"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 group-hover:animate-bounce" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+          </svg>
+        </button>
+      )}
 
       {/* Modal Kết quả */}
       {openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_RESULT && (

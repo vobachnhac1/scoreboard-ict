@@ -43,7 +43,7 @@
 //       gradient: 'from-purple-500 to-purple-600'
 //     },
 //     {
-//       name: 'Cấu hình hệ thống',
+//       name: 'Quản lý cài đặt',
 //       href: '/management/general-setting/config-system',
 //       icon: Cog6ToothIcon,
 //       current: false,
@@ -139,7 +139,6 @@
 //                       className="h-8 w-auto"
 //                       src="https://tailwindui.com/img/logos/mark.svg?color=blue&shade=600"
 //                       alt="Your Company"
-
 
 //                     />
 //                   </div>

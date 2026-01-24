@@ -33,7 +33,7 @@ class Admin {
         }
     }
 
-    // 3. RES_ROOM_ADMIN thông tin Cấu hình hệ thống
+    // 3. RES_ROOM_ADMIN thông tin Quản lý cài đặt
     get_information_system = async () =>{
         try {
             const res_config  = await init_config_db.getAllKeyValueByKey('system');
@@ -66,7 +66,7 @@ class Admin {
         }
     }
 
-    // 4. Cập nhật thông tin cấu hình hệ thống
+    // 4. Cập nhật thông tin Quản lý cài đặt
     update_information_system = async (body) =>{
         try {
             if(!body) return false

@@ -1,5 +1,5 @@
 const { app, globalShortcut, BrowserWindow, ipcMain, dialog } = require('electron');
-// const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-assembler');
+const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-assembler');
 const { fork } = require('child_process');
 
 const path = require('path');
@@ -26,11 +26,11 @@ fs.appendFileSync(logPath, `[${new Date().toISOString()}] userData: ${userDataPa
 const server = require('./app');
 
 // Tạm thời tắt electron-reloader để test migration
-// try {
-//   require('electron-reloader')(module);
-// } catch (err) {
-//     console.log('Reload failed:', err);
-// }
+try {
+  require('electron-reloader')(module);
+} catch (err) {
+    console.log('Reload failed:', err);
+}
 
 let mainWindow;
 
@@ -57,8 +57,8 @@ ipcMain.handle('folder:getFiles', async (event, folderPath) => {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 768,
+    width: 1920,
+    height: 1080,
     // webPreferences: {
     //   nodeIntegration: true
     // },
@@ -77,7 +77,7 @@ function createWindow() {
   // }));
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   // Register
 
@@ -95,14 +95,14 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
-// app.whenReady().then(() => {
-//   installExtension(REACT_DEVELOPER_TOOLS)
-//     .then((name) => console.log(`Added Extension:  ${name}`))
-//     .catch((err) => console.log('An error occurred: ', err));
-//   // globalShortcut.register('F2', () => {
-//   //   mainWindow.loadURL('http://localhost:6789/#/versus');
-//   // });
+app.whenReady().then(() => {
+  installExtension(REACT_DEVELOPER_TOOLS)
+    .then((name) => console.log(`Added Extension:  ${name}`))
+    .catch((err) => console.log('An error occurred: ', err));
+  // globalShortcut.register('F2', () => {
+  //   mainWindow.loadURL('http://localhost:6789/#/versus');
   // });
+  });
 
 function startServer() {
   const subprocess = fork('./app.js'); // hoặc file Node.js của bạn

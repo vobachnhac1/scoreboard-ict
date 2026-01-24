@@ -112,13 +112,21 @@ class LogoController {
   static async updateLogo(req, res) {
     try {
       const { id } = req.params;
-      const { url, position } = req.body;
-
-      const result = await db.updateLogo(id, {
-        url,
-        position
-      });
-
+      const { url, position, logos } = req.body;
+      let result;
+      if (!Array.isArray(logos)) {
+        result = await db.updateLogo(id, {
+          url,
+          position
+        });
+      }else{
+        for (const logo of logos) {
+          await db.updateLogo(logo.id, { position: logo.position });
+        }
+        // lấy thông tin logos mới
+        const newLogos = await db.getAllLogos();
+        result = newLogos;
+      }      
       return res.json({
         success: true,
         message: 'Cập nhật logo thành công',
@@ -157,6 +165,7 @@ class LogoController {
   static async reorderLogos(req, res) {
     try {
       const { logos } = req.body;
+      console.log('reorderLogos: ', req.body);
 
       if (!Array.isArray(logos)) {
         return res.status(400).json({

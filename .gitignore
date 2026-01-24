@@ -35,3 +35,9 @@ Thumbs.db
 
 # bundle App
 public/app.bundle.js
+
+# Uploads (keep structure but ignore files)
+server/uploads/*
+!server/uploads/logos/
+server/uploads/logos/*
+!server/uploads/logos/.gitkeep

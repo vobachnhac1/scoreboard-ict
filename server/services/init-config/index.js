@@ -27,7 +27,7 @@ class InitConfigService {
                 )
             `);  
 
-            // table config_values  => màn hình cấu hình hệ thống
+            // table config_values  => màn hình Quản lý cài đặt
             this.db.run(`
                 CREATE TABLE IF NOT EXISTS config_values (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -108,6 +108,9 @@ class InitConfigService {
                         ['system', 'cau_hinh_hinh_thuc_quyen', '1'],     // 1: Có | 0: Không
                         ['system', 'cau_hinh_hinh_thuc_doikhang', '1'],  // 1: Có | 0: Không
 
+                        // ===== CÀI ĐẶT ÂM THANH =====
+                        ['system', 'bat_am_thanh', '1'],                 // 1: Bật | 0: Tắt
+
                         // ===== CÀI ĐẶT THỜI GIAN =====
                         ['system', 'thoi_gian_tinh_diem', '1000'],
                         ['system', 'thoi_gian_thi_dau', '90'],
@@ -117,6 +120,16 @@ class InitConfigService {
 
                         // ===== ĐIỂM ÁP DỤNG =====
                         ['system', 'khoang_diem_tuyet_toi', '10'],
+
+                        // ===== CÀI ĐẶT ĐIỂM SỐ =====
+                        ['system', 'diem_don_chan', '1'],  // Điểm đòn chân
+                        ['system', 'diem_nga', '1'],       // Điểm ngã (đối thủ được cộng)
+                        ['system', 'diem_bien_tru', '1'],  // Điểm biên (trừ điểm)
+                        ['system', 'diem_bien_cong', '1'], // Điểm biên (cộng điểm)
+
+                        // ===== CHẾ ĐỘ ÁP DỤNG ĐIỂM BIÊN =====
+                        ['system', 'ap_dung_diem_bien_tru', '1'],  // 1: Bật | 0: Tắt - Áp dụng điểm biên (trừ điểm)
+                        ['system', 'ap_dung_diem_bien_cong', '0'], // 1: Bật | 0: Tắt - Áp dụng điểm biên (cộng điểm)
 
                         // ===== CHẾ ĐỘ APP =====
                         ['system', 'che_do_app', '1'], // chế độ chỉ dùng Thi đối kháng đơn giản | Thi quyền đơn giản

@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  watch: true,
+  watch: true, // Tắt watch mode mặc định, chỉ bật khi dùng --watch flag
   entry: {
     app: './app/index.js'
   },

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { readSheetNames } from "read-excel-file";
 import readXlsxFile from "read-excel-file";
 import Button from "../../../components/Button";
@@ -19,6 +19,7 @@ export default function CompetitionManagement() {
   // State cho tab quản lý dữ liệu
   const [savedData, setSavedData] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
+  const [viewMode, setViewMode] = useState("list"); // 'grid' hoặc 'list'
 
   // Xử lý khi chọn file
   const handleFileChange = (event) => {
@@ -34,8 +35,8 @@ export default function CompetitionManagement() {
     // Đọc danh sách sheet names
     readSheetNames(file)
       .then((names) => {
-        setSheetNames(names.filter(ele=> !ele.includes('SKIP')));
-        console.log('names: ', names);
+        setSheetNames(names.filter((ele) => !ele.includes("SKIP")));
+        console.log("names: ", names);
         // thực hiện lưu file vào database
         setLoading(false);
       })
@@ -64,28 +65,30 @@ export default function CompetitionManagement() {
           // Kiểm tra loại format dựa vào cell đầu tiên
           const formatType = rows[0][0];
 
-          if(formatType == 'DK') {
-            console.log('📋 Format: Đối kháng (DK)');
+          if (formatType == "DK") {
+            console.log("📋 Format: Đối kháng (DK)");
             handleSaveToDatabase(sheetName, rows);
-          } else if(formatType == 'DOL') {
-            console.log('📋 Format: Đối luyện (DOL) - 1 VĐV/row');
+          } else if (formatType == "DOL") {
+            console.log("📋 Format: Đối luyện (DOL) - 1 VĐV/row");
             handleSaveDOLToDatabase(sheetName, rows);
-          } else if(formatType == 'SOL') {
-            console.log('📋 Format: Song luyện (SOL) - 2 VĐV/team');
+          } else if (formatType == "SOL") {
+            console.log("📋 Format: Song luyện (SOL) - 2 VĐV/team");
             handleSaveSOLToDatabase(sheetName, rows);
-          } else if(formatType == 'TUV') {
-            console.log('📋 Format: Tự vệ (TUV) - 2 VĐV/team');
+          } else if (formatType == "TUV") {
+            console.log("📋 Format: Tự vệ (TUV) - 2 VĐV/team");
             handleSaveTUVToDatabase(sheetName, rows);
-          } else if(formatType == 'DAL') {
-            console.log('📋 Format: Đa luyện (DAL) - 4 VĐV/team');
+          } else if (formatType == "DAL") {
+            console.log("📋 Format: Đa luyện (DAL) - 4 VĐV/team");
             handleSaveDALToDatabase(sheetName, rows);
           } else {
-            console.warn('⚠️ Format không xác định:', formatType);
-            alert(`Format "${formatType}" không được hỗ trợ. Các format hợp lệ: DK, DOL, SOL, TUV, DAL`);
+            console.warn("⚠️ Format không xác định:", formatType);
+            alert(
+              `Format "${formatType}" không được hỗ trợ. Các format hợp lệ: DK, DOL, SOL, TUV, DAL`,
+            );
           }
-          if(rows[0][0] == 'DK') {
+          if (rows[0][0] == "DK") {
             // handleSaveToDatabase(sheetName, rows);
-            rows[0][0] = 'Trận số'
+            rows[0][0] = "Trận số";
           }
           setHeaders(rows[0]); // Dòng đầu tiên là header
           setSheetData(rows.slice(1)); // Các dòng còn lại là data
@@ -115,36 +118,39 @@ export default function CompetitionManagement() {
   const handleSaveToDatabase = async (sheetName, rows) => {
     try {
       // Bước 1: Lưu competition_dk trước
-      const response = await axios.post("http://localhost:6789/api/competition-dk", {
-        sheet_name: sheetName,
-        file_name: selectedFile?.name || "",
-        data: rows
-      });
+      const response = await axios.post(
+        "http://localhost:6789/api/competition-dk",
+        {
+          sheet_name: sheetName,
+          file_name: selectedFile?.name || "",
+          data: rows,
+        },
+      );
 
       if (response.data.success) {
         const competitionDkId = response.data.data.id;
 
         // Bước 2: Tạo match_id cho từng row (bỏ qua header - row đầu tiên)
         const dataRows = rows.slice(1); // Bỏ header
-        console.log('dataRows: ', dataRows);
+        console.log("dataRows: ", dataRows);
 
         // Tạo danh sách matches để insert
         const matchesToCreate = dataRows.map((row, index) => ({
           competition_dk_id: competitionDkId,
           row_index: index,
           match_no: row[0] || `Match ${index + 1}`, // Cột đầu tiên là số trận
-          red_name: row[3] || '', // Tên Giáp Đỏ
-          red_team: row[4] || '',
-          blue_name: row[6] || '', // Tên Giáp Xanh
-          blue_team: row[7] || '',
-          match_status: 'WAI', // Mặc định là chờ
-          config_system: {} // Config mặc định
+          red_name: row[3] || "", // Tên Giáp Đỏ
+          red_team: row[4] || "",
+          blue_name: row[6] || "", // Tên Giáp Xanh
+          blue_team: row[7] || "",
+          match_status: "WAI", // Mặc định là chờ
+          config_system: {}, // Config mặc định
         }));
 
         // Bước 3: Bulk insert matches
         if (matchesToCreate.length > 0) {
           await axios.post("http://localhost:6789/api/competition-match/bulk", {
-            matches: matchesToCreate
+            matches: matchesToCreate,
           });
         }
 
@@ -153,7 +159,10 @@ export default function CompetitionManagement() {
       }
     } catch (error) {
       console.error("Error saving to database:", error);
-      alert("Lỗi khi lưu dữ liệu: " + (error.response?.data?.message || error.message));
+      alert(
+        "Lỗi khi lưu dữ liệu: " +
+          (error.response?.data?.message || error.message),
+      );
     }
   };
 
@@ -162,16 +171,19 @@ export default function CompetitionManagement() {
   // 1 row = 1 VĐV = 1 match
   const handleSaveDOLToDatabase = async (sheetName, rows) => {
     try {
-      const response = await axios.post("http://localhost:6789/api/competition-dk", {
-        sheet_name: sheetName,
-        file_name: selectedFile?.name || "",
-        data: rows
-      });
+      const response = await axios.post(
+        "http://localhost:6789/api/competition-dk",
+        {
+          sheet_name: sheetName,
+          file_name: selectedFile?.name || "",
+          data: rows,
+        },
+      );
 
       if (response.data.success) {
         const competitionDkId = response.data.data.id;
         const dataRows = rows.slice(1); // Bỏ header
-        console.log('📋 Parsing SOL/TUV/DAL/DOL data...');
+        console.log("📋 Parsing SOL/TUV/DAL/DOL data...");
 
         // Format Excel: [DOL, Mã số, Họ tên, Đơn vị, Nội dung thi]
         // Mapping: row[0]=DOL, row[1]=Mã số, row[2]=Họ tên, row[3]=Đơn vị, row[4]=Nội dung thi
@@ -179,17 +191,20 @@ export default function CompetitionManagement() {
           competition_dk_id: competitionDkId,
           row_index: index,
           match_no: row[0] || `${index + 1}`, // Mã số
-          match_name: row[4] || '', // Họ tên
-          team_name: row[3] || '', // Đơn vị
-          match_type: row[1] || 'DOL', // Nội dung thi
-          match_status: 'WAI',
+          match_name: row[4] || "", // Họ tên
+          team_name: row[3] || "", // Đơn vị
+          match_type: row[1] || "DOL", // Nội dung thi
+          match_status: "WAI",
           config_system: {},
-          athletes: [{ name: row[2] || '', unit: row[3] || '' }] // danh sách VĐV
+          athletes: [{ name: row[2] || "", unit: row[3] || "" }], // danh sách VĐV
         }));
         if (teamsToCreate.length > 0) {
-          await axios.post("http://localhost:6789/api/competition-match-team/bulk", {
-            teams: teamsToCreate
-          });
+          await axios.post(
+            "http://localhost:6789/api/competition-match-team/bulk",
+            {
+              teams: teamsToCreate,
+            },
+          );
         }
 
         alert(`✅ Lưu ${teamsToCreate.length} VĐV DOL thành công!`);
@@ -197,7 +212,10 @@ export default function CompetitionManagement() {
       }
     } catch (error) {
       console.error("Error saving DOL to database:", error);
-      alert("Lỗi khi lưu dữ liệu DOL: " + (error.response?.data?.message || error.message));
+      alert(
+        "Lỗi khi lưu dữ liệu DOL: " +
+          (error.response?.data?.message || error.message),
+      );
     }
   };
 
@@ -205,20 +223,23 @@ export default function CompetitionManagement() {
   // Format Excel: [SOL, Mã số, Họ tên, Đơn vị, Nội dung thi]
   // 2 rows liên tục = 1 team
   const handleSaveSOLToDatabase = async (sheetName, rows) => {
-    console.log('rows: ', rows);
+    console.log("rows: ", rows);
     try {
-      const response = await axios.post("http://localhost:6789/api/competition-dk", {
-        sheet_name: sheetName,
-        file_name: selectedFile?.name || "",
-        data: rows
-      });
+      const response = await axios.post(
+        "http://localhost:6789/api/competition-dk",
+        {
+          sheet_name: sheetName,
+          file_name: selectedFile?.name || "",
+          data: rows,
+        },
+      );
 
       if (response.data.success) {
         const competitionDkId = response.data.data.id;
         const dataRows = rows.slice(1); // Bỏ header
 
         const teamsToCreate = [];
-        console.log('📋 Parsing SOL/TUV/DAL/DOL data...');
+        console.log("📋 Parsing SOL/TUV/DAL/DOL data...");
 
         // Group 2 rows liên tục
         for (let i = 0; i < dataRows.length; i += 2) {
@@ -227,32 +248,33 @@ export default function CompetitionManagement() {
 
           if (!row1) continue;
 
-          const athletes = [
-            { name: row1[2] || '', unit: row1[3] || '' }
-          ];
+          const athletes = [{ name: row1[2] || "", unit: row1[3] || "" }];
 
           if (row2) {
-            athletes.push({ name: row2[2] || '', unit: row2[3] || '' });
+            athletes.push({ name: row2[2] || "", unit: row2[3] || "" });
           }
           teamsToCreate.push({
             competition_dk_id: competitionDkId,
             row_index: i,
             match_no: row1[0] || `${teamsToCreate.length + 1}`, // Mã số
-            match_name: row1[4] ?? '', // Nội dung thi
-            team_name: row1[3] || '', // Đơn vị
-            match_type: row1[1] || 'SOL', // Hình thức
-            match_status: 'WAI',
+            match_name: row1[4] ?? "", // Nội dung thi
+            team_name: row1[3] || "", // Đơn vị
+            match_type: row1[1] || "SOL", // Hình thức
+            match_status: "WAI",
             config_system: {},
-            athletes: athletes // danh sách VĐV 
+            athletes: athletes, // danh sách VĐV
           });
         }
 
-        console.log('📊 Total teams:', teamsToCreate.length);
+        console.log("📊 Total teams:", teamsToCreate.length);
 
         if (teamsToCreate.length > 0) {
-          await axios.post("http://localhost:6789/api/competition-match-team/bulk", {
-            teams: teamsToCreate
-          });
+          await axios.post(
+            "http://localhost:6789/api/competition-match-team/bulk",
+            {
+              teams: teamsToCreate,
+            },
+          );
         }
 
         alert(`✅ Lưu ${teamsToCreate.length} teams thành công!`);
@@ -260,7 +282,10 @@ export default function CompetitionManagement() {
       }
     } catch (error) {
       console.error("Error saving to database:", error);
-      alert("Lỗi khi lưu dữ liệu: " + (error.response?.data?.message || error.message));
+      alert(
+        "Lỗi khi lưu dữ liệu: " +
+          (error.response?.data?.message || error.message),
+      );
     }
   };
 
@@ -269,11 +294,14 @@ export default function CompetitionManagement() {
   // 2 rows liên tục = 1 team (giống SOL)
   const handleSaveTUVToDatabase = async (sheetName, rows) => {
     try {
-      const response = await axios.post("http://localhost:6789/api/competition-dk", {
-        sheet_name: sheetName,
-        file_name: selectedFile?.name || "",
-        data: rows
-      });
+      const response = await axios.post(
+        "http://localhost:6789/api/competition-dk",
+        {
+          sheet_name: sheetName,
+          file_name: selectedFile?.name || "",
+          data: rows,
+        },
+      );
 
       if (response.data.success) {
         const competitionDkId = response.data.data.id;
@@ -287,30 +315,31 @@ export default function CompetitionManagement() {
 
           if (!row1) continue;
 
-          const athletes = [
-            { name: row1[2] || '', unit: row1[3] || '' }
-          ];
+          const athletes = [{ name: row1[2] || "", unit: row1[3] || "" }];
 
           if (row2) {
-            athletes.push({ name: row2[2] || '', unit: row2[3] || '' });
+            athletes.push({ name: row2[2] || "", unit: row2[3] || "" });
           }
           teamsToCreate.push({
             competition_dk_id: competitionDkId,
             row_index: i,
             match_no: row1[0] || `${teamsToCreate.length + 1}`, // Mã số
-            match_name: row1[4] ?? '', // Nội dung thi
-            team_name: row1[3] || '', // Đơn vị
-            match_type: row1[1] || 'TUV', // Hình thức
-            match_status: 'WAI',
+            match_name: row1[4] ?? "", // Nội dung thi
+            team_name: row1[3] || "", // Đơn vị
+            match_type: row1[1] || "TUV", // Hình thức
+            match_status: "WAI",
             config_system: {},
-            athletes: athletes // danh sách VĐV 
+            athletes: athletes, // danh sách VĐV
           });
         }
 
         if (teamsToCreate.length > 0) {
-          await axios.post("http://localhost:6789/api/competition-match-team/bulk", {
-            teams: teamsToCreate
-          });
+          await axios.post(
+            "http://localhost:6789/api/competition-match-team/bulk",
+            {
+              teams: teamsToCreate,
+            },
+          );
         }
 
         alert(`✅ Lưu ${teamsToCreate.length} teams TUV thành công!`);
@@ -318,7 +347,10 @@ export default function CompetitionManagement() {
       }
     } catch (error) {
       console.error("Error saving TUV to database:", error);
-      alert("Lỗi khi lưu dữ liệu TUV: " + (error.response?.data?.message || error.message));
+      alert(
+        "Lỗi khi lưu dữ liệu TUV: " +
+          (error.response?.data?.message || error.message),
+      );
     }
   };
 
@@ -327,11 +359,14 @@ export default function CompetitionManagement() {
   // 4 rows liên tục = 1 team
   const handleSaveDALToDatabase = async (sheetName, rows) => {
     try {
-      const response = await axios.post("http://localhost:6789/api/competition-dk", {
-        sheet_name: sheetName,
-        file_name: selectedFile?.name || "",
-        data: rows
-      });
+      const response = await axios.post(
+        "http://localhost:6789/api/competition-dk",
+        {
+          sheet_name: sheetName,
+          file_name: selectedFile?.name || "",
+          data: rows,
+        },
+      );
 
       if (response.data.success) {
         const competitionDkId = response.data.data.id;
@@ -348,33 +383,37 @@ export default function CompetitionManagement() {
 
           if (!row1) continue;
 
-          const athletes = [
-            { name: row1[2] || '', unit: row1[3] || '' }
-          ];
+          const athletes = [{ name: row1[2] || "", unit: row1[3] || "" }];
 
-          if (row2) athletes.push({ name: row2[2] || '', unit: row2[3] || '' });
-          if (row3) athletes.push({ name: row3[2] || '', unit: row3[3] || '' });
-          if (row4) athletes.push({ name: row4[2] || '', unit: row4[3] || '' });
+          if (row2) athletes.push({ name: row2[2] || "", unit: row2[3] || "" });
+          if (row3) athletes.push({ name: row3[2] || "", unit: row3[3] || "" });
+          if (row4) athletes.push({ name: row4[2] || "", unit: row4[3] || "" });
 
-          const athleteNames = athletes.map(a => a.name).filter(n => n).join(', ');
+          const athleteNames = athletes
+            .map((a) => a.name)
+            .filter((n) => n)
+            .join(", ");
 
           teamsToCreate.push({
             competition_dk_id: competitionDkId,
             row_index: i,
             match_no: row1[0] || `${teamsToCreate.length + 1}`, // Mã số
-            match_name: row1[4] ?? '', // Nội dung thi
-            team_name: row1[3] || '', // Đơn vị
-            match_type: row1[1] || 'DAL', // Hình thức
-            match_status: 'WAI',
+            match_name: row1[4] ?? "", // Nội dung thi
+            team_name: row1[3] || "", // Đơn vị
+            match_type: row1[1] || "DAL", // Hình thức
+            match_status: "WAI",
             config_system: {},
-            athletes: athletes // danh sách VĐV 
+            athletes: athletes, // danh sách VĐV
           });
         }
 
         if (teamsToCreate.length > 0) {
-          await axios.post("http://localhost:6789/api/competition-match-team/bulk", {
-            teams: teamsToCreate
-          });
+          await axios.post(
+            "http://localhost:6789/api/competition-match-team/bulk",
+            {
+              teams: teamsToCreate,
+            },
+          );
         }
 
         alert(`✅ Lưu ${teamsToCreate.length} teams DAL thành công!`);
@@ -382,7 +421,10 @@ export default function CompetitionManagement() {
       }
     } catch (error) {
       console.error("Error saving DAL to database:", error);
-      alert("Lỗi khi lưu dữ liệu DAL: " + (error.response?.data?.message || error.message));
+      alert(
+        "Lỗi khi lưu dữ liệu DAL: " +
+          (error.response?.data?.message || error.message),
+      );
     }
   };
 
@@ -390,7 +432,9 @@ export default function CompetitionManagement() {
   const fetchSavedData = async () => {
     setLoadingData(true);
     try {
-      const response = await axios.get("http://localhost:6789/api/competition-dk");
+      const response = await axios.get(
+        "http://localhost:6789/api/competition-dk",
+      );
       if (response.data.success) {
         setSavedData(response.data.data);
       }
@@ -406,14 +450,19 @@ export default function CompetitionManagement() {
     if (!confirm("Bạn có chắc chắn muốn xóa dữ liệu này?")) return;
 
     try {
-      const response = await axios.delete(`http://localhost:6789/api/competition-dk/${id}`);
+      const response = await axios.delete(
+        `http://localhost:6789/api/competition-dk/${id}`,
+      );
       if (response.data.success) {
         alert("Xóa dữ liệu thành công!");
         fetchSavedData();
       }
     } catch (error) {
       console.error("Error deleting data:", error);
-      alert("Lỗi khi xóa dữ liệu: " + (error.response?.data?.message || error.message));
+      alert(
+        "Lỗi khi xóa dữ liệu: " +
+          (error.response?.data?.message || error.message),
+      );
     }
   };
 
@@ -424,13 +473,16 @@ export default function CompetitionManagement() {
 
   // Chuyển đến trang chi tiết
   const handleViewDetail = (item) => {
-    console.log('item: ', item);
+    console.log("item: ", item);
     if (item.sheet_name.startsWith("DK")) {
       navigate(`/management/competition-data/${item.id}`);
-    } else { 
+    } else {
       navigate(`/management/competition-data-other/${item.id}`);
     }
   };
+
+  // Memoize savedData để tránh re-render không cần thiết
+  const memoizedSavedData = useMemo(() => savedData, [savedData]);
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">
@@ -438,24 +490,25 @@ export default function CompetitionManagement() {
 
       <TabGroup>
         <TabList className="flex space-x-1 rounded-lg bg-blue-900/20 p-1 mb-6">
-
           <Tab
             className={({ selected }) =>
               `w-full rounded-lg py-2.5 text-sm font-medium leading-5
-              ${selected
-                ? 'bg-white text-blue-700 shadow'
-                : 'text-blue-700 hover:bg-white/[0.12] hover:text-blue-800'
+              ${
+                selected
+                  ? "bg-white text-blue-700 shadow"
+                  : "text-blue-700 hover:bg-white/[0.12] hover:text-blue-800"
               }`
             }
           >
             Quản lý dữ liệu
           </Tab>
-            <Tab
+          <Tab
             className={({ selected }) =>
               `w-full rounded-lg py-2.5 text-sm font-medium leading-5
-              ${selected
-                ? 'bg-white text-blue-700 shadow'
-                : 'text-blue-700 hover:bg-white/[0.12] hover:text-blue-800'
+              ${
+                selected
+                  ? "bg-white text-blue-700 shadow"
+                  : "text-blue-700 hover:bg-white/[0.12] hover:text-blue-800"
               }`
             }
           >
@@ -464,8 +517,6 @@ export default function CompetitionManagement() {
         </TabList>
 
         <TabPanels>
-         
-
           {/* Tab 2: Quản lý dữ liệu */}
           <TabPanel>
             {/* Header với button refresh */}
@@ -497,38 +548,94 @@ export default function CompetitionManagement() {
                       />
                     </svg>
                     <div>
-                      <p className="text-xs text-blue-600 font-semibold uppercase">Tổng số</p>
-                      <p className="text-lg font-bold text-blue-700">{savedData.length}</p>
+                      <p className="text-xs text-blue-600 font-semibold uppercase">
+                        Tổng số
+                      </p>
+                      <p className="text-lg font-bold text-blue-700">
+                        {savedData.length}
+                      </p>
                     </div>
                   </div>
                 )}
               </div>
 
-              <button
-                onClick={fetchSavedData}
-                disabled={loadingData}
-                className="group relative overflow-hidden flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-              >
-                {/* Button shine effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 transform -skew-x-12 group-hover:translate-x-full transition-all duration-700"></div>
+              <div className="flex items-center gap-3">
+                {/* View Mode Toggle */}
+                <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                      viewMode === "grid"
+                        ? "bg-white text-blue-600 shadow-md"
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                      />
+                    </svg>
+                    <span>Grid</span>
+                  </button>
+                  <button
+                    onClick={() => setViewMode("list")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                      viewMode === "list"
+                        ? "bg-white text-blue-600 shadow-md"
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
+                    </svg>
+                    <span>List</span>
+                  </button>
+                </div>
 
-                <svg
-                  className={`w-5 h-5 ${loadingData ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-500`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+                <button
+                  onClick={fetchSavedData}
+                  disabled={loadingData}
+                  className="group relative overflow-hidden flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
-                <span className="relative z-10">
-                  {loadingData ? 'Đang tải...' : 'Làm mới'}
-                </span>
-              </button>
+                  {/* Button shine effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 transform -skew-x-12 group-hover:translate-x-full transition-all duration-700"></div>
+
+                  <svg
+                    className={`w-5 h-5 ${loadingData ? "animate-spin" : "group-hover:rotate-180"} transition-transform duration-500`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                  <span className="relative z-10">
+                    {loadingData ? "Đang tải..." : "Làm mới"}
+                  </span>
+                </button>
+              </div>
             </div>
 
             <div className="space-y-4">
@@ -541,7 +648,10 @@ export default function CompetitionManagement() {
                 <div className="relative text-center py-16 bg-gradient-to-br from-blue-50 via-blue-50 to-blue-50 rounded-2xl border-2 border-dashed border-blue-200 overflow-hidden">
                   {/* Animated background circles */}
                   <div className="absolute top-0 left-0 w-32 h-32 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
-                  <div className="absolute bottom-0 right-0 w-32 h-32 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse" style={{animationDelay: '1s'}}></div>
+                  <div
+                    className="absolute bottom-0 right-0 w-32 h-32 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"
+                    style={{ animationDelay: "1s" }}
+                  ></div>
 
                   <div className="relative z-10">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full mb-4 shadow-lg">
@@ -567,18 +677,18 @@ export default function CompetitionManagement() {
                     </p>
                   </div>
                 </div>
-              ) : (
+              ) : viewMode === "grid" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {savedData.map((item, index) => (
+                  {memoizedSavedData.map((item, index) => (
                     <div
                       key={item.id}
-                      className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-transparent overflow-hidden transform hover:-translate-y-2"
-                      style={{
-                        animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`
-                      }}
+                      className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-transparent overflow-hidden transform hover:-translate-y-1"
                     >
                       {/* Gradient Border Effect */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" style={{padding: '2px'}}>
+                      <div
+                        className="absolute inset-0 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
+                        style={{ padding: "2px" }}
+                      >
                         <div className="bg-white rounded-2xl h-full w-full"></div>
                       </div>
 
@@ -611,7 +721,9 @@ export default function CompetitionManagement() {
                               <div className="bg-white/25 backdrop-blur-md rounded-xl px-4 py-2 shadow-lg border border-white/30">
                                 <div className="text-center">
                                   <p className="text-2xl font-bold text-white">
-                                    {item.data?.length > 0 ? item.data?.length - 1 : 0  }
+                                    {item.data?.length > 0
+                                      ? item.data?.length - 1
+                                      : 0}
                                   </p>
                                   <p className="text-xs text-blue-100 font-medium">
                                     dòng
@@ -645,7 +757,10 @@ export default function CompetitionManagement() {
                               <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">
                                 Tên file
                               </p>
-                              <p className="text-sm text-gray-900 font-medium truncate" title={item.file_name}>
+                              <p
+                                className="text-sm text-gray-900 font-medium truncate"
+                                title={item.file_name}
+                              >
                                 {item.file_name || "Không có tên file"}
                               </p>
                             </div>
@@ -656,7 +771,7 @@ export default function CompetitionManagement() {
                             <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-100 to-pink-100 rounded-lg flex items-center justify-center group-hover/item:scale-110 transition-transform duration-300">
                               <svg
                                 className="w-5 h-5 text-blue-600"
-                                fill="none" 
+                                fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
                               >
@@ -673,13 +788,16 @@ export default function CompetitionManagement() {
                                 Ngày tạo
                               </p>
                               <p className="text-sm text-gray-900 font-medium">
-                                {new Date(item.created_at).toLocaleString('vi-VN', {
-                                  day: '2-digit',
-                                  month: '2-digit',
-                                  year: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
+                                {new Date(item.created_at).toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  },
+                                )}
                               </p>
                             </div>
                           </div>
@@ -745,13 +863,137 @@ export default function CompetitionManagement() {
                     </div>
                   ))}
                 </div>
+              ) : (
+                <div className="space-y-4">
+                  {memoizedSavedData.map((item, index) => (
+                    <div
+                      key={item.id}
+                      className="group relative bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-200 border border-gray-200 hover:border-blue-400 overflow-hidden"
+                    >
+                      <div className="flex items-center gap-6 p-6">
+                        {/* Left: Icon & ID */}
+                        <div className="flex-shrink-0">
+                          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <svg
+                              className="w-8 h-8 text-white"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+
+                        {/* Middle: Info */}
+                        <div className="flex-1 min-w-0 grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {/* Sheet Name */}
+                          <div>
+                            <p className="text-xs text-gray-500 font-semibold uppercase mb-1">
+                              Sheet Name
+                            </p>
+                            <p className="text-lg font-bold text-gray-900 truncate">
+                              {item.sheet_name}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              ID: #{item.id}
+                            </p>
+                          </div>
+
+                          {/* File Name */}
+                          <div>
+                            <p className="text-xs text-gray-500 font-semibold uppercase mb-1">
+                              File Name
+                            </p>
+                            <p
+                              className="text-sm text-gray-700 truncate"
+                              title={item.file_name}
+                            >
+                              {item.file_name || "Không có tên file"}
+                            </p>
+                          </div>
+
+                          {/* Stats */}
+                          <div>
+                            <p className="text-xs text-gray-500 font-semibold uppercase mb-1">
+                              Số dòng
+                            </p>
+                            <div className="flex items-center gap-2">
+                              <span className="text-2xl font-bold text-blue-600">
+                                {item.data?.length > 0
+                                  ? item.data?.length - 1
+                                  : 0}
+                              </span>
+                              <span className="text-sm text-gray-500">
+                                dòng
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Right: Actions */}
+                        <div className="flex-shrink-0 flex gap-2">
+                          <button
+                            onClick={() => handleViewDetail(item)}
+                            className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                              />
+                            </svg>
+                            <span>Xem</span>
+                          </button>
+
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
+                            </svg>
+                            <span>Xóa</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </TabPanel>
 
-               {/* Tab 1: Upload & Import */}
+          {/* Tab 1: Upload & Import */}
           <TabPanel>
-
             {/* Upload File Section */}
             <div className="mb-6 p-4 border-2 border-dashed border-gray-300 rounded-lg">
               <div className="flex items-center gap-4">
@@ -789,7 +1031,10 @@ export default function CompetitionManagement() {
             {/* Sheet Selection */}
             {sheetNames.length > 0 && (
               <div className="mb-6">
-                <label htmlFor="sheet-select" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="sheet-select"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Chọn Sheet
                 </label>
                 <select
@@ -821,7 +1066,8 @@ export default function CompetitionManagement() {
               <div className="w-full">
                 <div className="mb-4 flex items-center justify-between">
                   <h3 className="text-lg font-semibold">
-                    Dữ liệu từ sheet: <span className="text-blue-600">{selectedSheet}</span>
+                    Dữ liệu từ sheet:{" "}
+                    <span className="text-blue-600">{selectedSheet}</span>
                   </h3>
                   <div className="flex items-center gap-4">
                     <span className="text-sm text-gray-600">
@@ -830,16 +1076,18 @@ export default function CompetitionManagement() {
                     {(() => {
                       // Detect format
                       const firstDataRow = sheetData[0];
-                      const format = firstDataRow?.[1] || 'UNKNOWN';
+                      const format = firstDataRow?.[1] || "UNKNOWN";
                       const formatColors = {
-                        'SOL': 'bg-blue-100 text-blue-800',
-                        'TUV': 'bg-green-100 text-green-800',
-                        'DAL': 'bg-blue-100 text-blue-800',
-                        'DOL': 'bg-orange-100 text-orange-800',
-                        'DK': 'bg-red-100 text-red-800'
+                        SOL: "bg-blue-100 text-blue-800",
+                        TUV: "bg-green-100 text-green-800",
+                        DAL: "bg-blue-100 text-blue-800",
+                        DOL: "bg-orange-100 text-orange-800",
+                        DK: "bg-red-100 text-red-800",
                       };
                       return (
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${formatColors[format] || 'bg-gray-100 text-gray-800'}`}>
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${formatColors[format] || "bg-gray-100 text-gray-800"}`}
+                        >
                           Format: {format}
                         </span>
                       );
@@ -849,12 +1097,32 @@ export default function CompetitionManagement() {
 
                 {/* Scroll hint */}
                 <div className="mb-2 flex items-center justify-end gap-2 text-xs text-gray-500">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 16l-4-4m0 0l4-4m-4 4h18"
+                    />
                   </svg>
                   <span>Cuộn ngang để xem thêm</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
                   </svg>
                 </div>
 
@@ -949,79 +1217,89 @@ export default function CompetitionManagement() {
                   <table className="min-w-full divide-y divide-gray-200 table-auto">
                     <thead className="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-20">
                       <tr>
-                      {
-                        !selectedSheet.startsWith('DK') && (
+                        {!selectedSheet.startsWith("DK") && (
                           <>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200 min-w-[80px]">
-                           Team
-                          </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200 min-w-[100px]">
-                          Mã số
-                        </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200 min-w-[80px]">
+                              Team
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200 min-w-[100px]">
+                              Mã số
+                            </th>
 
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200 min-w-[120px]">
-                          Hình thức
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200 min-w-[350px]">
-                          Danh sách VĐV
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200 min-w-[200px]">
-                          Nội dung thi
-                        </th>
-            </>
-                        )
-                      }
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200 min-w-[120px]">
+                              Hình thức
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200 min-w-[350px]">
+                              Danh sách VĐV
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200 min-w-[200px]">
+                              Nội dung thi
+                            </th>
+                          </>
+                        )}
 
-                        {headers.length > 5 && headers.slice(!selectedSheet.startsWith('DK')  ? 5: 0).map((header, index) => (
-                          <th
-                            key={index + 5}
-                            className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200 last:border-r-0 min-w-[150px]"
-                          >
-                            {header || `Cột ${index + 6}`}
-                          </th>
-                        ))}
+                        {headers.length > 5 &&
+                          headers
+                            .slice(!selectedSheet.startsWith("DK") ? 5 : 0)
+                            .map((header, index) => (
+                              <th
+                                key={index + 5}
+                                className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200 last:border-r-0 min-w-[150px]"
+                              >
+                                {header || `Cột ${index + 6}`}
+                              </th>
+                            ))}
                       </tr>
                     </thead>
                     <tbody className="bg-white">
                       {(() => {
                         // Detect format from first row
-                        console.log('sheetData: ', selectedSheet.startsWith('DK'));
+                        console.log(
+                          "sheetData: ",
+                          selectedSheet.startsWith("DK"),
+                        );
                         const firstDataRow = sheetData[0];
-                        const detectedFormat = firstDataRow?.[1] || '';
-                        const isDKFormat = selectedSheet.startsWith('DK') || detectedFormat === 'DK';
+                        const detectedFormat = firstDataRow?.[1] || "";
+                        const isDKFormat =
+                          selectedSheet.startsWith("DK") ||
+                          detectedFormat === "DK";
 
                         // Group rows into teams
                         const teams = [];
                         let currentTeam = null;
-                        if(isDKFormat){
+                        if (isDKFormat) {
                           /// thực hiện khi là DK
                           sheetData.forEach((row, rowIndex) => {
                             currentTeam = {
-                              extraCols: row.slice(0)
+                              extraCols: row.slice(0),
                             };
                             teams.push(currentTeam);
-
                           });
-                        }else {
+                        } else {
                           sheetData.forEach((row, rowIndex) => {
-                            const isTeamStart = row[0] && row[0] !== '';
+                            const isTeamStart = row[0] && row[0] !== "";
 
                             if (isTeamStart) {
                               // Start new team
                               currentTeam = {
                                 teamNo: teams.length + 1,
                                 matchNo: row[0],
-                                matchType: row[1] || '',
-                                matchName: row[4] || '',
-                                redName: row[2] || '',
-                                blueName: row[3] || '',
-                                athletes: [{ name: row[2] || '', unit: row[3] || '' }],
-                                extraCols: row.slice(5)
+                                matchType: row[1] || "",
+                                matchName: row[4] || "",
+                                redName: row[2] || "",
+                                blueName: row[3] || "",
+                                athletes: [
+                                  { name: row[2] || "", unit: row[3] || "" },
+                                ],
+                                extraCols: row.slice(5),
                               };
                               teams.push(currentTeam);
                             } else if (currentTeam && row[2]) {
                               // Add athlete to current team
-                              currentTeam.athletes.push({ name: row[2] || '', unit: row[3] || '' });
+                              currentTeam.athletes.push({
+                                name: row[2] || "",
+                                unit: row[3] || "",
+                              });
                             }
                           });
                         }
@@ -1029,37 +1307,39 @@ export default function CompetitionManagement() {
                         return teams.map((team, teamIndex) => {
                           const matchType = team.matchType;
                           const bgColors = {
-                            'SOL': 'bg-blue-50',
-                            'TUV': 'bg-green-50',
-                            'DAL': 'bg-blue-50',
-                            'DOL': 'bg-orange-50',
-                            'DK': 'bg-red-50'
+                            SOL: "bg-blue-50",
+                            TUV: "bg-green-50",
+                            DAL: "bg-blue-50",
+                            DOL: "bg-orange-50",
+                            DK: "bg-red-50",
                           };
                           const borderColors = {
-                            'SOL': 'border-l-4 border-blue-400',
-                            'TUV': 'border-l-4 border-green-400',
-                            'DAL': 'border-l-4 border-blue-400',
-                            'DOL': 'border-l-4 border-orange-400',
-                            'DK': 'border-l-4 border-red-400'
+                            SOL: "border-l-4 border-blue-400",
+                            TUV: "border-l-4 border-green-400",
+                            DAL: "border-l-4 border-blue-400",
+                            DOL: "border-l-4 border-orange-400",
+                            DK: "border-l-4 border-red-400",
                           };
 
                           // DK format: Hiển thị khác
-                          if (isDKFormat || matchType === 'DK') {
+                          if (isDKFormat || matchType === "DK") {
                             return (
                               <tr
                                 key={teamIndex}
-                                className={`team-row ${bgColors[matchType] || 'bg-gray-50'} ${borderColors[matchType] || 'border-l-1 border-gray-400'} transition-all duration-200 ${teamIndex > 0 ? 'border-t-1 border-gray-300' : ''}`}
+                                className={`team-row ${bgColors[matchType] || "bg-gray-50"} ${borderColors[matchType] || "border-l-1 border-gray-400"} transition-all duration-200 ${teamIndex > 0 ? "border-t-1 border-gray-300" : ""}`}
                               >
-                              
                                 {/* Extra Columns */}
-                                {team.extraCols && team.extraCols.map((cell, cellIndex) => (
-                                  <td
-                                    key={cellIndex}
-                                    className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-300 last:border-r-0"
-                                  >
-                                    {cell !== null && cell !== undefined ? String(cell) : "-"}
-                                  </td>
-                                ))}
+                                {team.extraCols &&
+                                  team.extraCols.map((cell, cellIndex) => (
+                                    <td
+                                      key={cellIndex}
+                                      className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-300 last:border-r-0"
+                                    >
+                                      {cell !== null && cell !== undefined
+                                        ? String(cell)
+                                        : "-"}
+                                    </td>
+                                  ))}
                               </tr>
                             );
                           }
@@ -1068,7 +1348,7 @@ export default function CompetitionManagement() {
                           return (
                             <tr
                               key={teamIndex}
-                              className={`team-row ${bgColors[matchType] || 'bg-gray-50'} ${borderColors[matchType] || 'border-l-1 border-gray-400'} transition-all duration-200 ${teamIndex > 0 ? 'border-t-1 border-gray-300' : ''}`}
+                              className={`team-row ${bgColors[matchType] || "bg-gray-50"} ${borderColors[matchType] || "border-l-1 border-gray-400"} transition-all duration-200 ${teamIndex > 0 ? "border-t-1 border-gray-300" : ""}`}
                             >
                               {/* Team Number */}
                               <td className="px-4 py-4 whitespace-nowrap text-sm font-bold text-gray-700 border-r border-gray-300">
@@ -1080,19 +1360,27 @@ export default function CompetitionManagement() {
                               {/* Match No */}
                               <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 border-r border-gray-300">
                                 <div className="flex items-center gap-2">
-                                  <span className="text-lg">{team.matchNo}</span>
+                                  <span className="text-lg">
+                                    {team.matchNo}
+                                  </span>
                                 </div>
                               </td>
 
                               {/* Match Type Badge */}
                               <td className="px-4 py-4 whitespace-nowrap text-sm border-r border-gray-300">
-                                <span className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-md ${
-                                  matchType === 'SOL' ? 'bg-blue-500 text-white' :
-                                  matchType === 'TUV' ? 'bg-green-500 text-white' :
-                                  matchType === 'DAL' ? 'bg-blue-500 text-white' :
-                                  matchType === 'DOL' ? 'bg-orange-500 text-white' :
-                                  'bg-gray-500 text-white'
-                                }`}>
+                                <span
+                                  className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-md ${
+                                    matchType === "SOL"
+                                      ? "bg-blue-500 text-white"
+                                      : matchType === "TUV"
+                                        ? "bg-green-500 text-white"
+                                        : matchType === "DAL"
+                                          ? "bg-blue-500 text-white"
+                                          : matchType === "DOL"
+                                            ? "bg-orange-500 text-white"
+                                            : "bg-gray-500 text-white"
+                                  }`}
+                                >
                                   {matchType}
                                 </span>
                               </td>
@@ -1100,25 +1388,27 @@ export default function CompetitionManagement() {
                               {/* Athletes List */}
                               <td className="px-4 py-4 text-sm border-r border-gray-300">
                                 <div className="space-y-2">
-                                  {team.athletes.map((athlete, athleteIndex) => (
-                                    <div
-                                      key={athleteIndex}
-                                      className="athlete-card flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm border-2 border-gray-200 hover:border-blue-300"
-                                    >
-                                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
-                                        {athleteIndex + 1}
-                                      </div>
-                                      <div className="flex-1 min-w-0">
-                                        <div className="font-semibold text-gray-900 truncate text-sm">
-                                          {athlete.name || '-'}
+                                  {team.athletes.map(
+                                    (athlete, athleteIndex) => (
+                                      <div
+                                        key={athleteIndex}
+                                        className="athlete-card flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm border-2 border-gray-200 hover:border-blue-300"
+                                      >
+                                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
+                                          {athleteIndex + 1}
                                         </div>
-                                        <div className="text-xs text-gray-500 truncate flex items-center gap-1">
-                                          <span>📍</span>
-                                          <span>{athlete.unit || '-'}</span>
+                                        <div className="flex-1 min-w-0">
+                                          <div className="font-semibold text-gray-900 truncate text-sm">
+                                            {athlete.name || "-"}
+                                          </div>
+                                          <div className="text-xs text-gray-500 truncate flex items-center gap-1">
+                                            <span>📍</span>
+                                            <span>{athlete.unit || "-"}</span>
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  ))}
+                                    ),
+                                  )}
                                   <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200">
                                     <div className="text-xs text-gray-500 font-medium">
                                       Tổng số VĐV:
@@ -1132,18 +1422,23 @@ export default function CompetitionManagement() {
 
                               {/* Match Name */}
                               <td className="px-4 py-4 text-sm text-gray-900 border-r border-gray-300">
-                                <div className="font-medium">{team.matchName || '-'}</div>
+                                <div className="font-medium">
+                                  {team.matchName || "-"}
+                                </div>
                               </td>
 
                               {/* Extra Columns */}
-                              {team.extraCols && team.extraCols.map((cell, cellIndex) => (
-                                <td
-                                  key={cellIndex}
-                                  className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-300 last:border-r-0"
-                                >
-                                  {cell !== null && cell !== undefined ? String(cell) : "-"}
-                                </td>
-                              ))}
+                              {team.extraCols &&
+                                team.extraCols.map((cell, cellIndex) => (
+                                  <td
+                                    key={cellIndex}
+                                    className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-300 last:border-r-0"
+                                  >
+                                    {cell !== null && cell !== undefined
+                                      ? String(cell)
+                                      : "-"}
+                                  </td>
+                                ))}
                             </tr>
                           );
                         });
@@ -1154,26 +1449,38 @@ export default function CompetitionManagement() {
 
                 {/* Legend */}
                 <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Chú thích:</h4>
+                  <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                    Chú thích:
+                  </h4>
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs">
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-1 rounded bg-red-100 text-red-800 font-semibold">DK</span>
+                      <span className="px-2 py-1 rounded bg-red-100 text-red-800 font-semibold">
+                        DK
+                      </span>
                       <span className="text-gray-600">Đối kháng (1v1)</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-1 rounded bg-blue-100 text-blue-800 font-semibold">SOL</span>
+                      <span className="px-2 py-1 rounded bg-blue-100 text-blue-800 font-semibold">
+                        SOL
+                      </span>
                       <span className="text-gray-600">Song luyện (2 VĐV)</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-1 rounded bg-green-100 text-green-800 font-semibold">TUV</span>
+                      <span className="px-2 py-1 rounded bg-green-100 text-green-800 font-semibold">
+                        TUV
+                      </span>
                       <span className="text-gray-600">Tự vệ (2 VĐV)</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-1 rounded bg-blue-100 text-blue-800 font-semibold">DAL</span>
+                      <span className="px-2 py-1 rounded bg-blue-100 text-blue-800 font-semibold">
+                        DAL
+                      </span>
                       <span className="text-gray-600">Đại luyện (4 VĐV)</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-1 rounded bg-orange-100 text-orange-800 font-semibold">DOL</span>
+                      <span className="px-2 py-1 rounded bg-orange-100 text-orange-800 font-semibold">
+                        DOL
+                      </span>
                       <span className="text-gray-600">Đơn luyện (1 VĐV)</span>
                     </div>
                   </div>
@@ -1182,7 +1489,8 @@ export default function CompetitionManagement() {
                       💡 <strong>DK (Đối kháng):</strong> Hiển thị Đỏ vs Xanh
                     </p>
                     <p className="text-xs text-gray-500">
-                      💡 <strong>SOL/TUV/DAL/DOL:</strong> Hiển thị danh sách VĐV trong team
+                      💡 <strong>SOL/TUV/DAL/DOL:</strong> Hiển thị danh sách
+                      VĐV trong team
                     </p>
                   </div>
                 </div>
@@ -1190,26 +1498,29 @@ export default function CompetitionManagement() {
             )}
 
             {/* Empty State */}
-            {!loading && selectedFile && sheetNames.length > 0 && !selectedSheet && (
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <svg
-                  className="mx-auto h-12 w-12 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                <p className="mt-2 text-sm text-gray-600">
-                  Vui lòng chọn một sheet để xem dữ liệu
-                </p>
-              </div>
-            )}
+            {!loading &&
+              selectedFile &&
+              sheetNames.length > 0 &&
+              !selectedSheet && (
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                  <svg
+                    className="mx-auto h-12 w-12 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  <p className="mt-2 text-sm text-gray-600">
+                    Vui lòng chọn một sheet để xem dữ liệu
+                  </p>
+                </div>
+              )}
 
             {!loading && !selectedFile && (
               <div className="text-center py-12 bg-gray-50 rounded-lg">
@@ -1236,5 +1547,4 @@ export default function CompetitionManagement() {
       </TabGroup>
     </div>
   );
-
 }

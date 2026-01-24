@@ -11,22 +11,19 @@ import React from "react";
  * @param {string} config.backgroundColor - Background color (Tailwind class)
  * @param {string} config.decorativeLineColors - Decorative line gradient colors
  */
-export default function Header({
-  title,
-  desc,
-  logos,
-  config = {}
-}) {
+export default function Header({ title, desc, logos, config = {} }) {
   // Default configuration
   const defaultConfig = {
-    titleColor: "bg-gradient-to-r from-white via-white to-white bg-clip-text text-transparent",
+    titleColor:
+      "bg-gradient-to-r from-white via-white to-white bg-clip-text text-transparent",
     descColor: "text-yellow-300",
-    backgroundColor: "bg-gradient-to-r from-transparent via-white/10 to-transparent",
+    backgroundColor:
+      "bg-gradient-to-r from-transparent via-white/10 to-transparent",
     decorativeLineColors: {
       left: "from-transparent to-yellow-500",
       center: "from-yellow-500 via-yellow-500 to-yellow-500",
-      right: "from-yellow-500 to-transparent"
-    }
+      right: "from-yellow-500 to-transparent",
+    },
   };
 
   // Merge config with defaults
@@ -65,7 +62,7 @@ export default function Header({
             {logos.map((logo, index) => (
               <div
                 key={logo.id || index}
-                className="flex justify-center items-center shadow-lg hover:shadow-xl transition-shadow"
+                className="flex justify-center items-center shadow-lg hover:shadow-xl transition-shadow rounded-lg border-2 border-gray-300 bg-white p-2"
                 style={{ minWidth: "75px", maxWidth: "75px" }}
               >
                 <img
@@ -83,20 +80,32 @@ export default function Header({
       )}
 
       {/* Title */}
-      <div className={`${finalConfig.backgroundColor} py-4 px-6 rounded-xl backdrop-blur-sm`}>
-        <h1 className={`text-4xl font-black tracking-wider mb-2 ${finalConfig.titleColor} drop-shadow-2xl`}>
+      <div
+        className={`${finalConfig.backgroundColor} py-4 px-6 rounded-xl backdrop-blur-sm`}
+      >
+        <h1
+          className={`text-4xl font-black tracking-wider mb-2 ${finalConfig.titleColor} drop-shadow-2xl`}
+        >
           {title}
         </h1>
-        <p className={`text-xl font-bold tracking-wide ${finalConfig.descColor} drop-shadow-lg`}>
+        <p
+          className={`text-xl font-bold tracking-wide ${finalConfig.descColor} drop-shadow-lg`}
+        >
           {desc}
         </p>
       </div>
 
       {/* Decorative line */}
       <div className="mt-4 flex justify-center gap-2">
-        <div className={`h-1 w-20 bg-gradient-to-r ${finalConfig.decorativeLineColors.left} rounded-full`}></div>
-        <div className={`h-1 w-20 bg-gradient-to-r ${finalConfig.decorativeLineColors.center} rounded-full`}></div>
-        <div className={`h-1 w-20 bg-gradient-to-r ${finalConfig.decorativeLineColors.right} rounded-full`}></div>
+        <div
+          className={`h-1 w-20 bg-gradient-to-r ${finalConfig.decorativeLineColors.left} rounded-full`}
+        ></div>
+        <div
+          className={`h-1 w-20 bg-gradient-to-r ${finalConfig.decorativeLineColors.center} rounded-full`}
+        ></div>
+        <div
+          className={`h-1 w-20 bg-gradient-to-r ${finalConfig.decorativeLineColors.right} rounded-full`}
+        ></div>
       </div>
     </div>
   );

@@ -1,6 +1,12 @@
 import React from "react";
 import { Fragment } from "react";
-import { Dialog, Transition, DialogPanel, DialogTitle, TransitionChild } from "@headlessui/react";
+import {
+  Dialog,
+  Transition,
+  DialogPanel,
+  DialogTitle,
+  TransitionChild,
+} from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 
 const STATUS_STYLE = {
@@ -10,24 +16,35 @@ const STATUS_STYLE = {
   primary: "bg-primary/10 text-primary",
 };
 
-const Modal = ({ isOpen, onClose, title, status = "primary", headerClass = null, width, height, children }) => {
-  const customHeaderClass = headerClass ? headerClass : STATUS_STYLE[status] || STATUS_STYLE.primary;
+const Modal = ({
+  isOpen,
+  onClose,
+  title,
+  status = "primary",
+  headerClass = null,
+  width,
+  height,
+  children,
+}) => {
+  const customHeaderClass = headerClass
+    ? headerClass
+    : STATUS_STYLE[status] || STATUS_STYLE.primary;
 
   // Tạo style cho width và height
   const modalStyle = {};
   if (width) {
-    modalStyle.width = typeof width === 'number' ? `${width}px` : width;
-    modalStyle.maxWidth = typeof width === 'number' ? `${width}px` : width;
+    modalStyle.width = typeof width === "number" ? `${width}px` : width;
+    modalStyle.maxWidth = typeof width === "number" ? `${width}px` : width;
   }
   if (height) {
-    modalStyle.height = typeof height === 'number' ? `${height}px` : height;
-    modalStyle.maxHeight = typeof height === 'number' ? `${height}px` : height;
+    modalStyle.height = typeof height === "number" ? `${height}px` : height;
+    modalStyle.maxHeight = typeof height === "number" ? `${height}px` : height;
   }
 
   // Class mặc định nếu không có custom width
   const panelClass = width
-    ? "w-full rounded-2xl bg-white shadow-xl overflow-hidden"
-    : "w-full max-w-md rounded-2xl bg-white shadow-xl overflow-hidden";
+    ? "w-full rounded bg-white shadow-xl overflow-hidden"
+    : "w-full max-w-md rounded bg-white shadow-xl overflow-hidden";
 
   return (
     <Transition show={isOpen} as={Fragment}>
@@ -65,17 +82,29 @@ const Modal = ({ isOpen, onClose, title, status = "primary", headerClass = null,
           >
             <DialogPanel className={panelClass} style={modalStyle}>
               {/* Header */}
-              <div className={`px-6 py-3 text-lg font-semibold text-center ${customHeaderClass}`}>
+              <div
+                className={`px-6 py-3 text-lg font-semibold text-center ${customHeaderClass}`}
+              >
                 <DialogTitle>{title}</DialogTitle>
               </div>
 
               {/* Close button */}
-              <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-black z-10">
+              <button
+                onClick={onClose}
+                className="absolute top-4 right-4 text-gray-500 hover:text-black z-10"
+              >
                 <XMarkIcon className="w-5 h-5" />
               </button>
 
               {/* Body */}
-              <div className="p-6 overflow-y-auto" style={{ maxHeight: height ? `calc(${typeof height === 'number' ? height + 'px' : height} - 60px)` : 'auto' }}>
+              <div
+                className="p-6 overflow-y-auto"
+                style={{
+                  maxHeight: height
+                    ? `calc(${typeof height === "number" ? height + "px" : height} - 60px)`
+                    : "auto",
+                }}
+              >
                 {children}
               </div>
             </DialogPanel>

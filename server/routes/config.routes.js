@@ -218,9 +218,9 @@ router.get('/get-qr-register', AdminController.getQRRegisterReferrer);
 router.get('/logos', LogoController.getAllLogos);
 router.post('/logos', LogoController.createLogo);
 router.post('/logos/upload', LogoController.uploadMiddleware, LogoController.uploadLogo);
-router.put('/logos/:id', LogoController.updateLogo);
 router.delete('/logos/:id', LogoController.deleteLogo);
 router.put('/logos/reorder', LogoController.reorderLogos);
+router.put('/logos/:id', LogoController.updateLogo);
 
 
 

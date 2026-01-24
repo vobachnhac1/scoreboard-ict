@@ -41,22 +41,32 @@ const AdminLayout = ({ children }) => {
       icon: LinkIcon
     },
     {
-      name: "Quản lý cài đặt chung",
-      icon: Cog6ToothIcon,
-      href: "/management/general-setting",
-      children: [
-        {
-          name: "Quản lý Thi đấu",
-          href: "/management/general-setting/competition-management",
-          icon: TrophyIcon
-        },
-        {
-          name: "Cấu hình hệ thống",
-          href: "/management/general-setting/config-system",
-          icon: ServerStackIcon
-        }
-      ],
+      name: "Quản lý Thi đấu",
+      href: "/management/general-setting/competition-management",
+      icon: TrophyIcon
     },
+    {
+      name: "Quản lý cài đặt",
+      href: "/management/general-setting/config-system",
+      icon: ServerStackIcon
+    },
+    // {
+    //   name: "Quản lý cài đặt chung",
+    //   icon: Cog6ToothIcon,
+    //   href: "/management/general-setting",
+    //   children: [
+    //     {
+    //       name: "Quản lý Thi đấu",
+    //       href: "/management/general-setting/competition-management",
+    //       icon: TrophyIcon
+    //     },
+    //     {
+    //       name: "Quản lý cài đặt",
+    //       href: "/management/general-setting/config-system",
+    //       icon: ServerStackIcon
+    //     }
+    //   ],
+    // },
     // {
     //   name: "Bảng điểm",
     //   icon: ChartBarIcon,

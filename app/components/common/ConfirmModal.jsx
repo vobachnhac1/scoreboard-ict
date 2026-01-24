@@ -85,7 +85,7 @@ const ConfirmModal = ({
       />
       
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 animate-scale-in">
+      <div className="relative bg-white rounded shadow-2xl max-w-md w-full mx-4 p-6 animate-scale-in">
         {/* Icon */}
         {getIcon()}
         
@@ -106,14 +106,14 @@ const ConfirmModal = ({
           {showCancel && (
             <button
               onClick={onCancel}
-              className="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-semibold transition-colors"
+              className="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded font-semibold transition-colors"
             >
               {cancelText}
             </button>
           )}
           <button
             onClick={onConfirm}
-            className={`flex-1 px-6 py-3 text-white rounded-lg font-semibold transition-colors ${getConfirmButtonClass()}`}
+            className={`flex-1 px-6 py-3 text-white rounded font-semibold transition-colors ${getConfirmButtonClass()}`}
           >
             {confirmText}
           </button>

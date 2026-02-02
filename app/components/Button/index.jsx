@@ -2,13 +2,19 @@ import React from "react";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 const VARIANT_CLASSES = {
-  primary: "bg-primary text-white hover:bg-primary/90",
-  gray: "bg-primary text-white hover:bg-gray/90",
-  secondary: "bg-secondary text-white hover:bg-secondary/90",
-  danger: "bg-danger text-white hover:bg-danger/90",
-  warning: "bg-warning text-white hover:bg-warning/90",
-  success: "bg-success text-white hover:bg-success/90",
-  outline: "bg-gray-200 hover:bg-gray-300 text-gray-800",
+  primary:
+    "bg-primary dark:bg-blue-500 text-white hover:bg-primary/90 dark:hover:bg-blue-600",
+  gray: "bg-primary dark:bg-blue-500 text-white hover:bg-gray/90",
+  secondary:
+    "bg-secondary dark:bg-gray-600 text-white hover:bg-secondary/90 dark:hover:bg-gray-700",
+  danger:
+    "bg-danger dark:bg-red-500 text-white hover:bg-danger/90 dark:hover:bg-red-600",
+  warning:
+    "bg-warning dark:bg-yellow-500 text-white hover:bg-warning/90 dark:hover:bg-yellow-600",
+  success:
+    "bg-success dark:bg-green-500 text-white hover:bg-success/90 dark:hover:bg-green-600",
+  outline:
+    "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200",
   none: "",
 };
 

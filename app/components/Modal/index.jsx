@@ -24,11 +24,20 @@ const Modal = ({
   headerClass = null,
   width,
   height,
+  size = "default",
   children,
 }) => {
   const customHeaderClass = headerClass
     ? headerClass
     : STATUS_STYLE[status] || STATUS_STYLE.primary;
+
+  // Define size presets
+  const sizePresets = {
+    small: { maxWidth: "max-w-sm", padding: "p-4" },
+    default: { maxWidth: "max-w-md", padding: "p-4" },
+    large: { maxWidth: "max-w-2xl", padding: "p-4" },
+    full: { maxWidth: "max-w-7xl w-full h-full", padding: "p-2" },
+  };
 
   // Tạo style cho width và height
   const modalStyle = {};
@@ -41,10 +50,17 @@ const Modal = ({
     modalStyle.maxHeight = typeof height === "number" ? `${height}px` : height;
   }
 
-  // Class mặc định nếu không có custom width
+  // Determine panel class based on size or custom width
+  const sizeConfig = sizePresets[size] || sizePresets.default;
   const panelClass = width
-    ? "w-full rounded bg-white shadow-xl overflow-hidden"
-    : "w-full max-w-md rounded bg-white shadow-xl overflow-hidden";
+    ? "w-full rounded bg-white dark:bg-gray-800 shadow-xl overflow-hidden"
+    : `w-full ${sizeConfig.maxWidth} rounded bg-white dark:bg-gray-800 shadow-xl overflow-hidden`;
+
+  // Container class for full size
+  const containerClass =
+    size === "full"
+      ? "fixed inset-0 flex items-center justify-center p-2"
+      : "fixed inset-0 flex items-center justify-center p-4";
 
   return (
     <Transition show={isOpen} as={Fragment}>
@@ -66,11 +82,11 @@ const Modal = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/40" />
+          <div className="fixed inset-0 bg-black/40 dark:bg-black/60" />
         </TransitionChild>
 
         {/* Modal container */}
-        <div className="fixed inset-0 flex items-center justify-center p-4">
+        <div className={containerClass}>
           <TransitionChild
             as={Fragment}
             enter="ease-out duration-200"
@@ -91,18 +107,20 @@ const Modal = ({
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 text-gray-500 hover:text-black z-10"
+                className="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white z-10"
               >
                 <XMarkIcon className="w-5 h-5" />
               </button>
 
               {/* Body */}
               <div
-                className="p-6 overflow-y-auto"
+                className={`${sizeConfig.padding} overflow-y-auto bg-white dark:bg-gray-800 ${size === "full" ? "h-full" : ""}`}
                 style={{
                   maxHeight: height
                     ? `calc(${typeof height === "number" ? height + "px" : height} - 60px)`
-                    : "auto",
+                    : size === "full"
+                      ? "calc(100vh - 120px)"
+                      : "auto",
                 }}
               >
                 {children}

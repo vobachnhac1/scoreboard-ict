@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Button from "../../../../components/Button";
 import QRCode from "qrcode";
-import axios from 'axios'
+import axios from "axios";
 
 export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
   const [roomId, setRoomId] = useState("");
@@ -41,19 +41,18 @@ export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
   const generateQRCode = async () => {
     try {
       // gọi API  get-qr-active
-        let config = {
-          method: 'get',
-          maxBodyLength: Infinity,
-          baseURL: "http://localhost:6789/api/config/get-qr-active",
-          params: {
-            room_id: roomId
-          },
-        };
+      let config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        baseURL: "http://localhost:6789/api/config/get-qr-active",
+        params: {
+          room_id: roomId,
+        },
+      };
       const response = await axios.request(config);
-      if(response.status == 200){
+      if (response.status == 200) {
         setQrCodeUrl(response.data.data.base64QR);
       }
-      
     } catch (error) {
       console.error("Error generating QR code:", error);
     }
@@ -72,7 +71,7 @@ export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
       uuid_desktop: uuidDesktop,
       server_url: serverUrl,
       permission: 9,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
 
     onSubmit(roomData);
@@ -105,17 +104,17 @@ export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
       <form onSubmit={handleSubmit}>
         {/* Grid 2 Columns Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-
           {/* Left Column - Form Inputs */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
               Thông tin kết nối
             </h3>
 
             {/* Room ID */}
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Mã kết nối <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Mã kết nối{" "}
+                <span className="text-red-500 dark:text-red-400">*</span>
               </label>
               <div className="flex gap-2">
                 <input
@@ -123,7 +122,7 @@ export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
                   type="text"
                   value={roomId}
                   onChange={(e) => setRoomId(e.target.value.toUpperCase())}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-400"
                   placeholder="Mã kết nối"
                   maxLength={10}
                   required
@@ -137,15 +136,16 @@ export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
                   📋
                 </Button> */}
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Mã kết nối duy nhất (10 ký tự)
               </p>
             </div>
 
             {/* UUID Desktop */}
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Mã thiết bị <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Mã thiết bị{" "}
+                <span className="text-red-500 dark:text-red-400">*</span>
               </label>
               <div className="flex gap-2">
                 <input
@@ -153,7 +153,7 @@ export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
                   type="text"
                   value={uuidDesktop}
                   onChange={(e) => setUuidDesktop(e.target.value.toUpperCase())}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-400"
                   placeholder="Mã thiết bị"
                   maxLength={12}
                   required
@@ -167,7 +167,7 @@ export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
                   📋
                 </Button> */}
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Mã định danh thiết bị admin (12 ký tự)
               </p>
             </div>
@@ -193,28 +193,26 @@ export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
 
           {/* Right Column - QR Code */}
           <div className="flex flex-col">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
               QR Code
             </h3>
 
-            <div className="flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border-2 border-blue-200">
+            <div className="flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-lg border-2 border-blue-200 dark:border-blue-700">
               {qrCodeUrl ? (
                 <div className="flex flex-col items-center">
-                  <div className="bg-white p-4 rounded-xl shadow-lg mb-4">
-                    <img
-                      src={qrCodeUrl}
-                      alt="QR Code"
-                      className="w-64 h-64"
-                    />
+                  <div className="bg-white dark:bg-gray-700 p-4 rounded-xl shadow-lg mb-4 border border-gray-200 dark:border-gray-600">
+                    <img src={qrCodeUrl} alt="QR Code" className="w-64 h-64" />
                   </div>
-                  <p className="text-xs text-gray-600 mt-3 text-center max-w-xs">
+                  <p className="text-xs text-gray-600 dark:text-gray-300 mt-3 text-center max-w-xs">
                     Scan mã QR này để kết nối từ thiết bị di động
                   </p>
                 </div>
               ) : (
                 <div className="text-center">
-                  <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mx-auto mb-4"></div>
-                  <p className="text-gray-500 text-sm font-medium">Đang tải mã QR...</p>
+                  <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 dark:border-blue-400 mx-auto mb-4"></div>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
+                    Đang tải mã QR...
+                  </p>
                 </div>
               )}
             </div>
@@ -222,8 +220,8 @@ export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
         </div>
 
         {/* Action Buttons - Full Width Below */}
-        <div className="flex gap-3 pt-4 border-t border-gray-200 justify-end">
-            <Button
+        <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700 justify-end">
+          <Button
             type="button"
             variant="warning"
             onClick={handleGenerateNew}
@@ -239,11 +237,7 @@ export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
           >
             Tải mã QR
           </Button>
-          <Button
-            type="submit"
-            variant="primary"
-            className="min-w-[150px]"
-          >
+          <Button type="submit" variant="primary" className="min-w-[150px]">
             {existingRoom ? "Sử dụng" : "Tạo mới & Kết nối"}
           </Button>
           <Button
@@ -259,4 +253,3 @@ export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
     </div>
   );
 }
-

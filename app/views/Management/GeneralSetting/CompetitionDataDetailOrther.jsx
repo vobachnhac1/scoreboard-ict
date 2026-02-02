@@ -27,7 +27,8 @@ function TeamCard({
   const statusConfig = {
     WAI: {
       label: "Chờ",
-      color: "bg-yellow-100 text-yellow-800 border-yellow-300",
+      color:
+        "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +46,8 @@ function TeamCard({
     },
     IN: {
       label: "Đang diễn ra",
-      color: "bg-blue-100 text-blue-800 border-blue-300",
+      color:
+        "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-700",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +65,8 @@ function TeamCard({
     },
     FIN: {
       label: "Kết thúc",
-      color: "bg-green-100 text-green-800 border-green-300",
+      color:
+        "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 border-green-300 dark:border-green-700",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +84,8 @@ function TeamCard({
     },
     CAN: {
       label: "Hủy",
-      color: "bg-red-100 text-red-800 border-red-300",
+      color:
+        "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300 border-red-300 dark:border-red-700",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -101,31 +105,34 @@ function TeamCard({
 
   const typeColors = {
     DOL: {
-      bg: "bg-purple-100",
-      text: "text-purple-700",
-      border: "border-purple-300",
-      gradient: "from-purple-50 to-purple-100",
+      bg: "bg-purple-100 dark:bg-purple-900",
+      text: "text-purple-700 dark:text-purple-300",
+      border: "border-purple-300 dark:border-purple-700",
+      gradient:
+        "from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800",
       name: "Đối Luyện",
     },
     SOL: {
-      bg: "bg-green-100",
-      text: "text-green-700",
-      border: "border-green-300",
-      gradient: "from-green-50 to-green-100",
+      bg: "bg-green-100 dark:bg-green-900",
+      text: "text-green-700 dark:text-green-300",
+      border: "border-green-300 dark:border-green-700",
+      gradient:
+        "from-green-50 to-green-100 dark:from-green-900 dark:to-green-800",
       name: "Song Luyện",
     },
     TUV: {
-      bg: "bg-orange-100",
-      text: "text-orange-700",
-      border: "border-orange-300",
-      gradient: "from-orange-50 to-orange-100",
+      bg: "bg-orange-100 dark:bg-orange-900",
+      text: "text-orange-700 dark:text-orange-300",
+      border: "border-orange-300 dark:border-orange-700",
+      gradient:
+        "from-orange-50 to-orange-100 dark:from-orange-900 dark:to-orange-800",
       name: "Tự Vệ",
     },
     DAL: {
-      bg: "bg-pink-100",
-      text: "text-pink-700",
-      border: "border-pink-300",
-      gradient: "from-pink-50 to-pink-100",
+      bg: "bg-pink-100 dark:bg-pink-900",
+      text: "text-pink-700 dark:text-pink-300",
+      border: "border-pink-300 dark:border-pink-700",
+      gradient: "from-pink-50 to-pink-100 dark:from-pink-900 dark:to-pink-800",
       name: "Đả Luyện",
     },
   };
@@ -138,14 +145,14 @@ function TeamCard({
   if (viewMode === "list") {
     return (
       <div
-        className="bg-white rounded shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 overflow-hidden group"
+        className="bg-white dark:bg-gray-800 rounded shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 dark:border-gray-700 overflow-hidden group"
         onDoubleClick={() => onDoubleClick(row)}
       >
         <div className="flex items-center gap-4 p-4">
           {/* STT */}
           <div className="flex-shrink-0">
             <div
-              className={`bg-gradient-to-r ${typeColor.gradient} ${typeColor.border} border-2 text-gray-800 rounded px-4 py-2 font-bold text-base shadow-md min-w-[80px] text-center`}
+              className={`bg-gradient-to-r ${typeColor.gradient} ${typeColor.border} border-2 text-gray-800 dark:text-gray-200 rounded px-4 py-2 font-bold text-base shadow-md min-w-[80px] text-center`}
             >
               #{row.match_no}
             </div>
@@ -162,36 +169,42 @@ function TeamCard({
 
           {/* VĐV tham gia */}
           <div className="flex-1 min-w-0">
-            <div className="text-xs text-gray-500 mb-1">VĐV tham gia:</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+              VĐV tham gia:
+            </div>
             {row.athletes && row.athletes.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {row.athletes.slice(0, 3).map((athlete, idx) => (
                   <div
-                    key={idx}
-                    className="flex items-center gap-1.5 bg-blue-50 px-2 py-1 rounded"
+                    key={`${row.match_id || row.match_no}-athlete-${idx}`}
+                    className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900 px-2 py-1 rounded"
                   >
-                    <span className="w-4 h-4 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center font-bold">
+                    <span className="w-4 h-4 rounded-full bg-blue-500 dark:bg-blue-600 text-white text-xs flex items-center justify-center font-bold">
                       {idx + 1}
                     </span>
-                    <span className="font-semibold text-blue-700 text-sm truncate max-w-[150px]">
+                    <span className="font-semibold text-blue-700 dark:text-blue-300 text-sm truncate max-w-[150px]">
                       {athlete.athlete_name}
                     </span>
                   </div>
                 ))}
                 {row.athletes.length > 3 && (
-                  <span className="text-xs text-gray-500 self-center">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 self-center">
                     +{row.athletes.length - 3} khác
                   </span>
                 )}
               </div>
             ) : (
-              <span className="text-gray-400 text-sm">Chưa có VĐV</span>
+              <span className="text-gray-400 dark:text-gray-500 text-sm">
+                Chưa có VĐV
+              </span>
             )}
           </div>
 
           {/* Đơn vị */}
           <div className="flex-shrink-0 min-w-[120px]">
-            <div className="text-xs text-gray-500 mb-1">Đơn vị:</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+              Đơn vị:
+            </div>
             <div
               className={`px-3 py-1 rounded font-semibold text-sm ${typeColor.bg} ${typeColor.text}`}
             >
@@ -232,7 +245,7 @@ function TeamCard({
   // Grid View - Card layout
   return (
     <div
-      className="bg-white rounded shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 overflow-hidden group"
+      className="bg-white dark:bg-gray-800 rounded shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 overflow-hidden group"
       onDoubleClick={() => onDoubleClick(row)}
     >
       {/* Header - STT và Trạng thái */}
@@ -288,21 +301,21 @@ function TeamCard({
         </div>
 
         {/* VĐV tham gia */}
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded p-4 border-2 border-blue-200 shadow-sm mb-4">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 rounded p-4 border-2 border-blue-200 dark:border-blue-700 shadow-sm mb-4">
           <div className="flex items-center gap-2 mb-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-blue-700"
+              className="h-5 w-5 text-blue-700 dark:text-blue-300"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
               <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
             </svg>
-            <h3 className="text-sm font-bold text-blue-700 uppercase tracking-wide">
+            <h3 className="text-sm font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wide">
               VĐV tham gia
             </h3>
             {row.athletes && row.athletes.length > 0 && (
-              <span className="ml-auto bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+              <span className="ml-auto bg-blue-500 dark:bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full">
                 {row.athletes.length}
               </span>
             )}
@@ -311,18 +324,18 @@ function TeamCard({
             {row.athletes && row.athletes.length > 0 ? (
               row.athletes.map((athlete, idx) => (
                 <div
-                  key={idx}
-                  className="flex items-center gap-3 bg-white rounded p-2 shadow-sm"
+                  key={`${row.match_id || row.match_no}-athlete-card-${idx}`}
+                  className="flex items-center gap-3 bg-white dark:bg-gray-800 rounded p-2 shadow-sm"
                 >
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center font-bold">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500 dark:bg-blue-600 text-white text-xs flex items-center justify-center font-bold">
                     {idx + 1}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <div className="font-bold text-blue-900 truncate">
+                    <div className="font-bold text-blue-900 dark:text-blue-200 truncate">
                       {athlete.athlete_name || "-"}
                     </div>
                     {athlete.athlete_unit && (
-                      <div className="text-xs text-blue-600">
+                      <div className="text-xs text-blue-600 dark:text-blue-400">
                         {athlete.athlete_unit}
                       </div>
                     )}
@@ -330,13 +343,15 @@ function TeamCard({
                 </div>
               ))
             ) : (
-              <div className="text-center text-gray-400 py-2">Chưa có VĐV</div>
+              <div className="text-center text-gray-400 dark:text-gray-500 py-2">
+                Chưa có VĐV
+              </div>
             )}
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-200">
+        <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-200 dark:border-gray-700">
           {listActions
             .filter((action) => availableActions.includes(action.key))
             .map((action) => (
@@ -590,7 +605,10 @@ export default function CompetitionDataDetailOrther() {
         return (
           <div className="space-y-1">
             {row.athletes.map((athlete, idx) => (
-              <div key={idx} className="flex items-center gap-2">
+              <div
+                key={`${row.match_id || row.id}-athlete-table-${idx}`}
+                className="flex items-center gap-2"
+              >
                 <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
                   {idx + 1}
                 </span>
@@ -1241,10 +1259,12 @@ export default function CompetitionDataDetailOrther() {
 
   if (loading) {
     return (
-      <div className="p-6 bg-white  shadow">
+      <div className="p-6 bg-white dark:bg-gray-900 shadow">
         <div className="text-center py-8">
-          <div className="inline-block animate-spin  h-8 w-8 border-b-2 border-blue-500"></div>
-          <p className="mt-2 text-gray-600">Đang tải dữ liệu...</p>
+          <div className="inline-block animate-spin h-8 w-8 border-b-2 border-blue-500 dark:border-blue-400"></div>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
+            Đang tải dữ liệu...
+          </p>
         </div>
       </div>
     );
@@ -1252,10 +1272,10 @@ export default function CompetitionDataDetailOrther() {
 
   if (!sheetData) {
     return (
-      <div className="p-6 bg-white  shadow">
-        <div className="text-center py-12 bg-gray-50 ">
+      <div className="p-6 bg-white dark:bg-gray-900 shadow">
+        <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded">
           <svg
-            className="mx-auto h-12 w-12 text-gray-400"
+            className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -1267,21 +1287,23 @@ export default function CompetitionDataDetailOrther() {
               d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
             />
           </svg>
-          <p className="mt-2 text-sm text-gray-600">Không tìm thấy dữ liệu</p>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Không tìm thấy dữ liệu
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 bg-white shadow">
+    <div className="p-6 bg-white dark:bg-gray-900 shadow">
       {/* Header */}
       <div className="mb-6">
         <button
           onClick={() =>
             navigate("/management/general-setting/competition-management")
           }
-          className="mb-4 flex items-center text-blue-600 hover:text-blue-800 font-medium"
+          className="mb-4 flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
         >
           <svg
             className="w-5 h-5 mr-2"
@@ -1299,22 +1321,22 @@ export default function CompetitionDataDetailOrther() {
           Quay lại
         </button>
 
-        <h2 className="text-2xl font-bold mb-4">
+        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
           {sheetData?.sheet_name || "Đang tải..."}
         </h2>
         <div className="flex items-center justify-between mb-4">
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-gray-600 dark:text-gray-400">
             File: {sheetData?.file_name || "-"} | Tổng số dòng: {rows.length}
           </span>
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-2 border-yellow-200 rounded p-3 shadow-sm">
+          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900 dark:to-yellow-800 border-2 border-yellow-200 dark:border-yellow-700 rounded p-3 shadow-sm">
             <div className="flex items-center gap-2 mb-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-yellow-700"
+                className="h-5 w-5 text-yellow-700 dark:text-yellow-300"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -1324,19 +1346,19 @@ export default function CompetitionDataDetailOrther() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-xs font-semibold text-yellow-700 uppercase">
+              <span className="text-xs font-semibold text-yellow-700 dark:text-yellow-300 uppercase">
                 Chờ
               </span>
             </div>
-            <div className="text-2xl font-bold text-yellow-900">
+            <div className="text-2xl font-bold text-yellow-900 dark:text-yellow-200">
               {tableData.filter((r) => r.match_status === "WAI").length}
             </div>
           </div>
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded p-3 shadow-sm">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 border-2 border-blue-200 dark:border-blue-700 rounded p-3 shadow-sm">
             <div className="flex items-center gap-2 mb-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-blue-700"
+                className="h-5 w-5 text-blue-700 dark:text-blue-300"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -1346,19 +1368,19 @@ export default function CompetitionDataDetailOrther() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-xs font-semibold text-blue-700 uppercase">
+              <span className="text-xs font-semibold text-blue-700 dark:text-blue-300 uppercase">
                 Đang thi
               </span>
             </div>
-            <div className="text-2xl font-bold text-blue-900">
+            <div className="text-2xl font-bold text-blue-900 dark:text-blue-200">
               {tableData.filter((r) => r.match_status === "IN").length}
             </div>
           </div>
-          <div className="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded p-3 shadow-sm">
+          <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-800 border-2 border-green-200 dark:border-green-700 rounded p-3 shadow-sm">
             <div className="flex items-center gap-2 mb-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-green-700"
+                className="h-5 w-5 text-green-700 dark:text-green-300"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -1368,19 +1390,19 @@ export default function CompetitionDataDetailOrther() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-xs font-semibold text-green-700 uppercase">
+              <span className="text-xs font-semibold text-green-700 dark:text-green-300 uppercase">
                 Kết thúc
               </span>
             </div>
-            <div className="text-2xl font-bold text-green-900">
+            <div className="text-2xl font-bold text-green-900 dark:text-green-200">
               {tableData.filter((r) => r.match_status === "FIN").length}
             </div>
           </div>
-          <div className="bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200 rounded p-3 shadow-sm">
+          <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 border-2 border-red-200 dark:border-red-700 rounded p-3 shadow-sm">
             <div className="flex items-center gap-2 mb-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-red-700"
+                className="h-5 w-5 text-red-700 dark:text-red-300"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -1390,11 +1412,11 @@ export default function CompetitionDataDetailOrther() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-xs font-semibold text-red-700 uppercase">
+              <span className="text-xs font-semibold text-red-700 dark:text-red-300 uppercase">
                 Hủy
               </span>
             </div>
-            <div className="text-2xl font-bold text-red-900">
+            <div className="text-2xl font-bold text-red-900 dark:text-red-200">
               {tableData.filter((r) => r.match_status === "CAN").length}
             </div>
           </div>
@@ -1402,7 +1424,7 @@ export default function CompetitionDataDetailOrther() {
       </div>
 
       {/* Toolbar - Filter, Sort, View Mode */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded p-4 mb-6 shadow-sm border border-gray-200">
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded p-4 mb-6 shadow-sm border border-gray-200 dark:border-gray-700">
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
           {/* Left: Search & Filter */}
           <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full lg:w-auto">
@@ -1420,7 +1442,7 @@ export default function CompetitionDataDetailOrther() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2 border min-w-[150px] border-gray-300 rounded bg-white text-sm font-medium text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="px-4 py-2 border min-w-[150px] border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
             >
               <option value="ALL">Tất cả trạng thái</option>
               <option value="WAI">Chờ thi</option>
@@ -1433,7 +1455,7 @@ export default function CompetitionDataDetailOrther() {
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="px-4 py-2 border min-w-[150px] border-gray-300 rounded bg-white text-sm font-medium text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="px-4 py-2 border min-w-[150px] border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
             >
               <option value="ALL">Tất cả nội dung</option>
               <option value="DOL">Đối Luyện</option>
@@ -1446,7 +1468,7 @@ export default function CompetitionDataDetailOrther() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border min-w-[150px] border-gray-300 rounded bg-white text-sm font-medium text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="px-4 py-2 border min-w-[150px] border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
             >
               <option value="match_no">Sắp xếp: STT</option>
               <option value="status">Sắp xếp: Trạng thái</option>
@@ -1457,10 +1479,10 @@ export default function CompetitionDataDetailOrther() {
           {/* Right: View Mode & Stats */}
           <div className="flex items-center gap-3">
             {/* Stats */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-blue-50 rounded border border-blue-200">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900 rounded border border-blue-200 dark:border-blue-700">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 text-blue-600"
+                className="h-4 w-4 text-blue-600 dark:text-blue-300"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -1471,19 +1493,19 @@ export default function CompetitionDataDetailOrther() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-sm font-semibold text-blue-700">
+              <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
                 {filteredData.length} / {tableData.length}
               </span>
             </div>
 
             {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 bg-white rounded border border-gray-300 p-1">
+            <div className="flex items-center gap-1 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600 p-1">
               <button
                 onClick={() => setViewMode("grid")}
                 className={`p-2 rounded transition-all ${
                   viewMode === "grid"
-                    ? "bg-blue-600 text-white shadow-md"
-                    : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
                 title="Grid View"
               >
@@ -1500,8 +1522,8 @@ export default function CompetitionDataDetailOrther() {
                 onClick={() => setViewMode("list")}
                 className={`p-2 rounded transition-all ${
                   viewMode === "list"
-                    ? "bg-blue-600 text-white shadow-md"
-                    : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
                 title="List View"
               >
@@ -1527,13 +1549,15 @@ export default function CompetitionDataDetailOrther() {
       <div className="space-y-6">
         {loading ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin h-8 w-8 border-b-2 border-blue-500"></div>
-            <p className="mt-2 text-gray-600">Đang tải dữ liệu...</p>
+            <div className="inline-block animate-spin h-8 w-8 border-b-2 border-blue-500 dark:border-blue-400"></div>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
+              Đang tải dữ liệu...
+            </p>
           </div>
         ) : filteredData.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded border-2 border-dashed border-gray-300">
+          <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded border-2 border-dashed border-gray-300 dark:border-gray-600">
             <svg
-              className="mx-auto h-16 w-16 text-gray-400"
+              className="mx-auto h-16 w-16 text-gray-400 dark:text-gray-500"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -1545,10 +1569,10 @@ export default function CompetitionDataDetailOrther() {
                 d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <p className="mt-4 text-lg font-medium text-gray-600">
+            <p className="mt-4 text-lg font-medium text-gray-600 dark:text-gray-400">
               Không tìm thấy dữ liệu nào
             </p>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-500">
               Thử thay đổi bộ lọc hoặc tìm kiếm
             </p>
           </div>
@@ -1582,19 +1606,19 @@ export default function CompetitionDataDetailOrther() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                 {/* Page Info */}
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
                   Hiển thị{" "}
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">
                     {startIndex + 1}
                   </span>{" "}
                   -{" "}
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">
                     {Math.min(endIndex, filteredData.length)}
                   </span>{" "}
                   trong tổng số{" "}
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">
                     {filteredData.length}
                   </span>
                 </div>
@@ -1607,8 +1631,8 @@ export default function CompetitionDataDetailOrther() {
                     disabled={page === 1}
                     className={`px-3 py-2 rounded font-medium text-sm transition-all ${
                       page === 1
-                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        : "bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600"
+                        ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
                     }`}
                   >
                     <svg
@@ -1640,8 +1664,8 @@ export default function CompetitionDataDetailOrther() {
                               onClick={() => setPage(pageNum)}
                               className={`px-3 py-2 rounded font-medium text-sm transition-all ${
                                 page === pageNum
-                                  ? "bg-blue-600 text-white shadow-md"
-                                  : "bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600"
+                                  ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
+                                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
                               }`}
                             >
                               {pageNum}
@@ -1652,7 +1676,10 @@ export default function CompetitionDataDetailOrther() {
                           pageNum === page + 2
                         ) {
                           return (
-                            <span key={pageNum} className="px-2 text-gray-400">
+                            <span
+                              key={pageNum}
+                              className="px-2 text-gray-400 dark:text-gray-500"
+                            >
                               ...
                             </span>
                           );
@@ -1668,8 +1695,8 @@ export default function CompetitionDataDetailOrther() {
                     disabled={page === totalPages}
                     className={`px-3 py-2 rounded font-medium text-sm transition-all ${
                       page === totalPages
-                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        : "bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600"
+                        ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
                     }`}
                   >
                     <svg
@@ -1694,7 +1721,7 @@ export default function CompetitionDataDetailOrther() {
                     setItemsPerPage(Number(e.target.value));
                     setPage(1);
                   }}
-                  className="px-3 py-2 border border-gray-300 rounded bg-white text-sm font-medium text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
                 >
                   <option value={6}>6 / trang</option>
                   <option value={12}>12 / trang</option>
@@ -1733,15 +1760,15 @@ export default function CompetitionDataDetailOrther() {
       {openActions?.isOpen &&
         openActions?.key === Constants.ACTION_MATCH_RESULT && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
-            <div className="bg-white rounded shadow-2xl w-[900px] max-h-[95vh] overflow-hidden flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded shadow-2xl w-[900px] max-h-[95vh] overflow-hidden flex flex-col">
               {/* Header - Căn giữa */}
-              <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
+              <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 dark:from-yellow-600 dark:to-yellow-700 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
                 <h2 className="text-2xl font-bold text-white">KẾT QUẢ</h2>
                 <button
                   onClick={() =>
                     setOpenActions({ ...openActions, isOpen: false })
                   }
-                  className="text-white hover:text-gray-300 transition-colors absolute right-6"
+                  className="text-white hover:text-gray-300 dark:hover:text-gray-400 transition-colors absolute right-6"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1769,9 +1796,9 @@ export default function CompetitionDataDetailOrther() {
       {/* Modal Cập nhật */}
       {openActions?.isOpen && openActions?.key === Constants.ACTION_UPDATE && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
-          <div className="bg-white rounded shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="bg-white dark:bg-gray-800 rounded shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header - Căn giữa */}
-            <div className="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
+            <div className="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
               <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                 {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -1782,7 +1809,7 @@ export default function CompetitionDataDetailOrther() {
                 onClick={() =>
                   setOpenActions({ ...openActions, isOpen: false })
                 }
-                className="text-white hover:text-gray-300 transition-colors absolute right-6"
+                className="text-white hover:text-gray-300 dark:hover:text-gray-400 transition-colors absolute right-6"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1810,9 +1837,9 @@ export default function CompetitionDataDetailOrther() {
       {/* Modal Thêm mới */}
       {openActions?.isOpen && openActions?.key === Constants.ACTION_CREATE && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
-          <div className="bg-white rounded shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="bg-white dark:bg-gray-800 rounded shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
               <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1832,7 +1859,7 @@ export default function CompetitionDataDetailOrther() {
                 onClick={() =>
                   setOpenActions({ ...openActions, isOpen: false })
                 }
-                className="text-white hover:text-gray-300 transition-colors absolute right-6"
+                className="text-white hover:text-gray-300 dark:hover:text-gray-400 transition-colors absolute right-6"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1894,10 +1921,10 @@ function DeleteConfirm({ onConfirm, onCancel }) {
     <div className="space-y-6 p-4 rounded">
       {/* Icon cảnh báo */}
       <div className="flex justify-center">
-        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+        <div className="w-16 h-16 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 text-red-600"
+            className="h-8 w-8 text-red-600 dark:text-red-400"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -1913,14 +1940,14 @@ function DeleteConfirm({ onConfirm, onCancel }) {
       </div>
 
       {/* Tiêu đề */}
-      {/* <h3 className="text-xl font-bold text-gray-900 text-center">Xác nhận xóa</h3> */}
+      {/* <h3 className="text-xl font-bold text-gray-900 dark:text-white text-center">Xác nhận xóa</h3> */}
 
       {/* Nội dung */}
       <div className="text-center space-y-2">
-        <p className="text-base text-gray-700">
+        <p className="text-base text-gray-700 dark:text-gray-300">
           Bạn có chắc chắn muốn xóa dòng này?
         </p>
-        <p className="text-sm text-red-600 font-semibold">
+        <p className="text-sm text-red-600 dark:text-red-400 font-semibold">
           ⚠️ Hành động này không thể hoàn tác
         </p>
       </div>
@@ -1929,13 +1956,13 @@ function DeleteConfirm({ onConfirm, onCancel }) {
       <div className="flex justify-center gap-3 pt-2">
         <button
           onClick={onCancel}
-          className="px-6 py-2.5 min-w-[120px] bg-gray-200 hover:bg-gray-300 text-gray-800 rounded font-semibold transition-all shadow-md hover:shadow-lg"
+          className="px-6 py-2.5 min-w-[120px] bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded font-semibold transition-all shadow-md hover:shadow-lg"
         >
           Hủy
         </button>
         <button
           onClick={onConfirm}
-          className="px-6 py-2.5 min-w-[120px] bg-red-600 hover:bg-red-700 text-white rounded font-semibold transition-all shadow-md hover:shadow-lg"
+          className="px-6 py-2.5 min-w-[120px] bg-red-600 dark:bg-red-700 hover:bg-red-700 dark:hover:bg-red-800 text-white rounded font-semibold transition-all shadow-md hover:shadow-lg"
         >
           Xóa
         </button>
@@ -2022,15 +2049,15 @@ function DataFormOther({
   const getStatusColor = (status) => {
     switch (status) {
       case "WAI":
-        return "bg-yellow-100 text-yellow-800 border-yellow-300";
+        return "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700";
       case "IN":
-        return "bg-blue-100 text-blue-800 border-blue-300";
+        return "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-700";
       case "FIN":
-        return "bg-green-100 text-green-800 border-green-300";
+        return "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 border-green-300 dark:border-green-700";
       case "CAN":
-        return "bg-red-100 text-red-800 border-red-300";
+        return "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300 border-red-300 dark:border-red-700";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-300";
+        return "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-700";
     }
   };
 
@@ -2041,8 +2068,8 @@ function DataFormOther({
       {/* STT - Nội dung thi nằm chung hàng */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            STT <span className="text-red-500">*</span>
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            STT <span className="text-red-500 dark:text-red-400">*</span>
           </label>
           <input
             readOnly={!isCreate}
@@ -2052,12 +2079,12 @@ function DataFormOther({
             onChange={(e) =>
               setFormData({ ...formData, match_no: e.target.value })
             }
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
             placeholder="Nhập STT"
           />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
             Nội dung thi
           </label>
           <input
@@ -2068,7 +2095,7 @@ function DataFormOther({
             onChange={(e) =>
               setFormData({ ...formData, match_name: e.target.value })
             }
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
             placeholder="Nhập nội dung thi"
           />
         </div>
@@ -2076,7 +2103,7 @@ function DataFormOther({
 
       {/* Đơn vị */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
           Đơn vị
         </label>
         <input
@@ -2094,33 +2121,34 @@ function DataFormOther({
               team_name: e.target.value,
             });
           }}
-          className="w-full px-4 py-3 border-2 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
           placeholder="Nhập đơn vị"
         />
       </div>
 
       {/* Danh sách VĐV */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-3">
-          Danh sách VĐV <span className="text-red-500">*</span>
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+          Danh sách VĐV{" "}
+          <span className="text-red-500 dark:text-red-400">*</span>
         </label>
         <div className="space-y-3">
           {formData.athletes.map((athlete, idx) => (
             <div
-              key={idx}
-              className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded border-2 border-blue-200 hover:border-blue-400 transition-all"
+              key={`athlete-form-${idx}`}
+              className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 p-4 rounded border-2 border-blue-200 dark:border-blue-700 hover:border-blue-400 dark:hover:border-blue-500 transition-all"
             >
               <div className="flex items-start gap-3">
                 {/* Số thứ tự */}
                 <div className="flex-shrink-0">
-                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white text-base font-bold shadow-lg">
+                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 text-white text-base font-bold shadow-lg">
                     {idx + 1}
                   </span>
                 </div>
 
                 {/* Thông tin VĐV */}
                 <div className="flex-1">
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                  <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">
                     Họ tên VĐV {idx + 1}
                   </label>
                   <input
@@ -2129,7 +2157,7 @@ function DataFormOther({
                     onChange={(e) =>
                       handleAthleteChange(idx, "athlete_name", e.target.value)
                     }
-                    className="w-full px-4 py-2.5 border-2 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium"
+                    className="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-all font-medium"
                     placeholder={`Nhập họ tên VĐV ${idx + 1}`}
                   />
                 </div>
@@ -2141,15 +2169,15 @@ function DataFormOther({
 
       {/* Trạng thái */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
-          Trạng thái <span className="text-red-500">*</span>
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          Trạng thái <span className="text-red-500 dark:text-red-400">*</span>
         </label>
         <select
           value={formData.match_status}
           onChange={(e) =>
             setFormData({ ...formData, match_status: e.target.value })
           }
-          className={`w-full px-4 py-3 border-2 rounded font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${getStatusColor(formData.match_status)}`}
+          className={`w-full px-4 py-3 border-2 rounded font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ${getStatusColor(formData.match_status)}`}
         >
           <option value="WAI">Chờ thi đấu</option>
           <option value="IN">Đang diễn ra</option>
@@ -2159,7 +2187,7 @@ function DataFormOther({
       </div>
 
       {/* Buttons */}
-      <div className="flex justify-end gap-3 pt-4 border-t-2 border-gray-200">
+      <div className="flex justify-end gap-3 pt-4 border-t-2 border-gray-200 dark:border-gray-700">
         <Button variant="outline" onClick={onCancel}>
           Hủy
         </Button>
@@ -2177,10 +2205,10 @@ function ActionConfirm({ message, onConfirm, onCancel }) {
     <div className="space-y-6 p-4 rounded">
       {/* Icon thông tin */}
       <div className="flex justify-center">
-        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+        <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 text-blue-600"
+            className="h-8 w-8 text-blue-600 dark:text-blue-400"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -2196,24 +2224,26 @@ function ActionConfirm({ message, onConfirm, onCancel }) {
       </div>
 
       {/* Tiêu đề */}
-      {/* <h3 className="text-xl font-bold text-gray-900 text-center">Xác nhận</h3> */}
+      {/* <h3 className="text-xl font-bold text-gray-900 dark:text-white text-center">Xác nhận</h3> */}
 
       {/* Nội dung */}
       <div className="text-center">
-        <p className="text-base text-gray-700 font-medium">{message}</p>
+        <p className="text-base text-gray-700 dark:text-gray-300 font-medium">
+          {message}
+        </p>
       </div>
 
       {/* Buttons */}
       <div className="flex justify-center gap-3 pt-2">
         <button
           onClick={onCancel}
-          className="px-6 py-2.5 min-w-[120px] bg-gray-200 hover:bg-gray-300 text-gray-800 rounded font-semibold transition-all shadow-md hover:shadow-lg"
+          className="px-6 py-2.5 min-w-[120px] bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded font-semibold transition-all shadow-md hover:shadow-lg"
         >
           Hủy
         </button>
         <button
           onClick={onConfirm}
-          className="px-6 py-2.5 min-w-[120px] bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold transition-all shadow-md hover:shadow-lg"
+          className="px-6 py-2.5 min-w-[120px] bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 text-white rounded font-semibold transition-all shadow-md hover:shadow-lg"
         >
           Đồng ý
         </button>
@@ -2231,7 +2261,7 @@ function ResultForm({ row, onSubmit, onCancel }) {
   return (
     <div className="space-y-6">
       {/* Match Info */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-5 rounded shadow-lg border-2 border-blue-400">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 p-5 rounded shadow-lg border-2 border-blue-400 dark:border-blue-600">
         <div className="text-white space-y-2">
           <p className="text-center font-bold text-xl">
             {row?.match_name || row?.match_type}
@@ -2244,8 +2274,8 @@ function ResultForm({ row, onSubmit, onCancel }) {
       {hasScores ? (
         <>
           {/* Scores Display */}
-          <div className="bg-white p-6 rounded shadow-lg border-2 border-gray-200">
-            <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg border-2 border-gray-200 dark:border-gray-700">
+            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6 text-center">
               KẾT QUẢ THI
             </h3>
 
@@ -2319,15 +2349,17 @@ function ResultForm({ row, onSubmit, onCancel }) {
                   const isGrayed = isHighest || isLowest;
 
                   const cardBgColor = isGrayed
-                    ? "bg-gradient-to-br from-gray-200 to-gray-300"
-                    : "bg-gradient-to-br from-sky-50 to-sky-100";
+                    ? "bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800"
+                    : "bg-gradient-to-br from-sky-50 to-sky-100 dark:from-sky-900 dark:to-sky-800";
                   const borderColor = isGrayed
-                    ? "border-gray-400"
-                    : "border-sky-300";
-                  const textColor = isGrayed ? "text-gray-700" : "text-sky-800";
+                    ? "border-gray-400 dark:border-gray-600"
+                    : "border-sky-300 dark:border-sky-700";
+                  const textColor = isGrayed
+                    ? "text-gray-700 dark:text-gray-300"
+                    : "text-sky-800 dark:text-sky-300";
                   const scoreColor = isGrayed
-                    ? "text-gray-800"
-                    : "text-sky-900";
+                    ? "text-gray-800 dark:text-gray-200"
+                    : "text-sky-900 dark:text-sky-200";
 
                   return (
                     <div key={judgeIndex} className="relative group">
@@ -2350,8 +2382,8 @@ function ResultForm({ row, onSubmit, onCancel }) {
 
               {/* Total Score */}
               <div className="relative group">
-                <div className="bg-gradient-to-br from-orange-400 via-orange-500 to-red-600 p-4 rounded border-4 border-yellow-400 shadow-2xl h-full flex flex-col items-center justify-center">
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-orange-600 px-3 py-1 rounded-full border-2 border-yellow-300 shadow-lg">
+                <div className="bg-gradient-to-br from-orange-400 via-orange-500 to-red-600 dark:from-orange-600 dark:via-orange-700 dark:to-red-800 p-4 rounded border-4 border-yellow-400 dark:border-yellow-600 shadow-2xl h-full flex flex-col items-center justify-center">
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-orange-600 dark:from-yellow-600 dark:to-orange-700 px-3 py-1 rounded-full border-2 border-yellow-300 dark:border-yellow-500 shadow-lg">
                     <p className="text-xs font-black tracking-widest text-white">
                       TỔNG
                     </p>
@@ -2361,16 +2393,16 @@ function ResultForm({ row, onSubmit, onCancel }) {
                   </p>
 
                   {/* Decorative stars */}
-                  <div className="absolute top-1 left-1 text-yellow-300 text-sm">
+                  <div className="absolute top-1 left-1 text-yellow-300 dark:text-yellow-400 text-sm">
                     ⭐
                   </div>
-                  <div className="absolute top-1 right-1 text-yellow-300 text-sm">
+                  <div className="absolute top-1 right-1 text-yellow-300 dark:text-yellow-400 text-sm">
                     ⭐
                   </div>
-                  <div className="absolute bottom-1 left-1 text-yellow-300 text-sm">
+                  <div className="absolute bottom-1 left-1 text-yellow-300 dark:text-yellow-400 text-sm">
                     ⭐
                   </div>
-                  <div className="absolute bottom-1 right-1 text-yellow-300 text-sm">
+                  <div className="absolute bottom-1 right-1 text-yellow-300 dark:text-yellow-400 text-sm">
                     ⭐
                   </div>
                 </div>
@@ -2378,14 +2410,14 @@ function ResultForm({ row, onSubmit, onCancel }) {
             </div>
 
             {/* Score Details Table */}
-            <div className="bg-gray-50 rounded p-4 border border-gray-200">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded p-4 border border-gray-200 dark:border-gray-700">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b-2 border-gray-300">
-                    <th className="text-left py-2 px-3 font-bold text-gray-700">
+                  <tr className="border-b-2 border-gray-300 dark:border-gray-600">
+                    <th className="text-left py-2 px-3 font-bold text-gray-700 dark:text-gray-300">
                       Giám định
                     </th>
-                    <th className="text-center py-2 px-3 font-bold text-gray-700">
+                    <th className="text-center py-2 px-3 font-bold text-gray-700 dark:text-gray-300">
                       Điểm
                     </th>
                   </tr>
@@ -2394,21 +2426,21 @@ function ResultForm({ row, onSubmit, onCancel }) {
                   {Array.from({ length: soGiamDinh }).map((_, index) => (
                     <tr
                       key={index}
-                      className="border-b border-gray-200 hover:bg-gray-100"
+                      className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
                     >
-                      <td className="py-2 px-3 font-semibold text-gray-700">
+                      <td className="py-2 px-3 font-semibold text-gray-700 dark:text-gray-300">
                         Giám định {index + 1}
                       </td>
-                      <td className="py-2 px-3 text-center font-bold text-sky-700">
+                      <td className="py-2 px-3 text-center font-bold text-sky-700 dark:text-sky-400">
                         {scores[`judge${index + 1}`] || 0}
                       </td>
                     </tr>
                   ))}
-                  <tr className="bg-orange-100 border-t-2 border-orange-300">
-                    <td className="py-3 px-3 font-black text-gray-800 text-lg">
+                  <tr className="bg-orange-100 dark:bg-orange-900 border-t-2 border-orange-300 dark:border-orange-700">
+                    <td className="py-3 px-3 font-black text-gray-800 dark:text-gray-200 text-lg">
                       TỔNG ĐIỂM
                     </td>
-                    <td className="py-3 px-3 text-center font-black text-orange-700 text-2xl">
+                    <td className="py-3 px-3 text-center font-black text-orange-700 dark:text-orange-300 text-2xl">
                       {scores.total || 0}
                     </td>
                   </tr>
@@ -2419,7 +2451,7 @@ function ResultForm({ row, onSubmit, onCancel }) {
 
           {/* Status Badge */}
           <div className="flex justify-center">
-            <div className="bg-gradient-to-r from-green-500 to-green-700 px-6 py-3 !rounded shadow-lg border-2 border-green-300">
+            <div className="bg-gradient-to-r from-green-500 to-green-700 dark:from-green-600 dark:to-green-800 px-6 py-3 !rounded shadow-lg border-2 border-green-300 dark:border-green-600">
               <p className="text-white font-bold text-lg flex items-center gap-2">
                 HOÀN THÀNH
               </p>
@@ -2427,10 +2459,10 @@ function ResultForm({ row, onSubmit, onCancel }) {
           </div>
         </>
       ) : (
-        <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded">
+        <div className="bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-500 dark:border-yellow-600 p-6 rounded">
           <div className="flex items-center gap-3">
             <div>
-              <p className="text-lg font-bold text-yellow-800">
+              <p className="text-lg font-bold text-yellow-800 dark:text-yellow-300">
                 Chưa có kết quả
               </p>
             </div>
@@ -2439,7 +2471,7 @@ function ResultForm({ row, onSubmit, onCancel }) {
       )}
 
       {/* Close Button */}
-      <div className="flex justify-center pt-4 border-t-2 border-gray-200">
+      <div className="flex justify-center pt-4 border-t-2 border-gray-200 dark:border-gray-700">
         <Button
           variant="outline"
           onClick={onCancel}

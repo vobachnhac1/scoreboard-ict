@@ -41,10 +41,10 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-blue-600/10 to-blue-600/10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-blue-600/10 to-blue-600/10 dark:from-blue-500/5 dark:via-blue-500/5 dark:to-blue-500/5"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <div className="inline-flex items-center justify-center mb-6">
@@ -54,10 +54,10 @@ export default function Dashboard() {
                 className="w-20 h-20 object-contain rounded-2xl shadow-2xl hover:scale-110 transition-transform duration-300"
               />
             </div>
-            <h1 className="text-5xl font-black text-gray-900 mb-4 tracking-tight">
+            <h1 className="text-5xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">
               PHẦN MỀM QUẢN LÝ THI ĐẤU
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
               Giải pháp toàn diện cho việc tổ chức và quản lý các giải đấu thể
               thao chuyên nghiệp
             </p>
@@ -74,7 +74,7 @@ export default function Dashboard() {
                 onClick={() =>
                   navigate("/management/general-setting/config-system")
                 }
-                className="px-8 py-4 bg-white text-gray-900 font-bold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-200 border-2 border-gray-200"
+                className="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-200 border-2 border-gray-200 dark:border-gray-700"
               >
                 Cấu hình
               </button>
@@ -86,10 +86,10 @@ export default function Dashboard() {
       {/* Features Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-black text-gray-900 mb-4">
+          <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4">
             Tính năng nổi bật
           </h2>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             Khám phá các tính năng mạnh mẽ của hệ thống
           </p>
         </div>
@@ -101,7 +101,7 @@ export default function Dashboard() {
             <div
               key={index}
               onClick={() => navigate(feature.href)}
-              className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-105"
+              className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-105"
             >
               {/* Gradient overlay */}
               <div
@@ -117,20 +117,20 @@ export default function Dashboard() {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 transition-all duration-300">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 transition-all duration-300">
                   {feature.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
                   {feature.description}
                 </p>
 
                 {/* Stats */}
                 <div
-                  className={`flex items-center justify-between pt-4 border-t border-gray-100`}
+                  className={`flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700`}
                 >
-                  <span className="text-xs text-gray-500 font-semibold">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 font-semibold">
                     {feature?.stats?.label}
                   </span>
                   <span

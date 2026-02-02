@@ -90,7 +90,7 @@ const useConfirmModal = () => {
     return new Promise((resolve) => {
       setModalState({
         isOpen: true,
-        title: options.title || '⚠️ Cảnh báo',
+        title: options.title || 'Cảnh báo',
         message,
         type: 'warning',
         confirmText: options.confirmText || 'Tiếp tục',
@@ -118,7 +118,7 @@ const useConfirmModal = () => {
     return new Promise((resolve) => {
       setModalState({
         isOpen: true,
-        title: options.title || '❌ Lỗi',
+        title: options.title || 'Lỗi',
         message,
         type: 'error',
         confirmText: options.confirmText || 'Đóng',
@@ -146,7 +146,7 @@ const useConfirmModal = () => {
     return new Promise((resolve) => {
       setModalState({
         isOpen: true,
-        title: options.title || '✅ Thành công',
+        title: options.title || 'Thành công',
         message,
         type: 'success',
         confirmText: options.confirmText || 'OK',

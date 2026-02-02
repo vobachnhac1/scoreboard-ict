@@ -25,17 +25,17 @@ function RoundHistoryCard({ round, roundIndex, logs }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="bg-white rounded border border-gray-200 overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 overflow-hidden">
       {/* Header - Tóm tắt hiệp */}
       <div
-        className="p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+        className="p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 rounded">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`h-4 w-4 transition-transform text-gray-400 ${expanded ? "rotate-90" : ""}`}
+              className={`h-4 w-4 transition-transform text-gray-400 dark:text-gray-500 ${expanded ? "rotate-90" : ""}`}
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -45,10 +45,10 @@ function RoundHistoryCard({ round, roundIndex, logs }) {
                 clipRule="evenodd"
               />
             </svg>
-            <div className="text-sm font-semibold text-gray-700">
+            <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
               Hiệp {round.round}
               {round.roundType && round.roundType !== "NORMAL" && (
-                <span className="ml-2 text-xs px-2 py-0.5 bg-purple-100 text-purple-700 rounded">
+                <span className="ml-2 text-xs px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded">
                   {round.roundType === "EXTRA" ? "Hiệp phụ" : round.roundType}
                 </span>
               )}
@@ -59,15 +59,19 @@ function RoundHistoryCard({ round, roundIndex, logs }) {
             {/* Điểm số */}
             <div className="flex items-center gap-2">
               <div className="text-center">
-                <div className="text-xs text-gray-500">Đỏ</div>
-                <div className="text-lg font-bold text-red-600">
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  Đỏ
+                </div>
+                <div className="text-lg font-bold text-red-600 dark:text-red-400">
                   {round.red?.match?.score || 0}
                 </div>
               </div>
-              <div className="text-gray-400">-</div>
+              <div className="text-gray-400 dark:text-gray-500">-</div>
               <div className="text-center">
-                <div className="text-xs text-gray-500">Xanh</div>
-                <div className="text-lg font-bold text-blue-600">
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  Xanh
+                </div>
+                <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
                   {round.blue?.match?.score || 0}
                 </div>
               </div>
@@ -75,7 +79,7 @@ function RoundHistoryCard({ round, roundIndex, logs }) {
 
             {/* Số lượng logs */}
             {logs.length > 0 && (
-              <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+              <div className="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-1 rounded">
                 {logs.length} hành động
               </div>
             )}
@@ -85,35 +89,38 @@ function RoundHistoryCard({ round, roundIndex, logs }) {
 
       {/* Expanded - Chi tiết logs */}
       {expanded && logs.length > 0 && (
-        <div className="border-t border-gray-200 bg-gray-50 p-3">
-          <div className="text-xs font-semibold text-gray-600 mb-2">
+        <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3">
+          <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">
             📋 Chi tiết hành động
           </div>
-          <div className="max-h-60 overflow-y-auto bg-white rounded border border-gray-200">
+          <div className="max-h-60 overflow-y-auto bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
             <table className="min-w-full text-xs">
-              <thead className="bg-gray-100 sticky top-0">
+              <thead className="bg-gray-100 dark:bg-gray-700 sticky top-0">
                 <tr>
-                  <th className="px-2 py-1.5 text-left font-medium text-gray-600">
+                  <th className="px-2 py-1.5 text-left font-medium text-gray-600 dark:text-gray-300">
                     Thời gian
                   </th>
-                  <th className="px-2 py-1.5 text-left font-medium text-gray-600">
+                  <th className="px-2 py-1.5 text-left font-medium text-gray-600 dark:text-gray-300">
                     Loại
                   </th>
-                  <th className="px-2 py-1.5 text-left font-medium text-gray-600">
+                  <th className="px-2 py-1.5 text-left font-medium text-gray-600 dark:text-gray-300">
                     Đội
                   </th>
-                  <th className="px-2 py-1.5 text-left font-medium text-gray-600">
+                  <th className="px-2 py-1.5 text-left font-medium text-gray-600 dark:text-gray-300">
                     Mô tả
                   </th>
-                  <th className="px-2 py-1.5 text-center font-medium text-gray-600">
+                  <th className="px-2 py-1.5 text-center font-medium text-gray-600 dark:text-gray-300">
                     Điểm
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {logs.map((log, logIndex) => (
-                  <tr key={logIndex} className="hover:bg-gray-50">
-                    <td className="px-2 py-1.5 text-gray-600">
+                  <tr
+                    key={`round-${round.round}-log-${logIndex}`}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    <td className="px-2 py-1.5 text-gray-600 dark:text-gray-400">
                       {log.time || "-"}
                     </td>
                     <td className="px-2 py-1.5">
@@ -131,14 +138,16 @@ function RoundHistoryCard({ round, roundIndex, logs }) {
                           🔵 Xanh
                         </span>
                       ) : (
-                        <span className="text-gray-400">-</span>
+                        <span className="text-gray-400 dark:text-gray-500">
+                          -
+                        </span>
                       )}
                     </td>
-                    <td className="px-2 py-1.5 text-gray-700">
+                    <td className="px-2 py-1.5 text-gray-700 dark:text-gray-300">
                       {log.description || "-"}
                     </td>
                     <td className="px-2 py-1.5 text-center">
-                      <span className="font-mono text-gray-900 font-medium">
+                      <span className="font-mono text-gray-900 dark:text-gray-100 font-medium">
                         {log.redScore || 0} - {log.blueScore || 0}
                       </span>
                     </td>
@@ -151,14 +160,14 @@ function RoundHistoryCard({ round, roundIndex, logs }) {
           {/* Thống kê hiệp */}
           {round.red && round.blue && (
             <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-red-50 rounded p-2">
-                <div className="font-semibold text-red-700 mb-1">
+              <div className="bg-red-50 dark:bg-red-900 rounded p-2">
+                <div className="font-semibold text-red-700 dark:text-red-300 mb-1">
                   🔴 Giáp Đỏ
                 </div>
-                <div className="space-y-0.5 text-gray-600">
+                <div className="space-y-0.5 text-gray-600 dark:text-gray-400">
                   <div>
                     Điểm:{" "}
-                    <span className="font-bold text-red-600">
+                    <span className="font-bold text-red-600 dark:text-red-400">
                       {round.red.match?.score || 0}
                     </span>
                   </div>
@@ -167,14 +176,14 @@ function RoundHistoryCard({ round, roundIndex, logs }) {
                   <div>Ngã: {round.red.match?.fall || 0}</div>
                 </div>
               </div>
-              <div className="bg-blue-50 rounded p-2">
-                <div className="font-semibold text-blue-700 mb-1">
+              <div className="bg-blue-50 dark:bg-blue-900 rounded p-2">
+                <div className="font-semibold text-blue-700 dark:text-blue-300 mb-1">
                   🔵 Giáp Xanh
                 </div>
-                <div className="space-y-0.5 text-gray-600">
+                <div className="space-y-0.5 text-gray-600 dark:text-gray-400">
                   <div>
                     Điểm:{" "}
-                    <span className="font-bold text-blue-600">
+                    <span className="font-bold text-blue-600 dark:text-blue-400">
                       {round.blue.match?.score || 0}
                     </span>
                   </div>
@@ -190,7 +199,7 @@ function RoundHistoryCard({ round, roundIndex, logs }) {
 
       {/* Thông báo khi không có logs */}
       {expanded && logs.length === 0 && (
-        <div className="border-t border-gray-200 bg-gray-50 p-3 text-center text-xs text-gray-500">
+        <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-3 text-center text-xs text-gray-500 dark:text-gray-400">
           Không có hành động nào trong hiệp này
         </div>
       )}
@@ -210,7 +219,8 @@ function MatchCard({
   const statusConfig = {
     WAI: {
       label: "Chờ",
-      color: "bg-yellow-100 text-yellow-800 border-yellow-300",
+      color:
+        "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -228,7 +238,8 @@ function MatchCard({
     },
     IN: {
       label: "Đang diễn ra",
-      color: "bg-blue-100 text-blue-800 border-blue-300",
+      color:
+        "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-700",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -246,7 +257,8 @@ function MatchCard({
     },
     FIN: {
       label: "Kết thúc",
-      color: "bg-green-100 text-green-800 border-green-300",
+      color:
+        "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 border-green-300 dark:border-green-700",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -264,7 +276,8 @@ function MatchCard({
     },
     CAN: {
       label: "Hủy",
-      color: "bg-red-100 text-red-800 border-red-300",
+      color:
+        "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300 border-red-300 dark:border-red-700",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -287,19 +300,21 @@ function MatchCard({
 
   // Xác định màu nổi bật theo VĐV thắng
   const winner = row.winner?.toUpperCase();
-  let cardBorderClass = "border-gray-200";
-  let cardBgClass = "bg-white";
+  let cardBorderClass = "border-gray-200 dark:border-gray-700";
+  let cardBgClass = "bg-white dark:bg-gray-800";
   let cardGlowClass = "";
 
   if (status === "FIN" && winner) {
     if (winner === "RED") {
-      cardBorderClass = "border-red-400 border-2";
-      cardBgClass = "bg-gradient-to-br from-red-50 via-white to-red-50";
-      cardGlowClass = "shadow-red-200 shadow-lg";
+      cardBorderClass = "border-red-400 dark:border-red-600 border-2";
+      cardBgClass =
+        "bg-gradient-to-br from-red-50 via-white to-red-50 dark:from-red-900 dark:via-gray-800 dark:to-red-900";
+      cardGlowClass = "shadow-red-200 dark:shadow-red-900 shadow-lg";
     } else if (winner === "BLUE") {
-      cardBorderClass = "border-blue-400 border-2";
-      cardBgClass = "bg-gradient-to-br from-blue-50 via-white to-blue-50";
-      cardGlowClass = "shadow-blue-200 shadow-lg";
+      cardBorderClass = "border-blue-400 dark:border-blue-600 border-2";
+      cardBgClass =
+        "bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-blue-900 dark:via-gray-800 dark:to-blue-900";
+      cardGlowClass = "shadow-blue-200 dark:shadow-blue-900 shadow-lg";
     }
   }
 
@@ -325,7 +340,7 @@ function MatchCard({
         <div className="flex items-center gap-4 p-4">
           {/* Trận số */}
           <div className="flex-shrink-0">
-            <div className="bg-blue-600 text-white rounded px-4 py-2 font-bold text-base shadow-md min-w-[80px] text-center">
+            <div className="bg-blue-600 dark:bg-blue-500 text-white rounded px-4 py-2 font-bold text-base shadow-md min-w-[80px] text-center">
               Trận {row.data[0]}
             </div>
           </div>
@@ -338,15 +353,15 @@ function MatchCard({
           >
             <div className="flex items-center gap-2 mb-1">
               <div
-                className={`w-2 h-2 bg-red-600 rounded-full ${status === "FIN" && winner === "RED" ? "animate-pulse" : ""}`}
+                className={`w-2 h-2 bg-red-600 dark:bg-red-500 rounded-full ${status === "FIN" && winner === "RED" ? "animate-pulse" : ""}`}
               ></div>
-              <span className="text-xs font-semibold text-red-700 uppercase">
+              <span className="text-xs font-semibold text-red-700 dark:text-red-400 uppercase">
                 Đỏ
               </span>
               {status === "FIN" && winner === "RED" && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-yellow-500"
+                  className="h-4 w-4 text-yellow-500 dark:text-yellow-400"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -357,19 +372,19 @@ function MatchCard({
             <div
               className={`font-bold truncate ${
                 status === "FIN" && winner === "RED"
-                  ? "text-red-700 text-lg"
-                  : "text-red-900"
+                  ? "text-red-700 dark:text-red-400 text-lg"
+                  : "text-red-900 dark:text-red-300"
               }`}
             >
               {row.data[3] || "-"}
             </div>
-            <div className="text-sm text-red-700 truncate">
+            <div className="text-sm text-red-700 dark:text-red-400 truncate">
               {row.data[4] || "-"}
             </div>
           </div>
 
           {/* VS */}
-          <div className="flex-shrink-0 text-gray-400 font-bold text-lg">
+          <div className="flex-shrink-0 text-gray-400 dark:text-gray-500 font-bold text-lg">
             VS
           </div>
 
@@ -381,15 +396,15 @@ function MatchCard({
           >
             <div className="flex items-center gap-2 mb-1">
               <div
-                className={`w-2 h-2 bg-blue-600 rounded-full ${status === "FIN" && winner === "BLUE" ? "animate-pulse" : ""}`}
+                className={`w-2 h-2 bg-blue-600 dark:bg-blue-500 rounded-full ${status === "FIN" && winner === "BLUE" ? "animate-pulse" : ""}`}
               ></div>
-              <span className="text-xs font-semibold text-blue-700 uppercase">
+              <span className="text-xs font-semibold text-blue-700 dark:text-blue-400 uppercase">
                 Xanh
               </span>
               {status === "FIN" && winner === "BLUE" && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-yellow-500"
+                  className="h-4 w-4 text-yellow-500 dark:text-yellow-400"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -400,13 +415,13 @@ function MatchCard({
             <div
               className={`font-bold truncate ${
                 status === "FIN" && winner === "BLUE"
-                  ? "text-blue-700 text-lg"
-                  : "text-blue-900"
+                  ? "text-blue-700 dark:text-blue-400 text-lg"
+                  : "text-blue-900 dark:text-blue-300"
               }`}
             >
               {row.data[6] || "-"}
             </div>
-            <div className="text-sm text-blue-700 truncate">
+            <div className="text-sm text-blue-700 dark:text-blue-400 truncate">
               {row.data[7] || "-"}
             </div>
           </div>
@@ -479,16 +494,18 @@ function MatchCard({
       )}
 
       {/* Header - Trận số và Trạng thái */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-3 border-b border-gray-200">
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-600 text-white rounded px-3 py-1.5 font-bold text-sm shadow-md">
+            <div className="bg-blue-600 dark:bg-blue-500 text-white rounded px-3 py-1.5 font-bold text-sm shadow-md">
               Trận {row.data[0]}
             </div>
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
               <span className="font-medium">{row.data[1]}</span>
               {row.data[2] && (
-                <span className="ml-2 text-gray-400">• {row.data[2]}</span>
+                <span className="ml-2 text-gray-400 dark:text-gray-500">
+                  • {row.data[2]}
+                </span>
               )}
             </div>
           </div>
@@ -506,23 +523,23 @@ function MatchCard({
         <div className="grid grid-cols-2 gap-6 mb-5">
           {/* Giáp Đỏ */}
           <div
-            className={`bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4 border-2 shadow-sm transition-all duration-300 ${
+            className={`bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 rounded-xl p-4 border-2 shadow-sm transition-all duration-300 ${
               status === "FIN" && winner === "RED"
-                ? "border-red-500 ring-4 ring-red-200 scale-105"
-                : "border-red-200"
+                ? "border-red-500 dark:border-red-600 ring-4 ring-red-200 dark:ring-red-900 scale-105"
+                : "border-red-200 dark:border-red-700"
             }`}
           >
             <div className="flex items-center gap-2 mb-3">
               <div
-                className={`w-3 h-3 bg-red-600 rounded-full ${status === "FIN" && winner === "RED" ? "animate-pulse" : ""}`}
+                className={`w-3 h-3 bg-red-600 dark:bg-red-500 rounded-full ${status === "FIN" && winner === "RED" ? "animate-pulse" : ""}`}
               ></div>
-              <h3 className="text-sm font-bold text-red-700 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-red-700 dark:text-red-300 uppercase tracking-wide">
                 Giáp Đỏ
               </h3>
               {status === "FIN" && winner === "RED" && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-yellow-500 ml-auto"
+                  className="h-5 w-5 text-yellow-500 dark:text-yellow-400 ml-auto"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -534,17 +551,17 @@ function MatchCard({
               <div
                 className={`font-bold text-lg leading-tight ${
                   status === "FIN" && winner === "RED"
-                    ? "text-red-700 text-xl"
-                    : "text-red-900"
+                    ? "text-red-700 dark:text-red-400 text-xl"
+                    : "text-red-900 dark:text-red-300"
                 }`}
               >
                 {row.data[3] || "-"}
               </div>
-              <div className="text-sm text-red-700 font-medium">
+              <div className="text-sm text-red-700 dark:text-red-400 font-medium">
                 {row.data[4] || "-"}
               </div>
               {row.data[5] && (
-                <div className="text-xs text-red-600 bg-red-200 rounded px-2 py-1 inline-block">
+                <div className="text-xs text-red-600 dark:text-red-400 bg-red-200 dark:bg-red-900 rounded px-2 py-1 inline-block">
                   {row.data[5]}
                 </div>
               )}
@@ -553,23 +570,23 @@ function MatchCard({
 
           {/* Giáp Xanh */}
           <div
-            className={`bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border-2 shadow-sm transition-all duration-300 ${
+            className={`bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 rounded-xl p-4 border-2 shadow-sm transition-all duration-300 ${
               status === "FIN" && winner === "BLUE"
-                ? "border-blue-500 ring-4 ring-blue-200 scale-105"
-                : "border-blue-200"
+                ? "border-blue-500 dark:border-blue-600 ring-4 ring-blue-200 dark:ring-blue-900 scale-105"
+                : "border-blue-200 dark:border-blue-700"
             }`}
           >
             <div className="flex items-center gap-2 mb-3">
               <div
-                className={`w-3 h-3 bg-blue-600 rounded-full ${status === "FIN" && winner === "BLUE" ? "animate-pulse" : ""}`}
+                className={`w-3 h-3 bg-blue-600 dark:bg-blue-500 rounded-full ${status === "FIN" && winner === "BLUE" ? "animate-pulse" : ""}`}
               ></div>
-              <h3 className="text-sm font-bold text-blue-700 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wide">
                 Giáp Xanh
               </h3>
               {status === "FIN" && winner === "BLUE" && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-yellow-500 ml-auto"
+                  className="h-5 w-5 text-yellow-500 dark:text-yellow-400 ml-auto"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -581,13 +598,13 @@ function MatchCard({
               <div
                 className={`font-bold text-lg leading-tight ${
                   status === "FIN" && winner === "BLUE"
-                    ? "text-blue-700 text-xl"
-                    : "text-blue-900"
+                    ? "text-blue-700 dark:text-blue-400 text-xl"
+                    : "text-blue-900 dark:text-blue-300"
                 }`}
               >
                 {row.data[6] || "-"}
               </div>
-              <div className="text-sm text-blue-700 font-medium">
+              <div className="text-sm text-blue-700 dark:text-blue-400 font-medium">
                 {row.data[7] || "-"}
               </div>
               {row.data[8] && (
@@ -622,7 +639,7 @@ function MatchCard({
         )}
 
         {/* Actions */}
-        <div className="flex items-center justify-center gap-2 flex-wrap pt-3 border-t border-gray-200">
+        <div className="flex items-center justify-center gap-2 flex-wrap pt-3 border-t border-gray-200 dark:border-gray-700">
           {listActions
             .filter((action) => availableActions.includes(action.key))
             .map((action) => (
@@ -1687,10 +1704,12 @@ export default function CompetitionDataDetail() {
 
   if (loading) {
     return (
-      <div className="p-6 bg-white  shadow">
+      <div className="p-6 bg-white dark:bg-gray-900 shadow">
         <div className="text-center py-8">
-          <div className="inline-block animate-spin  h-8 w-8 border-b-2 border-blue-500"></div>
-          <p className="mt-2 text-gray-600">Đang tải dữ liệu...</p>
+          <div className="inline-block animate-spin h-8 w-8 border-b-2 border-blue-500 dark:border-blue-400"></div>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
+            Đang tải dữ liệu...
+          </p>
         </div>
       </div>
     );
@@ -1698,10 +1717,10 @@ export default function CompetitionDataDetail() {
 
   if (!sheetData) {
     return (
-      <div className="p-6 bg-white  shadow">
-        <div className="text-center py-12 bg-gray-50 ">
+      <div className="p-6 bg-white dark:bg-gray-900 shadow">
+        <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded">
           <svg
-            className="mx-auto h-12 w-12 text-gray-400"
+            className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -1713,21 +1732,23 @@ export default function CompetitionDataDetail() {
               d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
             />
           </svg>
-          <p className="mt-2 text-sm text-gray-600">Không tìm thấy dữ liệu</p>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Không tìm thấy dữ liệu
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 bg-white  shadow">
+    <div className="p-6 bg-white dark:bg-gray-900 shadow">
       {/* Header */}
       <div className="mb-6">
         <button
           onClick={() =>
             navigate("/management/general-setting/competition-management")
           }
-          className="mb-4 flex items-center text-blue-600 hover:text-blue-800 font-medium"
+          className="mb-4 flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
         >
           <svg
             className="w-5 h-5 mr-2"
@@ -1745,20 +1766,22 @@ export default function CompetitionDataDetail() {
           Quay lại
         </button>
 
-        <h2 className="text-2xl font-bold mb-4">{sheetData.sheet_name}</h2>
+        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+          {sheetData.sheet_name}
+        </h2>
         <div className="flex items-center justify-between mb-4">
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-gray-600 dark:text-gray-400">
             File: {sheetData.file_name || "-"} | Tổng số dòng: {rows.length}
           </span>
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-2 border-yellow-200 rounded p-3 shadow-sm">
+          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900 dark:to-yellow-800 border-2 border-yellow-200 dark:border-yellow-700 rounded p-3 shadow-sm">
             <div className="flex items-center gap-2 mb-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-yellow-700"
+                className="h-5 w-5 text-yellow-700 dark:text-yellow-300"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -1768,19 +1791,19 @@ export default function CompetitionDataDetail() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-xs font-semibold text-yellow-700 uppercase">
+              <span className="text-xs font-semibold text-yellow-700 dark:text-yellow-300 uppercase">
                 Chờ
               </span>
             </div>
-            <div className="text-2xl font-bold text-yellow-900">
+            <div className="text-2xl font-bold text-yellow-900 dark:text-yellow-200">
               {tableData.filter((r) => r.match_status === "WAI").length}
             </div>
           </div>
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded p-3 shadow-sm">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 border-2 border-blue-200 dark:border-blue-700 rounded p-3 shadow-sm">
             <div className="flex items-center gap-2 mb-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-blue-700"
+                className="h-5 w-5 text-blue-700 dark:text-blue-300"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -1790,19 +1813,19 @@ export default function CompetitionDataDetail() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-xs font-semibold text-blue-700 uppercase">
+              <span className="text-xs font-semibold text-blue-700 dark:text-blue-300 uppercase">
                 Đang đấu
               </span>
             </div>
-            <div className="text-2xl font-bold text-blue-900">
+            <div className="text-2xl font-bold text-blue-900 dark:text-blue-200">
               {tableData.filter((r) => r.match_status === "IN").length}
             </div>
           </div>
-          <div className="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded p-3 shadow-sm">
+          <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-800 border-2 border-green-200 dark:border-green-700 rounded p-3 shadow-sm">
             <div className="flex items-center gap-2 mb-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-green-700"
+                className="h-5 w-5 text-green-700 dark:text-green-300"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -1812,19 +1835,19 @@ export default function CompetitionDataDetail() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-xs font-semibold text-green-700 uppercase">
+              <span className="text-xs font-semibold text-green-700 dark:text-green-300 uppercase">
                 Kết thúc
               </span>
             </div>
-            <div className="text-2xl font-bold text-green-900">
+            <div className="text-2xl font-bold text-green-900 dark:text-green-200">
               {tableData.filter((r) => r.match_status === "FIN").length}
             </div>
           </div>
-          <div className="bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200 rounded p-3 shadow-sm">
+          <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 border-2 border-red-200 dark:border-red-700 rounded p-3 shadow-sm">
             <div className="flex items-center gap-2 mb-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-red-700"
+                className="h-5 w-5 text-red-700 dark:text-red-300"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -1834,11 +1857,11 @@ export default function CompetitionDataDetail() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-xs font-semibold text-red-700 uppercase">
+              <span className="text-xs font-semibold text-red-700 dark:text-red-300 uppercase">
                 Hủy
               </span>
             </div>
-            <div className="text-2xl font-bold text-red-900">
+            <div className="text-2xl font-bold text-red-900 dark:text-red-200">
               {tableData.filter((r) => r.match_status === "CAN").length}
             </div>
           </div>
@@ -1846,7 +1869,7 @@ export default function CompetitionDataDetail() {
       </div>
 
       {/* Toolbar - Filter, Sort, View Mode */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded p-4 mb-6 shadow-sm border border-gray-200">
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded p-4 mb-6 shadow-sm border border-gray-200 dark:border-gray-700">
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
           {/* Left: Search & Filter */}
           <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full lg:w-auto">
@@ -1864,7 +1887,7 @@ export default function CompetitionDataDetail() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2 border min-w-[150px] border-gray-300 rounded bg-white text-sm font-medium text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="px-4 py-2 border min-w-[150px] border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
             >
               <option value="ALL">Tất cả trạng thái</option>
               <option value="WAI">Chờ thi đấu</option>
@@ -1877,7 +1900,7 @@ export default function CompetitionDataDetail() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border min-w-[150px] border-gray-300 rounded bg-white text-sm font-medium text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="px-4 py-2 border min-w-[150px] border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
             >
               <option value="match_no">Sắp xếp: Trận số</option>
               <option value="status">Sắp xếp: Trạng thái</option>
@@ -1889,10 +1912,10 @@ export default function CompetitionDataDetail() {
           {/* Right: View Mode & Stats */}
           <div className="flex items-center gap-3">
             {/* Stats */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-blue-50 rounded border border-blue-200">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900 rounded border border-blue-200 dark:border-blue-700">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 text-blue-600"
+                className="h-4 w-4 text-blue-600 dark:text-blue-400"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -1903,19 +1926,19 @@ export default function CompetitionDataDetail() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-sm font-semibold text-blue-700">
+              <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
                 {filteredData.length} / {tableData.length}
               </span>
             </div>
 
             {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 bg-white rounded border border-gray-300 p-1">
+            <div className="flex items-center gap-1 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600 p-1">
               <button
                 onClick={() => setViewMode("grid")}
                 className={`p-2 rounded transition-all ${
                   viewMode === "grid"
-                    ? "bg-blue-600 text-white shadow-md"
-                    : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
                 title="Grid View"
               >
@@ -1932,8 +1955,8 @@ export default function CompetitionDataDetail() {
                 onClick={() => setViewMode("list")}
                 className={`p-2 rounded transition-all ${
                   viewMode === "list"
-                    ? "bg-blue-600 text-white shadow-md"
-                    : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
                 title="List View"
               >
@@ -1959,13 +1982,15 @@ export default function CompetitionDataDetail() {
       <div className="space-y-6">
         {loading ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin h-8 w-8 border-b-2 border-blue-500"></div>
-            <p className="mt-2 text-gray-600">Đang tải dữ liệu...</p>
+            <div className="inline-block animate-spin h-8 w-8 border-b-2 border-blue-500 dark:border-blue-400"></div>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
+              Đang tải dữ liệu...
+            </p>
           </div>
         ) : filteredData.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded border-2 border-dashed border-gray-300">
+          <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded border-2 border-dashed border-gray-300 dark:border-gray-600">
             <svg
-              className="mx-auto h-16 w-16 text-gray-400"
+              className="mx-auto h-16 w-16 text-gray-400 dark:text-gray-500"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -1977,10 +2002,10 @@ export default function CompetitionDataDetail() {
                 d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <p className="mt-4 text-lg font-medium text-gray-600">
+            <p className="mt-4 text-lg font-medium text-gray-600 dark:text-gray-400">
               Không tìm thấy trận đấu nào
             </p>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-500">
               Thử thay đổi bộ lọc hoặc tìm kiếm
             </p>
           </div>
@@ -2014,19 +2039,19 @@ export default function CompetitionDataDetail() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                 {/* Page Info */}
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
                   Hiển thị{" "}
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">
                     {startIndex + 1}
                   </span>{" "}
                   -{" "}
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">
                     {Math.min(endIndex, filteredData.length)}
                   </span>{" "}
                   trong tổng số{" "}
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">
                     {filteredData.length}
                   </span>{" "}
                   trận
@@ -2040,8 +2065,8 @@ export default function CompetitionDataDetail() {
                     disabled={page === 1}
                     className={`px-3 py-2 rounded font-medium text-sm transition-all ${
                       page === 1
-                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        : "bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600"
+                        ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
                     }`}
                   >
                     <svg
@@ -2074,8 +2099,8 @@ export default function CompetitionDataDetail() {
                               onClick={() => setPage(pageNum)}
                               className={`px-3 py-2 rounded font-medium text-sm transition-all ${
                                 page === pageNum
-                                  ? "bg-blue-600 text-white shadow-md"
-                                  : "bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600"
+                                  ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
+                                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
                               }`}
                             >
                               {pageNum}
@@ -2086,7 +2111,10 @@ export default function CompetitionDataDetail() {
                           pageNum === page + 2
                         ) {
                           return (
-                            <span key={pageNum} className="px-2 text-gray-400">
+                            <span
+                              key={pageNum}
+                              className="px-2 text-gray-400 dark:text-gray-500"
+                            >
                               ...
                             </span>
                           );
@@ -2102,8 +2130,8 @@ export default function CompetitionDataDetail() {
                     disabled={page === totalPages}
                     className={`px-3 py-2 rounded font-medium text-sm transition-all ${
                       page === totalPages
-                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        : "bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600"
+                        ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
                     }`}
                   >
                     <svg
@@ -2128,7 +2156,7 @@ export default function CompetitionDataDetail() {
                     setItemsPerPage(Number(e.target.value));
                     setPage(1);
                   }}
-                  className="px-3 py-2 border min-w-[150px] border-gray-300 rounded bg-white text-sm font-medium text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="px-3 py-2 border min-w-[150px] border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
                 >
                   <option value={6}>6 / trang</option>
                   <option value={12}>12 / trang</option>
@@ -2216,9 +2244,9 @@ export default function CompetitionDataDetail() {
       {openActions?.isOpen &&
         openActions?.key === Constants.ACTION_MATCH_RESULT && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
-            <div className="bg-white rounded shadow-2xl w-[900px] max-h-[95vh] overflow-hidden flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded shadow-2xl w-[900px] max-h-[95vh] overflow-hidden flex flex-col">
               {/* Header - Căn giữa */}
-              <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
+              <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 dark:from-yellow-600 dark:to-yellow-700 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
                 <h2 className="text-2xl font-bold text-white">
                   KẾT QUẢ TRẬN ĐẤU
                 </h2>
@@ -2226,7 +2254,7 @@ export default function CompetitionDataDetail() {
                   onClick={() =>
                     setOpenActions({ ...openActions, isOpen: false })
                   }
-                  className="text-white hover:text-gray-300 transition-colors absolute right-6"
+                  className="text-white hover:text-gray-300 dark:hover:text-gray-400 transition-colors absolute right-6"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -2249,14 +2277,14 @@ export default function CompetitionDataDetail() {
               </div>
 
               {/* Footer - Cố định */}
-              <div className="bg-gray-50 px-6 py-4 flex justify-between items-center gap-3 border-t border-gray-200 flex-shrink-0">
+              <div className="bg-gray-50 dark:bg-gray-900 px-6 py-4 flex justify-between items-center gap-3 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
                 <button
                   onClick={() => {
                     if (exportToExcelRef.current) {
                       exportToExcelRef.current();
                     }
                   }}
-                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded font-semibold transition-colors shadow-md hover:shadow-lg flex items-center gap-2"
+                  className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-6 py-2.5 rounded font-semibold transition-colors shadow-md hover:shadow-lg flex items-center gap-2"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -2276,7 +2304,7 @@ export default function CompetitionDataDetail() {
                   onClick={() =>
                     setOpenActions({ ...openActions, isOpen: false })
                   }
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2.5 rounded font-semibold transition-colors shadow-md hover:shadow-lg"
+                  className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-6 py-2.5 rounded font-semibold transition-colors shadow-md hover:shadow-lg"
                 >
                   Đóng
                 </button>
@@ -2289,9 +2317,9 @@ export default function CompetitionDataDetail() {
       {openActions?.isOpen &&
         openActions?.key === Constants.ACTION_MATCH_HISTORY && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
-            <div className="bg-white rounded shadow-2xl w-[1000px] max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded shadow-2xl w-[1000px] max-h-[90vh] overflow-hidden flex flex-col">
               {/* Header - Căn giữa */}
-              <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
                 <h2 className="text-2xl font-bold text-white">
                   LỊCH SỬ TRẬN ĐẤU
                 </h2>
@@ -2299,7 +2327,7 @@ export default function CompetitionDataDetail() {
                   onClick={() =>
                     setOpenActions({ ...openActions, isOpen: false })
                   }
-                  className="text-white hover:text-gray-300 transition-colors absolute right-6"
+                  className="text-white hover:text-gray-300 dark:hover:text-gray-400 transition-colors absolute right-6"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -2322,14 +2350,14 @@ export default function CompetitionDataDetail() {
               </div>
 
               {/* Footer - Cố định */}
-              <div className="bg-gray-50 px-6 py-4 flex justify-between items-center gap-3 border-t border-gray-200 flex-shrink-0">
+              <div className="bg-gray-50 dark:bg-gray-900 px-6 py-4 flex justify-between items-center gap-3 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
                 <button
                   onClick={() => {
                     if (exportToExcelRef.current) {
                       exportToExcelRef.current();
                     }
                   }}
-                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded font-semibold transition-colors shadow-md hover:shadow-lg flex items-center gap-2"
+                  className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-6 py-2.5 rounded font-semibold transition-colors shadow-md hover:shadow-lg flex items-center gap-2"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -2349,7 +2377,7 @@ export default function CompetitionDataDetail() {
                   onClick={() =>
                     setOpenActions({ ...openActions, isOpen: false })
                   }
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2.5 rounded font-semibold transition-colors shadow-md hover:shadow-lg"
+                  className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-6 py-2.5 rounded font-semibold transition-colors shadow-md hover:shadow-lg"
                 >
                   Đóng
                 </button>
@@ -2361,9 +2389,9 @@ export default function CompetitionDataDetail() {
       {/* Modal Cập nhật - Custom style */}
       {openActions?.isOpen && openActions?.key === Constants.ACTION_UPDATE && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
-          <div className="bg-white rounded shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="bg-white dark:bg-gray-800 rounded shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header - Căn giữa */}
-            <div className="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
+            <div className="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
               <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -2379,7 +2407,7 @@ export default function CompetitionDataDetail() {
                 onClick={() =>
                   setOpenActions({ ...openActions, isOpen: false })
                 }
-                className="text-white hover:text-gray-300 transition-colors absolute right-6"
+                className="text-white hover:text-gray-300 dark:hover:text-gray-400 transition-colors absolute right-6"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -2469,26 +2497,26 @@ function DataForm({
   const getStatusColor = (status) => {
     switch (status) {
       case "WAI":
-        return "bg-yellow-100 text-yellow-800 border-yellow-300";
+        return "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700";
       case "IN":
-        return "bg-blue-100 text-blue-800 border-blue-300";
+        return "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-700";
       case "FIN":
-        return "bg-green-100 text-green-800 border-green-300";
+        return "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 border-green-300 dark:border-green-700";
       case "CAN":
-        return "bg-red-100 text-red-800 border-red-300";
+        return "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300 border-red-300 dark:border-red-700";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-300";
+        return "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-700";
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Trường trạng thái - Nổi bật */}
-      <div className="bg-gray-50 p-4 rounded border border-gray-200">
-        <label className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+      <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded border border-gray-200 dark:border-gray-700">
+        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-blue-600"
+            className="h-5 w-5 text-blue-600 dark:text-blue-400"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -2505,7 +2533,7 @@ function DataForm({
           onChange={(e) =>
             setFormData({ ...formData, match_status: e.target.value })
           }
-          className={`w-full px-4 py-3 border-2 rounded font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${getStatusColor(formData.match_status)}`}
+          className={`w-full px-4 py-3 border-2 rounded font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ${getStatusColor(formData.match_status)}`}
         >
           <option value="WAI">Chờ thi đấu</option>
           <option value="IN">Đang diễn ra</option>
@@ -2516,10 +2544,10 @@ function DataForm({
 
       {/* Thông tin chung */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2 pb-2 border-b border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-green-600"
+            className="h-5 w-5 text-green-600 dark:text-green-400"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -2536,9 +2564,9 @@ function DataForm({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* STT */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {editableHeaders[0] || "STT"}
-              <span className="text-red-500 ml-1">*</span>
+              <span className="text-red-500 dark:text-red-400 ml-1">*</span>
             </label>
             <input
               type="text"
@@ -2546,7 +2574,7 @@ function DataForm({
               onChange={(e) =>
                 setFormData({ ...formData, col_0: e.target.value })
               }
-              className="w-full px-4 py-2.5 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
               placeholder="Nhập STT (bắt buộc)"
               required
             />
@@ -2554,9 +2582,9 @@ function DataForm({
 
           {/* Nội dung */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {editableHeaders[1] || "Nội dung"}
-              <span className="text-red-500 ml-1">*</span>
+              <span className="text-red-500 dark:text-red-400 ml-1">*</span>
             </label>
             <input
               type="text"
@@ -2564,7 +2592,7 @@ function DataForm({
               onChange={(e) =>
                 setFormData({ ...formData, col_1: e.target.value })
               }
-              className="w-full px-4 py-2.5 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
               placeholder="Nhập nội dung (bắt buộc)"
               required
             />
@@ -2572,9 +2600,9 @@ function DataForm({
 
           {/* Hạng cân */}
           <div className="md:col-span-3">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {editableHeaders[2] || "Hạng cân"}
-              <span className="text-red-500 ml-1">*</span>
+              <span className="text-red-500 dark:text-red-400 ml-1">*</span>
             </label>
             <input
               type="text"
@@ -2582,7 +2610,7 @@ function DataForm({
               onChange={(e) =>
                 setFormData({ ...formData, col_2: e.target.value })
               }
-              className="w-full px-4 py-2.5 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               placeholder="Nhập hạng cân (bắt buộc)"
               required
             />
@@ -2593,8 +2621,8 @@ function DataForm({
       {/* Thông tin VĐV - 2 cột đỏ/xanh */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Cột ĐỎ */}
-        <div className="bg-red-50 p-4 rounded border-2 border-red-200">
-          <h3 className="text-lg font-bold text-red-700 flex items-center gap-2 pb-3 mb-4 border-b-2 border-red-300">
+        <div className="bg-red-50 dark:bg-red-900 p-4 rounded border-2 border-red-200 dark:border-red-700">
+          <h3 className="text-lg font-bold text-red-700 dark:text-red-300 flex items-center gap-2 pb-3 mb-4 border-b-2 border-red-300 dark:border-red-700">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
@@ -2613,9 +2641,9 @@ function DataForm({
           <div className="space-y-4">
             {/* Tên VĐV đỏ */}
             <div>
-              <label className="block text-sm font-semibold text-red-800 mb-2">
+              <label className="block text-sm font-semibold text-red-800 dark:text-red-300 mb-2">
                 {editableHeaders[3] || "Tên VĐV"}
-                <span className="text-red-600 ml-1">*</span>
+                <span className="text-red-600 dark:text-red-400 ml-1">*</span>
               </label>
               <input
                 type="text"
@@ -2623,7 +2651,7 @@ function DataForm({
                 onChange={(e) =>
                   setFormData({ ...formData, col_3: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border-2 border-red-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                className="w-full px-4 py-2.5 border-2 border-red-300 dark:border-red-700 rounded focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="Nhập tên VĐV đỏ"
                 required
               />
@@ -2631,7 +2659,7 @@ function DataForm({
 
             {/* Đơn vị đỏ */}
             <div>
-              <label className="block text-sm font-semibold text-red-800 mb-2">
+              <label className="block text-sm font-semibold text-red-800 dark:text-red-300 mb-2">
                 {editableHeaders[4] || "Đơn vị"}
               </label>
               <input
@@ -2640,14 +2668,14 @@ function DataForm({
                 onChange={(e) =>
                   setFormData({ ...formData, col_4: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-red-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500 bg-red-50"
+                className="w-full px-4 py-2.5 border border-red-200 dark:border-red-700 rounded focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 bg-red-50 dark:bg-red-900 text-gray-900 dark:text-gray-100"
                 placeholder="Nhập đơn vị"
               />
             </div>
 
             {/* Năm sinh đỏ */}
             <div>
-              <label className="block text-sm font-semibold text-red-800 mb-2">
+              <label className="block text-sm font-semibold text-red-800 dark:text-red-300 mb-2">
                 {editableHeaders[5] || "Năm sinh"}
               </label>
               <input
@@ -2656,7 +2684,7 @@ function DataForm({
                 onChange={(e) =>
                   setFormData({ ...formData, col_5: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-red-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500 bg-red-50"
+                className="w-full px-4 py-2.5 border border-red-200 dark:border-red-700 rounded focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 bg-red-50 dark:bg-red-900 text-gray-900 dark:text-gray-100"
                 placeholder="Nhập năm sinh"
               />
             </div>
@@ -2664,8 +2692,8 @@ function DataForm({
         </div>
 
         {/* Cột XANH */}
-        <div className="bg-blue-50 p-4 rounded border-2 border-blue-200">
-          <h3 className="text-lg font-bold text-blue-700 flex items-center gap-2 pb-3 mb-4 border-b-2 border-blue-300">
+        <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded border-2 border-blue-200 dark:border-blue-700">
+          <h3 className="text-lg font-bold text-blue-700 dark:text-blue-300 flex items-center gap-2 pb-3 mb-4 border-b-2 border-blue-300 dark:border-blue-700">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
@@ -2684,9 +2712,9 @@ function DataForm({
           <div className="space-y-4">
             {/* Tên VĐV xanh */}
             <div>
-              <label className="block text-sm font-semibold text-blue-800 mb-2">
+              <label className="block text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">
                 {editableHeaders[6] || "Tên VĐV"}
-                <span className="text-blue-600 ml-1">*</span>
+                <span className="text-blue-600 dark:text-blue-400 ml-1">*</span>
               </label>
               <input
                 type="text"
@@ -2694,7 +2722,7 @@ function DataForm({
                 onChange={(e) =>
                   setFormData({ ...formData, col_6: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border-2 border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full px-4 py-2.5 border-2 border-blue-300 dark:border-blue-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="Nhập tên VĐV xanh"
                 required
               />
@@ -2702,7 +2730,7 @@ function DataForm({
 
             {/* Đơn vị xanh */}
             <div>
-              <label className="block text-sm font-semibold text-blue-800 mb-2">
+              <label className="block text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">
                 {editableHeaders[7] || "Đơn vị"}
               </label>
               <input
@@ -2711,14 +2739,14 @@ function DataForm({
                 onChange={(e) =>
                   setFormData({ ...formData, col_7: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-blue-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-50"
+                className="w-full px-4 py-2.5 border border-blue-200 dark:border-blue-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-blue-50 dark:bg-blue-900 text-gray-900 dark:text-gray-100"
                 placeholder="Nhập đơn vị"
               />
             </div>
 
             {/* Năm sinh xanh */}
             <div>
-              <label className="block text-sm font-semibold text-blue-800 mb-2">
+              <label className="block text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">
                 {editableHeaders[8] || "Năm sinh"}
               </label>
               <input
@@ -2727,7 +2755,7 @@ function DataForm({
                 onChange={(e) =>
                   setFormData({ ...formData, col_8: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-blue-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-50"
+                className="w-full px-4 py-2.5 border border-blue-200 dark:border-blue-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-blue-50 dark:bg-blue-900 text-gray-900 dark:text-gray-100"
                 placeholder="Nhập năm sinh"
               />
             </div>
@@ -2736,11 +2764,11 @@ function DataForm({
       </div>
 
       {/* Footer buttons */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           type="button"
           onClick={onCancel}
-          className="px-6 py-2.5 bg-gray-500 hover:bg-gray-600 text-white rounded font-semibold transition-colors shadow-md hover:shadow-lg"
+          className="px-6 py-2.5 bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white rounded font-semibold transition-colors shadow-md hover:shadow-lg"
         >
           Hủy
         </button>
@@ -2773,10 +2801,10 @@ function DeleteConfirm({ onConfirm, onCancel }) {
     <div className="space-y-6 p-4 rounded">
       {/* Icon cảnh báo */}
       <div className="flex justify-center">
-        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+        <div className="w-16 h-16 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-10 w-10 text-red-600"
+            className="h-10 w-10 text-red-600 dark:text-red-400"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -2791,11 +2819,11 @@ function DeleteConfirm({ onConfirm, onCancel }) {
 
       {/* Nội dung */}
       <div className="text-center space-y-2">
-        {/* <p className="text-xl font-bold text-gray-900">Thông báo</p> */}
-        <p className="text-base text-gray-700">
+        {/* <p className="text-xl font-bold text-gray-900 dark:text-white">Thông báo</p> */}
+        <p className="text-base text-gray-700 dark:text-gray-300">
           Bạn có chắc chắn muốn xóa dòng này?
         </p>
-        <p className="text-sm text-red-600 font-medium">
+        <p className="text-sm text-red-600 dark:text-red-400 font-medium">
           ⚠️ Hành động này không thể hoàn tác.
         </p>
       </div>
@@ -2811,7 +2839,7 @@ function DeleteConfirm({ onConfirm, onCancel }) {
         </Button>
         <Button
           variant="none"
-          className="bg-red-600 text-white hover:bg-red-700 px-6 py-2.5 min-w-[120px] font-semibold shadow-md hover:shadow-lg transition-all"
+          className="bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-800 px-6 py-2.5 min-w-[120px] font-semibold shadow-md hover:shadow-lg transition-all"
           onClick={onConfirm}
         >
           Xóa
@@ -2827,10 +2855,10 @@ function ActionConfirm({ message, onConfirm, onCancel }) {
     <div className="space-y-6 p-4 rounded">
       {/* Icon xác nhận */}
       <div className="flex justify-center">
-        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+        <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-10 w-10 text-blue-600"
+            className="h-10 w-10 text-blue-600 dark:text-blue-400"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -2845,8 +2873,8 @@ function ActionConfirm({ message, onConfirm, onCancel }) {
 
       {/* Nội dung */}
       <div className="text-center">
-        {/* <p className="text-xl font-bold text-gray-900 mb-2">Xác nhận</p> */}
-        <p className="text-base text-gray-700">{message}</p>
+        {/* <p className="text-xl font-bold text-gray-900 dark:text-white mb-2">Xác nhận</p> */}
+        <p className="text-base text-gray-700 dark:text-gray-300">{message}</p>
       </div>
 
       {/* Buttons */}
@@ -2938,11 +2966,11 @@ function ResultForm({ row, onSubmit, onCancel, showAlert }) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col h-full">
       {/* Content - Scrollable */}
-      <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
+      <div className="p-6 overflow-y-auto flex-1 bg-gray-50 dark:bg-gray-900">
         <div className="space-y-6">
           {/* Hiển thị VĐV thắng phía trên */}
           {existingWinner && existingWinner !== "-" && (
-            <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 p-6 rounded text-center shadow-lg">
+            <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 dark:from-yellow-600 dark:to-yellow-700 p-6 rounded text-center shadow-lg">
               <div className="text-white text-sm font-semibold mb-2 uppercase tracking-wide">
                 🏆 VĐV THẮNG CUỘC
               </div>
@@ -2953,36 +2981,36 @@ function ResultForm({ row, onSubmit, onCancel, showAlert }) {
           )}
 
           {/* Hiển thị thông tin VĐV xanh/đỏ - Luôn hiển thị, disable khi không chỉnh sửa */}
-          <div className="bg-white p-6  shadow-md rounded border border-gray-200">
-            <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">
+          <div className="bg-white dark:bg-gray-800 p-6  shadow-md rounded border border-gray-200 dark:border-gray-700">
+            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6 text-center">
               Thông tin VĐV và chọn người thắng
             </h3>
 
             <div className="grid grid-cols-2 gap-6">
               {/* Giáp Đỏ */}
               <div
-                className={`bg-gradient-to-br from-red-50 to-red-100 border-4 p-6 rounded transition-all ${
+                className={`bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 border-4 p-6 rounded transition-all ${
                   formData.winner === "red"
-                    ? "border-red-500 shadow-xl shadow-red-200 scale-105"
-                    : "border-red-200 hover:border-red-300 hover:shadow-lg"
+                    ? "border-red-500 dark:border-red-400 shadow-xl shadow-red-200 dark:shadow-red-900 scale-105"
+                    : "border-red-200 dark:border-red-700 hover:border-red-300 dark:hover:border-red-600 hover:shadow-lg"
                 } ${!isEditing ? "opacity-75" : ""}`}
               >
                 <div className="text-center mb-6">
-                  <div className="inline-block rounded bg-red-600 text-white px-4 py-1  text-xs font-bold mb-3 uppercase tracking-wide">
+                  <div className="inline-block rounded bg-red-600 dark:bg-red-700 text-white px-4 py-1  text-xs font-bold mb-3 uppercase tracking-wide">
                     Giáp Đỏ
                   </div>
-                  <div className="text-2xl font-bold text-red-700 mb-2">
+                  <div className="text-2xl font-bold text-red-700 dark:text-red-300 mb-2">
                     {redName}
                   </div>
                   {redUnit && (
-                    <div className="text-sm text-red-600 font-medium">
+                    <div className="text-sm text-red-600 dark:text-red-400 font-medium">
                       {redUnit}
                     </div>
                   )}
                 </div>
 
                 <div className="mb-6">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 text-center">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">
                     Điểm số
                   </label>
                   <input
@@ -2995,7 +3023,7 @@ function ResultForm({ row, onSubmit, onCancel, showAlert }) {
                       })
                     }
                     disabled={!isEditing}
-                    className="w-full px-4 py-4 border-2 border-red-300 rounded text-center text-3xl font-bold focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-4 border-2 border-red-300 dark:border-red-700 rounded text-center text-3xl font-bold focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-red-500 dark:focus:border-red-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                     placeholder="0"
                   />
                 </div>
@@ -3006,8 +3034,8 @@ function ResultForm({ row, onSubmit, onCancel, showAlert }) {
                   disabled={!isEditing}
                   className={`w-full py-4  font-bold text-lg transition-all rounded disabled:cursor-not-allowed ${
                     formData.winner === "red"
-                      ? "bg-red-600 text-white shadow-xl transform scale-105"
-                      : "bg-white text-red-600 border-2 border-red-600 hover:bg-red-50"
+                      ? "bg-red-600 dark:bg-red-700 text-white shadow-xl transform scale-105"
+                      : "bg-white dark:bg-gray-800 text-red-600 dark:text-red-400 border-2 border-red-600 dark:border-red-700 hover:bg-red-50 dark:hover:bg-red-900"
                   } ${!isEditing ? "opacity-50" : ""}`}
                 >
                   {formData.winner === "red" ? "✓ NGƯỜI THẮNG" : "CHỌN THẮNG"}
@@ -3016,28 +3044,28 @@ function ResultForm({ row, onSubmit, onCancel, showAlert }) {
 
               {/* Giáp Xanh */}
               <div
-                className={`bg-gradient-to-br from-blue-50 to-blue-100 border-4 p-6 rounded transition-all ${
+                className={`bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 border-4 p-6 rounded transition-all ${
                   formData.winner === "blue"
-                    ? "border-blue-500 shadow-xl shadow-blue-200 scale-105"
-                    : "border-blue-200 hover:border-blue-300 hover:shadow-lg"
+                    ? "border-blue-500 dark:border-blue-400 shadow-xl shadow-blue-200 dark:shadow-blue-900 scale-105"
+                    : "border-blue-200 dark:border-blue-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg"
                 } ${!isEditing ? "opacity-75" : ""}`}
               >
                 <div className="text-center mb-6">
-                  <div className="inline-block rounded bg-blue-600 text-white px-4 py-1  text-xs font-bold mb-3 uppercase tracking-wide">
+                  <div className="inline-block rounded bg-blue-600 dark:bg-blue-700 text-white px-4 py-1  text-xs font-bold mb-3 uppercase tracking-wide">
                     Giáp Xanh
                   </div>
-                  <div className="text-2xl font-bold text-blue-700 mb-2">
+                  <div className="text-2xl font-bold text-blue-700 dark:text-blue-300 mb-2">
                     {blueName}
                   </div>
                   {blueUnit && (
-                    <div className="text-sm text-blue-600 font-medium">
+                    <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">
                       {blueUnit}
                     </div>
                   )}
                 </div>
 
                 <div className="mb-6">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 text-center">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">
                     Điểm số
                   </label>
                   <input
@@ -3050,7 +3078,7 @@ function ResultForm({ row, onSubmit, onCancel, showAlert }) {
                       })
                     }
                     disabled={!isEditing}
-                    className="w-full px-4 py-4 border-2 border-blue-300 rounded text-center text-3xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-4 border-2 border-blue-300 dark:border-blue-700 rounded text-center text-3xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                     placeholder="0"
                   />
                 </div>
@@ -3061,8 +3089,8 @@ function ResultForm({ row, onSubmit, onCancel, showAlert }) {
                   disabled={!isEditing}
                   className={`w-full py-4  font-bold text-lg transition-all rounded disabled:cursor-not-allowed ${
                     formData.winner === "blue"
-                      ? "bg-blue-600 text-white shadow-xl transform scale-105"
-                      : "bg-white text-blue-600 border-2 border-blue-600 hover:bg-blue-50"
+                      ? "bg-blue-600 dark:bg-blue-700 text-white shadow-xl transform scale-105"
+                      : "bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 border-2 border-blue-600 dark:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900"
                   } ${!isEditing ? "opacity-50" : ""}`}
                 >
                   {formData.winner === "blue" ? "✓ NGƯỜI THẮNG" : "CHỌN THẮNG"}
@@ -3074,21 +3102,21 @@ function ResultForm({ row, onSubmit, onCancel, showAlert }) {
       </div>
 
       {/* Footer - Giống Vovinam */}
-      <div className="bg-gray-100 px-6 py-4 flex justify-end gap-3 border-t border-gray-200">
+      <div className="bg-gray-100 dark:bg-gray-800 px-6 py-4 flex justify-end gap-3 border-t border-gray-200 dark:border-gray-700">
         {!isEditing ? (
           // Khi không chỉnh sửa - Hiển thị button Cập nhật và Đóng
           <>
             <button
               type="button"
               onClick={handleCancel}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded font-semibold transition-colors"
+              className="bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white px-6 py-2 rounded font-semibold transition-colors"
             >
               Đóng
             </button>
             <button
               type="button"
               onClick={handleUpdate}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold transition-colors shadow-md"
+              className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 text-white px-6 py-2 rounded font-semibold transition-colors shadow-md"
             >
               Cập nhật
             </button>
@@ -3105,7 +3133,7 @@ function ResultForm({ row, onSubmit, onCancel, showAlert }) {
                   onCancel();
                 }
               }}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded font-semibold transition-colors"
+              className="bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white px-6 py-2 rounded font-semibold transition-colors"
             >
               {existingWinner && existingWinner !== "-"
                 ? "Hủy chỉnh sửa"
@@ -3113,7 +3141,7 @@ function ResultForm({ row, onSubmit, onCancel, showAlert }) {
             </button>
             <button
               type="submit"
-              className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded font-semibold transition-colors shadow-md"
+              className="bg-yellow-500 dark:bg-yellow-600 hover:bg-yellow-600 dark:hover:bg-yellow-700 text-white px-6 py-2 rounded font-semibold transition-colors shadow-md"
             >
               Lưu
             </button>
@@ -3172,10 +3200,10 @@ function ConfigForm({ row, onSubmit, onCancel }) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col flex-1">
       {/* Content - Scrollable */}
-      <div className="p-6 overflow-y-auto max-h-[calc(600px-140px)] bg-gray-50">
+      <div className="p-6 overflow-y-auto max-h-[calc(600px-140px)] bg-gray-50 dark:bg-gray-900">
         <div className="space-y-6">
           {/* Section: Thông tin trận đấu */}
-          <div className="bg-gradient-to-r from-green-500 to-green-600 p-4 ">
+          <div className="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-700 dark:to-green-800 p-4 ">
             <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -3194,11 +3222,11 @@ function ConfigForm({ row, onSubmit, onCancel }) {
 
             <div className="grid grid-cols-3 gap-4">
               {/* Hệ điểm */}
-              <div className="bg-white border border-gray-200 p-3 ">
-                <label className="block text-gray-600 text-xs font-semibold mb-1">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 ">
+                <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold mb-1">
                   Hệ điểm
                 </label>
-                <div className="text-gray-800 text-lg font-bold">
+                <div className="text-gray-800 dark:text-gray-200 text-lg font-bold">
                   {configData.he_diem === "1" || configData.he_diem === 1
                     ? "Hệ điểm 1"
                     : configData.he_diem === "2" || configData.he_diem === 2
@@ -3210,11 +3238,11 @@ function ConfigForm({ row, onSubmit, onCancel }) {
               </div>
 
               {/* Số giám định */}
-              <div className="bg-white border border-gray-200 p-3 ">
-                <label className="block text-gray-600 text-xs font-semibold mb-1">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 ">
+                <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold mb-1">
                   Số giám định
                 </label>
-                <div className="text-gray-800 text-lg font-bold">
+                <div className="text-gray-800 dark:text-gray-200 text-lg font-bold">
                   {configData.so_giam_dinh === "3" ||
                   configData.so_giam_dinh === 3
                     ? "3 giám định"
@@ -3229,15 +3257,15 @@ function ConfigForm({ row, onSubmit, onCancel }) {
               </div>
 
               {/* Tổng số hiệp */}
-              <div className="bg-white border border-gray-200 p-3 ">
-                <label className="block text-gray-600 text-xs font-semibold mb-1">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 ">
+                <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold mb-1">
                   Tổng số hiệp
                 </label>
-                <div className="text-gray-800 text-lg font-bold">
+                <div className="text-gray-800 dark:text-gray-200 text-lg font-bold">
                   {(configData.so_hiep || 3) + (configData.so_hiep_phu || 0)}{" "}
                   hiệp
                 </div>
-                <div className="text-gray-500 text-xs mt-1">
+                <div className="text-gray-500 dark:text-gray-400 text-xs mt-1">
                   ({configData.so_hiep || 3} chính +{" "}
                   {configData.so_hiep_phu || 0} phụ)
                 </div>
@@ -3246,7 +3274,7 @@ function ConfigForm({ row, onSubmit, onCancel }) {
           </div>
 
           {/* Section: Cấu hình hiệp */}
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 ">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-700 dark:to-blue-800 p-4 ">
             <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -3266,8 +3294,8 @@ function ConfigForm({ row, onSubmit, onCancel }) {
 
             <div className="grid grid-cols-2 gap-4">
               {/* Số hiệp chính */}
-              <div className="bg-white border border-gray-200 p-4 ">
-                <label className="block text-gray-700 font-semibold mb-2">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
                   Số hiệp chính
                 </label>
                 <select
@@ -3275,20 +3303,20 @@ function ConfigForm({ row, onSubmit, onCancel }) {
                   onChange={(e) =>
                     handleChange("so_hiep", parseInt(e.target.value))
                   }
-                  className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
                 >
                   <option value="1">1 hiệp</option>
                   <option value="2">2 hiệp</option>
                   <option value="3">3 hiệp</option>
                 </select>
-                <p className="text-gray-500 text-xs mt-2">
+                <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
                   Theo Quản lý cài đặt
                 </p>
               </div>
 
               {/* Số hiệp phụ */}
-              <div className="bg-white border border-gray-200 p-4 ">
-                <label className="block text-gray-700 font-semibold mb-2">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
                   Số hiệp phụ
                 </label>
                 <select
@@ -3296,52 +3324,52 @@ function ConfigForm({ row, onSubmit, onCancel }) {
                   onChange={(e) =>
                     handleChange("so_hiep_phu", parseInt(e.target.value))
                   }
-                  className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
                 >
                   <option value="0">Không có</option>
                   <option value="1">1 hiệp phụ</option>
                   <option value="2">2 hiệp phụ</option>
                   <option value="3">3 hiệp phụ</option>
                 </select>
-                <p className="text-gray-500 text-xs mt-2">
+                <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
                   Theo Quản lý cài đặt
                 </p>
               </div>
 
               {/* Hệ điểm */}
-              <div className="bg-white border border-gray-200 p-4 ">
-                <label className="block text-gray-700 font-semibold mb-2">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
                   Hệ điểm
                 </label>
                 <select
                   value={configData.he_diem || "2"}
                   onChange={(e) => handleChange("he_diem", e.target.value)}
-                  className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
                 >
                   <option value="1">Hệ điểm 1</option>
                   <option value="2">Hệ điểm 2</option>
                   <option value="3">Hệ điểm 3</option>
                 </select>
-                <p className="text-gray-500 text-xs mt-2">
+                <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
                   Theo Quản lý cài đặt
                 </p>
               </div>
 
               {/* Số giám định */}
-              <div className="bg-white border border-gray-200 p-4 ">
-                <label className="block text-gray-700 font-semibold mb-2">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
                   Số giám định
                 </label>
                 <select
                   value={configData.so_giam_dinh || "3"}
                   onChange={(e) => handleChange("so_giam_dinh", e.target.value)}
-                  className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
                 >
                   <option value="3">3 giám định</option>
                   <option value="5">5 giám định</option>
                   <option value="10">10 giám định</option>
                 </select>
-                <p className="text-gray-500 text-xs mt-2">
+                <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
                   Theo Quản lý cài đặt
                 </p>
               </div>
@@ -3349,7 +3377,7 @@ function ConfigForm({ row, onSubmit, onCancel }) {
           </div>
 
           {/* Section: Cấu hình thời gian */}
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 ">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-700 dark:to-blue-800 p-4 ">
             <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -3368,8 +3396,8 @@ function ConfigForm({ row, onSubmit, onCancel }) {
 
             <div className="grid grid-cols-3 gap-4">
               {/* Thời gian tính điểm */}
-              <div className="bg-white border border-gray-200 p-4 ">
-                <label className="block text-gray-700 font-semibold mb-2">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
                   Thời gian tính điểm (ms)
                 </label>
                 <input
@@ -3381,13 +3409,13 @@ function ConfigForm({ row, onSubmit, onCancel }) {
                       parseInt(e.target.value),
                     )
                   }
-                  className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
                 />
               </div>
 
               {/* Thời gian thi đấu */}
-              <div className="bg-white border border-gray-200 p-4 ">
-                <label className="block text-gray-700 font-semibold mb-2">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
                   Thời gian thi đấu (giây)
                 </label>
                 <input
@@ -3396,13 +3424,13 @@ function ConfigForm({ row, onSubmit, onCancel }) {
                   onChange={(e) =>
                     handleChange("thoi_gian_thi_dau", parseInt(e.target.value))
                   }
-                  className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
                 />
               </div>
 
               {/* Thời gian nghỉ */}
-              <div className="bg-white border border-gray-200 p-4 ">
-                <label className="block text-gray-700 font-semibold mb-2">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
                   Thời gian nghỉ (giây)
                 </label>
                 <input
@@ -3411,13 +3439,13 @@ function ConfigForm({ row, onSubmit, onCancel }) {
                   onChange={(e) =>
                     handleChange("thoi_gian_nghi", parseInt(e.target.value))
                   }
-                  className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
                 />
               </div>
 
               {/* Thời gian hiệp phụ */}
-              <div className="bg-white border border-gray-200 p-4 ">
-                <label className="block text-gray-700 font-semibold mb-2">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
                   Thời gian hiệp phụ (giây)
                 </label>
                 <input
@@ -3426,13 +3454,13 @@ function ConfigForm({ row, onSubmit, onCancel }) {
                   onChange={(e) =>
                     handleChange("thoi_gian_hiep_phu", parseInt(e.target.value))
                   }
-                  className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
                 />
               </div>
 
               {/* Thời gian y tế */}
-              <div className="bg-white border border-gray-200 p-4 ">
-                <label className="block text-gray-700 font-semibold mb-2">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
                   Thời gian y tế (giây)
                 </label>
                 <input
@@ -3441,14 +3469,14 @@ function ConfigForm({ row, onSubmit, onCancel }) {
                   onChange={(e) =>
                     handleChange("thoi_gian_y_te", parseInt(e.target.value))
                   }
-                  className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
                 />
               </div>
             </div>
           </div>
 
           {/* Section: Điểm áp dụng */}
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 ">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-700 dark:to-blue-800 p-4 ">
             <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -3462,8 +3490,8 @@ function ConfigForm({ row, onSubmit, onCancel }) {
             </h3>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white border border-gray-200 p-4 ">
-                <label className="block text-gray-700 font-semibold mb-2">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
                   Khoảng điểm tuyệt đối
                 </label>
                 <input
@@ -3475,9 +3503,9 @@ function ConfigForm({ row, onSubmit, onCancel }) {
                       parseInt(e.target.value),
                     )
                   }
-                  className="w-full bg-gray-100 text-gray-800 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300"
+                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
                 />
-                <p className="text-gray-500 text-xs mt-2">
+                <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
                   Khoảng cách điểm để thắng tuyệt đối
                 </p>
               </div>
@@ -3485,7 +3513,7 @@ function ConfigForm({ row, onSubmit, onCancel }) {
           </div>
 
           {/* Section: Chế độ áp dụng */}
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 ">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-700 dark:to-blue-800 p-4 ">
             <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -3520,16 +3548,19 @@ function ConfigForm({ row, onSubmit, onCancel }) {
                 { key: "cau_hinh_xoa_nhac_nho", label: "Xoá nhắc nhở" },
                 { key: "cau_hinh_xoa_canh_cao", label: "Xoá cảnh cáo" },
               ].map(({ key, label }) => (
-                <div key={key} className="bg-white border border-gray-200 p-3 ">
+                <div
+                  key={key}
+                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 "
+                >
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
                       id={key}
                       checked={configData[key] || false}
                       onChange={(e) => handleChange(key, e.target.checked)}
-                      className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      className="w-5 h-5 text-blue-600 dark:text-blue-500 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-400"
                     />
-                    <span className="text-sm text-gray-700 font-medium">
+                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">
                       {label}
                     </span>
                   </label>
@@ -3541,17 +3572,17 @@ function ConfigForm({ row, onSubmit, onCancel }) {
       </div>
 
       {/* Footer - Giống Vovinam */}
-      <div className="bg-gray-100 px-6 py-4 flex justify-end gap-3 border-t border-gray-200">
+      <div className="bg-gray-100 dark:bg-gray-800 px-6 py-4 flex justify-end gap-3 border-t border-gray-200 dark:border-gray-700">
         <button
           type="button"
           onClick={onCancel}
-          className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2  font-semibold transition-colors"
+          className="bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white px-6 py-2  font-semibold transition-colors"
         >
           Hủy
         </button>
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2  font-semibold transition-colors"
+          className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 text-white px-6 py-2  font-semibold transition-colors"
         >
           Lưu thay đổi
         </button>
@@ -3702,6 +3733,90 @@ function HistoryView({
     }
   };
 
+  // Hàm xuất Excel khổ A5 với template đối kháng
+  const exportToExcelA5 = () => {
+    try {
+      const latestHistoryItem =
+        history.length > 0 ? history[history.length - 1] : null;
+      const allLogs = latestHistoryItem?.logs || [];
+      const roundHistory = latestHistoryItem?.round_history || [];
+
+      // Tạo workbook
+      const wb = XLSX.utils.book_new();
+
+      // Template đối kháng theo hình ảnh
+      const templateData = [
+        ["BIÊN BẢN NỘI DUNG DỰ THI"],
+        [],
+        ["TÊN GIAI", "", "", "", ""],
+        ["NGÀY THI", new Date().toLocaleDateString("vi-VN"), "", "", ""],
+        ["NỘI DUNG THI", "", "", "", ""],
+        ["ĐƠN VỊ", "", "", "", ""],
+        [],
+        ["", "", "KẾT QUẢ NỘI DUNG DỰ THI", "", ""],
+        ["GIÁM ĐỊNH", "1", "2", "3", "4", "5"],
+        ["ĐIỂM", redScore || 0, blueScore || 0, "", "", ""],
+        ["TỔNG", "", "", "255", "", ""],
+        [],
+        ["", "", "THÔNG TIN GIÁM ĐỊNH", "", ""],
+        ["GIÁM", "", "HỌ TÊN", "", "ĐƠN VỊ"],
+        ["1", "", "", "", ""],
+        ["2", "", "", "", ""],
+        ["3", "", "", "", ""],
+        ["4", "", "", "", ""],
+        ["5", "", "", "", ""],
+        ["6", "", "", "", ""],
+        [],
+        ["", "", "THÔNG TIN VĐV", "", ""],
+        ["VĐV", "", "HỌ TÊN", "", "ĐƠN VỊ"],
+        ["1", "", redName, "", redUnit],
+        ["2", "", blueName, "", blueUnit],
+        ["3", "", "", "", ""],
+        ["4", "", "", "", ""],
+        ["5", "", "", "", ""],
+        ["6", "", "", "", ""],
+        ["7", "", "", "", ""],
+        ["8", "", "", "", ""],
+        ["9", "", "", "", ""],
+        ["10", "", "", "", ""],
+        ["11", "", "", "", ""],
+        ["12", "", "", "", ""],
+        ["13", "", "", "", ""],
+        ["14", "", "", "", ""],
+      ];
+
+      const ws = XLSX.utils.aoa_to_sheet(templateData);
+
+      // Thiết lập khổ A5 và styling
+      ws["!cols"] = [
+        { wch: 8 }, // Cột A
+        { wch: 8 }, // Cột B
+        { wch: 20 }, // Cột C
+        { wch: 8 }, // Cột D
+        { wch: 15 }, // Cột E
+      ];
+
+      // Merge cells cho header
+      ws["!merges"] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }, // BIÊN BẢN NỘI DUNG DỰ THI
+        { s: { r: 7, c: 2 }, e: { r: 7, c: 4 } }, // KẾT QUẢ NỘI DUNG DỰ THI
+        { s: { r: 12, c: 2 }, e: { r: 12, c: 4 } }, // THÔNG TIN GIÁM ĐỊNH
+        { s: { r: 21, c: 2 }, e: { r: 21, c: 4 } }, // THÔNG TIN VĐV
+      ];
+
+      XLSX.utils.book_append_sheet(wb, ws, "Đối Kháng A5");
+
+      // Xuất file với tên phù hợp
+      const fileName = `DoiKhang_A5_${redName}_vs_${blueName}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+
+      console.log("Xuất Excel A5 thành công!");
+    } catch (error) {
+      console.error("Lỗi khi xuất Excel A5:", error);
+      showError("Có lỗi xảy ra khi xuất file Excel A5!");
+    }
+  };
+
   React.useEffect(() => {
     const fetchHistory = async () => {
       try {
@@ -3742,8 +3857,10 @@ function HistoryView({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin  h-12 w-12 border-b-2 border-blue-600"></div>
-        <span className="ml-3 text-gray-600">Đang tải lịch sử...</span>
+        <div className="animate-spin  h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
+        <span className="ml-3 text-gray-600 dark:text-gray-400">
+          Đang tải lịch sử...
+        </span>
       </div>
     );
   }
@@ -3769,8 +3886,8 @@ function HistoryView({
   return (
     <div className="space-y-6">
       {/* 1. KẾT QUẢ TỔNG - Bảng điểm giống Vovinam */}
-      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded p-6 shadow-2xl">
-        <div className="bg-gradient-to-r from-purple-600 to-purple-800 rounded px-4 py-2 -mx-6 -mt-6 mb-6">
+      <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 rounded p-6 shadow-2xl">
+        <div className="bg-gradient-to-r from-purple-600 to-purple-800 dark:from-purple-700 dark:to-purple-900 rounded px-4 py-2 -mx-6 -mt-6 mb-6">
           <h3 className="text-xl font-bold text-white flex items-center gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -3792,9 +3909,9 @@ function HistoryView({
         <div className="flex justify-between items-center gap-6">
           {/* Giáp Đỏ */}
           <div
-            className={`flex-1 bg-red-600 rounded p-6 shadow-lg transition-all ${
+            className={`flex-1 bg-red-600 dark:bg-red-700 rounded p-6 shadow-lg transition-all ${
               winner?.toUpperCase() === "RED"
-                ? "ring-4 ring-yellow-400 ring-offset-2 ring-offset-gray-900"
+                ? "ring-4 ring-yellow-400 dark:ring-yellow-500 ring-offset-2 ring-offset-gray-900 dark:ring-offset-gray-800"
                 : ""
             }`}
           >
@@ -3805,7 +3922,7 @@ function HistoryView({
                 <p className="text-lg opacity-90">{redUnit}</p>
               </div>
               {winner?.toUpperCase() === "RED" && (
-                <div className="mt-4 bg-yellow-400 text-gray-900 font-bold py-2 px-4  inline-block">
+                <div className="mt-4 bg-yellow-400 dark:bg-yellow-500 text-gray-900 dark:text-gray-800 font-bold py-2 px-4  inline-block">
                   🏆 CHIẾN THẮNG
                 </div>
               )}
@@ -3816,7 +3933,7 @@ function HistoryView({
           <div className="flex flex-col items-center justify-center px-6 text-white">
             <div className="text-3xl font-bold mb-2">VS</div>
             <div className="text-xl opacity-75">Trận {row.data[0]}</div>
-            <div className="mt-4 bg-yellow-400 rounded text-gray-900 font-bold px-6 py-2 ">
+            <div className="mt-4 bg-yellow-400 dark:bg-yellow-500 rounded text-gray-900 dark:text-gray-800 font-bold px-6 py-2 ">
               {row.match_status === "FIN"
                 ? "ĐÃ KẾT THÚC"
                 : row.match_status === "IN"
@@ -3827,9 +3944,9 @@ function HistoryView({
 
           {/* Giáp Xanh */}
           <div
-            className={`flex-1 bg-blue-600 rounded p-6 shadow-lg transition-all ${
+            className={`flex-1 bg-blue-600 dark:bg-blue-700 rounded p-6 shadow-lg transition-all ${
               winner?.toUpperCase() === "BLUE"
-                ? "ring-4 ring-yellow-400 ring-offset-2 ring-offset-gray-900"
+                ? "ring-4 ring-yellow-400 dark:ring-yellow-500 ring-offset-2 ring-offset-gray-900 dark:ring-offset-gray-800"
                 : ""
             }`}
           >
@@ -3840,7 +3957,7 @@ function HistoryView({
                 <p className="text-lg opacity-90">{blueUnit}</p>
               </div>
               {winner?.toUpperCase() === "BLUE" && (
-                <div className="mt-4 bg-yellow-400 text-gray-900 font-bold py-2 px-4  inline-block">
+                <div className="mt-4 bg-yellow-400 dark:bg-yellow-500 text-gray-900 dark:text-gray-800 font-bold py-2 px-4  inline-block">
                   🏆 CHIẾN THẮNG
                 </div>
               )}
@@ -3851,8 +3968,8 @@ function HistoryView({
 
       {/* 2. KẾT QUẢ TỪNG HIỆP */}
       {roundHistory.length > 0 && (
-        <div className="bg-white rounded shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-green-600 to-green-800 px-6 py-4 rounded">
+        <div className="bg-white dark:bg-gray-800 rounded shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-green-600 to-green-800 dark:from-green-700 dark:to-green-900 px-6 py-4 rounded">
             <h3 className="text-xl font-bold text-white flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -3870,7 +3987,7 @@ function HistoryView({
             </h3>
           </div>
 
-          <div className="p-6 space-y-3 bg-gray-50">
+          <div className="p-6 space-y-3 bg-gray-50 dark:bg-gray-900">
             {roundHistory.map((round, roundIndex) => {
               // Lọc logs theo hiệp
               const roundLogs =
@@ -3878,7 +3995,7 @@ function HistoryView({
 
               return (
                 <RoundHistoryCard
-                  key={roundIndex}
+                  key={`round-history-${round.round}-${round.roundType || "NORMAL"}`}
                   round={round}
                   roundIndex={roundIndex}
                   logs={roundLogs}
@@ -3891,8 +4008,8 @@ function HistoryView({
 
       {/* 3. LỊCH SỬ CHI TIẾT HÀNH ĐỘNG */}
       {allLogs.length > 0 && (
-        <div className="bg-white rounded shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4">
+        <div className="bg-white dark:bg-gray-800 rounded shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 px-6 py-4">
             <h3 className="text-xl font-bold text-white flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -3910,9 +4027,9 @@ function HistoryView({
             </h3>
           </div>
 
-          <div className="max-h-[500px] overflow-y-auto border border-gray-200 ">
+          <div className="max-h-[500px] overflow-y-auto border border-gray-200 dark:border-gray-700 ">
             {allLogs.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-16 w-16 mx-auto mb-4 opacity-50"
@@ -3931,46 +4048,46 @@ function HistoryView({
               </div>
             ) : (
               <table className="min-w-full text-sm">
-                <thead className="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10 shadow-sm">
+                <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 sticky top-0 z-10 shadow-sm">
                   <tr>
-                    <th className="px-3 py-3 text-center font-semibold text-gray-700 border-b-2 border-gray-300 w-12">
+                    <th className="px-3 py-3 text-center font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-gray-300 dark:border-gray-600 w-12">
                       #
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700 border-b-2 border-gray-300">
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-gray-300 dark:border-gray-600">
                       Thời gian
                     </th>
-                    <th className="px-4 py-3 text-center font-semibold text-gray-700 border-b-2 border-gray-300 w-20">
+                    <th className="px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-gray-300 dark:border-gray-600 w-20">
                       Hiệp
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700 border-b-2 border-gray-300">
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-gray-300 dark:border-gray-600">
                       Loại hành động
                     </th>
-                    <th className="px-4 py-3 text-center font-semibold text-gray-700 border-b-2 border-gray-300 w-24">
+                    <th className="px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-gray-300 dark:border-gray-600 w-24">
                       Đội
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700 border-b-2 border-gray-300">
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-gray-300 dark:border-gray-600">
                       Mô tả
                     </th>
-                    <th className="px-4 py-3 text-center font-semibold text-gray-700 border-b-2 border-gray-300 w-50">
+                    <th className="px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-gray-300 dark:border-gray-600 w-50">
                       Tỷ số
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
                   {allLogs.map((log, logIndex) => {
                     return (
                       <tr
-                        key={logIndex}
-                        className="hover:bg-blue-50 transition-colors duration-150"
+                        key={`all-logs-${log.round}-${log.time}-${log.actionType}-${logIndex}`}
+                        className="hover:bg-blue-50 dark:hover:bg-blue-900 transition-colors duration-150"
                       >
-                        <td className="px-3 py-3 text-center text-gray-500 font-medium border-r border-gray-100">
+                        <td className="px-3 py-3 text-center text-gray-500 dark:text-gray-400 font-medium border-r border-gray-100 dark:border-gray-700">
                           {logIndex + 1}
                         </td>
-                        <td className="px-4 py-3 text-gray-700 font-medium">
+                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300 font-medium">
                           {log.time || "-"}
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <span className="inline-flex items-center rounded justify-center px-2 py-1  bg-indigo-100 text-indigo-700 text-xs font-semibold">
+                          <span className="inline-flex items-center rounded justify-center px-2 py-1  bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-semibold">
                             {log.round || "-"}
                           </span>
                         </td>
@@ -3983,22 +4100,24 @@ function HistoryView({
                         </td>
                         <td className="px-4 py-3 text-center">
                           {log.team === "red" ? (
-                            <span className="inline-flex items-center px-3 py-1 rounded bg-red-100 text-red-700 font-bold text-sm border border-red-200">
+                            <span className="inline-flex items-center px-3 py-1 rounded bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 font-bold text-sm border border-red-200 dark:border-red-700">
                               Đỏ
                             </span>
                           ) : log.team === "blue" ? (
-                            <span className="inline-flex items-center px-3 py-1 rounded bg-blue-100 text-blue-700 font-bold text-sm border border-blue-200">
+                            <span className="inline-flex items-center px-3 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold text-sm border border-blue-200 dark:border-blue-700">
                               Xanh
                             </span>
                           ) : (
-                            <span className="text-gray-400">-</span>
+                            <span className="text-gray-400 dark:text-gray-500">
+                              -
+                            </span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-gray-700">
+                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
                           {log.description || "-"}
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <span className="inline-flex items-center justify-center rounded px-3 py-1.5  bg-gray-100 font-mono text-gray-900 font-bold text-sm border border-gray-300">
+                          <span className="inline-flex items-center justify-center rounded px-3 py-1.5  bg-gray-100 dark:bg-gray-700 font-mono text-gray-900 dark:text-gray-100 font-bold text-sm border border-gray-300 dark:border-gray-600">
                             {log.redScore || 0} - {log.blueScore || 0}
                           </span>
                         </td>
@@ -4011,6 +4130,77 @@ function HistoryView({
           </div>
         </div>
       )}
+
+      {/* Action Buttons */}
+      <div className="flex justify-end gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <Button
+          variant="secondary"
+          onClick={() => {
+            // Tạo preview modal với template đối kháng
+            const previewData = {
+              redName,
+              redUnit,
+              blueName,
+              blueUnit,
+              redScore,
+              blueScore,
+              winner,
+              roundHistory,
+              allLogs,
+              matchDate: new Date().toLocaleDateString("vi-VN"),
+            };
+
+            // Mở modal preview với template đối kháng
+            window.openDoiKhangPreview?.(previewData);
+          }}
+          className="flex items-center gap-2"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+            />
+          </svg>
+          Preview Template
+        </Button>
+
+        <Button
+          variant="primary"
+          onClick={() => {
+            // Export Excel với khổ A5
+            exportToExcelA5();
+          }}
+          className="flex items-center gap-2"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          Export Excel A5
+        </Button>
+      </div>
 
       {/* Modal thông báo chung */}
       <ConfirmModal {...modalProps} />

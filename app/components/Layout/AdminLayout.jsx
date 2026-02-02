@@ -14,7 +14,8 @@ import {
   CalendarIcon,
   DocumentTextIcon,
   ClipboardDocumentListIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  DocumentChartBarIcon,
 } from "@heroicons/react/24/outline";
 import Breadcrumb from "../Breadcrumb";
 
@@ -33,22 +34,27 @@ const AdminLayout = ({ children }) => {
     {
       name: "Trang chủ",
       href: "/",
-      icon: HomeIcon
+      icon: HomeIcon,
     },
     {
       name: "Quản lý kết nối",
       href: "/management/connect",
-      icon: LinkIcon
+      icon: LinkIcon,
     },
     {
       name: "Quản lý Thi đấu",
       href: "/management/general-setting/competition-management",
-      icon: TrophyIcon
+      icon: TrophyIcon,
     },
     {
       name: "Quản lý cài đặt",
       href: "/management/general-setting/config-system",
-      icon: ServerStackIcon
+      icon: ServerStackIcon,
+    },
+    {
+      name: "Quản lý mẫu báo cáo",
+      href: "/reports",
+      icon: DocumentTextIcon,
     },
     // {
     //   name: "Quản lý cài đặt chung",
@@ -92,7 +98,7 @@ const AdminLayout = ({ children }) => {
   ];
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="h-screen flex flex-col overflow-hidden bg-white dark:bg-gray-900">
       {isActive ? (
         <Fragment>
           <div className="flex flex-1 overflow-hidden relative">
@@ -103,8 +109,8 @@ const AdminLayout = ({ children }) => {
             />
 
             <div
-              className={`flex-1 bg-gray-100 p-4 overflow-auto transition-all duration-300
-                ${sidebarCollapsed ? 'ml-20' : 'ml-72'}`}
+              className={`flex-1 bg-gray-100 dark:bg-gray-900 p-4 overflow-auto transition-all duration-300
+                ${sidebarCollapsed ? "ml-20" : "ml-72"}`}
             >
               <Breadcrumb navigation={navigation} />
               {children}

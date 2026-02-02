@@ -5,6 +5,8 @@ import Button from "../../../components/Button";
 import axios from "axios";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { useNavigate } from "react-router-dom";
+import useConfirmModal from "../../../hooks/useConfirmModal";
+import ConfirmModal from "../../../components/Common/ConfirmModal";
 
 export default function CompetitionManagement() {
   const navigate = useNavigate();
@@ -20,6 +22,10 @@ export default function CompetitionManagement() {
   const [savedData, setSavedData] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
   const [viewMode, setViewMode] = useState("list"); // 'grid' hoặc 'list'
+
+  // Modal hook
+  const { modalProps, showConfirm, showAlert, showError, showSuccess } =
+    useConfirmModal();
 
   // Xử lý khi chọn file
   const handleFileChange = (event) => {
@@ -40,9 +46,9 @@ export default function CompetitionManagement() {
         // thực hiện lưu file vào database
         setLoading(false);
       })
-      .catch((error) => {
+      .catch(async (error) => {
         console.error("Lỗi khi đọc file Excel:", error);
-        alert("Lỗi khi đọc file Excel. Vui lòng kiểm tra lại file.");
+        await showError("Lỗi khi đọc file Excel. Vui lòng kiểm tra lại file.");
         setLoading(false);
       });
   };
@@ -82,8 +88,9 @@ export default function CompetitionManagement() {
             handleSaveDALToDatabase(sheetName, rows);
           } else {
             console.warn("⚠️ Format không xác định:", formatType);
-            alert(
+            showWarning(
               `Format "${formatType}" không được hỗ trợ. Các format hợp lệ: DK, DOL, SOL, TUV, DAL`,
+              { title: "Format không hỗ trợ", showCancel: false },
             );
           }
           if (rows[0][0] == "DK") {
@@ -98,9 +105,9 @@ export default function CompetitionManagement() {
         }
         setLoading(false);
       })
-      .catch((error) => {
+      .catch(async (error) => {
         console.error("Lỗi khi đọc sheet:", error);
-        alert("Lỗi khi đọc sheet. Vui lòng thử lại.");
+        await showError("Lỗi khi đọc sheet. Vui lòng thử lại.");
         setLoading(false);
       });
   };
@@ -154,12 +161,12 @@ export default function CompetitionManagement() {
           });
         }
 
-        alert("Lưu dữ liệu DK và tạo matches thành công!");
+        await showSuccess("Lưu dữ liệu DK và tạo matches thành công!");
         fetchSavedData(); // Refresh danh sách
       }
     } catch (error) {
       console.error("Error saving to database:", error);
-      alert(
+      await showError(
         "Lỗi khi lưu dữ liệu: " +
           (error.response?.data?.message || error.message),
       );
@@ -207,12 +214,12 @@ export default function CompetitionManagement() {
           );
         }
 
-        alert(`✅ Lưu ${teamsToCreate.length} VĐV DOL thành công!`);
+        await showSuccess(`✅ Lưu ${teamsToCreate.length} VĐV DOL thành công!`);
         fetchSavedData();
       }
     } catch (error) {
       console.error("Error saving DOL to database:", error);
-      alert(
+      await showError(
         "Lỗi khi lưu dữ liệu DOL: " +
           (error.response?.data?.message || error.message),
       );
@@ -277,12 +284,12 @@ export default function CompetitionManagement() {
           );
         }
 
-        alert(`✅ Lưu ${teamsToCreate.length} teams thành công!`);
+        await showSuccess(`✅ Lưu ${teamsToCreate.length} teams thành công!`);
         fetchSavedData();
       }
     } catch (error) {
       console.error("Error saving to database:", error);
-      alert(
+      await showError(
         "Lỗi khi lưu dữ liệu: " +
           (error.response?.data?.message || error.message),
       );
@@ -342,12 +349,14 @@ export default function CompetitionManagement() {
           );
         }
 
-        alert(`✅ Lưu ${teamsToCreate.length} teams TUV thành công!`);
+        await showSuccess(
+          `✅ Lưu ${teamsToCreate.length} teams TUV thành công!`,
+        );
         fetchSavedData();
       }
     } catch (error) {
       console.error("Error saving TUV to database:", error);
-      alert(
+      await showError(
         "Lỗi khi lưu dữ liệu TUV: " +
           (error.response?.data?.message || error.message),
       );
@@ -416,12 +425,14 @@ export default function CompetitionManagement() {
           );
         }
 
-        alert(`✅ Lưu ${teamsToCreate.length} teams DAL thành công!`);
+        await showSuccess(
+          `✅ Lưu ${teamsToCreate.length} teams DAL thành công!`,
+        );
         fetchSavedData();
       }
     } catch (error) {
       console.error("Error saving DAL to database:", error);
-      alert(
+      await showError(
         "Lỗi khi lưu dữ liệu DAL: " +
           (error.response?.data?.message || error.message),
       );
@@ -447,19 +458,27 @@ export default function CompetitionManagement() {
 
   // Xóa dữ liệu
   const handleDelete = async (id) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa dữ liệu này?")) return;
+    const confirmDelete = await showConfirm(
+      "Bạn có chắc chắn muốn xóa dữ liệu này?",
+      {
+        title: "Xác nhận xóa",
+        confirmText: "Xóa",
+        cancelText: "Hủy",
+      },
+    );
+    if (!confirmDelete) return;
 
     try {
       const response = await axios.delete(
         `http://localhost:6789/api/competition-dk/${id}`,
       );
       if (response.data.success) {
-        alert("Xóa dữ liệu thành công!");
+        await showSuccess("Xóa dữ liệu thành công!");
         fetchSavedData();
       }
     } catch (error) {
       console.error("Error deleting data:", error);
-      alert(
+      await showError(
         "Lỗi khi xóa dữ liệu: " +
           (error.response?.data?.message || error.message),
       );
@@ -485,18 +504,20 @@ export default function CompetitionManagement() {
   const memoizedSavedData = useMemo(() => savedData, [savedData]);
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow">
-      <h2 className="text-2xl font-bold mb-6">Quản lý Thi đấu</h2>
+    <div className="p-6 bg-white dark:bg-gray-900 rounded-lg shadow">
+      <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
+        Quản lý Thi đấu
+      </h2>
 
       <TabGroup>
-        <TabList className="flex space-x-1 rounded-lg bg-blue-900/20 p-1 mb-6">
+        <TabList className="flex space-x-1 rounded-lg bg-blue-900/20 dark:bg-blue-800/30 p-1 mb-6">
           <Tab
             className={({ selected }) =>
               `w-full rounded-lg py-2.5 text-sm font-medium leading-5
               ${
                 selected
-                  ? "bg-white text-blue-700 shadow"
-                  : "text-blue-700 hover:bg-white/[0.12] hover:text-blue-800"
+                  ? "bg-white dark:bg-gray-700 text-blue-700 dark:text-blue-300 shadow"
+                  : "text-blue-700 dark:text-blue-200 hover:bg-white/[0.12] dark:hover:bg-gray-700/50 hover:text-blue-800 dark:hover:text-blue-300"
               }`
             }
           >
@@ -507,8 +528,8 @@ export default function CompetitionManagement() {
               `w-full rounded-lg py-2.5 text-sm font-medium leading-5
               ${
                 selected
-                  ? "bg-white text-blue-700 shadow"
-                  : "text-blue-700 hover:bg-white/[0.12] hover:text-blue-800"
+                  ? "bg-white dark:bg-gray-700 text-blue-700 dark:text-blue-300 shadow"
+                  : "text-blue-700 dark:text-blue-200 hover:bg-white/[0.12] dark:hover:bg-gray-700/50 hover:text-blue-800 dark:hover:text-blue-300"
               }`
             }
           >
@@ -523,19 +544,19 @@ export default function CompetitionManagement() {
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-600 bg-clip-text text-transparent">
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-600 dark:from-blue-400 dark:to-blue-400 bg-clip-text text-transparent">
                     Dữ liệu đã lưu
                   </h2>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                     Quản lý và xem chi tiết các file đã upload
                   </p>
                 </div>
 
                 {/* Badge số lượng */}
                 {!loadingData && savedData.length > 0 && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-blue-100 rounded-xl border-2 border-blue-200">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-blue-100 dark:from-blue-900 dark:to-blue-900 rounded-xl border-2 border-blue-200 dark:border-blue-700">
                     <svg
-                      className="w-5 h-5 text-blue-600"
+                      className="w-5 h-5 text-blue-600 dark:text-blue-400"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -548,10 +569,10 @@ export default function CompetitionManagement() {
                       />
                     </svg>
                     <div>
-                      <p className="text-xs text-blue-600 font-semibold uppercase">
+                      <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold uppercase">
                         Tổng số
                       </p>
-                      <p className="text-lg font-bold text-blue-700">
+                      <p className="text-lg font-bold text-blue-700 dark:text-blue-300">
                         {savedData.length}
                       </p>
                     </div>
@@ -561,13 +582,13 @@ export default function CompetitionManagement() {
 
               <div className="flex items-center gap-3">
                 {/* View Mode Toggle */}
-                <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
+                <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
                   <button
                     onClick={() => setViewMode("grid")}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
                       viewMode === "grid"
-                        ? "bg-white text-blue-600 shadow-md"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md"
+                        : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                     }`}
                   >
                     <svg
@@ -589,8 +610,8 @@ export default function CompetitionManagement() {
                     onClick={() => setViewMode("list")}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
                       viewMode === "list"
-                        ? "bg-white text-blue-600 shadow-md"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md"
+                        : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                     }`}
                   >
                     <svg
@@ -613,7 +634,7 @@ export default function CompetitionManagement() {
                 <button
                   onClick={fetchSavedData}
                   disabled={loadingData}
-                  className="group relative overflow-hidden flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  className="group relative overflow-hidden flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 hover:from-green-600 hover:to-emerald-700 dark:hover:from-green-700 dark:hover:to-emerald-800 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
                   {/* Button shine effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 transform -skew-x-12 group-hover:translate-x-full transition-all duration-700"></div>
@@ -641,20 +662,22 @@ export default function CompetitionManagement() {
             <div className="space-y-4">
               {loadingData ? (
                 <div className="text-center py-8">
-                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                  <p className="mt-2 text-gray-600">Đang tải dữ liệu...</p>
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 dark:border-blue-400"></div>
+                  <p className="mt-2 text-gray-600 dark:text-gray-400">
+                    Đang tải dữ liệu...
+                  </p>
                 </div>
               ) : savedData.length === 0 ? (
-                <div className="relative text-center py-16 bg-gradient-to-br from-blue-50 via-blue-50 to-blue-50 rounded-2xl border-2 border-dashed border-blue-200 overflow-hidden">
+                <div className="relative text-center py-16 bg-gradient-to-br from-blue-50 via-blue-50 to-blue-50 dark:from-blue-900 dark:via-blue-900 dark:to-blue-900 rounded-2xl border-2 border-dashed border-blue-200 dark:border-blue-700 overflow-hidden">
                   {/* Animated background circles */}
-                  <div className="absolute top-0 left-0 w-32 h-32 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+                  <div className="absolute top-0 left-0 w-32 h-32 bg-blue-200 dark:bg-blue-700 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
                   <div
-                    className="absolute bottom-0 right-0 w-32 h-32 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"
+                    className="absolute bottom-0 right-0 w-32 h-32 bg-blue-200 dark:bg-blue-700 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"
                     style={{ animationDelay: "1s" }}
                   ></div>
 
                   <div className="relative z-10">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full mb-4 shadow-lg">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-500 dark:from-blue-600 dark:to-blue-700 rounded-full mb-4 shadow-lg">
                       <svg
                         className="h-10 w-10 text-white"
                         fill="none"
@@ -669,10 +692,10 @@ export default function CompetitionManagement() {
                         />
                       </svg>
                     </div>
-                    <p className="mt-4 text-xl font-bold text-gray-800">
+                    <p className="mt-4 text-xl font-bold text-gray-800 dark:text-white">
                       Chưa có dữ liệu nào được lưu
                     </p>
-                    <p className="mt-2 text-sm text-gray-600">
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                       Hãy upload file Excel để bắt đầu quản lý dữ liệu
                     </p>
                   </div>
@@ -682,14 +705,14 @@ export default function CompetitionManagement() {
                   {memoizedSavedData.map((item, index) => (
                     <div
                       key={item.id}
-                      className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-transparent overflow-hidden transform hover:-translate-y-1"
+                      className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-transparent overflow-hidden transform hover:-translate-y-1"
                     >
                       {/* Gradient Border Effect */}
                       <div
                         className="absolute inset-0 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
                         style={{ padding: "2px" }}
                       >
-                        <div className="bg-white rounded-2xl h-full w-full"></div>
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl h-full w-full"></div>
                       </div>
 
                       {/* Card Content */}
@@ -735,12 +758,12 @@ export default function CompetitionManagement() {
                         </div>
 
                         {/* Card Body */}
-                        <div className="px-6 py-5 space-y-4 bg-gradient-to-br from-gray-50 to-white">
+                        <div className="px-6 py-5 space-y-4 bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
                           {/* File Name */}
-                          <div className="group/item flex items-start gap-3 p-3 rounded-xl hover:bg-blue-50 transition-all duration-300">
-                            <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-100 rounded-lg flex items-center justify-center group-hover/item:scale-110 transition-transform duration-300">
+                          <div className="group/item flex items-start gap-3 p-3 rounded-xl hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-300">
+                            <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-100 dark:from-blue-900 dark:to-blue-900 rounded-lg flex items-center justify-center group-hover/item:scale-110 transition-transform duration-300">
                               <svg
-                                className="w-5 h-5 text-blue-600"
+                                className="w-5 h-5 text-blue-600 dark:text-blue-400"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -754,11 +777,11 @@ export default function CompetitionManagement() {
                               </svg>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide mb-1">
                                 Tên file
                               </p>
                               <p
-                                className="text-sm text-gray-900 font-medium truncate"
+                                className="text-sm text-gray-900 dark:text-white font-medium truncate"
                                 title={item.file_name}
                               >
                                 {item.file_name || "Không có tên file"}
@@ -767,10 +790,10 @@ export default function CompetitionManagement() {
                           </div>
 
                           {/* Created Date */}
-                          <div className="group/item flex items-start gap-3 p-3 rounded-xl hover:bg-blue-50 transition-all duration-300">
-                            <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-100 to-pink-100 rounded-lg flex items-center justify-center group-hover/item:scale-110 transition-transform duration-300">
+                          <div className="group/item flex items-start gap-3 p-3 rounded-xl hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-300">
+                            <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-100 to-pink-100 dark:from-blue-900 dark:to-pink-900 rounded-lg flex items-center justify-center group-hover/item:scale-110 transition-transform duration-300">
                               <svg
-                                className="w-5 h-5 text-blue-600"
+                                className="w-5 h-5 text-blue-600 dark:text-blue-400"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -784,10 +807,10 @@ export default function CompetitionManagement() {
                               </svg>
                             </div>
                             <div className="flex-1">
-                              <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide mb-1">
                                 Ngày tạo
                               </p>
-                              <p className="text-sm text-gray-900 font-medium">
+                              <p className="text-sm text-gray-900 dark:text-white font-medium">
                                 {new Date(item.created_at).toLocaleString(
                                   "vi-VN",
                                   {
@@ -805,11 +828,11 @@ export default function CompetitionManagement() {
                       </div>
 
                       {/* Card Footer - Actions */}
-                      <div className="relative px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-200">
+                      <div className="relative px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-t border-gray-200 dark:border-gray-700">
                         <div className="flex gap-3">
                           <button
                             onClick={() => handleViewDetail(item)}
-                            className="group/btn flex-1 relative overflow-hidden flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-bold rounded-xl transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105"
+                            className="group/btn flex-1 relative overflow-hidden flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 hover:from-blue-600 hover:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 text-white text-sm font-bold rounded-xl transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105"
                           >
                             {/* Button shine effect */}
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover/btn:opacity-30 transform -skew-x-12 group-hover/btn:translate-x-full transition-all duration-700"></div>
@@ -838,7 +861,7 @@ export default function CompetitionManagement() {
 
                           <button
                             onClick={() => handleDelete(item.id)}
-                            className="group/btn relative overflow-hidden flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white text-sm font-bold rounded-xl transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105"
+                            className="group/btn relative overflow-hidden flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-red-500 to-pink-600 dark:from-red-600 dark:to-pink-700 hover:from-red-600 hover:to-pink-700 dark:hover:from-red-700 dark:hover:to-pink-800 text-white text-sm font-bold rounded-xl transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105"
                           >
                             {/* Button shine effect */}
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover/btn:opacity-30 transform -skew-x-12 group-hover/btn:translate-x-full transition-all duration-700"></div>
@@ -868,12 +891,12 @@ export default function CompetitionManagement() {
                   {memoizedSavedData.map((item, index) => (
                     <div
                       key={item.id}
-                      className="group relative bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-200 border border-gray-200 hover:border-blue-400 overflow-hidden"
+                      className="group relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-200 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 overflow-hidden"
                     >
                       <div className="flex items-center gap-6 p-6">
                         {/* Left: Icon & ID */}
                         <div className="flex-shrink-0">
-                          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
                             <svg
                               className="w-8 h-8 text-white"
                               fill="none"
@@ -894,24 +917,24 @@ export default function CompetitionManagement() {
                         <div className="flex-1 min-w-0 grid grid-cols-1 md:grid-cols-3 gap-4">
                           {/* Sheet Name */}
                           <div>
-                            <p className="text-xs text-gray-500 font-semibold uppercase mb-1">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase mb-1">
                               Sheet Name
                             </p>
-                            <p className="text-lg font-bold text-gray-900 truncate">
+                            <p className="text-lg font-bold text-gray-900 dark:text-white truncate">
                               {item.sheet_name}
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                               ID: #{item.id}
                             </p>
                           </div>
 
                           {/* File Name */}
                           <div>
-                            <p className="text-xs text-gray-500 font-semibold uppercase mb-1">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase mb-1">
                               File Name
                             </p>
                             <p
-                              className="text-sm text-gray-700 truncate"
+                              className="text-sm text-gray-700 dark:text-gray-300 truncate"
                               title={item.file_name}
                             >
                               {item.file_name || "Không có tên file"}
@@ -920,16 +943,16 @@ export default function CompetitionManagement() {
 
                           {/* Stats */}
                           <div>
-                            <p className="text-xs text-gray-500 font-semibold uppercase mb-1">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase mb-1">
                               Số dòng
                             </p>
                             <div className="flex items-center gap-2">
-                              <span className="text-2xl font-bold text-blue-600">
+                              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                                 {item.data?.length > 0
                                   ? item.data?.length - 1
                                   : 0}
                               </span>
-                              <span className="text-sm text-gray-500">
+                              <span className="text-sm text-gray-500 dark:text-gray-400">
                                 dòng
                               </span>
                             </div>
@@ -940,7 +963,7 @@ export default function CompetitionManagement() {
                         <div className="flex-shrink-0 flex gap-2">
                           <button
                             onClick={() => handleViewDetail(item)}
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                            className="flex items-center gap-2 px-4 py-2 bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
                           >
                             <svg
                               className="w-4 h-4"
@@ -966,7 +989,7 @@ export default function CompetitionManagement() {
 
                           <button
                             onClick={() => handleDelete(item.id)}
-                            className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                            className="flex items-center gap-2 px-4 py-2 bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
                           >
                             <svg
                               className="w-4 h-4"
@@ -1545,6 +1568,9 @@ export default function CompetitionManagement() {
           </TabPanel>
         </TabPanels>
       </TabGroup>
+
+      {/* Confirm Modal */}
+      <ConfirmModal {...modalProps} />
     </div>
   );
 }

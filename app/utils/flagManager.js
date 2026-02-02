@@ -185,7 +185,7 @@ export const getFlagImage = (country) => {
   }
 
   // Fallback to Vietnam
-  console.warn(`⚠️ Flag not found for "${country}", using Vietnam`);
+  console.warn(`Flag not found for "${country}", using Vietnam`);
   return VietnamFlag;
 };
 

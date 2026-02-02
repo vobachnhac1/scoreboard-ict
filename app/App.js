@@ -8,6 +8,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { initI18n } from './i18n';
 import { connectSocket, disconnectSocket } from './config/redux/reducers/socket-reducer';
 import { useSocketEvent, emitSocketEvent } from './config/hooks/useSocketEvents';
+import { ThemeProvider } from './contexts/ThemeContext';
+
 const App = () => {
   const { language } = useSelector((state) => state.language);
 
@@ -30,9 +32,11 @@ const App = () => {
   }, [language]);
 
   return (
-    <HashRouter>
-      <Routes />
-    </HashRouter>
+    <ThemeProvider>
+      <HashRouter>
+        <Routes />
+      </HashRouter>
+    </ThemeProvider>
   );
 };
 

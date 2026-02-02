@@ -450,11 +450,11 @@ export default function ConfigSystem() {
   const renderInputGroup = (title, fields, index) => (
     <div
       key={index}
-      className="col-span-1 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-md hover:shadow-lg rounded-xl transition-all duration-200"
+      className="col-span-1 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded-xl transition-all duration-200"
     >
-      <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-blue-300">
+      <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-blue-300 dark:border-blue-600">
         <svg
-          className="w-5 h-5 text-blue-600"
+          className="w-5 h-5 text-blue-600 dark:text-blue-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -466,14 +466,16 @@ export default function ConfigSystem() {
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
           />
         </svg>
-        <span className="font-bold text-blue-700 text-base">{title}</span>
+        <span className="font-bold text-blue-700 dark:text-blue-300 text-base">
+          {title}
+        </span>
       </div>
       <div className="space-y-3">
         {fields.map(({ name, label, placeholder, type = "text" }, i) => (
           <div key={i} className="grid grid-cols-3 gap-2 items-center">
             <label
               htmlFor={name}
-              className="text-sm font-semibold text-gray-700"
+              className="text-sm font-semibold text-gray-700 dark:text-gray-300"
             >
               {label}
             </label>
@@ -484,10 +486,10 @@ export default function ConfigSystem() {
                 {...register(name, { required: `${label} là bắt buộc` })}
                 type={type}
                 placeholder={placeholder}
-                className="w-full px-3 py-2 border-2 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg text-sm transition-all duration-200 disabled:bg-gray-100"
+                className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded-lg text-sm transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
               {errors[name] && (
-                <p className="text-red-500 text-xs mt-1 font-medium">
+                <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-medium">
                   {errors[name].message}
                 </p>
               )}
@@ -501,11 +503,11 @@ export default function ConfigSystem() {
   const renderSelectGroup = (title, fields, index) => (
     <div
       key={index}
-      className="col-span-1 p-5 bg-gradient-to-br from-blue-50 to-pink-50 border-2 border-blue-200 shadow-md hover:shadow-lg rounded-xl transition-all duration-200"
+      className="col-span-1 p-5 bg-gradient-to-br from-blue-50 to-pink-50 dark:from-blue-900 dark:to-pink-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded-xl transition-all duration-200"
     >
-      <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-blue-300">
+      <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-blue-300 dark:border-blue-600">
         <svg
-          className="w-5 h-5 text-blue-600"
+          className="w-5 h-5 text-blue-600 dark:text-blue-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -517,14 +519,16 @@ export default function ConfigSystem() {
             d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
           />
         </svg>
-        <span className="font-bold text-blue-700 text-base">{title}</span>
+        <span className="font-bold text-blue-700 dark:text-blue-300 text-base">
+          {title}
+        </span>
       </div>
       <div className="space-y-3">
         {fields.map(({ name, label, options }, i) => (
           <div key={i} className="grid grid-cols-3 gap-2 items-center">
             <label
               htmlFor={name}
-              className="text-sm font-semibold text-gray-700"
+              className="text-sm font-semibold text-gray-700 dark:text-gray-300"
             >
               {label}
             </label>
@@ -533,7 +537,7 @@ export default function ConfigSystem() {
                 id={name}
                 disabled={loading}
                 {...register(name, { required: `${label} là bắt buộc` })}
-                className="w-full px-3 py-2 border-2 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg text-sm transition-all duration-200 disabled:bg-gray-100"
+                className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded-lg text-sm transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">-- Chọn {label.toLowerCase()} --</option>
                 {options.map((option, idx) => (
@@ -543,7 +547,7 @@ export default function ConfigSystem() {
                 ))}
               </select>
               {errors[name] && (
-                <p className="text-red-500 text-xs mt-1 font-medium">
+                <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-medium">
                   {errors[name].message}
                 </p>
               )}
@@ -557,11 +561,11 @@ export default function ConfigSystem() {
   const renderTextareaGroup = (title, fields, index) => (
     <div
       key={index}
-      className="col-span-1 lg:col-span-2 xl:col-span-3 p-5 bg-gradient-to-br from-blue-50 to-emerald-50 border-2 border-blue-200 shadow-md hover:shadow-lg rounded-xl transition-all duration-200"
+      className="col-span-1 lg:col-span-2 xl:col-span-3 p-5 bg-gradient-to-br from-blue-50 to-emerald-50 dark:from-blue-900 dark:to-emerald-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded-xl transition-all duration-200"
     >
-      <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-blue-300">
+      <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-blue-300 dark:border-blue-600">
         <svg
-          className="w-5 h-5 text-blue-600"
+          className="w-5 h-5 text-blue-600 dark:text-blue-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -573,14 +577,16 @@ export default function ConfigSystem() {
             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
           />
         </svg>
-        <span className="font-bold text-blue-700 text-base">{title}</span>
+        <span className="font-bold text-blue-700 dark:text-blue-300 text-base">
+          {title}
+        </span>
       </div>
       <div className="space-y-4">
         {fields.map(({ name, label, placeholder, rows = 3 }, i) => (
           <div key={i}>
             <label
               htmlFor={name}
-              className="text-sm font-semibold text-gray-700 block mb-2"
+              className="text-sm font-semibold text-gray-700 dark:text-gray-300 block mb-2"
             >
               {label}
             </label>
@@ -590,10 +596,10 @@ export default function ConfigSystem() {
               {...register(name)}
               rows={rows}
               placeholder={placeholder}
-              className="w-full px-4 py-3 border-2 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg text-sm resize-none transition-all duration-200 disabled:bg-gray-100"
+              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded-lg text-sm resize-none transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
             {errors[name] && (
-              <p className="text-red-500 text-xs mt-1 font-medium">
+              <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-medium">
                 {errors[name].message}
               </p>
             )}
@@ -606,11 +612,11 @@ export default function ConfigSystem() {
   const renderSwitchGroup = (title, fields, index) => (
     <div
       key={index}
-      className="col-span-1 p-5 bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 shadow-md hover:shadow-lg rounded-xl transition-all duration-200"
+      className="col-span-1 p-5 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900 dark:to-orange-900 border-2 border-amber-200 dark:border-amber-700 shadow-md hover:shadow-lg rounded-xl transition-all duration-200"
     >
-      <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-amber-300">
+      <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-amber-300 dark:border-amber-600">
         <svg
-          className="w-5 h-5 text-amber-600"
+          className="w-5 h-5 text-amber-600 dark:text-amber-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -622,7 +628,9 @@ export default function ConfigSystem() {
             d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
           />
         </svg>
-        <span className="font-bold text-amber-700 text-base">{title}</span>
+        <span className="font-bold text-amber-700 dark:text-amber-300 text-base">
+          {title}
+        </span>
       </div>
       <div className="space-y-2">
         {fields.map(({ name, label }, i) => (
@@ -641,10 +649,10 @@ export default function ConfigSystem() {
 
   // Render Logo Management Section
   const renderLogoManagement = () => (
-    <div className="col-span-1 lg:col-span-2 xl:col-span-3 p-5 bg-gradient-to-br from-rose-50 to-pink-50 border-2 border-rose-200 shadow-md hover:shadow-lg rounded-xl transition-all duration-200">
-      <div className="flex items-center gap-2 mb-5 pb-3 border-b-2 border-rose-300">
+    <div className="col-span-1 lg:col-span-2 xl:col-span-3 p-5 bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900 dark:to-pink-900 border-2 border-rose-200 dark:border-rose-700 shadow-md hover:shadow-lg rounded-xl transition-all duration-200">
+      <div className="flex items-center gap-2 mb-5 pb-3 border-b-2 border-rose-300 dark:border-rose-600">
         <svg
-          className="w-6 h-6 text-rose-600"
+          className="w-6 h-6 text-rose-600 dark:text-rose-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -656,7 +664,7 @@ export default function ConfigSystem() {
             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
           />
         </svg>
-        <span className="font-bold text-rose-700 text-lg">
+        <span className="font-bold text-rose-700 dark:text-rose-300 text-lg">
           Quản lý Logo/Hình ảnh
         </span>
       </div>
@@ -672,7 +680,7 @@ export default function ConfigSystem() {
             onChange={(e) => setUploadMode(e.target.value)}
             className="w-4 h-4"
           />
-          <span className="text-sm font-medium">Nhập URL</span>
+          <span className="text-sm font-medium dark:text-gray-300">Nhập URL</span>
         </label> */}
         <label className="flex items-center gap-2 cursor-pointer">
           <input
@@ -683,12 +691,14 @@ export default function ConfigSystem() {
             onChange={(e) => setUploadMode(e.target.value)}
             className="w-4 h-4"
           />
-          <span className="text-sm font-medium">Upload từ thiết bị</span>
+          <span className="text-sm font-medium dark:text-gray-300">
+            Upload từ thiết bị
+          </span>
         </label>
       </div>
 
       {/* Input thêm logo mới */}
-      <div className="mb-5 bg-white rounded-lg p-4 border-2 border-gray-200">
+      <div className="mb-5 bg-white dark:bg-gray-800 rounded-lg p-4 border-2 border-gray-200 dark:border-gray-600">
         {uploadMode === "url" ? (
           <div className="flex gap-3">
             <input
@@ -696,7 +706,7 @@ export default function ConfigSystem() {
               value={logoInput}
               onChange={(e) => setLogoInput(e.target.value)}
               placeholder="Nhập URL hình ảnh..."
-              className="flex-1 px-4 py-2.5 border-2 border-gray-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 rounded-lg text-sm transition-all duration-200"
+              className="flex-1 px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 focus:border-rose-500 dark:focus:border-rose-400 focus:ring-2 focus:ring-rose-200 dark:focus:ring-rose-800 rounded-lg text-sm transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
             <button
               type="button"
@@ -779,9 +789,9 @@ export default function ConfigSystem() {
       {/* Danh sách logos */}
       <div className="space-y-3">
         {loadingLogos ? (
-          <div className="flex items-center justify-center py-8 bg-white rounded-lg border-2 border-gray-200">
+          <div className="flex items-center justify-center py-8 bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-200 dark:border-gray-600">
             <svg
-              className="w-8 h-8 text-rose-500 animate-spin"
+              className="w-8 h-8 text-rose-500 dark:text-rose-400 animate-spin"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -793,12 +803,14 @@ export default function ConfigSystem() {
                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
               />
             </svg>
-            <span className="ml-3 text-gray-600 font-medium">Đang tải...</span>
+            <span className="ml-3 text-gray-600 dark:text-gray-300 font-medium">
+              Đang tải...
+            </span>
           </div>
         ) : logos.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-300">
+          <div className="flex flex-col items-center justify-center py-12 bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
             <svg
-              className="w-16 h-16 text-gray-400 mb-3"
+              className="w-16 h-16 text-gray-400 dark:text-gray-500 mb-3"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -810,8 +822,10 @@ export default function ConfigSystem() {
                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            <span className="text-gray-500 font-medium">Chưa có logo nào</span>
-            <span className="text-gray-400 text-sm mt-1">
+            <span className="text-gray-500 dark:text-gray-400 font-medium">
+              Chưa có logo nào
+            </span>
+            <span className="text-gray-400 dark:text-gray-500 text-sm mt-1">
               Upload logo đầu tiên của bạn
             </span>
           </div>
@@ -819,7 +833,7 @@ export default function ConfigSystem() {
           logos.map((logo, index) => (
             <div
               key={logo.id}
-              className="flex items-center gap-4 p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-rose-300 hover:shadow-lg transition-all duration-200"
+              className="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-rose-300 dark:hover:border-rose-500 hover:shadow-lg transition-all duration-200"
             >
               {/* Số thứ tự & Reorder buttons */}
               <div className="flex flex-col gap-1">
@@ -884,11 +898,11 @@ export default function ConfigSystem() {
                       handleUpdateLogo(logo.id, e.target.value);
                     }
                   }}
-                  className="flex-1 px-4 py-2 border-2 border-rose-500 focus:ring-2 focus:ring-rose-200 rounded-lg text-sm transition-all duration-200"
+                  className="flex-1 px-4 py-2 border-2 border-rose-500 dark:border-rose-400 focus:ring-2 focus:ring-rose-200 dark:focus:ring-rose-800 rounded-lg text-sm transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   autoFocus
                 />
               ) : (
-                <div className="flex-1 text-sm text-gray-700 truncate font-mono bg-gray-50 px-3 py-2 rounded-lg">
+                <div className="flex-1 text-sm text-gray-700 dark:text-gray-300 truncate font-mono bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-lg">
                   {logo.url}
                 </div>
               )}
@@ -954,10 +968,10 @@ export default function ConfigSystem() {
 
       {/* Preview danh sách logos */}
       {logos.length > 0 && (
-        <div className="mt-5 p-5 bg-gradient-to-br from-white to-gray-50 rounded-xl border-2 border-gray-300 shadow-sm">
+        <div className="mt-5 p-5 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 border-gray-300 dark:border-gray-600 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <svg
-              className="w-5 h-5 text-rose-600"
+              className="w-5 h-5 text-rose-600 dark:text-rose-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -975,14 +989,14 @@ export default function ConfigSystem() {
                 d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
               />
             </svg>
-            <span className="font-bold text-gray-700 text-base">
+            <span className="font-bold text-gray-700 dark:text-gray-300 text-base">
               Preview Logo
             </span>
-            <span className="ml-auto text-sm text-gray-500 font-medium">
+            <span className="ml-auto text-sm text-gray-500 dark:text-gray-400 font-medium">
               {logos.length} logo(s)
             </span>
           </div>
-          <div className="flex justify-center items-center gap-6 flex-wrap p-4 bg-white rounded-lg border-2 border-dashed border-gray-300">
+          <div className="flex justify-center items-center gap-6 flex-wrap p-4 bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
             {logos.map((logo, index) => (
               <div key={logo.id} className="group relative">
                 <div className="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-gray-300 group-hover:border-rose-400 flex items-center justify-center overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-200">
@@ -1019,13 +1033,13 @@ export default function ConfigSystem() {
   );
 
   return (
-    <div className="p-6 bg-gradient-to-br from-white to-gray-50 shadow-lg rounded-xl">
+    <div className="p-6 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 shadow-lg rounded-xl">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Header with Action Buttons */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4 shadow-sm">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border-2 border-blue-200 dark:border-blue-700 rounded-xl p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-xl flex items-center justify-center shadow-md">
                 <svg
                   className="w-7 h-7 text-white"
                   fill="none"
@@ -1047,10 +1061,10 @@ export default function ConfigSystem() {
                 </svg>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-800">
+                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
                   Quản lý cài đặt
                 </h2>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
                   Quản lý các thiết lập chung của hệ thống
                 </p>
               </div>
@@ -1062,7 +1076,7 @@ export default function ConfigSystem() {
                 type="button"
                 onClick={handleReload}
                 disabled={loading}
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-500 to-gray-600 dark:from-gray-600 dark:to-gray-700 hover:from-gray-600 hover:to-gray-700 dark:hover:from-gray-700 dark:hover:to-gray-800 disabled:from-gray-300 disabled:to-gray-400 dark:disabled:from-gray-700 dark:disabled:to-gray-800 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
               >
                 <svg
                   className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
@@ -1106,7 +1120,7 @@ export default function ConfigSystem() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 hover:from-green-600 hover:to-green-700 dark:hover:from-green-700 dark:hover:to-green-800 disabled:from-gray-300 disabled:to-gray-400 dark:disabled:from-gray-700 dark:disabled:to-gray-800 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
               >
                 <svg
                   className="w-5 h-5"

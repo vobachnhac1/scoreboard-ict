@@ -1,16 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import readXlsxFile, { readSheetNames } from 'read-excel-file';
+import React, { useEffect, useState } from "react";
+import readXlsxFile, { readSheetNames } from "read-excel-file";
 
-import { Button } from 'antd';
+import { Button } from "antd";
 
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
-import QRCode from 'qrcode';
-import SelectNavite from '../../components/SelectBox';
-import { useTranslation } from 'react-i18next';
+import QRCode from "qrcode";
+import SelectNavite from "../../../components/SelectBox";
+import { useTranslation } from "react-i18next";
 
-const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) => {
+const ReadExcel = ({
+  dataTable,
+  setDataTable,
+  selectedFile,
+  setSelectedFile,
+}) => {
   const { t } = useTranslation();
   const [headers, setHeaders] = useState([]);
 
@@ -21,7 +26,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
 
   const [isQrLink, setIsQrLink] = useState(false);
 
-  const options = ['information', 'link'];
+  const options = ["information", "link"];
 
   useEffect(() => {
     if (selectedFile !== null) {
@@ -50,7 +55,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
   };
 
   const handleDownloadQr = async (item, index) => {
-    let templateString = '';
+    let templateString = "";
 
     if (isQrLink) {
       templateString = `${item[2]} \n`;
@@ -60,11 +65,13 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
       }
     }
 
-    templateString += '///////  DHT-NHACVB ///////';
+    templateString += "///////  DHT-NHACVB ///////";
 
-    const qrCodeURL = await QRCode.toDataURL(templateString, { errorCorrectionLevel: 'H' });
+    const qrCodeURL = await QRCode.toDataURL(templateString, {
+      errorCorrectionLevel: "H",
+    });
 
-    let aEl = document.createElement('a');
+    let aEl = document.createElement("a");
     aEl.href = qrCodeURL;
     aEl.download = `${index + 1}.png`;
     document.body.appendChild(aEl);
@@ -77,7 +84,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
 
     for (let i = 0; i < dataTable.length; i++) {
       const item = dataTable[i];
-      let templateString = '';
+      let templateString = "";
 
       if (isQrLink) {
         templateString = `${item[2]} \n`;
@@ -87,19 +94,21 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
         }
       }
 
-      templateString += '///////  DHT-NHACVB ///////';
+      templateString += "///////  DHT-NHACVB ///////";
 
-      const qrDataURL = await QRCode.toDataURL(templateString, { errorCorrectionLevel: 'H' });
-      zip.file(`${i + 1}.png`, qrDataURL.split('base64,')[1], { base64: true });
+      const qrDataURL = await QRCode.toDataURL(templateString, {
+        errorCorrectionLevel: "H",
+      });
+      zip.file(`${i + 1}.png`, qrDataURL.split("base64,")[1], { base64: true });
     }
 
-    const content = await zip.generateAsync({ type: 'blob' });
-    saveAs(content, 'danh_sach_qrcodes.zip');
+    const content = await zip.generateAsync({ type: "blob" });
+    saveAs(content, "danh_sach_qrcodes.zip");
   };
 
   const handleChangeQrType = (e) => {
     console.log(e.target.value);
-    if (e.target.value === '1') {
+    if (e.target.value === "1") {
       setIsQrLink(true);
     } else {
       setIsQrLink(false);
@@ -108,12 +117,21 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
 
   return (
     <div className="mt-4">
-      <div className="mb-2 font-semibold">{t('infor_view')} </div>
+      <div className="mb-2 font-semibold">{t("infor_view")} </div>
       <div className="flex justify-between items-center">
         <div>
-          <label htmlFor="file-upload" className="custom-file-upload bg-blue-500">
-            <input id="file-upload" type="file" onChange={handleChange} className="hidden" key={inputKey} />
-            {t('upload_file')}
+          <label
+            htmlFor="file-upload"
+            className="custom-file-upload bg-blue-500"
+          >
+            <input
+              id="file-upload"
+              type="file"
+              onChange={handleChange}
+              className="hidden"
+              key={inputKey}
+            />
+            {t("upload_file")}
           </label>
           {selectedFile &&
             sheetOptions.length > 0 &&
@@ -133,8 +151,11 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
 
         {/* {dataTable.length ? ( */}
         <div className="flex gap-4">
-          <div className="custom-file-upload bg-blue-500" onClick={handleDownloadAll}>
-            {t('qr_download_all')}
+          <div
+            className="custom-file-upload bg-blue-500"
+            onClick={handleDownloadAll}
+          >
+            {t("qr_download_all")}
           </div>
           <div>
             <select
@@ -163,7 +184,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
                 {headers.map((header, index) => (
                   <th key={index}>{header}</th>
                 ))}
-                <th className="font-semibold">{t('qr_code')}</th>
+                <th className="font-semibold">{t("qr_code")}</th>
               </tr>
             </thead>
             <tbody>
@@ -173,7 +194,9 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
                     <td key={cellIndex}>{cell}</td>
                   ))}
                   <td>
-                    <Button onClick={() => handleDownloadQr(row, rowIndex)}>{t('qr_download')}</Button>
+                    <Button onClick={() => handleDownloadQr(row, rowIndex)}>
+                      {t("qr_download")}
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -183,7 +206,7 @@ const ReadExcel = ({ dataTable, setDataTable, selectedFile, setSelectedFile }) =
           <table className="mt-4 border border-gray-400 table_no_data">
             <tbody>
               <tr>
-                <td className="text-center">{t('no_file_selected')}</td>
+                <td className="text-center">{t("no_file_selected")}</td>
               </tr>
             </tbody>
           </table>

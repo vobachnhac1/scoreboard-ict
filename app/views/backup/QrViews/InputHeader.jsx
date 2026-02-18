@@ -1,11 +1,11 @@
-import { Button, Spin } from 'antd';
-import InputWithLabel from '../../components/InputWithLabel';
-import './index.scss';
-import React, { useEffect, useRef, useState } from 'react';
-import Refresh from '../../components/Icons/Refresh';
-import { LoadingOutlined } from '@ant-design/icons';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { Button, Spin } from "antd";
+import InputWithLabel from "../../../components/InputWithLabel";
+import "./index.scss";
+import React, { useEffect, useRef, useState } from "react";
+import Refresh from "../../../components/Icons/Refresh";
+import { LoadingOutlined } from "@ant-design/icons";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 const InputHeader = ({
   inputRef,
@@ -19,7 +19,7 @@ const InputHeader = ({
   inputData,
   setInputData,
   refreshData,
-  isLoading
+  isLoading,
 }) => {
   const { t } = useTranslation();
   const {
@@ -28,12 +28,12 @@ const InputHeader = ({
     reset,
     setValue,
     setFocus,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
   } = useForm();
 
   useEffect(() => {
-    setValue('column', inputData);
-    setFocus('column');
+    setValue("column", inputData);
+    setFocus("column");
   }, [inputData]);
 
   const onSubmit = (data) => {
@@ -41,9 +41,9 @@ const InputHeader = ({
     if (isEdit) {
       if (!data.column.trim()) return;
       let temp = [...tableData];
-      temp[editId]['label'] = data.column;
+      temp[editId]["label"] = data.column;
       setTableData(temp);
-      setInputData('');
+      setInputData("");
       reset();
       setIsEdit(false);
     } else {
@@ -52,51 +52,54 @@ const InputHeader = ({
       let temp = [...tableData];
 
       if (temp.length >= 10 && temp[temp.length - 1].label) {
-        console.error('Đã đủ trường cần nhập', temp.length, temp);
-        reset({ column: '' });
-        setInputData('');
+        console.error("Đã đủ trường cần nhập", temp.length, temp);
+        reset({ column: "" });
+        setInputData("");
         return;
       }
 
       const newData = {
         key: indexAdd,
-        label: data.column
+        label: data.column,
       };
 
       temp[indexAdd] = {
         ...temp[indexAdd],
-        ...newData
+        ...newData,
       };
 
       setTableData(temp);
 
-      setInputData('');
+      setInputData("");
       setIndexAdd(indexAdd + 1);
 
       if (inputRef.current) {
         inputRef.current.focus();
       }
 
-      reset({ column: '' });
+      reset({ column: "" });
     }
   };
 
   const handleCancelEdit = () => {
     setIsEdit(false);
-    setInputData('');
+    setInputData("");
     reset();
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex justify-between items-center">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex justify-between items-center"
+    >
       <InputWithLabel
         inputRef={inputRef}
-        label={t('column_name')}
+        label={t("column_name")}
         flex
-        name={'column'}
-        placeholder={t('input_infor')}
+        name={"column"}
+        placeholder={t("input_infor")}
         className="w-4/5"
-        fieldKey={'column'}
+        fieldKey={"column"}
         register={register}
       />
       <div className="flex w-1/5 items-center gap-1">
@@ -105,14 +108,14 @@ const InputHeader = ({
           disabled={isSubmitting}
           className="ml-4 py-1.5 px-4 bg-blue-500 rounded text-white focus:outline-none whitespace-nowrap"
         >
-          {isEdit ? t('update') : t('add')}
+          {isEdit ? t("update") : t("add")}
         </button>
         {isEdit && (
           <button
             onClick={handleCancelEdit}
             className="py-1.5 px-4 bg-red-500 rounded text-white focus:outline-none whitespace-nowrap"
           >
-            {t('cancel')}
+            {t("cancel")}
           </button>
         )}
         <button
@@ -121,7 +124,14 @@ const InputHeader = ({
           className="ml-4 py-1 px-4 bg-transparent border border-gray-400 rounded text-white focus:outline-none whitespace-nowrap"
         >
           {isLoading ? (
-            <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: 'black' }} spin />} />
+            <Spin
+              indicator={
+                <LoadingOutlined
+                  style={{ fontSize: 24, color: "black" }}
+                  spin
+                />
+              }
+            />
           ) : (
             <Refresh className="w-5 h-7" />
           )}

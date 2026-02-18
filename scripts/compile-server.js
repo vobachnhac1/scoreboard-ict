@@ -109,15 +109,46 @@ function obfuscateDirectory(dirPath) {
 }
 
 /**
+ * Clean up all backup files (without restoring)
+ */
+function cleanupBackups() {
+  console.log('\n🧹 Cleaning up backup files...');
+
+  dirsToObfuscate.forEach(dir => {
+    cleanupBackupsInDir(dir);
+  });
+
+  console.log('✅ Backup files cleaned up\n');
+}
+
+function cleanupBackupsInDir(dirPath) {
+  if (!fs.existsSync(dirPath)) return;
+
+  const files = fs.readdirSync(dirPath);
+
+  files.forEach(file => {
+    const filePath = path.join(dirPath, file);
+    const stat = fs.statSync(filePath);
+
+    if (stat.isDirectory()) {
+      cleanupBackupsInDir(filePath);
+    } else if (file.endsWith('.backup')) {
+      fs.unlinkSync(filePath);
+      console.log(`🗑️  Deleted: ${filePath}`);
+    }
+  });
+}
+
+/**
  * Restore backup files
  */
 function restoreBackups() {
   console.log('\n🔄 Restoring backup files...');
-  
+
   dirsToObfuscate.forEach(dir => {
     restoreBackupsInDir(dir);
   });
-  
+
   console.log('✅ Backup restored\n');
 }
 
@@ -148,12 +179,14 @@ const args = process.argv.slice(2);
 
 if (args.includes('--restore')) {
   restoreBackups();
+} else if (args.includes('--cleanup')) {
+  cleanupBackups();
 } else {
   dirsToObfuscate.forEach(dir => {
     console.log(`📁 Obfuscating directory: ${dir}`);
     obfuscateDirectory(dir);
   });
-  
+
   console.log('\n✅ Obfuscation complete!');
   console.log('💡 To restore original files, run: node scripts/compile-server.js --restore\n');
 }

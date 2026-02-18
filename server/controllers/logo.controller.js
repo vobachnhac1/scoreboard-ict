@@ -4,16 +4,16 @@ const path = require('path');
 const fs = require('fs');
 
 // Helper function để lấy upload directory
-const getUploadDir = () => {
+const getUploadDir = (type = 'logos') => {
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   if (isDevelopment) {
     // Development: Lưu trong thư mục source code
-    return path.join(__dirname, '../uploads/logos');
+    return path.join(__dirname, `../uploads/${type}`);
   } else {
     // Production: Lưu trong USER_DATA_PATH
     const baseDir = process.env.USER_DATA_PATH || path.join(__dirname, '..');
-    return path.join(baseDir, 'uploads', 'logos');
+    return path.join(baseDir, 'uploads', type);
   }
 };
 
@@ -56,9 +56,36 @@ const upload = multer({
   }
 });
 
+// Cấu hình multer cho background images
+const backgroundStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = getUploadDir('backgrounds');
+    // Tạo thư mục nếu chưa tồn tại
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    // Tạo tên file unique: timestamp + random + extension
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, 'bg-' + uniqueSuffix + ext);
+  }
+});
+
+const backgroundUpload = multer({
+  storage: backgroundStorage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // Giới hạn 5MB
+  }
+});
+
 class LogoController {
   // Middleware upload
   static uploadMiddleware = upload.single('logo');
+  static backgroundUploadMiddleware = backgroundUpload.single('image');
 
   // Lấy tất cả logos
   static async getAllLogos(req, res) {
@@ -251,6 +278,46 @@ class LogoController {
       }
     } catch (error) {
       console.error('Lỗi khi xóa file:', error);
+    }
+  }
+
+  // Upload background image từ file
+  static async uploadBackgroundImage(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: 'Không có file được upload'
+        });
+      }
+
+      // Tạo URL relative cho file đã upload
+      const fileUrl = `/uploads/backgrounds/${req.file.filename}`;
+
+      return res.json({
+        success: true,
+        message: 'Upload background thành công',
+        url: fileUrl,
+        data: {
+          filename: req.file.filename,
+          originalname: req.file.originalname,
+          size: req.file.size
+        }
+      });
+    } catch (error) {
+      // Xóa file nếu có lỗi
+      if (req.file) {
+        const filePath = path.join(getUploadDir('backgrounds'), req.file.filename);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+
+      console.error('Error uploading background:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Lỗi khi upload background'
+      });
     }
   }
 }

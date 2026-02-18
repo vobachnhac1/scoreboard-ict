@@ -20,10 +20,23 @@ const checkInternet =async()=>{
     }
 }
 
+const checkKeyLicense = async ()=>{
+    try {
+        // https://digisports.com.vn/api/v1/device-activations/activate
+        // lấy thông tin MacAddress
+        
+        
+    } catch (error) {
+        
+    }
+
+}
+
+
 const FetchInitApp = async  ()=>{
+
     // Gọi API Check Version
     let insert = {}
-    
     // thực hiện lấy dữ liệu từ sqllite3
     // const init_config_db = new InitConfigService();
     const list_license = await init_config_db.getAllConfig();

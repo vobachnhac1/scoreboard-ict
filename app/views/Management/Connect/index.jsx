@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState, useRef } from "react";
 import CustomTable from "../../../components/CustomTable";
 import Button from "../../../components/Button";
 import NotePopover from "./components/NotePopover";
@@ -9,6 +9,7 @@ import UpdateForm from "./Forms/UpdateForm";
 import CreateRoomForm from "./Forms/CreateRoomForm";
 import { Constants, LIST_JUDGE_PRORMISSION } from "../../../common/Constants";
 import Utils from "../../../common/Utils";
+import IpMasker from "../../../common/IpMasker";
 import { useSelector, useDispatch } from "react-redux";
 import {
   useSocketEvent,
@@ -111,22 +112,24 @@ export default function ManagementConnectionSocket() {
   }, [dispatch, store]); // Chỉ chạy 1 lần khi mount
 
   // Lắng nghe response từ server khi fetch danh sách thiết bị
+  const serverIpHash = useRef();
   useSocketEvent("RES_ROOM_ADMIN", (response) => {
-    console.log("Receive from server:", response);
-
     // Kiểm tra nếu response từ ADMIN_FETCH_CONN
     if (response.path === "ADMIN_FETCH_CONN" && response.status === 200) {
       // Chuyển đổi MapConn object thành array
       const deviceList = response.data.ls_conn || {};
+      // Tìm admin_ip từ item có register_status_code === "ADMIN"
+      const adminItem = Object.values(deviceList).find(
+        (ele) => ele?.register_status_code === "ADMIN",
+      );
+      const serverIp = adminItem?.admin_ip || "N/A";
+      serverIpHash.current = IpMasker.mask(serverIp, "hash", 999, "Server");
+
       const devices = Object.values(deviceList)
-        ?.filter(
-          (ele) =>
-            ele?.register_status_code !== "ADMIN" && ele.client_ip != "::1",
-        )
+        ?.filter((ele) => ele?.register_status_code !== "ADMIN" || ele?.device_ip != '::1')
         .map((conn, index) => ({
           order: index + 1,
-          device_name:
-            conn.device_name || `Thiết bị ${conn.socket_id?.substring(0, 8)}`,
+          device_name: conn.device_name ?? "",
           judge_permission: conn.referrer
             ? LIST_JUDGE_PRORMISSION.find(
                 (item) => item.key === Number(conn.referrer),
@@ -134,6 +137,7 @@ export default function ManagementConnectionSocket() {
             : "Chưa gán",
           device_code: conn.device_id || conn.socket_id,
           device_ip: conn.client_ip || "N/A",
+          server_ip: serverIp, // Thêm server IP
           status:
             conn.connect_status_code === "CONNECTED" ? "active" : "inactive",
           accepted:
@@ -165,8 +169,7 @@ export default function ManagementConnectionSocket() {
         ?.filter((ele) => ele?.register_status_code !== "ADMIN")
         .map((conn, index) => ({
           order: index + 1,
-          device_name:
-            conn.device_name || `Thiết bị ${conn.socket_id?.substring(0, 8)}`,
+          device_name: conn.device_name ?? "",
           judge_permission: conn.referrer
             ? LIST_JUDGE_PRORMISSION.find(
                 (item) => item.key === Number(conn.referrer),
@@ -332,12 +335,45 @@ export default function ManagementConnectionSocket() {
     { title: "STT", key: "order" },
     // { title: "Tên thiết bị", key: "device_name" },
     {
-      title: "Quyền giám định",
+      title: "Giám định",
       key: "judge_permission",
       render: (row) => Utils.getJudgePermissionLabel(row.judge_permission),
     },
     // { title: "Mã thiết bị", key: "device_code" },
-    { title: "IP thiết bị", key: "device_ip" },
+    { title: "Tên thiết bị", key: "device_name" },
+    {
+      title: "Mã thiết bị",
+      key: "device_ip",
+      render: (row, index) => {
+        const maskedIp = IpMasker.mask(
+          row.device_ip,
+          "hash",
+          index,
+          row.device_name,
+        );
+        return (
+          <span
+            className="inline-flex items-center gap-1.5 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs font-semibold font-mono"
+            title={maskedIp.tooltip}
+          >
+            <svg
+              className="w-3 h-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+            {maskedIp.display}
+          </span>
+        );
+      },
+    },
     {
       title: "Trạng thái",
       key: "status",
@@ -375,7 +411,7 @@ export default function ManagementConnectionSocket() {
                   px-3 py-2
                   ${action.color} ${action.hoverColor}
                   ${action.textColor}
-                  rounded-lg
+                  rounded
                   transition-all duration-200
                   shadow-md hover:shadow-lg
                   font-semibold text-xs
@@ -394,7 +430,7 @@ export default function ManagementConnectionSocket() {
                 <div
                   className="
                   absolute bottom-full left-1/2 -translate-x-1/2 mb-2
-                  px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg
+                  px-3 py-1.5 bg-gray-900 text-white text-xs rounded
                   opacity-0 group-hover:opacity-100
                   pointer-events-none transition-opacity duration-200
                   whitespace-nowrap z-50
@@ -423,11 +459,11 @@ export default function ManagementConnectionSocket() {
             <div className="flex items-center justify-center my-6">
               {/* fake QR code */}
               {false ? (
-                <div className="bg-slate-400 min-h-24 min-w-24 rounded-lg border-2 border-black flex items-center justify-center">
+                <div className="bg-slate-400 min-h-24 min-w-24 rounded border-2 border-black flex items-center justify-center">
                   QR
                 </div>
               ) : (
-                <div className="bg-slate-400 min-h-24 min-w-24 rounded-lg border-2 border-black flex items-center justify-center">
+                <div className="bg-slate-400 min-h-24 min-w-24 rounded border-2 border-black flex items-center justify-center">
                   QR
                 </div>
               )}
@@ -447,7 +483,7 @@ export default function ManagementConnectionSocket() {
             <div className="">Đăng ký giám định</div>
             <div className="flex items-center justify-center my-6">
               {/* fake QR code */}
-              <div className="bg-slate-400 min-h-24 min-w-24 rounded-lg border-2 border-black flex items-center justify-center">
+              <div className="bg-slate-400 min-h-24 min-w-24 rounded border-2 border-black flex items-center justify-center">
                 QR
               </div>
             </div>
@@ -611,9 +647,6 @@ export default function ManagementConnectionSocket() {
         // Bước 4: Refresh danh sách
         console.log("4. Refresh danh sách thiết bị...");
         emitSocketEvent("ADMIN_FETCH_CONN", {});
-
-        console.log("Tạo lại kết nối socket thành công!");
-        await showSuccess("Tạo lại kết nối socket thành công!");
       } catch (error) {
         console.error("Lỗi khi tạo lại kết nối:", error);
         await showError("Lỗi khi tạo lại kết nối socket. Vui lòng thử lại.");
@@ -672,7 +705,6 @@ export default function ManagementConnectionSocket() {
       console.error("Lỗi khi tạo lại kết nối:", error);
       await showError("Lỗi khi tạo lại kết nối socket. Vui lòng thử lại.");
     } finally {
-      setIsReconnecting(false);
       setLoading(false);
     }
   };
@@ -710,12 +742,12 @@ export default function ManagementConnectionSocket() {
     <div className="w-full h-auto overflow-auto">
       {/* Room Info Bar - Redesigned */}
       {currentRoom && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border-2 border-blue-200 dark:border-blue-700 rounded-xl p-4 mb-4 shadow-sm">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border-2 border-blue-200 dark:border-blue-700 rounded p-4 mb-4 shadow-sm">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-6">
               {/* Server Icon & Info */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-lg flex items-center justify-center shadow-md">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded flex items-center justify-center shadow-md">
                   <svg
                     className="w-6 h-6 text-white"
                     fill="none"
@@ -735,14 +767,14 @@ export default function ManagementConnectionSocket() {
                     Máy chủ
                   </div>
                   <div className="font-mono font-bold text-blue-700 dark:text-blue-300 text-sm">
-                    {currentRoom.room_id}
+                    {serverIpHash.current?.display}
                   </div>
                 </div>
               </div>
 
               {/* Device Icon & Info */}
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded-lg flex items-center justify-center shadow-md">
+              {/* <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded flex items-center justify-center shadow-md">
                   <svg
                     className="w-6 h-6 text-white"
                     fill="none"
@@ -765,19 +797,19 @@ export default function ManagementConnectionSocket() {
                     {currentRoom.uuid_desktop}
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Status Badge */}
               <div className="flex items-center gap-3">
                 {socket.connected ? (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900 border-2 border-green-300 dark:border-green-700 rounded-lg">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900 border-2 border-green-300 dark:border-green-700 rounded">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-xs font-bold text-green-700 dark:text-green-300">
                       Đang kết nối
                     </span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900 border-2 border-red-300 dark:border-red-700 rounded-lg">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900 border-2 border-red-300 dark:border-red-700 rounded">
                     <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                     <span className="text-xs font-bold text-red-700 dark:text-red-300">
                       Không kết nối
@@ -791,12 +823,12 @@ export default function ManagementConnectionSocket() {
       )}
 
       {/* Action Toolbar - Redesigned */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-4 mb-4 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded p-4 mb-4 shadow-sm border border-gray-200 dark:border-gray-700">
         <div className="flex justify-between items-center gap-3">
           {/* Left side - Stats & Danger Actions */}
           <div className="flex items-center gap-3">
             {/* Device Count Badge */}
-            <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-lg shadow-sm">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded shadow-sm">
               <svg
                 className="w-5 h-5 text-blue-600 dark:text-blue-400"
                 fill="none"
@@ -818,27 +850,6 @@ export default function ManagementConnectionSocket() {
               </span>
             </div>
 
-            {/* Disconnect All Button */}
-            <button
-              onClick={handleTurnOffAll}
-              disabled={loading || data.length === 0}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
-                />
-              </svg>
-              <span>Tắt tất cả</span>
-            </button>
           </div>
 
           {/* Right side - Action Buttons */}
@@ -847,7 +858,7 @@ export default function ManagementConnectionSocket() {
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
             >
               <svg
                 className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
@@ -868,7 +879,7 @@ export default function ManagementConnectionSocket() {
             {/* Scan QR Button */}
             <button
               onClick={handleOpenCreateRoom}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200"
             >
               <svg
                 className="w-5 h-5"
@@ -890,7 +901,7 @@ export default function ManagementConnectionSocket() {
             <button
               onClick={handleRecreateConnection}
               disabled={isReconnecting || loading || !currentRoom}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
             >
               <svg
                 className={`w-5 h-5 ${isReconnecting ? "animate-spin" : ""}`}

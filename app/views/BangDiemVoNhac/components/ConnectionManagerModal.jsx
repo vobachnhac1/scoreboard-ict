@@ -7,6 +7,7 @@ import {
   PowerIcon,
   CloseIcon,
 } from "../../../components/icons/ConnectionIcons";
+import IpMasker from "../../../common/IpMasker";
 
 /**
  * ConnectionManagerModal Component
@@ -324,7 +325,10 @@ export default function ConnectionManagerModal({
                             GĐ
                           </th>
                           <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                            IP
+                            Mã TB
+                          </th>
+                          <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            Máy chủ
                           </th>
                           <th className="px-3 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                             Trạng thái
@@ -340,7 +344,7 @@ export default function ConnectionManagerModal({
                       <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {devices.length === 0 ? (
                           <tr>
-                            <td colSpan="7" className="px-4 py-12 text-center">
+                            <td colSpan="8" className="px-4 py-12 text-center">
                               <div className="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
                                 <svg
                                   className="w-16 h-16 mb-3"
@@ -367,6 +371,20 @@ export default function ConnectionManagerModal({
                         ) : (
                           devices.map((device, index) => {
                             const isTesting = testingJudge === device.referrer;
+                            const maskedIp = IpMasker.mask(
+                              device.device_ip,
+                              "hash",
+                              index,
+                              device.device_name,
+                            );
+                            const maskedServerIp =
+                              device.server_ip_hash ||
+                              IpMasker.mask(
+                                device.server_ip,
+                                "hash",
+                                999,
+                                "Server",
+                              );
 
                             return (
                               <tr
@@ -384,8 +402,47 @@ export default function ConnectionManagerModal({
                                     {device.referrer}
                                   </span>
                                 </td>
-                                <td className="px-3 py-3 text-sm text-gray-600 dark:text-gray-400 font-mono">
-                                  {device.device_ip}
+                                <td
+                                  className="px-3 py-3 text-sm text-gray-600 dark:text-gray-400 font-mono"
+                                  title={maskedIp.tooltip}
+                                >
+                                  <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs font-semibold">
+                                    <svg
+                                      className="w-3 h-3"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                      />
+                                    </svg>
+                                    {maskedIp.display}
+                                  </span>
+                                </td>
+                                <td
+                                  className="px-3 py-3 text-sm text-gray-600 dark:text-gray-400 font-mono"
+                                  title={maskedServerIp.tooltip}
+                                >
+                                  <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-blue-100 dark:bg-blue-900 rounded text-xs font-semibold">
+                                    <svg
+                                      className="w-3 h-3"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"
+                                      />
+                                    </svg>
+                                    {maskedServerIp.display}
+                                  </span>
                                 </td>
                                 <td className="px-3 py-3 text-center">
                                   {device.connected ? (

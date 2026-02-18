@@ -9,7 +9,7 @@ const CustomTable = ({
   page = 1,
   totalPages = 1,
   contentHeader = null,
-  rounded = "rounded-xl",
+  rounded = "rounded",
   onPageChange = (newPage) => {},
   onRowDoubleClick = (row) => {},
 }) => {

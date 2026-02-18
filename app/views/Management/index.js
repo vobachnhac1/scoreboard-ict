@@ -14,3 +14,5 @@ export { default as ConfigSystem } from './GeneralSetting/ConfigSystem';
 export { default as CompetitionManagement } from './GeneralSetting/CompetitionManagement';
 export { default as CompetitionDataDetail } from './GeneralSetting/CompetitionDataDetail';
 export { default as CompetitionDataDetailOrther } from './GeneralSetting/CompetitionDataDetailOrther';
+
+export { default as DataSync } from './DataSync/DataSync';

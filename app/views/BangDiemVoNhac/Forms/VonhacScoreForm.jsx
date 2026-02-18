@@ -3,13 +3,13 @@ import { useForm } from "react-hook-form";
 import { useAppDispatch } from "../../../config/redux/store";
 import Button from "../../../components/Button";
 
-export default function VovinamScoreForm({
+export default function VonhacScoreForm({
   type,
   data = null,
   matchData = null,
   onAgree,
   onGoBack,
-  soGiamDinh = 3,
+  soGiamDinh = 7,
   scores = {},
   scoresRef,
 }) {
@@ -100,6 +100,95 @@ export default function VovinamScoreForm({
     </tr>
   );
 
+  // Render Category Row for 7 judges (Võ Nhạc layout)
+  const CategoryRow = ({
+    stt,
+    categoryName,
+    judge1,
+    judge2,
+    isSingleJudge = false,
+  }) => (
+    <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 transition-colors">
+      {/* STT */}
+      <td className="px-4 py-4 text-center">
+        <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-purple-600 dark:bg-purple-700 text-white text-sm font-bold shadow-sm">
+          {stt}
+        </span>
+      </td>
+
+      {/* Chức năng */}
+      <td className="px-6 py-4">
+        <label className="text-base font-semibold text-gray-800 dark:text-gray-200">
+          {categoryName}
+        </label>
+      </td>
+
+      {/* Số 1 (GĐ1) */}
+      <td className="px-4 py-4">
+        <div className="flex flex-col gap-1">
+          <input
+            readOnly={loadingButton}
+            id={`judge${judge1}`}
+            {...register(`judge${judge1}`, {
+              required: "Điểm là bắt buộc",
+              min: { value: 0, message: "Điểm phải từ 0-10" },
+              max: { value: 100, message: "Điểm phải từ 0-10" },
+              pattern: {
+                value: /^[0-9]*\.?[0-9]+$/,
+                message: "Chỉ được nhập số",
+              },
+            })}
+            type="number"
+            step="0.1"
+            min="0"
+            max="100"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-center text-xl font-bold text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-600 focus:border-purple-500 dark:focus:border-purple-600 transition-all bg-white dark:bg-gray-700 hover:border-purple-400 dark:hover:border-purple-500"
+            placeholder="0"
+          />
+          {errors[`judge${judge1}`] && (
+            <p className="text-red-600 dark:text-red-400 text-[10px] font-medium">
+              {String(errors[`judge${judge1}`].message)}
+            </p>
+          )}
+        </div>
+      </td>
+
+      {/* Số 2 (GĐ2) */}
+      <td className="px-4 py-4">
+        {!isSingleJudge ? (
+          <div className="flex flex-col gap-1">
+            <input
+              readOnly={loadingButton}
+              id={`judge${judge2}`}
+              {...register(`judge${judge2}`, {
+                required: "Điểm là bắt buộc",
+                min: { value: 0, message: "Điểm phải từ 0-10" },
+                max: { value: 10, message: "Điểm phải từ 0-10" },
+                pattern: {
+                  value: /^[0-9]*\.?[0-9]+$/,
+                  message: "Chỉ được nhập số",
+                },
+              })}
+              type="number"
+              step="0.1"
+              min="0"
+              max="100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-center text-xl font-bold text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-600 focus:border-purple-500 dark:focus:border-purple-600 transition-all bg-white dark:bg-gray-700 hover:border-purple-400 dark:hover:border-purple-500"
+              placeholder="0"
+            />
+            {errors[`judge${judge2}`] && (
+              <p className="text-red-600 dark:text-red-400 text-[10px] font-medium">
+                {String(errors[`judge${judge2}`].message)}
+              </p>
+            )}
+          </div>
+        ) : (
+          <div className="text-center text-gray-400 dark:text-gray-600">-</div>
+        )}
+      </td>
+    </tr>
+  );
+
   return (
     <Fragment>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -157,24 +246,73 @@ export default function VovinamScoreForm({
 
           {/* Table */}
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-              <tr>
-                <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider w-20">
-                  STT
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                  Giám định
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                  Nhập điểm
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {Array.from({ length: soGiamDinh }).map((_, index) => (
-                <JudgeRow key={index} judgeNumber={index + 1} />
-              ))}
-            </tbody>
+            {soGiamDinh === 7 ? (
+              <>
+                <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                  <tr>
+                    <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider w-20">
+                      STT
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      Chức năng
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider w-32">
+                      Số 1
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider w-32">
+                      Số 2
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  <CategoryRow
+                    stt={1}
+                    categoryName="Chuyên môn"
+                    judge1={1}
+                    judge2={2}
+                  />
+                  <CategoryRow
+                    stt={2}
+                    categoryName="Nghệ thuật"
+                    judge1={3}
+                    judge2={4}
+                  />
+                  <CategoryRow
+                    stt={3}
+                    categoryName="Thực hiện"
+                    judge1={5}
+                    judge2={6}
+                  />
+                  <CategoryRow
+                    stt={4}
+                    categoryName="Trọng tài trưởng"
+                    judge1={7}
+                    isSingleJudge={true}
+                  />
+                </tbody>
+              </>
+            ) : (
+              <>
+                <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                  <tr>
+                    <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider w-20">
+                      STT
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      Giám định
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      Nhập điểm
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  {Array.from({ length: soGiamDinh }).map((_, index) => (
+                    <JudgeRow key={index} judgeNumber={index + 1} />
+                  ))}
+                </tbody>
+              </>
+            )}
           </table>
         </div>
 

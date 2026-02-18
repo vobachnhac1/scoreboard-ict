@@ -23,11 +23,16 @@ const athleteRoutes = require('./server/routes/athlete.routes');
 const competitionRoutes = require('./server/routes/competition.routes');
 const competitionMatchRoutes = require('./server/routes/competition_match.routes');
 const competitionMatchTeamRoutes = require('./server/routes/competition_match_team.routes');
+const licenseRoutes = require('./server/routes/license.routes');
+const syncRoutes = require('./server/routes/sync.routes');
 
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve exports directory for Excel files
+app.use('/exports', express.static(path.join(__dirname, 'exports')));
 
 // Serve uploads từ USER_DATA_PATH (khi build) hoặc local (khi dev)
 let uploadsDir;
@@ -68,6 +73,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/config', configRoutes);
+app.use('/api/license', licenseRoutes);
+app.use('/api/sync', syncRoutes);
 app.use('/api', commonRoutes);
 app.use('/api', championRoutes);
 app.use('/api', athleteRoutes);

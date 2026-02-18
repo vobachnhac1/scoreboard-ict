@@ -1,2 +1,2 @@
-import BangDiemQuyen from './BangDiemQuyen'
-export default BangDiemQuyen;
+import BangDiemVoNhac from './BangDiemVoNhac'
+export default BangDiemVoNhac;

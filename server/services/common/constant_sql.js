@@ -40,21 +40,21 @@ const getDbPath = () => {
             cachedDbPath = dbPath;
             return dbPath;
         } catch (error) {
-            console.error('❌ Error creating database path:', error);
+            console.error('Error creating database path:', error);
             // Fallback to temp directory
             const tempDir = path.join(os.tmpdir(), 'vhd-scoreboard');
             if (!fs.existsSync(tempDir)) {
                 fs.mkdirSync(tempDir, { recursive: true });
             }
             const tempPath = path.join(tempDir, 'database.sqlite');
-            console.log('⚠️  Using temp path:', tempPath);
+            console.log('Using temp path:', tempPath);
             cachedDbPath = tempPath;
             return tempPath;
         }
     } else {
         // Development: Lưu trong thư mục hiện tại
         const dbPath = path.resolve('./database.sqlite');
-        console.log('📍 Database path (development):', dbPath);
+        console.log('Database path (development):', dbPath);
         cachedDbPath = dbPath;
         return dbPath;
     }

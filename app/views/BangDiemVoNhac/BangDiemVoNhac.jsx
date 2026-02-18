@@ -6,10 +6,11 @@ import TotalScore from "./components/TotalScore";
 import ControlPanel from "./components/ControlPanel";
 import InfoPanel from "./components/InfoPanel";
 import Modal from "../../components/Modal";
-import VovinamScoreForm from "./Forms/VovinamScoreForm";
+import VonhacScoreForm from "./Forms/VonhacScoreForm";
 import ScoreWaitingOverlay from "./components/ScoreWaitingOverlay";
 import ConnectionManagerModal from "./components/ConnectionManagerModal";
 import MatchListModal from "../../components/MatchListModal";
+import VoNhacScoreDisplay from "./components/VoNhacScoreDisplay";
 import axios from "axios";
 import useConfirmModal from "../../hooks/useConfirmModal";
 import ConfirmModal from "../../components/common/ConfirmModal";
@@ -25,8 +26,9 @@ import {
 } from "../../config/redux/reducers/socket-reducer";
 import { socketClient } from "../../config/routes";
 import { initSocket as initSocketUtil } from "../../utils/socketUtils";
+import IpMasker from "../../common/IpMasker";
 
-export default function BangDiemQuyen() {
+export default function BangDiemVoNhac() {
   const {
     modalProps,
     showConfirm,
@@ -48,6 +50,30 @@ export default function BangDiemQuyen() {
     location.state?.matchData?.config_system || {},
   );
   const returnUrl = location.state?.returnUrl || "/management/competition-data";
+  const so_giam_dinh = 7;
+
+  // Background style từ config
+  const getBackgroundStyle = () => {
+    const bgType = configSystem.bg_vonhac_type || "color";
+    const bgColor = configSystem.bg_vonhac_color || "#1a1a2e";
+    const bgOpacity = configSystem.bg_vonhac_opacity || 100;
+    const bgImage = configSystem.bg_vonhac_image || "";
+
+    if (bgType === "image" && bgImage) {
+      return {
+        backgroundImage: `url(${bgImage.startsWith("http") ? bgImage : `http://localhost:6789${bgImage}`})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        opacity: bgOpacity / 100,
+      };
+    } else {
+      return {
+        backgroundColor: bgColor,
+        opacity: bgOpacity / 100,
+      };
+    }
+  };
 
   // Cập nhật matchData khi location.state thay đổi
   useEffect(() => {
@@ -75,6 +101,7 @@ export default function BangDiemQuyen() {
   // Chuyển scores sang useRef để tránh stale closure
   const scoresRef = useRef({});
   const [, forceUpdate] = useState({});
+  const [scoresVersion, setScoresVersion] = useState(0); // Track scores changes for secondary display
 
   // Helper function để update scores và trigger re-render
   const setScores = (newScores) => {
@@ -86,6 +113,7 @@ export default function BangDiemQuyen() {
       }
     });
     forceUpdate({}); // Trigger re-render
+    setScoresVersion((prev) => prev + 1); // Trigger secondary display update
   };
 
   // Getter để dễ sử dụng
@@ -110,6 +138,9 @@ export default function BangDiemQuyen() {
 
   // Room management state
   const [currentRoom, setCurrentRoom] = useState(null);
+
+  // Secondary display popup state (F9 hotkey)
+  const [showSecondaryDisplay, setShowSecondaryDisplay] = useState(false);
 
   // Hàm khởi tạo socket connection (sử dụng socketUtils)
   const initSocket = async (forceReConnection = false) => {
@@ -165,21 +196,28 @@ export default function BangDiemQuyen() {
   };
 
   // Lắng nghe response từ server khi fetch danh sách thiết bị
+  const serverIpHash = useRef();
   useSocketEvent("RES_ROOM_ADMIN", (response) => {
     console.log("Receive from server RES_ROOM_ADMIN:", response);
     if (response.path === "ADMIN_FETCH_CONN" && response.status === 200) {
       const devices = Object.values(response.data.ls_conn);
+
+      // Tìm admin_ip từ item có register_status_code === "ADMIN"
+      const adminItem = devices.find(
+        (ele) => ele?.register_status_code === "ADMIN",
+      );
+      const serverIp = adminItem?.admin_ip || "N/A";
+      serverIpHash.current = IpMasker.mask(serverIp, "hash", 999, "Server");
+
       // Transform server data to match our device format
       const transformedDevices = devices
-        .filter(
-          (device) =>
-            device.register_status_code !== "ADMIN" &&
-            device?.client_ip != "::1",
-        ) // Only judge devices
+        .filter((device) => device.register_status_code !== "ADMIN") // Only judge devices
         .map((device, index) => ({
           referrer: device.referrer,
           device_name: device.device_name,
           device_ip: device.client_ip || "N/A",
+          server_ip: serverIp, // Thêm server IP
+          server_ip_hash: serverIpHash.current, // Thêm server IP hash
           connected: device.connect_status_code === "CONNECTED", // 1 = active, 0 = inactive
           socket_id: device.socket_id,
           room_id: device.room_id,
@@ -204,6 +242,60 @@ export default function BangDiemQuyen() {
     initSocket();
     fetchLogos();
   }, []); // Chỉ chạy 1 lần khi mount
+
+  // F9 hotkey listener - Toggle secondary display window (Electron)
+  useEffect(() => {
+    const handleKeyPress = async (event) => {
+      if (event.key === "F9") {
+        event.preventDefault();
+
+        // Toggle secondary display window
+        if (!showSecondaryDisplay) {
+          // Mở cửa sổ mới
+          if (window.electron && window.electron.openSecondaryDisplay) {
+            const result = await window.electron.openSecondaryDisplay({
+              scores: scoresRef.current,
+              configSystem: configSystem,
+              matchData: matchDataRef.current,
+              so_giam_dinh: 7,
+              screenType: "vonhac",
+            });
+            console.log("🖥️ Secondary display opened:", result);
+            setShowSecondaryDisplay(true);
+          }
+        } else {
+          // Đóng cửa sổ
+          if (window.electron && window.electron.closeSecondaryDisplay) {
+            const result = await window.electron.closeSecondaryDisplay();
+            console.log("🖥️ Secondary display closed:", result);
+            setShowSecondaryDisplay(false);
+          }
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [showSecondaryDisplay, configSystem]);
+
+  // Update secondary display when scores change
+  useEffect(() => {
+    if (
+      showSecondaryDisplay &&
+      window.electron &&
+      window.electron.updateSecondaryDisplay
+    ) {
+      const dataToUpdate = {
+        scores: scoresRef.current,
+        configSystem: configSystem,
+        matchData: matchDataRef.current,
+        so_giam_dinh: 7,
+        screenType: "vonhac",
+      };
+      console.log("🔄 [VoNhac] Updating secondary display:", dataToUpdate);
+      window.electron.updateSecondaryDisplay(dataToUpdate);
+    }
+  }, [scoresVersion, showSecondaryDisplay, configSystem]);
 
   // Cập nhật khi chuyển trận (matchData.match_id thay đổi)
   useEffect(() => {
@@ -305,41 +397,33 @@ export default function BangDiemQuyen() {
     if (matchDataRef.current.scores.judge1 > 0) judges.push(1);
     if (matchDataRef.current.scores.judge2 > 0) judges.push(2);
     if (matchDataRef.current.scores.judge3 > 0) judges.push(3);
-
-    if (configSystem.so_giam_dinh === 5) {
-      if (matchDataRef.current.scores.judge4 > 0) judges.push(4);
-      if (matchDataRef.current.scores.judge5 > 0) judges.push(5);
-    }
+    if (matchDataRef.current.scores.judge4 > 0) judges.push(4);
+    if (matchDataRef.current.scores.judge5 > 0) judges.push(5);
+    if (matchDataRef.current.scores.judge6 > 0) judges.push(6);
+    if (matchDataRef.current.scores.judge7 > 0) judges.push(7);
 
     setReceivedJudges(judges);
 
     // Auto hide overlay when all scores received
-    if (judges.length === configSystem.so_giam_dinh && showWaiting) {
+    if (judges.length === so_giam_dinh && showWaiting) {
       setTimeout(() => {
         setShowWaiting(false);
       }, 1500); // Wait 1.5s before hiding
     }
-  }, [matchDataRef.current.scores, configSystem.so_giam_dinh, showWaiting]);
+  }, [matchDataRef.current.scores, so_giam_dinh, showWaiting]);
 
   // clear điểm hiện tại
   const clearScore = () => {
-    if (configSystem.so_giam_dinh == 3) {
-      setScores({
-        judge1: 0,
-        judge2: 0,
-        judge3: 0,
-        total: 0,
-      });
-    } else if (configSystem.so_giam_dinh == 5) {
-      setScores({
-        judge1: 0,
-        judge2: 0,
-        judge3: 0,
-        judge4: 0,
-        judge5: 0,
-        total: 0,
-      });
-    }
+    setScores({
+      judge1: 0,
+      judge2: 0,
+      judge3: 0,
+      judge4: 0,
+      judge5: 0,
+      judge6: 0,
+      judge7: 0,
+      total: 0,
+    });
 
     // Show waiting overlay and reset received judges
     setShowWaiting(false);
@@ -422,7 +506,7 @@ export default function BangDiemQuyen() {
     console.log("Refreshing device list...");
     // Emit event để fetch danh sách thiết bị từ server
     emitSocketEvent("ADMIN_FETCH_CONN", {});
-    showSuccess("Đang làm mới danh sách thiết bị...");
+    // showSuccess("Đang làm mới danh sách thiết bị...");
   };
 
   const buttons = useRef([
@@ -500,71 +584,38 @@ export default function BangDiemQuyen() {
     if (!scoresToCalculate?.judge1) return;
     // Loại bỏ total và hidden để chỉ lấy điểm giám định
     const { total, hidden, ...judgeScores } = scoresToCalculate;
+    // Logic tính điểm cho 7 giám định (Võ Nhạc)
+    // Chuyên môn: GĐ1 và GĐ2 => tính điểm trung bình
+    const chuyenMonAvg =
+      ((Number(judgeScores.judge1) || 0) + (Number(judgeScores.judge2) || 0)) /
+      2;
 
-    if (configSystem.so_giam_dinh == 3) {
-      const calculatedTotal =
-        Number(judgeScores.judge1 || 0) +
-        Number(judgeScores.judge2 || 0) +
-        Number(judgeScores.judge3 || 0);
-      const newScores = { ...judgeScores, total: calculatedTotal };
-      setScores(newScores);
-      return newScores;
-    } else if (configSystem.so_giam_dinh == 5) {
-      const scoresArray = Object.values(judgeScores)
-        .filter((score) => Number(score) !== 0)
-        .sort((a, b) => Number(a) - Number(b));
+    // Nghệ thuật: GĐ3 và GĐ4 => tính điểm trung bình
+    const ngheThuatAvg =
+      ((Number(judgeScores.judge3) || 0) + (Number(judgeScores.judge4) || 0)) /
+      2;
 
-      const calculatedTotal =
-        scoresArray.length >= 3
-          ? scoresArray
-              .slice(1, -1)
-              .reduce((acc, score) => Number(acc) + Number(score), 0)
-          : 0;
+    // Thực hiện: GĐ5 và GĐ6 => tính điểm trung bình
+    const thucHienAvg =
+      ((Number(judgeScores.judge5) || 0) + (Number(judgeScores.judge6) || 0)) /
+      2;
 
-      let selectedMaxIndex = -1;
-      let selectedMinIndex = -1;
-      const maxScore = Math.max(...scoresArray);
-      const minScore = Math.min(...scoresArray);
-      const hasNonZeroScores = scoresArray.some((s) => s > 0);
-      const scoresToCalculate = currentScores || scoresRef.current;
+    // Trọng tài trưởng: GĐ7
+    const trongTaiTruong = Number(judgeScores.judge7) || 0;
 
-      if (hasNonZeroScores) {
-        // Tìm tất cả các index có điểm cao nhất
-        const maxIndices = scoresArray
-          .map((score, idx) => ({ score: Number(score), idx }))
-          .filter((item) => item.score === Number(maxScore))
-          .map((item) => item.idx);
+    // Điểm tổng: Chuyên môn * 0.3 + Nghệ thuật * 0.3 + Thực hiện * 0.3 + Trọng tài trưởng * 0.1
+    const calculatedTotal =
+      chuyenMonAvg * 0.3 +
+      ngheThuatAvg * 0.3 +
+      thucHienAvg * 0.3 +
+      trongTaiTruong * 0.1;
 
-        // Tìm tất cả các index có điểm thấp nhất
-        const minIndices = scoresArray
-          .map((score, idx) => ({ score: Number(score), idx }))
-          .filter((item) => item.score === Number(minScore) && item.score > 0)
-          .map((item) => item.idx);
-
-        // Random chọn 1 index từ danh sách điểm cao nhất
-        if (maxIndices.length > 0) {
-          selectedMaxIndex =
-            maxIndices.length > 1
-              ? maxIndices[Math.floor(Math.random() * maxIndices.length)]
-              : maxIndices[0];
-        }
-
-        // Random chọn 1 index từ danh sách điểm thấp nhất
-        if (minIndices.length > 0) {
-          selectedMinIndex =
-            minIndices.length > 1
-              ? minIndices[Math.floor(Math.random() * minIndices.length)]
-              : minIndices[0];
-        }
-      }
-      const newScores = {
-        ...judgeScores,
-        total: calculatedTotal,
-        hidden: { maxIndex: selectedMaxIndex, minIndex: selectedMinIndex },
-      };
-      setScores(newScores);
-      return newScores;
-    }
+    const newScores = {
+      ...judgeScores,
+      total: Number(calculatedTotal.toFixed(2)),
+    };
+    setScores(newScores);
+    return newScores;
   };
 
   // Thực hiện đến căp thi tiếp
@@ -609,7 +660,7 @@ export default function BangDiemQuyen() {
         row_index: nextMatch.row_index,
         scores: nextMatch.scores || {},
       };
-      navigate("/scoreboard/vovinam-score", {
+      navigate("/bang-diem/quyen", {
         state: {
           matchData: nextMatchData,
           returnUrl: returnUrl,
@@ -665,7 +716,7 @@ export default function BangDiemQuyen() {
         row_index: previousMatch.row_index,
         scores: previousMatch.scores || {},
       };
-      navigate("/scoreboard/vovinam-score", {
+      navigate("/bang-diem/quyen", {
         state: {
           matchData: previousMatchData,
           returnUrl: returnUrl,
@@ -830,7 +881,7 @@ export default function BangDiemQuyen() {
       setShowMatchListModal(false);
 
       // Navigate với state mới
-      navigate("/scoreboard/vovinam-score", {
+      navigate("/bang-diem/quyen", {
         state: { matchData: newMatchData, returnUrl },
         replace: true,
       });
@@ -846,9 +897,9 @@ export default function BangDiemQuyen() {
   // Thực hiện tạo file excel kết quả
   const RenderContentModal = ({ setScores, scoresRef }) => {
     return (
-      <VovinamScoreForm
+      <VonhacScoreForm
         type={"other"}
-        soGiamDinh={configSystem.so_giam_dinh}
+        soGiamDinh={so_giam_dinh}
         scores={matchData.scores ?? scoresRef.current}
         scoresRef={scoresRef}
         onAgree={(data) => {
@@ -981,15 +1032,14 @@ export default function BangDiemQuyen() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-3 pb-20 text-white flex flex-col items-center">
-      {/* Waiting Overlay */}
-      {/* <ScoreWaitingOverlay
-        show={showWaiting}
-        message="Đang chờ nhập điểm từ giám định"
-        judgeCount={configSystem.so_giam_dinh || 5}
-        receivedScores={receivedJudges}
-      /> */}
+    <div className="min-h-screen p-3 pb-20 text-white flex flex-col items-center relative">
+      {/* Background layer with opacity */}
+      <div
+        className="absolute inset-0 -z-10"
+        style={getBackgroundStyle()}
+      ></div>
 
+      {/* Waiting Overlay */}
       {/* Connection Manager Modal */}
       <ConnectionManagerModal
         isOpen={showConnectionModal}
@@ -1012,8 +1062,8 @@ export default function BangDiemQuyen() {
       />
 
       {/* Match Name & Team Name */}
-      <div className="w-full max-w-6xl mb-3 space-y-3">
-        <div className="bg-white/10 px-6 py-4 shadow-2xl">
+      <div className="w-full m-4 flex flex-row justify-center">
+        <div className="px-6 py-4 shadow-2xl">
           <p className="text-start text-2xl font-bold tracking-wide">
             NỘI DUNG:{" "}
             {matchDataRef.current?.match_name?.toUpperCase() ||
@@ -1021,7 +1071,7 @@ export default function BangDiemQuyen() {
               ""}
           </p>
         </div>
-        <div className="bg-white/10 px-6 py-4 shadow-2xl ">
+        <div className="px-6 py-4 shadow-2xl ">
           <p className="text-start text-2xl font-bold tracking-wide">
             ĐƠN VỊ: {matchDataRef.current?.team_name?.toUpperCase() || ""}
           </p>
@@ -1039,48 +1089,8 @@ export default function BangDiemQuyen() {
         </div>
       )}
 
-      {/* Bố cục điểm: Giám định 1-5 + Tổng điểm */}
-      {showScores && (
-        <>
-          <div className="w-full max-w-6xl mb-6 mt-6">
-            <div
-              className={`grid grid-cols-${configSystem.so_giam_dinh ?? 5} md:grid-cols-${configSystem.so_giam_dinh ?? 5} lg:grid-cols-${configSystem.so_giam_dinh ?? 5} gap-4 justify-items-center`}
-            >
-              {/* Render JudgeScores */}
-              {(() => {
-                // Tính toán selectedMaxIndex và selectedMinIndex một lần duy nhất
-                // Render các JudgeScore
-                return Array.from({
-                  length: configSystem.so_giam_dinh ?? 5,
-                }).map((_, index) => {
-                  const judgeNum = index + 1;
-                  const judgeScore = scores[`judge${judgeNum}`] || 0;
-
-                  const isHighest =
-                    configSystem.so_giam_dinh == 3
-                      ? false
-                      : index === scores?.hidden?.maxIndex;
-                  const isLowest =
-                    configSystem.so_giam_dinh == 3
-                      ? false
-                      : index === scores?.hidden?.minIndex;
-
-                  return (
-                    <JudgeScore
-                      key={index}
-                      judge={judgeNum}
-                      score={judgeScore}
-                      isHighest={isHighest}
-                      isLowest={isLowest}
-                    />
-                  );
-                });
-              })()}
-            </div>
-          </div>
-          <TotalScore total={scores.total} />
-        </>
-      )}
+      {/* Bố cục điểm: Giám định 1-7 | + Tổng điểm */}
+      {showScores && <VoNhacScoreDisplay scores={scores} main={true} />}
 
       {/* Danh sách VĐV (Toggle với F5) */}
       {showAthletes && (
@@ -1166,7 +1176,7 @@ export default function BangDiemQuyen() {
               <span className="text-gray-400">
                 Tổng số:{" "}
                 <span className="text-white font-bold text-sm">
-                  {configSystem.so_giam_dinh || 3}
+                  {so_giam_dinh || 7}
                 </span>
               </span>
               <span className="text-gray-400">
@@ -1194,39 +1204,36 @@ export default function BangDiemQuyen() {
 
             {/* Center: Individual GĐ Indicators */}
             <div className="flex items-center gap-2">
-              {Array.from(
-                { length: configSystem.so_giam_dinh || 3 },
-                (_, index) => {
-                  const gdNumber = index + 1;
-                  const device = referrerDevices.find(
-                    (d) => Number(d.referrer) === gdNumber,
-                  );
-                  const isReady = device?.ready || false;
-                  const bgColor = isReady ? "bg-green-500" : "bg-red-500";
-                  const textColor = "text-white";
+              {Array.from({ length: so_giam_dinh || 7 }, (_, index) => {
+                const gdNumber = index + 1;
+                const device = referrerDevices.find(
+                  (d) => Number(d.referrer) === gdNumber,
+                );
+                const isReady = device?.ready || false;
+                const bgColor = isReady ? "bg-green-500" : "bg-red-500";
+                const textColor = "text-white";
 
-                  return (
-                    <div
-                      key={gdNumber}
-                      className={`${bgColor} ${textColor} font-bold px-3 py-1.5 rounded text-sm min-w-[50px] text-center shadow-lg`}
-                      title={
-                        isReady
-                          ? `GĐ${gdNumber}: Sẵn sàng`
-                          : `GĐ${gdNumber}: Chưa sẵn sàng`
-                      }
-                    >
-                      GĐ{gdNumber}
-                    </div>
-                  );
-                },
-              )}
+                return (
+                  <div
+                    key={gdNumber}
+                    className={`${bgColor} ${textColor} font-bold px-3 py-1.5 rounded text-sm min-w-[50px] text-center shadow-lg`}
+                    title={
+                      isReady
+                        ? `GĐ${gdNumber}: Sẵn sàng`
+                        : `GĐ${gdNumber}: Chưa sẵn sàng`
+                    }
+                  >
+                    GĐ{gdNumber}
+                  </div>
+                );
+              })}
             </div>
 
             {/* Right: Ready Indicator + Control Bar Toggle */}
             <div className="flex items-center gap-4">
               {/* Ready Indicator */}
               {referrerDevices.filter((s) => s.ready).length ===
-              (configSystem.so_giam_dinh || 3) ? (
+              (so_giam_dinh || 7) ? (
                 <div className="flex items-center gap-2 bg-green-500/20 border border-green-500 rounded px-4 py-2">
                   <span className="text-green-400 font-bold text-sm">
                     Tất cả sẵn sàng
@@ -1311,4 +1318,3 @@ export default function BangDiemQuyen() {
     </div>
   );
 }
-

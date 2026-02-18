@@ -6,7 +6,7 @@ import {
 } from "@headlessui/react";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import logoVoHienDai from "../../assets/logo_vohiendai.jpg";
+import logoVoHienDai from "../../assets/logo_nhacvb_light.png";
 import ThemeToggle from "../ThemeToggle";
 
 const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
@@ -125,7 +125,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
             {!collapsed && (
               <div className="text-left overflow-hidden">
                 <h1 className="text-xl font-black text-gray-900 dark:text-white tracking-tight whitespace-nowrap">
-                  VÕ HIỆN ĐẠI
+                  DIGISPORTS
                 </h1>
                 <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold whitespace-nowrap">
                   Quản lý thi đấu
@@ -291,7 +291,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
               e.stopPropagation();
               onToggle();
             }}
-            className="group w-full flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden cursor-pointer"
+            className="group w-full flex items-center justify-center gap-2 py-3 px-3 rounded  bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden cursor-pointer"
             title={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
             type="button"
           >

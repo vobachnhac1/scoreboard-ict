@@ -469,7 +469,7 @@ function MatchCard({
   // Grid View - Original card layout
   return (
     <div
-      className={`${cardBgClass} rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border ${cardBorderClass} ${cardGlowClass} overflow-hidden group relative`}
+      className={`${cardBgClass} rounded shadow-md hover:shadow-xl transition-all duration-300 border ${cardBorderClass} ${cardGlowClass} overflow-hidden group relative`}
       onDoubleClick={() => onDoubleClick(row)}
     >
       {/* Winner Badge cho Grid View */}
@@ -523,7 +523,7 @@ function MatchCard({
         <div className="grid grid-cols-2 gap-6 mb-5">
           {/* Giáp Đỏ */}
           <div
-            className={`bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 rounded-xl p-4 border-2 shadow-sm transition-all duration-300 ${
+            className={`bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 rounded  p-4 border-2 shadow-sm transition-all duration-300 ${
               status === "FIN" && winner === "RED"
                 ? "border-red-500 dark:border-red-600 ring-4 ring-red-200 dark:ring-red-900 scale-105"
                 : "border-red-200 dark:border-red-700"
@@ -570,7 +570,7 @@ function MatchCard({
 
           {/* Giáp Xanh */}
           <div
-            className={`bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 rounded-xl p-4 border-2 shadow-sm transition-all duration-300 ${
+            className={`bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 rounded  p-4 border-2 shadow-sm transition-all duration-300 ${
               status === "FIN" && winner === "BLUE"
                 ? "border-blue-500 dark:border-blue-600 ring-4 ring-blue-200 dark:ring-blue-900 scale-105"
                 : "border-blue-200 dark:border-blue-700"
@@ -1367,12 +1367,12 @@ export default function CompetitionDataDetail() {
   const handleMatchStart = async () => {
     try {
       const row = openActions.row;
-      console.log("🚀 CompetitionDataDetail - handleMatchStart - row:", row);
-      console.log(
-        "🚀 CompetitionDataDetail - handleMatchStart - configSystem:",
-        configSystem,
-      );
-
+      // Thực hiện chặn
+      let isBlocked = !configSystem.data.ap_dung_vonhac;
+      if (isBlocked) {
+        await showError("Tính năng đang khoá. Vui lòng thử lại sau.");
+        return;
+      }
       // Nếu chưa có match_id, tạo match mới
       if (!row.match_id) {
         const createResponse = await axios.post(
@@ -1426,15 +1426,8 @@ export default function CompetitionDataDetail() {
         competition_dk_id: id, // Thêm competition_dk_id để dùng cho handleNextMatch
         row_index: row.match_id, // Thêm row_index để tìm trận tiếp theo
       };
-
-      console.log(
-        "🚀 CompetitionDataDetail - Navigating with matchData:",
-        matchData,
-      );
-      console.log("🚀 CompetitionDataDetail - row.data:", row.data);
-
       // Chuyển sang màn hình thi đấu với state
-      navigate("/scoreboard/vovinam", {
+      navigate("/bang-diem/doi-khang", {
         state: {
           matchData,
           returnUrl: `/management/competition-data/${id}`,
@@ -2015,7 +2008,7 @@ export default function CompetitionDataDetail() {
             <div
               className={
                 viewMode === "grid"
-                  ? "grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4"
+                  ? "grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-4"
                   : "space-y-3"
               }
             >

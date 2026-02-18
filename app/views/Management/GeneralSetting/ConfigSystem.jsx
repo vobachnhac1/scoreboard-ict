@@ -145,6 +145,11 @@ const switchFields = {
     { name: "cau_hinh_xoa_canh_cao", label: "Xoá cảnh cáo" },
     { name: "cau_hinh_hinh_thuc_quyen", label: "Cấu hình hình thức quyền" },
   ],
+  "Chế độ bảng điểm": [
+    { name: "ap_dung_doikhang", label: "Bật/tắt chế độ Đối kháng" },
+    { name: "ap_dung_quyen", label: "Bật/tắt chế độ Quyền" },
+    { name: "ap_dung_vonhac", label: "Bật/tắt chế độ Võ Nhạc" },
+  ],
   "Chế độ áp dụng điểm biên": [
     { name: "ap_dung_diem_bien_tru", label: "Áp dụng điểm biên (trừ điểm)" },
     { name: "ap_dung_diem_bien_cong", label: "Áp dụng điểm biên (cộng điểm)" },
@@ -196,6 +201,13 @@ const switchFields = {
   ],
 };
 
+// Background configuration for 3 screens
+const backgroundScreens = [
+  { key: "quyen", label: "Màn hình Quyền" },
+  { key: "doikhang", label: "Màn hình Đối kháng" },
+  { key: "vonhac", label: "Màn hình Võ Nhạc" },
+];
+
 export default function ConfigSystem() {
   const dispatch = useAppDispatch();
   // @ts-ignore
@@ -219,6 +231,15 @@ export default function ConfigSystem() {
   const [uploadMode, setUploadMode] = useState("file"); // 'url' hoặc 'file'
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
+
+  // State cho quản lý background images
+  const [bgQuyenFile, setBgQuyenFile] = useState(null);
+  const [bgDoikhangFile, setBgDoikhangFile] = useState(null);
+  const [bgVonhacFile, setBgVonhacFile] = useState(null);
+  const [uploadingBg, setUploadingBg] = useState(null); // 'quyen', 'doikhang', 'vonhac'
+  const bgQuyenInputRef = useRef(null);
+  const bgDoikhangInputRef = useRef(null);
+  const bgVonhacInputRef = useRef(null);
 
   useEffect(() => {
     dispatch(fetchConfigSystem());
@@ -447,10 +468,85 @@ export default function ConfigSystem() {
       });
   };
 
+  // Upload background image
+  const handleUploadBackgroundImage = async (screenKey, file) => {
+    if (!file) return;
+
+    setUploadingBg(screenKey);
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await axios.post(
+        "http://localhost:6789/api/config/upload/background",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+
+      if (response.data.success) {
+        const imageUrl = response.data.url;
+        setValue(`bg_${screenKey}_image`, imageUrl);
+        setValue(`bg_${screenKey}_type`, "image");
+
+        // Clear file input
+        if (screenKey === "quyen") setBgQuyenFile(null);
+        if (screenKey === "doikhang") setBgDoikhangFile(null);
+        if (screenKey === "vonhac") setBgVonhacFile(null);
+
+        console.log(`✅ Background ${screenKey} uploaded:`, imageUrl);
+      }
+    } catch (error) {
+      console.error(`❌ Lỗi khi upload background ${screenKey}:`, error);
+      alert(
+        `Lỗi khi upload hình nền: ${error.response?.data?.message || error.message}`,
+      );
+    } finally {
+      setUploadingBg(null);
+    }
+  };
+
+  // Handle file selection
+  const handleBgFileChange = (screenKey, event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+    ];
+    if (!validTypes.includes(file.type)) {
+      alert("Chỉ chấp nhận file ảnh (JPG, PNG, GIF, WEBP)");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Kích thước file không được vượt quá 5MB");
+      return;
+    }
+
+    // Set file to state
+    if (screenKey === "quyen") setBgQuyenFile(file);
+    if (screenKey === "doikhang") setBgDoikhangFile(file);
+    if (screenKey === "vonhac") setBgVonhacFile(file);
+
+    // Auto upload
+    handleUploadBackgroundImage(screenKey, file);
+  };
+
   const renderInputGroup = (title, fields, index) => (
     <div
       key={index}
-      className="col-span-1 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded-xl transition-all duration-200"
+      className="col-span-1 p-5 bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900 dark:to-blue-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded  transition-all duration-200"
     >
       <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-blue-300 dark:border-blue-600">
         <svg
@@ -486,7 +582,7 @@ export default function ConfigSystem() {
                 {...register(name, { required: `${label} là bắt buộc` })}
                 type={type}
                 placeholder={placeholder}
-                className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded-lg text-sm transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded  text-sm transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
               {errors[name] && (
                 <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-medium">
@@ -503,7 +599,7 @@ export default function ConfigSystem() {
   const renderSelectGroup = (title, fields, index) => (
     <div
       key={index}
-      className="col-span-1 p-5 bg-gradient-to-br from-blue-50 to-pink-50 dark:from-blue-900 dark:to-pink-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded-xl transition-all duration-200"
+      className="col-span-1 p-5 bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900 dark:to-blue-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded  transition-all duration-200"
     >
       <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-blue-300 dark:border-blue-600">
         <svg
@@ -537,7 +633,7 @@ export default function ConfigSystem() {
                 id={name}
                 disabled={loading}
                 {...register(name, { required: `${label} là bắt buộc` })}
-                className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded-lg text-sm transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded  text-sm transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">-- Chọn {label.toLowerCase()} --</option>
                 {options.map((option, idx) => (
@@ -561,7 +657,7 @@ export default function ConfigSystem() {
   const renderTextareaGroup = (title, fields, index) => (
     <div
       key={index}
-      className="col-span-1 lg:col-span-2 xl:col-span-3 p-5 bg-gradient-to-br from-blue-50 to-emerald-50 dark:from-blue-900 dark:to-emerald-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded-xl transition-all duration-200"
+      className="col-span-1 lg:col-span-2 xl:col-span-3 p-5 bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900 dark:to-blue-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded  transition-all duration-200"
     >
       <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-blue-300 dark:border-blue-600">
         <svg
@@ -596,7 +692,7 @@ export default function ConfigSystem() {
               {...register(name)}
               rows={rows}
               placeholder={placeholder}
-              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded-lg text-sm resize-none transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded  text-sm resize-none transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
             {errors[name] && (
               <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-medium">
@@ -612,11 +708,11 @@ export default function ConfigSystem() {
   const renderSwitchGroup = (title, fields, index) => (
     <div
       key={index}
-      className="col-span-1 p-5 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900 dark:to-orange-900 border-2 border-amber-200 dark:border-amber-700 shadow-md hover:shadow-lg rounded-xl transition-all duration-200"
+      className="col-span-1 p-5 bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900 dark:to-blue-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded  transition-all duration-200"
     >
-      <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-amber-300 dark:border-amber-600">
+      <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-blue-300 dark:border-blue-600">
         <svg
-          className="w-5 h-5 text-amber-600 dark:text-amber-400"
+          className="w-5 h-5 text-blue-600 dark:text-blue-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -628,7 +724,7 @@ export default function ConfigSystem() {
             d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
           />
         </svg>
-        <span className="font-bold text-amber-700 dark:text-amber-300 text-base">
+        <span className="font-bold text-blue-700 dark:text-blue-300 text-base">
           {title}
         </span>
       </div>
@@ -647,12 +743,12 @@ export default function ConfigSystem() {
     </div>
   );
 
-  // Render Logo Management Section
-  const renderLogoManagement = () => (
-    <div className="col-span-1 lg:col-span-2 xl:col-span-3 p-5 bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900 dark:to-pink-900 border-2 border-rose-200 dark:border-rose-700 shadow-md hover:shadow-lg rounded-xl transition-all duration-200">
-      <div className="flex items-center gap-2 mb-5 pb-3 border-b-2 border-rose-300 dark:border-rose-600">
+  // Render Background Settings Section
+  const renderBackgroundSettings = () => (
+    <div className="col-span-1 lg:col-span-2 xl:col-span-3 p-5 bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900 dark:to-blue-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded transition-all duration-200">
+      <div className="flex items-center gap-2 mb-5 pb-3 border-b-2 border-blue-300 dark:border-blue-600">
         <svg
-          className="w-6 h-6 text-rose-600 dark:text-rose-400"
+          className="w-6 h-6 text-blue-600 dark:text-blue-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -664,7 +760,264 @@ export default function ConfigSystem() {
             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
           />
         </svg>
-        <span className="font-bold text-rose-700 dark:text-rose-300 text-lg">
+        <span className="font-bold text-blue-700 dark:text-blue-300 text-lg">
+          Cài đặt Background Màn hình
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {backgroundScreens.map(({ key, label }) => {
+          const bgType = watch(`bg_${key}_type`) || "color";
+          const bgColor = watch(`bg_${key}_color`) || "#1a1a2e";
+          const bgOpacity = watch(`bg_${key}_opacity`) || 100;
+          const bgImage = watch(`bg_${key}_image`) || "";
+
+          return (
+            <div
+              key={key}
+              className="p-4 bg-white dark:bg-gray-800 rounded-lg border-2 border-blue-200 dark:border-blue-600 shadow-sm"
+            >
+              <h3 className="text-base font-bold text-blue-700 dark:text-blue-300 mb-4">
+                {label}
+              </h3>
+
+              {/* Background Type Selection */}
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Loại Background
+                </label>
+                <div className="flex gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      value="color"
+                      checked={bgType === "color"}
+                      onChange={(e) =>
+                        setValue(`bg_${key}_type`, e.target.value)
+                      }
+                      className="w-4 h-4 text-blue-600"
+                    />
+                    <span className="text-sm font-medium dark:text-gray-300">
+                      Màu sắc
+                    </span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      value="image"
+                      checked={bgType === "image"}
+                      onChange={(e) =>
+                        setValue(`bg_${key}_type`, e.target.value)
+                      }
+                      className="w-4 h-4 text-blue-600"
+                    />
+                    <span className="text-sm font-medium dark:text-gray-300">
+                      Hình ảnh
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Color Picker (if type is color) */}
+              {bgType === "color" && (
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Chọn màu
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={bgColor}
+                      onChange={(e) =>
+                        setValue(`bg_${key}_color`, e.target.value)
+                      }
+                      className="w-16 h-10 rounded border-2 border-gray-300 dark:border-gray-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={bgColor}
+                      onChange={(e) =>
+                        setValue(`bg_${key}_color`, e.target.value)
+                      }
+                      placeholder="#1a1a2e"
+                      className="flex-1 px-3 py-2 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Image Upload (if type is image) */}
+              {bgType === "image" && (
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Upload hình ảnh
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      ref={
+                        key === "quyen"
+                          ? bgQuyenInputRef
+                          : key === "doikhang"
+                            ? bgDoikhangInputRef
+                            : bgVonhacInputRef
+                      }
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                      onChange={(e) => handleBgFileChange(key, e)}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (key === "quyen") bgQuyenInputRef.current?.click();
+                        if (key === "doikhang")
+                          bgDoikhangInputRef.current?.click();
+                        if (key === "vonhac") bgVonhacInputRef.current?.click();
+                      }}
+                      disabled={uploadingBg === key}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+                    >
+                      {uploadingBg === key ? (
+                        <>
+                          <svg
+                            className="animate-spin h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
+                          </svg>
+                          <span>Đang upload...</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                          <span>Chọn hình ảnh</span>
+                        </>
+                      )}
+                    </button>
+                    {bgImage && (
+                      <button
+                        type="button"
+                        onClick={() => setValue(`bg_${key}_image`, "")}
+                        className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200"
+                        title="Xóa hình ảnh"
+                      >
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                  {bgImage && (
+                    <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 truncate">
+                      {bgImage}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Opacity Slider */}
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Độ trong suốt: {bgOpacity}%
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={bgOpacity}
+                  onChange={(e) =>
+                    setValue(`bg_${key}_opacity`, parseInt(e.target.value))
+                  }
+                  className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+              </div>
+
+              {/* Preview */}
+              <div className="mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Xem trước
+                </label>
+                <div
+                  className="w-full h-24 rounded-lg border-2 border-gray-300 dark:border-gray-600 overflow-hidden relative"
+                  style={{
+                    backgroundColor:
+                      bgType === "color" ? bgColor : "transparent",
+                    backgroundImage:
+                      bgType === "image" && bgImage
+                        ? `url(${bgImage})`
+                        : "none",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    opacity: bgOpacity / 100,
+                  }}
+                >
+                  {bgType === "image" && !bgImage && (
+                    <div className="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-gray-500 text-xs">
+                      Chưa có hình ảnh
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  // Render Logo Management Section
+  const renderLogoManagement = () => (
+    <div className="col-span-1 lg:col-span-2 xl:col-span-3 p-5 bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900 dark:to-blue-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded  transition-all duration-200">
+      <div className="flex items-center gap-2 mb-5 pb-3 border-b-2 border-blue-300 dark:border-blue-600">
+        <svg
+          className="w-6 h-6 text-blue-600 dark:text-blue-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+          />
+        </svg>
+        <span className="font-bold text-blue-700 dark:text-blue-300 text-lg">
           Quản lý Logo/Hình ảnh
         </span>
       </div>
@@ -698,7 +1051,7 @@ export default function ConfigSystem() {
       </div>
 
       {/* Input thêm logo mới */}
-      <div className="mb-5 bg-white dark:bg-gray-800 rounded-lg p-4 border-2 border-gray-200 dark:border-gray-600">
+      <div className="mb-5 bg-white dark:bg-gray-800 rounded  p-4 border-2 border-gray-200 dark:border-gray-600">
         {uploadMode === "url" ? (
           <div className="flex gap-3">
             <input
@@ -706,12 +1059,12 @@ export default function ConfigSystem() {
               value={logoInput}
               onChange={(e) => setLogoInput(e.target.value)}
               placeholder="Nhập URL hình ảnh..."
-              className="flex-1 px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 focus:border-rose-500 dark:focus:border-rose-400 focus:ring-2 focus:ring-rose-200 dark:focus:ring-rose-800 rounded-lg text-sm transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="flex-1 px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 focus:border-rose-500 dark:focus:border-rose-400 focus:ring-2 focus:ring-rose-200 dark:focus:ring-rose-800 rounded  text-sm transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
             <button
               type="button"
               onClick={handleAddLogo}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200"
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white rounded  font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200"
             >
               <svg
                 className="w-5 h-5"
@@ -737,10 +1090,10 @@ export default function ConfigSystem() {
                 type="file"
                 accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml"
                 onChange={handleFileSelect}
-                className="flex-1 px-3 py-2 border-2 border-gray-300 focus:border-rose-500 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-rose-500 file:to-rose-600 file:text-white hover:file:from-rose-600 hover:file:to-rose-700 file:shadow-md file:cursor-pointer transition-all duration-200"
+                className="flex-1 px-3 py-2 border-2 border-gray-300 focus:border-rose-500 rounded  text-sm file:mr-4 file:py-2 file:px-4 file:rounded  file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-rose-500 file:to-rose-600 file:text-white hover:file:from-rose-600 hover:file:to-rose-700 file:shadow-md file:cursor-pointer transition-all duration-200"
               />
               {selectedFile && (
-                <div className="flex items-center gap-2 px-3 py-2 bg-blue-100 border-2 border-blue-300 rounded-lg">
+                <div className="flex items-center gap-2 px-3 py-2 bg-blue-100 border-2 border-blue-300 rounded ">
                   <svg
                     className="w-4 h-4 text-blue-600"
                     fill="none"
@@ -765,7 +1118,7 @@ export default function ConfigSystem() {
               type="button"
               onClick={handleAddLogo}
               disabled={!selectedFile}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded  font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
             >
               <svg
                 className="w-5 h-5"
@@ -789,7 +1142,7 @@ export default function ConfigSystem() {
       {/* Danh sách logos */}
       <div className="space-y-3">
         {loadingLogos ? (
-          <div className="flex items-center justify-center py-8 bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-200 dark:border-gray-600">
+          <div className="flex items-center justify-center py-8 bg-white dark:bg-gray-800 rounded  border-2 border-gray-200 dark:border-gray-600">
             <svg
               className="w-8 h-8 text-rose-500 dark:text-rose-400 animate-spin"
               fill="none"
@@ -808,7 +1161,7 @@ export default function ConfigSystem() {
             </span>
           </div>
         ) : logos.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+          <div className="flex flex-col items-center justify-center py-12 bg-white dark:bg-gray-800 rounded  border-2 border-dashed border-gray-300 dark:border-gray-600">
             <svg
               className="w-16 h-16 text-gray-400 dark:text-gray-500 mb-3"
               fill="none"
@@ -833,7 +1186,7 @@ export default function ConfigSystem() {
           logos.map((logo, index) => (
             <div
               key={logo.id}
-              className="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-rose-300 dark:hover:border-rose-500 hover:shadow-lg transition-all duration-200"
+              className="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded  border-2 border-gray-200 dark:border-gray-600 hover:border-rose-300 dark:hover:border-rose-500 hover:shadow-lg transition-all duration-200"
             >
               {/* Số thứ tự & Reorder buttons */}
               <div className="flex flex-col gap-1">
@@ -843,11 +1196,11 @@ export default function ConfigSystem() {
                     index > 0 && handleReorderLogos(index, index - 1)
                   }
                   disabled={index === 0}
-                  className="px-2 py-1 text-xs bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 font-bold"
+                  className="px-2 py-1 text-xs bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 rounded  disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 font-bold"
                 >
                   ↑
                 </button>
-                <div className="px-2 py-1 text-sm font-bold text-center bg-gradient-to-r from-rose-100 to-pink-100 rounded-lg text-rose-700">
+                <div className="px-2 py-1 text-sm font-bold text-center bg-gradient-to-r from-rose-100 to-pink-100 rounded  text-rose-700">
                   {index + 1}
                 </div>
                 <button
@@ -857,14 +1210,14 @@ export default function ConfigSystem() {
                     handleReorderLogos(index, index + 1)
                   }
                   disabled={index === logos.length - 1}
-                  className="px-2 py-1 text-xs bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 font-bold"
+                  className="px-2 py-1 text-xs bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 rounded  disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 font-bold"
                 >
                   ↓
                 </button>
               </div>
 
               {/* Preview ảnh */}
-              <div className="w-24 h-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-gray-300 flex items-center justify-center overflow-hidden shadow-sm">
+              <div className="w-24 h-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded  border-2 border-gray-300 flex items-center justify-center overflow-hidden shadow-sm">
                 <img
                   src={
                     logo.url.startsWith("http")
@@ -898,11 +1251,11 @@ export default function ConfigSystem() {
                       handleUpdateLogo(logo.id, e.target.value);
                     }
                   }}
-                  className="flex-1 px-4 py-2 border-2 border-rose-500 dark:border-rose-400 focus:ring-2 focus:ring-rose-200 dark:focus:ring-rose-800 rounded-lg text-sm transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="flex-1 px-4 py-2 border-2 border-rose-500 dark:border-rose-400 focus:ring-2 focus:ring-rose-200 dark:focus:ring-rose-800 rounded  text-sm transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   autoFocus
                 />
               ) : (
-                <div className="flex-1 text-sm text-gray-700 dark:text-gray-300 truncate font-mono bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-lg">
+                <div className="flex-1 text-sm text-gray-700 dark:text-gray-300 truncate font-mono bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded ">
                   {logo.url}
                 </div>
               )}
@@ -914,7 +1267,7 @@ export default function ConfigSystem() {
                   onClick={() =>
                     setEditingIndex(editingIndex === index ? null : index)
                   }
-                  className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded  font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200"
                 >
                   <svg
                     className="w-4 h-4"
@@ -943,7 +1296,7 @@ export default function ConfigSystem() {
                 <button
                   type="button"
                   onClick={() => handleDeleteLogo(logo.id)}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded  font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200"
                 >
                   <svg
                     className="w-4 h-4"
@@ -968,7 +1321,7 @@ export default function ConfigSystem() {
 
       {/* Preview danh sách logos */}
       {logos.length > 0 && (
-        <div className="mt-5 p-5 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 border-gray-300 dark:border-gray-600 shadow-sm">
+        <div className="mt-5 p-5 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded  border-2 border-gray-300 dark:border-gray-600 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <svg
               className="w-5 h-5 text-rose-600 dark:text-rose-400"
@@ -996,10 +1349,10 @@ export default function ConfigSystem() {
               {logos.length} logo(s)
             </span>
           </div>
-          <div className="flex justify-center items-center gap-6 flex-wrap p-4 bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+          <div className="flex justify-center items-center gap-6 flex-wrap p-4 bg-white dark:bg-gray-800 rounded  border-2 border-dashed border-gray-300 dark:border-gray-600">
             {logos.map((logo, index) => (
               <div key={logo.id} className="group relative">
-                <div className="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-gray-300 group-hover:border-rose-400 flex items-center justify-center overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-200">
+                <div className="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded  border-2 border-gray-300 group-hover:border-rose-400 flex items-center justify-center overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-200">
                   <img
                     src={
                       logo.url.startsWith("http")
@@ -1033,13 +1386,13 @@ export default function ConfigSystem() {
   );
 
   return (
-    <div className="p-6 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 shadow-lg rounded-xl">
+    <div className="p-6 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 shadow-lg rounded ">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Header with Action Buttons */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border-2 border-blue-200 dark:border-blue-700 rounded-xl p-4 shadow-sm">
+        <div className="bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-900 dark:to-blue-900 border-2 border-blue-200 dark:border-blue-700 rounded  p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-xl flex items-center justify-center shadow-md">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded  flex items-center justify-center shadow-md">
                 <svg
                   className="w-7 h-7 text-white"
                   fill="none"
@@ -1076,7 +1429,7 @@ export default function ConfigSystem() {
                 type="button"
                 onClick={handleReload}
                 disabled={loading}
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-500 to-gray-600 dark:from-gray-600 dark:to-gray-700 hover:from-gray-600 hover:to-gray-700 dark:hover:from-gray-700 dark:hover:to-gray-800 disabled:from-gray-300 disabled:to-gray-400 dark:disabled:from-gray-700 dark:disabled:to-gray-800 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-500 to-gray-600 dark:from-gray-600 dark:to-gray-700 hover:from-gray-600 hover:to-gray-700 dark:hover:from-gray-700 dark:hover:to-gray-800 disabled:from-gray-300 disabled:to-gray-400 dark:disabled:from-gray-700 dark:disabled:to-gray-800 text-white rounded  font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
               >
                 <svg
                   className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
@@ -1098,7 +1451,7 @@ export default function ConfigSystem() {
               {/* <button
                 type="button"
                 disabled
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded  font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
               >
                 <svg
                   className="w-5 h-5"
@@ -1120,7 +1473,7 @@ export default function ConfigSystem() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 hover:from-green-600 hover:to-green-700 dark:hover:from-green-700 dark:hover:to-green-800 disabled:from-gray-300 disabled:to-gray-400 dark:disabled:from-gray-700 dark:disabled:to-gray-800 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 hover:from-green-600 hover:to-green-700 dark:hover:from-green-700 dark:hover:to-green-800 disabled:from-gray-300 disabled:to-gray-400 dark:disabled:from-gray-700 dark:disabled:to-gray-800 text-white rounded  font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
               >
                 <svg
                   className="w-5 h-5"
@@ -1153,6 +1506,9 @@ export default function ConfigSystem() {
           {Object.entries(switchFields).map(([groupTitle, fields], index) =>
             renderSwitchGroup(groupTitle, fields, index),
           )}
+
+          {/* Background Settings Section */}
+          {renderBackgroundSettings()}
 
           {/* Logo Management Section */}
           {renderLogoManagement()}

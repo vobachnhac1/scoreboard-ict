@@ -34,14 +34,14 @@ export default function JudgeScore({ judge, score, isHighest = false, isLowest =
   return (
     <div className="relative group">
       {/* Main card */}
-      <div className={`${cardBgColor} rounded-2xl w-40 h-40 flex flex-col items-center justify-center text-white shadow-2xl border-4 ${borderColor} transform transition-all duration-300 hover:scale-105 ${hoverShadow}`}>
+      <div className={`${cardBgColor} rounded w-[200px] h-[170px] flex flex-col items-center justify-center text-white shadow-2xl transform transition-all duration-300 hover:scale-105 ${hoverShadow}`}>
         {/* Judge label */}
-        <div className={`absolute -top-3 left-1/2 transform -translate-x-1/2 ${labelBgColor} px-4 py-1 rounded-full border-2 ${labelBorderColor}`}>
-          <p className="text-xs font-bold tracking-wider text-center">GIÁM ĐỊNH {judge}</p>
+        <div className={`absolute w-[150px] -top-3 left-1/2 transform -translate-x-1/2 ${labelBgColor} px-4 py-2 rounded`}>
+          <p className="text-[12px] font-bold tracking-wider text-center">GIÁM ĐỊNH {judge}</p>
         </div>
 
         {/* Score */}
-        <p className="text-6xl font-black mt-4 drop-shadow-lg">{score}</p>
+        <p className="text-[100px] font-black mt-4 drop-shadow-lg">{score}</p>
 
         {/* Decorative corner - Chỉ hiện khi không bị gạch */}
         {!isGrayed && (

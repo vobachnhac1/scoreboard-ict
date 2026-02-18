@@ -55,8 +55,6 @@ getMacAddress = () => {
 getUUID = async ()=>{
     try {
         const data = await si.uuid()
-        console.log("✅ UUIDs:", data);
-        console.log("📦 Device UUID:", data.os); // hoặc data.hardware, data.machine
         return data.hardware
     } catch (error) {
         console.error('❌ Error:', error)

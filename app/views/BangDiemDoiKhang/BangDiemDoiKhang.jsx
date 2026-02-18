@@ -18,6 +18,7 @@ import {
   disconnectSocket,
 } from "../../config/redux/reducers/socket-reducer";
 import { initSocket as initSocketUtil } from "../../utils/socketUtils";
+import IpMasker from "../../common/IpMasker";
 
 // Import flag manager utility
 import { getFlagImage, getDefaultFlag } from "../../utils/flagManager";
@@ -396,6 +397,9 @@ const BangDiemDoiKhang = () => {
   const [showMatchListModal, setShowMatchListModal] = useState(false); // HIỂN THỊ DANH SÁCH TRẬN ĐẤU
   const [matchesList, setMatchesList] = useState([]); // DANH SÁCH TRẬN ĐẤU
 
+  // Secondary display popup state (F9 hotkey)
+  const [showSecondaryDisplay, setShowSecondaryDisplay] = useState(false);
+
   // State vô hiệu hóa button
   const [disableRedButtons, setDisableRedButtons] = useState(false);
   const [disableBlueButtons, setDisableBlueButtons] = useState(false);
@@ -544,6 +548,30 @@ const BangDiemDoiKhang = () => {
     row_index: matchData.row_index,
     config_system: matchData.config_system || {},
   });
+
+  // Background style từ config
+  const getBackgroundStyle = () => {
+    const configSystem = matchInfo.config_system || {};
+    const bgType = configSystem.bg_doikhang_type || "color";
+    const bgColor = configSystem.bg_doikhang_color || "#000000";
+    const bgOpacity = configSystem.bg_doikhang_opacity || 100;
+    const bgImage = configSystem.bg_doikhang_image || "";
+
+    if (bgType === "image" && bgImage) {
+      return {
+        backgroundImage: `url(${bgImage.startsWith("http") ? bgImage : `http://localhost:6789${bgImage}`})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        opacity: bgOpacity / 100,
+      };
+    } else {
+      return {
+        backgroundColor: bgColor,
+        opacity: bgOpacity / 100,
+      };
+    }
+  };
 
   // State cho điểm số
   const [redScore, setRedScore] = useState(0);
@@ -806,19 +834,30 @@ const BangDiemDoiKhang = () => {
   };
 
   // Lắng nghe response từ server khi fetch danh sách thiết bị
+  const serverIpHash = useRef();
   useSocketEvent("RES_ROOM_ADMIN", (response) => {
     if (response.path === "ADMIN_FETCH_CONN" && response.status === 200) {
       const devices = Object.values(response.data.ls_conn);
+
+      // Tìm admin_ip từ item có register_status_code === "ADMIN"
+      const adminItem = devices.find(
+        (ele) => ele?.register_status_code === "ADMIN",
+      );
+      const serverIp = adminItem?.admin_ip || "N/A";
+      serverIpHash.current = IpMasker.mask(serverIp, "hash", 999, "Server");
+
       const transformedDevices = devices
         .filter(
           (device) =>
-            device.register_status_code !== "ADMIN" &&
+            device.register_status_code !== "ADMIN" ||
             device?.client_ip != "::1",
-        )
+        ) // Only judge devices
         .map((device, index) => ({
           referrer: device.referrer,
           device_name: device.device_name,
           device_ip: device.client_ip || "N/A",
+          server_ip: serverIp, // Thêm server IP
+          server_ip_hash: serverIpHash.current, // Thêm server IP hash
           connected: device.connect_status_code === "CONNECTED",
           socket_id: device.socket_id,
           room_id: device.room_id,
@@ -1106,6 +1145,144 @@ const BangDiemDoiKhang = () => {
       clearInterval(pollingInterval);
     };
   }, []);
+
+  // F9 hotkey listener - Toggle secondary display window (Electron)
+  useEffect(() => {
+    const handleKeyPress = async (event) => {
+      if (event.key === "F9") {
+        event.preventDefault();
+
+        // Toggle secondary display window
+        if (!showSecondaryDisplay) {
+          // Mở cửa sổ mới
+          if (window.electron && window.electron.openSecondaryDisplay) {
+            const result = await window.electron.openSecondaryDisplay({
+              matchInfo: matchInfo,
+              redScore: redScore,
+              blueScore: blueScore,
+              timeLeft: timeLeft,
+              currentRound: currentRound,
+              isRunning: isRunning,
+              isBreakTime: isBreakTime,
+              isMedicalTime: isMedicalTime,
+              lsLogo: lsLogo,
+              flashingRefs: flashingRefs,
+              remindRed: remindRed,
+              remindBlue: remindBlue,
+              warnRed: warnRed,
+              warnBlue: warnBlue,
+              kickRed: kickRed,
+              kickBlue: kickBlue,
+              medicalRed: medicalRed,
+              medicalBlue: medicalBlue,
+              buttonPermissions: buttonPermissions,
+              screenType: "doikhang",
+            });
+            console.log("🖥️ Secondary display opened:", result);
+            setShowSecondaryDisplay(true);
+          }
+        } else {
+          // Đóng cửa sổ
+          if (window.electron && window.electron.closeSecondaryDisplay) {
+            const result = await window.electron.closeSecondaryDisplay();
+            console.log("🖥️ Secondary display closed:", result);
+            setShowSecondaryDisplay(false);
+          }
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [
+    showSecondaryDisplay,
+    matchInfo,
+    redScore,
+    blueScore,
+    timeLeft,
+    currentRound,
+    isRunning,
+    isBreakTime,
+    isMedicalTime,
+    lsLogo,
+    flashingRefs,
+    remindRed,
+    remindBlue,
+    warnRed,
+    warnBlue,
+    kickRed,
+    kickBlue,
+    medicalRed,
+    medicalBlue,
+    buttonPermissions,
+  ]);
+
+  // Update secondary display when data changes
+  useEffect(() => {
+    if (
+      showSecondaryDisplay &&
+      window.electron &&
+      window.electron.updateSecondaryDisplay
+    ) {
+      const dataToUpdate = {
+        matchInfo: matchInfo,
+        redScore: redScore,
+        blueScore: blueScore,
+        timeLeft: timeLeft,
+        currentRound: currentRound,
+        isRunning: isRunning,
+        isBreakTime: isBreakTime,
+        breakTimeLeft: breakTimeLeft,
+        isMedicalTime: isMedicalTime,
+        medicalTimeLeft: medicalTimeLeft,
+        medicalTeam: medicalTeam,
+        ready: ready,
+        pauseMatch: pauseMatch,
+        lsLogo: lsLogo,
+        flashingRefs: flashingRefs,
+        remindRed: remindRed,
+        remindBlue: remindBlue,
+        warnRed: warnRed,
+        warnBlue: warnBlue,
+        kickRed: kickRed,
+        kickBlue: kickBlue,
+        medicalRed: medicalRed,
+        medicalBlue: medicalBlue,
+        buttonPermissions: buttonPermissions,
+        announcedWinner: announcedWinner,
+        screenType: "doikhang",
+      };
+      console.log("🔄 [DoiKhang] Updating secondary display:", dataToUpdate);
+      window.electron.updateSecondaryDisplay(dataToUpdate);
+    }
+  }, [
+    showSecondaryDisplay,
+    matchInfo,
+    redScore,
+    blueScore,
+    timeLeft,
+    currentRound,
+    isRunning,
+    isBreakTime,
+    breakTimeLeft,
+    isMedicalTime,
+    medicalTimeLeft,
+    medicalTeam,
+    ready,
+    pauseMatch,
+    lsLogo,
+    flashingRefs,
+    remindRed,
+    remindBlue,
+    warnRed,
+    warnBlue,
+    kickRed,
+    kickBlue,
+    medicalRed,
+    medicalBlue,
+    buttonPermissions,
+    announcedWinner,
+  ]);
 
   // Ref để lưu các handlers (tránh stale closure)
   const handlersRef = useRef({});
@@ -1598,7 +1775,7 @@ const BangDiemDoiKhang = () => {
       console.log("🚀 Navigating to match with data:", newMatchData);
 
       // Navigate với state mới
-      navigate("/scoreboard/vovinam", {
+      navigate("/bang-diem/doi-khang", {
         state: { matchData: newMatchData, returnUrl },
         replace: true,
       });
@@ -2861,7 +3038,7 @@ const BangDiemDoiKhang = () => {
       console.log("Updated matchInfo: ", matchInfo);
 
       // 7. Navigate sang trận trước
-      navigate("/scoreboard/vovinam", {
+      navigate("/bang-diem/doi-khang", {
         state: {
           matchData: matchData,
           returnUrl: returnUrl,
@@ -3078,7 +3255,7 @@ const BangDiemDoiKhang = () => {
         winner: undefined,
       });
 
-      navigate("/scoreboard/vovinam", {
+      navigate("/bang-diem/doi-khang", {
         state: {
           matchData: matchData,
           returnUrl: returnUrl,
@@ -3223,7 +3400,13 @@ const BangDiemDoiKhang = () => {
   };
 
   return (
-    <div className="bg-black h-screen w-screen text-white flex flex-col items-center justify-start relative overflow-hidden pb-20">
+    <div className="h-screen w-screen text-white flex flex-col items-center justify-start relative overflow-hidden pb-20">
+      {/* Background layer with opacity */}
+      <div
+        className="absolute inset-0 -z-10"
+        style={getBackgroundStyle()}
+      ></div>
+
       {/* CSS Animations cho hiệu ứng chiến thắng */}
       <style>{`
         @keyframes victoryPulse {
@@ -4787,6 +4970,7 @@ const BangDiemDoiKhang = () => {
         onInitSocket={handleReConnectionSocket}
         onGenerateQR={generateQR}
         onSetPermissionRef={onSetPermissionRef}
+        serverIpHash={serverIpHash.current}
       />
 
       {/* Modal thông báo chung */}

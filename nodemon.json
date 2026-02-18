@@ -1,0 +1,22 @@
+{
+  "watch": [
+    "server/**/*",
+    "main.js"
+  ],
+  "ext": "js,json",
+  "ignore": [
+    "node_modules/**/*",
+    "public/**/*",
+    "app/**/*",
+    ".webpack-cache/**/*",
+    "dist/**/*",
+    "build/**/*"
+  ],
+  "exec": "electron .",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "delay": 1000,
+  "verbose": true
+}
+

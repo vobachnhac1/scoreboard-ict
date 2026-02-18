@@ -1,7 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { LinkIcon } from "@heroicons/react/24/outline";
-import logoVoHienDai from "../../assets/logo_vohiendai.jpg";
+import logoDigiSports from "../../assets/logo_nhacvb_light.png";
+import backgroundLogo from "../../assets/background_logo.png";
+
 export default function Dashboard() {
   const navigate = useNavigate();
 
@@ -9,141 +11,191 @@ export default function Dashboard() {
     {
       title: "Quản lý giải đấu",
       description: "Tạo và quản lý các giải đấu, trận đấu, đội thi đấu",
-      icon: "🏆",
+      icon: (
+        <svg
+          className="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+          />
+        </svg>
+      ),
       href: "/management/general-setting/competition-management",
       gradient: "from-blue-500 to-blue-600",
+      bgGradient:
+        "from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20",
+      iconBg: "from-blue-500 to-blue-600",
       stats: { label: "Giải đấu", value: "0" },
     },
     {
       title: "Quản lý cài đặt",
       description: "Thiết lập thông tin giải đấu, logo, số giám định",
-      icon: "⚙️",
+      icon: (
+        <svg
+          className="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        </svg>
+      ),
       href: "/management/general-setting/config-system",
       gradient: "from-blue-500 to-blue-600",
+      bgGradient:
+        "from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20",
+      iconBg: "from-blue-500 to-blue-600",
       stats: { label: "Cấu hình", value: "0" },
     },
-    // {
-    //   title: 'Bảng điểm',
-    //   description: 'Xem và quản lý kết quả thi đấu theo thời gian thực',
-    //   icon: '📊',
-    //   href: '/scoreboard',
-    //   gradient: 'from-orange-500 to-orange-600',
-    //   stats: { label: 'Trận đấu', value: '48' }
-    // },
     {
       title: "Quản lý kết nối",
       description: "Quản lý cấp quyền những thiết bị đang kết nối",
-      icon: <LinkIcon className="w-8 h-8 text-white" />,
+      icon: (
+        <svg
+          className="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+          />
+        </svg>
+      ),
       href: "/management/connect",
-      gradient: "from-blue-500 to-blue-600",
+      gradient: "from-emerald-500 to-teal-600",
+      bgGradient:
+        "from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20",
+      iconBg: "from-emerald-500 to-teal-600",
       stats: { label: "Kết nối", value: "0" },
+    },
+    {
+      title: "Hướng dẫn sử dụng",
+      description: "Tài liệu chi tiết về cách sử dụng phần mềm",
+      icon: (
+        <svg
+          className="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+          />
+        </svg>
+      ),
+      href: "/user-guide",
+      gradient: "from-orange-500 to-red-600",
+      bgGradient:
+        "from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20",
+      iconBg: "from-orange-500 to-red-600",
+      stats: { label: "Tài liệu", value: "7" },
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-blue-600/10 to-blue-600/10 dark:from-blue-500/5 dark:via-blue-500/5 dark:to-blue-500/5"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center mb-6">
-              <img
-                src={logoVoHienDai}
-                alt="Logo Võ Hiện Đại"
-                className="w-20 h-20 object-contain rounded-2xl shadow-2xl hover:scale-110 transition-transform duration-300"
-              />
+      <div className="relative overflow-hidden z-10">
+        {/* Background gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-blue-600/5 to-blue-600/5 dark:from-blue-500/10 dark:via-blue-500/10 dark:to-blue-500/10"></div>
+
+        {/* Background Logo - Large watermark with effects */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="relative w-full h-full flex items-center justify-center">
+            {/* Animated glow effect */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div
+                className="w-[600px] h-[600px] bg-gradient-to-r from-blue-500/10 via-blue-500/10 to-blue-500/10 rounded-full blur-3xl animate-pulse"
+                style={{ animationDuration: "4s" }}
+              ></div>
             </div>
-            <h1 className="text-5xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">
-              PHẦN MỀM QUẢN LÝ THI ĐẤU
+
+            {/* Main logo watermark */}
+            {/* <div className="relative">
+              <img
+                src={backgroundLogo}
+                alt="Background Logo"
+                className="w-[full] h-auto opacity-[0.3] dark:opacity-[0.12] object-contain"
+                style={{
+                  filter: "blur(0.5px) brightness(1.2)",
+                }}
+              />
+            </div> */}
+          </div>
+        </div>
+
+        {/* Decorative gradient orbs */}
+        <div className="absolute top-0 left-0 w-72 h-72 bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-400/5 via-blue-400/5 to-blue-400/5 rounded-full blur-3xl"></div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="text-center">
+            {/* Logo with animated ring */}
+            <div className="inline-flex items-center justify-center mb-8 relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-blue-500 to-blue-500 rounded blur-2xl opacity-20 animate-pulse"></div>
+              <div className="relative bg-white dark:bg-gray-800 p-4 rounded-3xl shadow-2xl ring-4 ring-blue-500/20 dark:ring-blue-400/20">
+                <img
+                  src={logoDigiSports}
+                  alt="Logo DigiSports"
+                  className="w-24 h-24 object-contain hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+            </div>
+
+            {/* Title with gradient */}
+            <h1 className="text-6xl md:text-7xl font-black mb-6 tracking-tight">
+              <span className="bg-gradient-to-r from-blue-600 via-blue-600 to-blue-600 dark:from-blue-400 dark:via-blue-400 dark:to-blue-400 bg-clip-text text-transparent">
+                DIGISPORTS
+              </span>
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
-              Giải pháp toàn diện cho việc tổ chức và quản lý các giải đấu thể
-              thao chuyên nghiệp
+
+            <p className="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-4">
+              Phần mềm thi đấu chuyên nghiệp
             </p>
-            <div className="flex items-center justify-center gap-4">
+
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-10 leading-relaxed">
+              Giải pháp toàn diện cho việc tổ chức và quản lý các giải đấu thể
+              thao. Hệ thống chấm điểm thời gian thực, quản lý kết nối thiết bị
+              và báo cáo chi tiết.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-wrap items-center justify-center gap-4">
               <button
                 onClick={() =>
                   navigate("/management/general-setting/competition-management")
                 }
-                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-600 text-white font-bold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
+                className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-600 text-white font-bold rounded   shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
               >
-                Bắt đầu ngay
-              </button>
-              <button
-                onClick={() =>
-                  navigate("/management/general-setting/config-system")
-                }
-                className="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-200 border-2 border-gray-200 dark:border-gray-700"
-              >
-                Cấu hình
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Features Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4">
-            Tính năng nổi bật
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            Khám phá các tính năng mạnh mẽ của hệ thống
-          </p>
-        </div>
-
-        <div
-          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${features?.length} gap-6`}
-        >
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              onClick={() => navigate(feature.href)}
-              className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-105"
-            >
-              {/* Gradient overlay */}
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
-              ></div>
-
-              <div className="relative p-6">
-                {/* Icon */}
-                <div
-                  className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-xl flex items-center justify-center text-3xl mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
-                >
-                  {feature.icon}
-                </div>
-
-                {/* Title */}
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 transition-all duration-300">
-                  {feature.title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
-                  {feature.description}
-                </p>
-
-                {/* Stats */}
-                <div
-                  className={`flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700`}
-                >
-                  <span className="text-xs text-gray-500 dark:text-gray-400 font-semibold">
-                    {feature?.stats?.label}
-                  </span>
-                  <span
-                    className={`text-2xl font-black bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent`}
-                  >
-                    {feature?.stats?.value}
-                  </span>
-                </div>
-
-                {/* Arrow icon */}
-                <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <span className="relative flex items-center gap-2">
                   <svg
-                    className="w-6 h-6 text-gray-400"
+                    className="w-5 h-5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -152,13 +204,138 @@ export default function Dashboard() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M9 5l7 7-7 7"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
                     />
                   </svg>
+                  Bắt đầu ngay
+                </span>
+              </button>
+
+              <button
+                onClick={() =>
+                  navigate("/management/general-setting/config-system")
+                }
+                className="group px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold rounded   shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-400"
+              >
+                <span className="flex items-center gap-2">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    />
+                  </svg>
+                  Cấu hình hệ thống
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Features Grid */}
+      <div className="relative max-w-7xl mx-auto px-4 py-10 z-10">
+        <div className="text-center mb-8">
+          <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
+            Tính năng nổi bật
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400">
+            Khám phá các tính năng mạnh mẽ của hệ thống quản lý thi đấu
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {features.map((feature, index) => (
+            <div
+              key={index}
+              onClick={() => navigate(feature.href)}
+              className="group relative cursor-pointer"
+            >
+              {/* Card */}
+              <div className="relative h-full bg-white dark:bg-gray-800 rounded   shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 dark:border-gray-700 hover:border-transparent">
+                {/* Gradient background on hover */}
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${feature.bgGradient} opacity-0 transition-opacity duration-500`}
+                ></div>
+
+                {/* Animated gradient border */}
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 transition-opacity duration-500 blur-xl`}
+                ></div>
+
+                <div className="relative p-8 h-full flex flex-col">
+                  {/* Icon container */}
+                  <div className="mb-6">
+                    <div
+                      className={`inline-flex p-4 bg-gradient-to-br ${feature.iconBg} rounded   shadow-lg transition-all duration-500 text-white`}
+                    >
+                      {feature.icon}
+                    </div>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 transition-all duration-500">
+                    {feature.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-gray-600 dark:text-gray-400 mb-6 flex-grow leading-relaxed">
+                    {feature.description}
+                  </p>
+
+                  {/* Stats & Arrow */}
+                  <div className="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider mb-1">
+                        {feature?.stats?.label}
+                      </p>
+                      <p
+                        className={`text-3xl font-black bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent`}
+                      >
+                        {feature?.stats?.value}
+                      </p>
+                    </div>
+
+                    {/* Arrow icon */}
+                    <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center transition-all duration-500">
+                      <svg
+                        className="w-6 h-6 text-gray-400 transition-all duration-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7l5 5m0 0l-5 5m5-5H6"
+                        />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {/* Hover effect - floating animation */}
+              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-500/20 via-blue-500/20 to-blue-500/20 rounded   blur-2xl opacity-0  transition-opacity duration-500 transform "></div>
             </div>
           ))}
+        </div>
+
+        {/* Bottom CTA */}
+        <div className="mt-20 text-center">
+          <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20 rounded-full border border-blue-200 dark:border-blue-800">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Hệ thống đang hoạt động ổn định
+            </p>
+          </div>
         </div>
       </div>
     </div>

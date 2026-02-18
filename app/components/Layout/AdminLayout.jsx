@@ -13,9 +13,13 @@ import {
   UserGroupIcon,
   CalendarIcon,
   DocumentTextIcon,
+  BookOpenIcon,
+  ArrowUpCircleIcon,
   ClipboardDocumentListIcon,
   ExclamationTriangleIcon,
   DocumentChartBarIcon,
+  ShieldCheckIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import Breadcrumb from "../Breadcrumb";
 
@@ -52,9 +56,29 @@ const AdminLayout = ({ children }) => {
       icon: ServerStackIcon,
     },
     {
+      name: "Đồng bộ dữ liệu",
+      href: "/management/data-sync",
+      icon: ArrowPathIcon,
+    },
+    {
       name: "Quản lý mẫu báo cáo",
       href: "/reports",
       icon: DocumentTextIcon,
+    },
+    {
+      name: "Hướng dẫn sử dụng",
+      href: "/user-guide",
+      icon: BookOpenIcon,
+    },
+    {
+      name: "Cập nhật phần mềm",
+      href: "/update-manager",
+      icon: ArrowUpCircleIcon,
+    },
+    {
+      name: "Kích hoạt bản quyền",
+      href: "/license-activation",
+      icon: ShieldCheckIcon,
     },
     // {
     //   name: "Quản lý cài đặt chung",
@@ -80,12 +104,12 @@ const AdminLayout = ({ children }) => {
     //   children: [
     //     {
     //       name: "Vovinam",
-    //       href: "/scoreboard/vovinam",
+    //       href: "/bang-diem/doi-khang",
     //       icon: ClipboardDocumentListIcon
     //     },
     //     {
     //       name: "Chấm điểm",
-    //       href: "/scoreboard/vovinam-score",
+    //       href: "/bang-diem/quyen",
     //       icon: DocumentTextIcon
     //     },
     //   ],

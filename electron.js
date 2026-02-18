@@ -1,10 +1,21 @@
 const { app, globalShortcut, BrowserWindow, ipcMain, dialog } = require('electron');
 const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-assembler');
 const { fork } = require('child_process');
+const { autoUpdater } = require('electron-updater');
 
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
+
+// Configure electron-log for auto-updater
+const log = require('electron-log');
+log.transports.file.level = 'info';
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+
+// Configure auto-updater
+autoUpdater.autoDownload = false; // Không tự động download, để user quyết định
+autoUpdater.autoInstallOnAppQuit = true; // Tự động install khi quit app
 
 // Set userData path cho server code TRƯỚC KHI require app.js
 // Đảm bảo app.getPath('userData') luôn hoạt động
@@ -33,6 +44,7 @@ try {
 }
 
 let mainWindow;
+let secondaryDisplayWindow = null; // Cửa sổ hiển thị điểm phụ
 
 ipcMain.handle('dialog:openFolder', async () => {
   const result = await dialog.showOpenDialog({
@@ -54,6 +66,206 @@ ipcMain.handle('folder:getFiles', async (event, folderPath) => {
     return [];
   }
 });
+
+// Auto-Update IPC Handlers
+ipcMain.handle('check-for-updates', async () => {
+  try {
+    log.info('Manual check for updates triggered');
+    const result = await autoUpdater.checkForUpdates();
+    return result;
+  } catch (error) {
+    log.error('Check for updates error:', error);
+    return { error: error.message };
+  }
+});
+
+ipcMain.handle('download-update', async () => {
+  try {
+    log.info('Download update triggered');
+    await autoUpdater.downloadUpdate();
+    return { success: true };
+  } catch (error) {
+    log.error('Download update error:', error);
+    return { error: error.message };
+  }
+});
+
+ipcMain.handle('quit-and-install', () => {
+  log.info('Quit and install triggered');
+  autoUpdater.quitAndInstall();
+});
+
+ipcMain.handle('get-current-version', () => {
+  const version = app.getVersion();
+  log.info('Current version:', version);
+  return version;
+});
+
+// License IPC Handlers
+ipcMain.handle('license:check-status', async () => {
+  try {
+    const axios = require('axios');
+    const response = await axios.get('http://localhost:6789/api/license/status');
+    return response.data;
+  } catch (error) {
+    log.error('License check error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('license:activate', async (event, licenseKey) => {
+  try {
+    const axios = require('axios');
+    const response = await axios.post('http://localhost:6789/api/license/activate', {
+      license_key: licenseKey,
+    });
+    return response.data;
+  } catch (error) {
+    log.error('License activation error:', error);
+    return {
+      success: false,
+      error: error.response?.data?.error || error.message
+    };
+  }
+});
+
+// Secondary Display Window IPC Handlers
+ipcMain.handle('secondary-display:open', async (event, data) => {
+  try {
+    if (secondaryDisplayWindow) {
+      // Nếu cửa sổ đã tồn tại, focus vào nó
+      secondaryDisplayWindow.focus();
+      // Gửi dữ liệu mới
+      secondaryDisplayWindow.webContents.send('update-score-data', data);
+      return { success: true, message: 'Window already exists, focused and updated' };
+    }
+
+    // Tạo cửa sổ mới
+    secondaryDisplayWindow = new BrowserWindow({
+      width: 1280,
+      height: 720,
+      title: 'Màn hình phụ - Bảng điểm',
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js'),
+        nodeIntegration: false,
+        contextIsolation: true
+      },
+      backgroundColor: '#1e3a8a' // Blue background
+    });
+
+    // Load URL với hash route
+    secondaryDisplayWindow.loadURL('http://localhost:6789/#/secondary-display');
+
+    // Gửi dữ liệu sau khi load xong
+    secondaryDisplayWindow.webContents.on('did-finish-load', () => {
+      secondaryDisplayWindow.webContents.send('update-score-data', data);
+    });
+
+    // Cleanup khi đóng
+    secondaryDisplayWindow.on('closed', () => {
+      secondaryDisplayWindow = null;
+    });
+
+    log.info('Secondary display window opened');
+    return { success: true, message: 'Window created' };
+  } catch (error) {
+    log.error('Secondary display open error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('secondary-display:close', async () => {
+  try {
+    if (secondaryDisplayWindow) {
+      secondaryDisplayWindow.close();
+      secondaryDisplayWindow = null;
+      log.info('Secondary display window closed');
+      return { success: true };
+    }
+    return { success: false, message: 'Window does not exist' };
+  } catch (error) {
+    log.error('Secondary display close error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('secondary-display:update', async (event, data) => {
+  try {
+    if (secondaryDisplayWindow) {
+      secondaryDisplayWindow.webContents.send('update-score-data', data);
+      return { success: true };
+    }
+    return { success: false, message: 'Window does not exist' };
+  } catch (error) {
+    log.error('Secondary display update error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Setup Auto-Updater
+function setupAutoUpdater() {
+  // Check for updates when app starts (after 3 seconds)
+  setTimeout(() => {
+    log.info('Checking for updates...');
+    autoUpdater.checkForUpdates();
+  }, 3000);
+
+  // Event: Update available
+  autoUpdater.on('update-available', (info) => {
+    log.info('Update available:', info);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-available', {
+        version: info.version,
+        releaseDate: info.releaseDate,
+        releaseNotes: info.releaseNotes,
+        files: info.files.map(f => ({
+          url: f.url,
+          size: (f.size / 1024 / 1024).toFixed(2) + ' MB'
+        }))
+      });
+    }
+  });
+
+  // Event: Update not available
+  autoUpdater.on('update-not-available', (info) => {
+    log.info('Update not available:', info);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-not-available', info);
+    }
+  });
+
+  // Event: Download progress
+  autoUpdater.on('download-progress', (progressObj) => {
+    log.info('Download progress:', progressObj.percent);
+    if (mainWindow) {
+      mainWindow.webContents.send('download-progress', {
+        percent: Math.round(progressObj.percent),
+        transferred: (progressObj.transferred / 1024 / 1024).toFixed(2),
+        total: (progressObj.total / 1024 / 1024).toFixed(2),
+        bytesPerSecond: (progressObj.bytesPerSecond / 1024).toFixed(2)
+      });
+    }
+  });
+
+  // Event: Update downloaded
+  autoUpdater.on('update-downloaded', (info) => {
+    log.info('Update downloaded:', info);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-downloaded', info);
+    }
+  });
+
+  // Event: Error
+  autoUpdater.on('error', (error) => {
+    log.error('Update error:', error);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-error', {
+        message: error.message,
+        stack: error.stack
+      });
+    }
+  });
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -90,10 +302,63 @@ function createWindow() {
   });
 }
 
+// License check function
+async function checkLicenseOnStartup() {
+  try {
+    // Đợi server khởi động (3 giây)
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
+    const axios = require('axios');
+    const response = await axios.get('http://localhost:6789/api/license/status');
+
+    if (response.data && response.data.success) {
+      const licenseData = response.data.data;
+
+      if (licenseData.valid) {
+        log.info('✅ License valid. Days remaining:', licenseData.daysRemaining);
+
+        // Gửi thông tin license cho renderer process
+        if (mainWindow) {
+          mainWindow.webContents.send('license-status', {
+            valid: true,
+            data: licenseData
+          });
+        }
+      } else {
+        log.warn('⚠️ License invalid or expired. Require activation.');
+
+        // Gửi thông báo cần kích hoạt
+        if (mainWindow) {
+          mainWindow.webContents.send('license-status', {
+            valid: false,
+            requireActivation: true,
+            data: licenseData
+          });
+        }
+      }
+    }
+  } catch (error) {
+    log.error('❌ License check error:', error.message);
+
+    // Gửi thông báo lỗi
+    if (mainWindow) {
+      mainWindow.webContents.send('license-status', {
+        valid: false,
+        requireActivation: true,
+        error: error.message
+      });
+    }
+  }
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', ()=>{
+  createWindow()
+  setupAutoUpdater();
+  checkLicenseOnStartup(); // Kiểm tra license khi khởi động
+});
 
 app.whenReady().then(() => {
   installExtension(REACT_DEVELOPER_TOOLS)

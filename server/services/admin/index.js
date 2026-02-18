@@ -46,7 +46,17 @@ class Admin {
                 'thoi_gian_bat_dau',
                 'thoi_gian_ket_thuc',
                 'mo_ta_giai_dau',
-                'mon_thi'
+                'mon_thi',
+                // Background fields
+                'bg_quyen_type',
+                'bg_quyen_color',
+                'bg_quyen_image',
+                'bg_doikhang_type',
+                'bg_doikhang_color',
+                'bg_doikhang_image',
+                'bg_vonhac_type',
+                'bg_vonhac_color',
+                'bg_vonhac_image'
             ];
 
             res_config.forEach(element => {

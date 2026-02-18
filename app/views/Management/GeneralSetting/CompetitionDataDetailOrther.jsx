@@ -152,9 +152,9 @@ function TeamCard({
           {/* STT */}
           <div className="flex-shrink-0">
             <div
-              className={`bg-gradient-to-r ${typeColor.gradient} ${typeColor.border} border-2 text-gray-800 dark:text-gray-200 rounded px-4 py-2 font-bold text-base shadow-md min-w-[80px] text-center`}
+              className={`bg-gradient-to-r ${typeColor.gradient} ${typeColor.border} border-2  text-gray-800 dark:text-gray-200 rounded px-4 py-2 font-bold text-base shadow-md min-w-[50px] text-center`}
             >
-              #{row.match_no}
+              {Number(row.match_no)}
             </div>
           </div>
 
@@ -257,7 +257,7 @@ function TeamCard({
             <div
               className={`${typeColor.bg} ${typeColor.text} border-2 ${typeColor.border} rounded px-3 py-1.5 font-bold text-sm shadow-md`}
             >
-              #{row.match_no}
+              {Number(row.match_no)}
             </div>
             <div
               className={`px-3 py-1 rounded font-bold text-xs ${typeColor.bg} ${typeColor.text}`}
@@ -635,6 +635,7 @@ export default function CompetitionDataDetailOrther() {
           SOL: "bg-green-100 text-green-700",
           TUV: "bg-orange-100 text-orange-700",
           DAL: "bg-pink-100 text-pink-700",
+          VON: "bg-yellow-100 text-yellow-700",
         };
         const color = typeColors[row.match_type] || "bg-gray-100 text-gray-700";
 
@@ -656,6 +657,7 @@ export default function CompetitionDataDetailOrther() {
           SOL: "bg-green-100 text-green-700",
           TUV: "bg-orange-100 text-orange-700",
           DAL: "bg-pink-100 text-pink-700",
+          VON: "bg-yellow-100 text-yellow-700",
         };
         const color = typeColors[row.match_type] || "bg-gray-100 text-gray-700";
 
@@ -795,8 +797,6 @@ export default function CompetitionDataDetailOrther() {
   const handleUpdate = async (formData) => {
     try {
       const row = openActions.row;
-      console.log("row: ", row, formData);
-
       const athletes = formData.athletes || [];
       const matchType = formData.match_type || row.match_type;
 
@@ -899,6 +899,8 @@ export default function CompetitionDataDetailOrther() {
           file_name: sheetData.file_name,
           data: updated,
         });
+      } else if (match_type == "VON") {
+        // xoá dữ liệu
       }
 
       // gọi lại dữ liệu
@@ -931,15 +933,22 @@ export default function CompetitionDataDetailOrther() {
 
   // Xử lý vào trận - Chỉ cho format DOL/SOL/TUV/DAL
   const handleMatchStart = async (row) => {
+    // Thực hiện chặn
+    const _match_type = row?.match_type ?? null;
+    let isBlocked = false;
+    if (_match_type == "VON") {
+      isBlocked = !configSystem.data.ap_dung_vonhac;
+    }
+    if (_match_type != "VON") {
+      isBlocked = !configSystem.data.ap_dung_quyen;
+    }
+    if (isBlocked) {
+      await showError("Tính năng đang khoá. Vui lòng thử lại sau.");
+      return;
+    }
+
     try {
-      console.log(
-        "🚀 CompetitionDataDetailOrther - handleMatchStart - row:",
-        row,
-      );
-      console.log(
-        "🚀 CompetitionDataDetailOrther - handleMatchStart - configSystem:",
-        configSystem,
-      );
+
       // Nếu chưa có match_id, tạo team mới
       if (!row.match_id) {
         const createPayload = {
@@ -988,18 +997,25 @@ export default function CompetitionDataDetailOrther() {
         scores: row?.scores || {},
       };
 
-      console.log(
-        "🚀 CompetitionDataDetailOrther - Navigating with matchData:",
-        matchData,
-      );
 
-      // Chuyển sang màn hình thi đấu với state
-      navigate("/scoreboard/vovinam-score", {
-        state: {
-          matchData,
-          returnUrl: `/management/competition-data-other/${id}`,
-        },
-      });
+      // Chuyển màn hình thi đấu Võ Nhạc
+      if (_match_type == "VON") {
+        // Chuyển màn hình thi Võ Nhạc
+        navigate("/bang-diem/vo-nhac", {
+          state: {
+            matchData,
+            returnUrl: `/management/competition-data-other/${id}`,
+          },
+        });
+      } else {
+        // Chuyển màn hình thi đấu Quyền
+        navigate("/bang-diem/quyen", {
+          state: {
+            matchData,
+            returnUrl: `/management/competition-data-other/${id}`,
+          },
+        });
+      }
     } catch (error) {
       console.error("Error starting match:", error);
       showError(
@@ -1461,7 +1477,8 @@ export default function CompetitionDataDetailOrther() {
               <option value="DOL">Đối Luyện</option>
               <option value="SOL">Song Luyện</option>
               <option value="TUV">Tự Vệ</option>
-              <option value="DAL">Đả Luyện</option>
+              <option value="DAL">Đa Luyện</option>
+              <option value="VON">Võ Nhạc</option>
             </select>
 
             {/* Sort */}

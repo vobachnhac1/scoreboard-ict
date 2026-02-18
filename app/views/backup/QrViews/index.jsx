@@ -1,29 +1,40 @@
-import './index.scss';
+import "./index.scss";
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from "react";
 
-import TableDisplay from './TableDisplay';
-import ReadExcel from './ReadExcel';
+import TableDisplay from "./TableDisplay";
+import ReadExcel from "./ReadExcel";
 
-import writeXlsxFile from 'write-excel-file';
+import writeXlsxFile from "write-excel-file";
 
-import { exportSchema } from '../../shared/qrDataSchema';
-import Excel from '../../components/Icons/Excel';
-import InputHeader from './InputHeader';
-import { Alert, Modal } from 'antd';
-import { useTranslation } from 'react-i18next';
+import { exportSchema } from "../../../shared/qrDataSchema";
+import Excel from "../../../components/Icons/Excel";
+import InputHeader from "./InputHeader";
+import { Alert, Modal } from "antd";
+import { useTranslation } from "react-i18next";
 
 const QrViews = () => {
   const { t } = useTranslation();
-  const template = ['index', 'fullname', 'birthdate', 'sex', 'level', 'desc', 'unit', 'cardCode', 'cardDate', 'note'];
+  const template = [
+    "index",
+    "fullname",
+    "birthdate",
+    "sex",
+    "level",
+    "desc",
+    "unit",
+    "cardCode",
+    "cardDate",
+    "note",
+  ];
 
   const [tableData, setTableData] = useState(
     Array(10)
       .fill(null)
-      .map((_, index) => ({ key: index, title: template[index] }))
+      .map((_, index) => ({ key: index, title: template[index] })),
   );
 
-  const [inputData, setInputData] = useState('');
+  const [inputData, setInputData] = useState("");
   const [indexAdd, setIndexAdd] = useState(0);
 
   const [isEdit, setIsEdit] = useState(false);
@@ -45,7 +56,8 @@ const QrViews = () => {
   function handleSort() {
     const dataClone = [...tableData];
     const tempLabel = dataClone[dragItem.current].label;
-    dataClone[dragItem.current].label = dataClone[draggedOverItem.current].label;
+    dataClone[dragItem.current].label =
+      dataClone[draggedOverItem.current].label;
     dataClone[draggedOverItem.current].label = tempLabel;
 
     setTableData(dataClone);
@@ -63,8 +75,8 @@ const QrViews = () => {
     setTableData(temp);
 
     temp.push({
-      key: '',
-      label: ''
+      key: "",
+      label: "",
     });
 
     let indexDelete = indexAdd - 1;
@@ -95,14 +107,14 @@ const QrViews = () => {
 
     await writeXlsxFile([newData], {
       schema: exportSchema,
-      fileName: 'file.xlsx'
+      fileName: "file.xlsx",
     });
   };
 
   const hasAtLeastTwoNonEmptyLabels = (arr) => {
     let count = 0;
     for (const obj of arr) {
-      if (obj.label && obj.label !== '') {
+      if (obj.label && obj.label !== "") {
         count++;
         if (count > 2) {
           return true;
@@ -114,12 +126,23 @@ const QrViews = () => {
 
   const refreshData = () => {
     setIsLoading(true);
-    const template = ['index', 'fullname', 'birthdate', 'sex', 'level', 'desc', 'unit', 'cardCode', 'cardDate', 'note'];
+    const template = [
+      "index",
+      "fullname",
+      "birthdate",
+      "sex",
+      "level",
+      "desc",
+      "unit",
+      "cardCode",
+      "cardDate",
+      "note",
+    ];
 
     setTableData(
       Array(10)
         .fill(null)
-        .map((_, index) => ({ key: index, title: template[index] }))
+        .map((_, index) => ({ key: index, title: template[index] })),
     );
     setDataTable([]);
     setIsEdit(false);
@@ -133,9 +156,11 @@ const QrViews = () => {
       <div className="w-full h-full">
         <div className="qr__generator ">
           <div className="qr__generator-form bg-white shadow-xl">
-            <div className="text-start pl-4 pt-2 w-full text-blue-600 text-xl">{t('qr_export_screen')}</div>
+            <div className="text-start pl-4 pt-2 w-full text-blue-600 text-xl">
+              {t("qr_export_screen")}
+            </div>
             <div className="form-section form-header">
-              <div className="mt-4 mb-4 font-semibold">{t('input_infor')} </div>
+              <div className="mt-4 mb-4 font-semibold">{t("input_infor")} </div>
               <InputHeader
                 tableData={tableData}
                 setTableData={setTableData}
@@ -157,7 +182,10 @@ const QrViews = () => {
               <>
                 <div className="form-section form-display relative">
                   <div className="excel_button">
-                    <button onClick={() => handleExportExcel()} className="custom-file-export bg-transparent">
+                    <button
+                      onClick={() => handleExportExcel()}
+                      className="custom-file-export bg-transparent"
+                    >
                       <Excel className="w-6 h-6" />
                     </button>
                   </div>
@@ -187,8 +215,16 @@ const QrViews = () => {
         </div>
       </div>
 
-      <Modal open={isErrorExport} onCancel={() => setIsErrorExport(false)} footer={false}>
-        <Alert description={t('excel_missing_infor')} type="error" className="mt-8 text-lg" />
+      <Modal
+        open={isErrorExport}
+        onCancel={() => setIsErrorExport(false)}
+        footer={false}
+      >
+        <Alert
+          description={t("excel_missing_infor")}
+          type="error"
+          className="mt-8 text-lg"
+        />
       </Modal>
     </>
   );

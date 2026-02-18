@@ -1,6 +1,7 @@
 const { CONSTANT, RES_TYPE, STATE_SOCKET, STATE_REG_CONN } = require('../constants');
 const crypto = require('crypto');
 const init_config_db = require('../services/init-config');
+const { getIP } = require('./config');
 
 // Wrapper function để bọc socket handlers với try/catch
 const safeSocketHandler = (handlerName, handler) => {
@@ -153,17 +154,45 @@ InitSocket = async (io) => {
             message: 'Kết nối thành công',
             data: init
         })
+        // GET_INFO_DEVICE: nhận thông tin thiết bị gửi về cập nhât vào mapConn
+        socket.on(CONSTANT.GET_INFO_DEVICE, safeSocketHandler('GET_INFO_DEVICE', (input) => {
+            console.log('GET_INFO_DEVICE: ', input);
+            const {device_id, device_name} = input;
+            const client = MapConn[`${socket.id}`];
+            if(!client){
+                return;
+            }
+            MapConn[`${socket.id}`] = {
+                ...client,
+                device_id: device_id,
+                device_name: device_name
+            }
+
+            // gửi thông tin thiết bị về cho admin
+            io.to(client?.room_id).emit('RES_ROOM_ADMIN', {
+                status: 200,
+                message: 'Thực hiện thành công',
+                path:  "ADMIN_FETCH_CONN",
+                data: {
+                    ls_conn: MapConn
+                }
+            });
+        }))
 
         // 1. Admin tạo một phòng để kết nối
-        socket.on(CONSTANT.REGISTER_ROOM_ADMIN, safeSocketHandler('REGISTER_ROOM_ADMIN', (input) => {
+        socket.on(CONSTANT.REGISTER_ROOM_ADMIN, safeSocketHandler('REGISTER_ROOM_ADMIN', async (input) => {
             console.log('|------ INPUT REGISTER_ROOM_ADMIN: ', input);
             if(input?.room_id){
                 socket.join(input?.room_id);
                 console.log(`${socket.id}(Admin) đã tham gia phòng ${input?.room_id}`);
                 // cập nhật dữ liệu
                 const admin = MapConn[`${socket.id}`];
+                // IP admin
+                const ip = await getIP();
+
                 MapConn[`${socket.id}`] = {
                     ...admin,
+                    admin_ip: ip,
                     connect_status_code: getConnectStatusCode('active'),
                     connect_status_name: getConnectStatusName('active'),
                     register_status_code: 'ADMIN',
@@ -218,6 +247,7 @@ InitSocket = async (io) => {
                 room_id: input.room_id,
                 referrer: input.referrer,
                 device_id: input.device_id,
+                device_name: input.device_name,
                 socket_id: socket.id,
                 permission: 1,
                 connect_status_code: getConnectStatusCode('active'), 
@@ -1105,6 +1135,164 @@ InitSocket = async (io) => {
                 }
             });
         }))
+
+        // ==================== DATA SYNC EVENTS ====================
+
+        // 17. SYNC_REQUEST - Yêu cầu đồng bộ dữ liệu
+        socket.on('SYNC_REQUEST', safeSocketHandler('SYNC_REQUEST', (input) => {
+            console.log('|------ SYNC_REQUEST:', input);
+            const { room_id, source_device, tables, metadata, target_socket_id } = input;
+
+            // Broadcast đến máy đích trong room
+            if (target_socket_id) {
+                io.to(target_socket_id).emit('SYNC_OFFER', {
+                    status: 200,
+                    message: 'Có yêu cầu đồng bộ dữ liệu',
+                    data: {
+                        source_socket_id: socket.id,
+                        source_device,
+                        tables,
+                        metadata
+                    }
+                });
+            } else {
+                // Broadcast đến tất cả admin trong room (trừ người gửi)
+                socket.to(room_id).emit('SYNC_OFFER', {
+                    status: 200,
+                    message: 'Có yêu cầu đồng bộ dữ liệu',
+                    data: {
+                        source_socket_id: socket.id,
+                        source_device,
+                        tables,
+                        metadata
+                    }
+                });
+            }
+        }));
+
+        // 18. SYNC_ACCEPT - Chấp nhận đồng bộ
+        socket.on('SYNC_ACCEPT', safeSocketHandler('SYNC_ACCEPT', (input) => {
+            console.log('|------ SYNC_ACCEPT:', input);
+            const { source_socket_id, target_device } = input;
+
+            // Thông báo cho máy nguồn rằng đã được chấp nhận
+            io.to(source_socket_id).emit('SYNC_READY', {
+                status: 200,
+                message: 'Máy đích đã chấp nhận đồng bộ',
+                data: {
+                    target_socket_id: socket.id,
+                    target_device
+                }
+            });
+        }));
+
+        // 19. SYNC_REJECT - Từ chối đồng bộ
+        socket.on('SYNC_REJECT', safeSocketHandler('SYNC_REJECT', (input) => {
+            console.log('|------ SYNC_REJECT:', input);
+            const { source_socket_id, target_device, reason } = input;
+
+            // Thông báo cho máy nguồn rằng bị từ chối
+            io.to(source_socket_id).emit('SYNC_REJECTED', {
+                status: 400,
+                message: 'Máy đích đã từ chối đồng bộ',
+                data: {
+                    target_device,
+                    reason: reason || 'Người dùng từ chối'
+                }
+            });
+        }));
+
+        // 20. SYNC_DATA - Gửi dữ liệu (chunks)
+        socket.on('SYNC_DATA', safeSocketHandler('SYNC_DATA', (input) => {
+            console.log('|------ SYNC_DATA:', {
+                table: input.table,
+                chunk: `${input.chunk_index + 1}/${input.total_chunks}`,
+                records: input.data?.length || 0
+            });
+            const { target_socket_id, table, chunk_index, total_chunks, data } = input;
+
+            // Forward dữ liệu đến máy đích
+            io.to(target_socket_id).emit('SYNC_DATA', {
+                status: 200,
+                message: 'Nhận dữ liệu đồng bộ',
+                data: {
+                    table,
+                    chunk_index,
+                    total_chunks,
+                    data
+                }
+            });
+        }));
+
+        // 21. SYNC_PROGRESS - Cập nhật tiến trình
+        socket.on('SYNC_PROGRESS', safeSocketHandler('SYNC_PROGRESS', (input) => {
+            const { target_socket_id, table, progress, imported_records } = input;
+
+            // Gửi progress về máy nguồn
+            io.to(target_socket_id).emit('SYNC_PROGRESS', {
+                status: 200,
+                data: {
+                    table,
+                    progress,
+                    imported_records
+                }
+            });
+        }));
+
+        // 22. SYNC_COMPLETE - Hoàn thành đồng bộ
+        socket.on('SYNC_COMPLETE', safeSocketHandler('SYNC_COMPLETE', (input) => {
+            console.log('|------ SYNC_COMPLETE:', input);
+            const { target_socket_id, source_socket_id, success, imported_records, errors } = input;
+
+            // Thông báo cho cả 2 máy
+            if (target_socket_id) {
+                io.to(target_socket_id).emit('SYNC_COMPLETE', {
+                    status: success ? 200 : 400,
+                    message: success ? 'Đồng bộ dữ liệu thành công' : 'Đồng bộ dữ liệu thất bại',
+                    data: {
+                        success,
+                        imported_records,
+                        errors
+                    }
+                });
+            }
+
+            if (source_socket_id) {
+                io.to(source_socket_id).emit('SYNC_COMPLETE', {
+                    status: success ? 200 : 400,
+                    message: success ? 'Đồng bộ dữ liệu thành công' : 'Đồng bộ dữ liệu thất bại',
+                    data: {
+                        success,
+                        imported_records,
+                        errors
+                    }
+                });
+            }
+        }));
+
+        // 23. SYNC_ERROR - Lỗi trong quá trình đồng bộ
+        socket.on('SYNC_ERROR', safeSocketHandler('SYNC_ERROR', (input) => {
+            console.error('|------ SYNC_ERROR:', input);
+            const { target_socket_id, source_socket_id, error, table } = input;
+
+            // Thông báo lỗi cho cả 2 máy
+            const errorData = {
+                status: 500,
+                message: 'Lỗi trong quá trình đồng bộ',
+                data: {
+                    error,
+                    table
+                }
+            };
+
+            if (target_socket_id) {
+                io.to(target_socket_id).emit('SYNC_ERROR', errorData);
+            }
+
+            if (source_socket_id) {
+                io.to(source_socket_id).emit('SYNC_ERROR', errorData);
+            }
+        }));
 
 
         // 6. Khi client ngắt kết nối

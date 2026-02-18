@@ -101,7 +101,7 @@ export default function NotFound() {
             </button>
 
             <button
-              onClick={() => navigate('/scoreboard/vovinam-score')}
+              onClick={() => navigate('/bang-diem/quyen')}
               className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 rounded-xl transition-all duration-200 text-left group"
             >
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">

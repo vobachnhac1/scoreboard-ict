@@ -30,8 +30,8 @@ export default function Header({ title, desc, logos, config = {} }) {
   const finalConfig = { ...defaultConfig, ...config };
 
   return (
-    <div className="text-center text-white mb-3 w-full max-w-6xl">
-    
+    <div className="text-center text-white w-full max-w-6xl">
+
           {/* Thiết kế hiển thị danh sách Logo - Căn giữa hàng ngang */}
           {logos.length > 0 ? (
             <div className="w-full max-w-7xl mx-auto mb-3 mt-3">
@@ -63,7 +63,7 @@ export default function Header({ title, desc, logos, config = {} }) {
           )}
     
           {/* Header */}
-          <div className="text-center mb-8 max-w-7xl mx-auto">
+          <div className="text-center mb-2 max-w-7xl mx-auto">
             <h1 className="text-4xl font-black text-yellow-400 leading-tight uppercase">
               {/* Tự động xuống dòng mỗi từ */}
               {title?.split("\n").map((word, index) => (

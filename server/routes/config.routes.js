@@ -222,6 +222,9 @@ router.delete('/logos/:id', LogoController.deleteLogo);
 router.put('/logos/reorder', LogoController.reorderLogos);
 router.put('/logos/:id', LogoController.updateLogo);
 
+// Background Image Upload Route
+router.post('/upload/background', LogoController.backgroundUploadMiddleware, LogoController.uploadBackgroundImage);
+
 
 
 // Client

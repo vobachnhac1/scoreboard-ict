@@ -1,0 +1,21 @@
+npx electron-rebuild -f -w better-sqlite3
+
+
+
+
+
+—— chay dev
+# 1. Rebuild
+yarn install && npx electron-rebuild
+
+# 2. Build app
+yarn mac
+
+
+—— chay build — can clean lai moi chay dev
+# Kiểm tra log
+cat ~/Library/Application\ Support/score-board-dht/electron.log
+cat ~/Library/Application\ Support/score-board-dht/database.log
+
+
+

@@ -45,7 +45,7 @@ import * as XLSX from "xlsx";
 //       }
 
 //       const contentType = response.headers.get("content-type");
-//       console.log("📄 Content-Type:", contentType);
+//       console.log(" Content-Type:", contentType);
 
 //       if (
 //         contentType &&
@@ -55,16 +55,16 @@ import * as XLSX from "xlsx";
 //         !contentType.includes("application/vnd.ms-excel") &&
 //         !contentType.includes("application/octet-stream")
 //       ) {
-//         console.warn("⚠️ Response content type:", contentType);
+//         console.warn(" Response content type:", contentType);
 //         throw new Error("Response is not an Excel file");
 //       }
 
 //       console.log("📥 Getting array buffer...");
 //       const arrayBuffer = await response.arrayBuffer();
-//       console.log("📊 Array buffer size:", arrayBuffer.byteLength, "bytes");
+//       console.log(" Array buffer size:", arrayBuffer.byteLength, "bytes");
 
 //       const data = new Uint8Array(arrayBuffer);
-//       console.log("🔧 Reading workbook with XLSX...");
+//       console.log(" Reading workbook with XLSX...");
 //       const workbook = XLSX.read(data, { type: "array" });
 //       console.log("📋 Workbook sheets:", workbook.SheetNames);
 
@@ -75,11 +75,11 @@ import * as XLSX from "xlsx";
 
 //       if (jsonData.length > 0) {
 //         console.log("📝 Headers:", jsonData[0]);
-//         console.log("📊 Sample data row:", jsonData[1]);
+//         console.log(" Sample data row:", jsonData[1]);
 //         setHeaders(jsonData[0]);
 //         setExcelData(jsonData.slice(1));
 //         console.log(
-//           "✅ Successfully loaded Excel file with",
+//           " Successfully loaded Excel file with",
 //           jsonData.length - 1,
 //           "rows",
 //         );
@@ -87,7 +87,7 @@ import * as XLSX from "xlsx";
 //         throw new Error("Excel file is empty");
 //       }
 //     } catch (error) {
-//       console.error("❌ Lỗi khi tải file Excel mặc định:", error);
+//       console.error(" Lỗi khi tải file Excel mặc định:", error);
 //       console.log("🔄 Falling back to sample data...");
 //       // Fallback: create sample data structure
 //       createSampleData();

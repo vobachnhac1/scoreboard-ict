@@ -66,12 +66,12 @@ export default function SecondaryDisplay() {
 
     // Lắng nghe dữ liệu từ main process
     if (window.electron && window.electron.onUpdateScoreData) {
-      console.log("✅ Setting up onUpdateScoreData listener");
+      console.log(" Setting up onUpdateScoreData listener");
 
       window.electron.onUpdateScoreData((data) => {
-        console.log("📊 Received score data:", data);
-        console.log("📊 screenType:", data?.screenType);
-        console.log("📊 scores:", data?.scores);
+        console.log(" Received score data:", data);
+        console.log(" screenType:", data?.screenType);
+        console.log(" scores:", data?.scores);
 
         scoreDataRef.current = data;
         soGiamDinhRef.current =
@@ -116,7 +116,7 @@ export default function SecondaryDisplay() {
 
         // Trigger re-render
         setUpdateTrigger((prev) => prev + 1);
-        console.log("✅ Data updated, triggering re-render");
+        console.log(" Data updated, triggering re-render");
       });
 
       // Cleanup

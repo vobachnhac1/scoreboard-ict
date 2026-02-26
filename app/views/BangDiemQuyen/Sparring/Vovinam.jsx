@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import useConfirmModal from "../../../hooks/useConfirmModal";
-import ConfirmModal from "../../../components/Common/ConfirmModal";
+import ConfirmModal from "../../../components/ConfirmModal";
 
 export default function Vovinam() {
   const location = useLocation();

@@ -179,10 +179,10 @@ class InitConfigService {
                         exportData[tableName] = rows;
                         completed++;
                 
-                        if (completed === tables.length) {
-                        await fs.writeFileSync('./backup/backup.json', JSON.stringify(exportData, null, 2));
-                        console.log('✅ Exported to backup.json');
-                        }
+                        // if (completed === tables.length) {
+                        // await fs.writeFileSync('./backup/backup.json', JSON.stringify(exportData, null, 2));
+                        // console.log(' Exported to backup.json');
+                        // }
                     });
                 });
             });
@@ -238,7 +238,7 @@ class InitConfigService {
     };
 
     // thêm mới 
-    // ✅ Hàm tạo mã random 10 ký tự
+    //  Hàm tạo mã random 10 ký tự
     randomCode(length = 10) {
         return [...Array(length)].map(() =>
             Math.floor(Math.random() * 36).toString(36)

@@ -61,10 +61,10 @@ export function ExampleComponent2() {
       socket,
       role: 'admin',
       onSuccess: () => {
-        console.log("✅ Socket initialized successfully");
+        console.log(" Socket initialized successfully");
       },
       onError: (error) => {
-        console.error("❌ Socket initialization failed:", error);
+        console.error(" Socket initialization failed:", error);
         showError("Không thể kết nối socket. Vui lòng thử lại.");
       }
     });

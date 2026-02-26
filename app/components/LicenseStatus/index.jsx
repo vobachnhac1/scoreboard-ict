@@ -251,7 +251,7 @@ export default function LicenseStatus({ compact = false }) {
           {daysRemaining <= 30 && daysRemaining > 0 && (
             <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded  ">
               <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">
-                ⚠️ Bản quyền sắp hết hạn
+                Bản quyền sắp hết hạn
               </p>
               <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
                 Vui lòng gia hạn bản quyền để tiếp tục sử dụng dịch vụ

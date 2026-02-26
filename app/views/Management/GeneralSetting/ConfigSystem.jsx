@@ -264,7 +264,7 @@ export default function ConfigSystem() {
         setLogos(response.data.data || []);
       }
     } catch (error) {
-      console.error("❌ Lỗi khi lấy danh sách logos:", error);
+      console.error(" Lỗi khi lấy danh sách logos:", error);
     } finally {
       setLoadingLogos(false);
     }
@@ -415,7 +415,7 @@ export default function ConfigSystem() {
         position: index,
       }));
 
-      console.log("📤 Sending updates:", updates);
+      console.log(" Sending updates:", updates);
 
       const response = await axios.put(
         "http://localhost:6789/api/config/logos/reorder",
@@ -427,11 +427,11 @@ export default function ConfigSystem() {
       console.log("📥 Response:", response.data);
 
       if (response.data.success) {
-        console.log("✅ Logos reordered successfully");
+        console.log(" Logos reordered successfully");
         // Không cần fetchLogos() nữa vì đã update UI rồi
       }
     } catch (error) {
-      console.error("❌ Lỗi khi sắp xếp logos:", error);
+      console.error(" Lỗi khi sắp xếp logos:", error);
       // Nếu lỗi, fetch lại để đồng bộ với server
       await fetchLogos();
       alert(
@@ -498,10 +498,10 @@ export default function ConfigSystem() {
         if (screenKey === "doikhang") setBgDoikhangFile(null);
         if (screenKey === "vonhac") setBgVonhacFile(null);
 
-        console.log(`✅ Background ${screenKey} uploaded:`, imageUrl);
+        console.log(` Background ${screenKey} uploaded:`, imageUrl);
       }
     } catch (error) {
-      console.error(`❌ Lỗi khi upload background ${screenKey}:`, error);
+      console.error(` Lỗi khi upload background ${screenKey}:`, error);
       alert(
         `Lỗi khi upload hình nền: ${error.response?.data?.message || error.message}`,
       );

@@ -92,7 +92,7 @@ export default function NotFound() {
               className="flex items-center gap-3 p-3 bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 rounded-xl transition-all duration-200 text-left group"
             >
               <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                <span className="text-xl">📊</span>
+                <span className="text-xl"></span>
               </div>
               <div>
                 <p className="font-semibold text-gray-900 group-hover:text-orange-700">Bảng điểm</p>

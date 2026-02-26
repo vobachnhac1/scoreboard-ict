@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useHotkeys } from "react-hotkeys-hook";
 import axios from "axios";
-import ConfirmModal from "../../components/common/ConfirmModal";
+import ConfirmModal from "../../components/ConfirmModal";
 import useConfirmModal from "../../hooks/useConfirmModal";
 import ConnectionManagerModal from "../BangDiemQuyen/components/ConnectionManagerModal";
 import RefereeStatusBar from "../BangDiemQuyen/components/RefereeStatusBar";
@@ -712,7 +712,7 @@ const BangDiemDoiKhang = () => {
   });
   // SCORE_RESULT
   useSocketEvent(MSG_TP_CLIENT.SCORE_RESULT, (response) => {
-    // ⚠️ Không nhận event khi đang nghỉ giải lao hoặc không chạy
+    //  Không nhận event khi đang nghỉ giải lao hoặc không chạy
     if (!isRunning || isBreakTime) {
       // tracking
       if (response?.data?.team == "red") {
@@ -801,10 +801,10 @@ const BangDiemDoiKhang = () => {
       socket,
       role: "admin",
       onSuccess: () => {
-        console.log("✅ Socket initialized successfully in Vovinam");
+        console.log(" Socket initialized successfully in Vovinam");
       },
       onError: (error) => {
-        console.error("❌ Socket initialization failed:", error);
+        console.error(" Socket initialization failed:", error);
         showError("Không thể kết nối socket. Vui lòng thử lại.");
       },
       forceReConnection: forceReConnection,
@@ -1578,7 +1578,7 @@ const BangDiemDoiKhang = () => {
         // Hiển thị animation thắng
         setAnnouncedWinner(winnerData);
 
-        console.log("✅ Hiển thị kết quả trận đã kết thúc:", winnerData);
+        console.log(" Hiển thị kết quả trận đã kết thúc:", winnerData);
       }, 500);
 
       return () => clearTimeout(timer);
@@ -1737,10 +1737,10 @@ const BangDiemDoiKhang = () => {
           );
           if (configResponse?.data) {
             configSystem = configResponse.data;
-            console.log("✅ Loaded default config_system from API");
+            console.log(" Loaded default config_system from API");
           }
         } catch (configError) {
-          console.warn("⚠️ Could not load default config_system:", configError);
+          console.warn(" Could not load default config_system:", configError);
           configSystem = {}; // Fallback to empty object
         }
       }
@@ -1953,7 +1953,7 @@ const BangDiemDoiKhang = () => {
       startBreakTime();
     } else if (currentRound === totalMainRounds && extraRounds > 0) {
       // Kết thúc hiệp chính, có hiệp phụ
-      // ✅ FIX: Kiểm tra điểm trước khi quyết định chạy hiệp phụ
+      //  FIX: Kiểm tra điểm trước khi quyết định chạy hiệp phụ
       if (currentRedScore === currentBlueScore) {
         // Điểm hòa -> Chạy hiệp phụ
         console.log(
@@ -2030,9 +2030,9 @@ const BangDiemDoiKhang = () => {
           );
           // Cập nhật matchInfo
           setMatchInfo({ ...matchInfo, match_status: "IN" });
-          console.log("✅ Đã cập nhật trạng thái thành IN");
+          console.log(" Đã cập nhật trạng thái thành IN");
         } catch (error) {
-          console.error("❌ Lỗi khi cập nhật trạng thái:", error);
+          console.error(" Lỗi khi cập nhật trạng thái:", error);
           await showError(
             "Lỗi khi cập nhật trạng thái trận đấu: " +
               (error.response?.data?.message || error.message),
@@ -2064,9 +2064,9 @@ const BangDiemDoiKhang = () => {
           );
           // Cập nhật matchInfo
           setMatchInfo({ ...matchInfo, match_status: "IN" });
-          console.log("✅ Đã cập nhật trạng thái thành IN");
+          console.log(" Đã cập nhật trạng thái thành IN");
         } catch (error) {
-          console.error("❌ Lỗi khi cập nhật trạng thái:", error);
+          console.error(" Lỗi khi cập nhật trạng thái:", error);
           await showError(
             "Lỗi khi cập nhật trạng thái trận đấu: " +
               (error.response?.data?.message || error.message),
@@ -2495,7 +2495,7 @@ const BangDiemDoiKhang = () => {
           clearInterval(timerRef.current);
           setIsMedicalTime(false);
           setMedicalTeam(null);
-          console.log("✅ Hết thời gian y tế");
+          console.log(" Hết thời gian y tế");
           timerRef.current = null;
           return 0;
         }
@@ -2796,7 +2796,7 @@ const BangDiemDoiKhang = () => {
     try {
       const competition_dk_id = matchInfo.competition_dk_id;
       if (!competition_dk_id) {
-        console.log("⚠️ Không có competition_dk_id, bỏ qua cập nhật.");
+        console.log(" Không có competition_dk_id, bỏ qua cập nhật.");
         return 0;
       }
 
@@ -2807,7 +2807,7 @@ const BangDiemDoiKhang = () => {
 
       // Nếu không có VĐV thắng, không cần cập nhật
       if (!winnerName) {
-        console.log("⚠️ Không có thông tin VĐV thắng, bỏ qua cập nhật.");
+        console.log(" Không có thông tin VĐV thắng, bỏ qua cập nhật.");
         return 0;
       }
 
@@ -2816,7 +2816,7 @@ const BangDiemDoiKhang = () => {
         `http://localhost:6789/api/competition-dk/${competition_dk_id}`,
       );
       if (!response?.data?.success || !response?.data?.data) {
-        console.log("⚠️ Không thể lấy dữ liệu competition, bỏ qua cập nhật.");
+        console.log(" Không thể lấy dữ liệu competition, bỏ qua cập nhật.");
         return 0;
       }
 
@@ -2843,7 +2843,7 @@ const BangDiemDoiKhang = () => {
           if (cellValue === winPattern.toLowerCase()) {
             // Tìm thấy pattern, cập nhật tên VĐV thắng
             console.log(
-              `✅ Tìm thấy "${winPattern}" tại trận ${updatedRow[0]}, cột ${j}`,
+              ` Tìm thấy "${winPattern}" tại trận ${updatedRow[0]}, cột ${j}`,
             );
 
             updatedRow[j] = winnerName;
@@ -2871,11 +2871,11 @@ const BangDiemDoiKhang = () => {
                 { data: updatedRow },
               )
               .then(() => {
-                console.log(`✅ Đã cập nhật backend - Trận ${updatedRow[0]}`);
+                console.log(` Đã cập nhật backend - Trận ${updatedRow[0]}`);
               })
               .catch((err) => {
                 console.error(
-                  `❌ Lỗi cập nhật backend - Trận ${updatedRow[0]}:`,
+                  ` Lỗi cập nhật backend - Trận ${updatedRow[0]}:`,
                   err,
                 );
                 throw err;
@@ -2891,7 +2891,7 @@ const BangDiemDoiKhang = () => {
         );
         await Promise.all(updateRequests);
         console.log(
-          `✅ Đã cập nhật thành công ${updateRequests.length} trận vào backend!`,
+          ` Đã cập nhật thành công ${updateRequests.length} trận vào backend!`,
         );
       } else {
         console.log("ℹ️ Không tìm thấy trận nào cần cập nhật.");
@@ -2899,7 +2899,7 @@ const BangDiemDoiKhang = () => {
 
       return updateCount;
     } catch (error) {
-      console.error("❌ Error updating winner to next matches:", error);
+      console.error(" Error updating winner to next matches:", error);
       return 0;
     }
   };
@@ -2914,7 +2914,7 @@ const BangDiemDoiKhang = () => {
 
       if (["IN"].includes(currentStatus)) {
         const confirmed = await showWarning(
-          "Trận đấu đang diễn ra. Bạn có chắc chắn muốn quay lại trận trước không?\n\n⚠️ Dữ liệu trận hiện tại sẽ không được lưu!",
+          "Trận đấu đang diễn ra. Bạn có chắc chắn muốn quay lại trận trước không?\n\n Dữ liệu trận hiện tại sẽ không được lưu!",
           { title: "Cảnh báo", confirmText: "Đồng ý" },
         );
         if (!confirmed) {
@@ -3049,7 +3049,7 @@ const BangDiemDoiKhang = () => {
       });
       resetTimer();
     } catch (error) {
-      console.error("❌ Lỗi khi quay lại trận trước:", error);
+      console.error(" Lỗi khi quay lại trận trước:", error);
       await showError(
         "Lỗi khi quay lại trận trước: " +
           (error.response?.data?.message || error.message),
@@ -3066,7 +3066,7 @@ const BangDiemDoiKhang = () => {
 
       // Nếu trạng thái là FIN (đã kết thúc) -> Chuyển trận luôn, không cần lưu lại
       if (currentStatus === "FIN" || currentStatus === "WAI") {
-        console.log("✅ Trận đã kết thúc, chuyển sang trận tiếp theo");
+        console.log(" Trận đã kết thúc, chuyển sang trận tiếp theo");
       } else {
         // Trạng thái WAI hoặc IN -> Cần lưu kết quả trước khi chuyển trận
 
@@ -3127,7 +3127,7 @@ const BangDiemDoiKhang = () => {
             roundHistory: roundHistory,
           },
         );
-        console.log("✅ Đã lưu kết quả trận đấu vào database");
+        console.log(" Đã lưu kết quả trận đấu vào database");
 
         // Tự động cập nhật VĐV thắng vào các trận tiếp theo
         const winnerName =
@@ -3146,7 +3146,7 @@ const BangDiemDoiKhang = () => {
 
         if (updateCount > 0) {
           console.log(
-            `✅ Đã tự động cập nhật ${updateCount} trận tiếp theo với VĐV thắng: ${winnerName}`,
+            ` Đã tự động cập nhật ${updateCount} trận tiếp theo với VĐV thắng: ${winnerName}`,
           );
         }
       }
@@ -3293,7 +3293,7 @@ const BangDiemDoiKhang = () => {
         console.log("winnerData: ", winnerData);
       }
     } catch (error) {
-      console.error("❌ Lỗi khi chuyển trận:", error);
+      console.error(" Lỗi khi chuyển trận:", error);
       await showError(
         "Lỗi khi chuyển sang trận tiếp theo: " +
           (error.response?.data?.message || error.message),
@@ -3987,7 +3987,7 @@ const BangDiemDoiKhang = () => {
                     setIsMedicalTime(false);
                     setMedicalTeam(null);
                     setMedicalTimeLeft(0);
-                    console.log("✅ Kết thúc thời gian y tế");
+                    console.log(" Kết thúc thời gian y tế");
                   }}
                   className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center font-bold text-sm gap-2 transition-colors animate-pulse"
                 >

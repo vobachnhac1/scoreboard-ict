@@ -27,7 +27,7 @@ if (!fs.existsSync(userDataPath)) {
 }
 
 process.env.USER_DATA_PATH = userDataPath;
-console.log('📍 Electron userData path:', process.env.USER_DATA_PATH);
+console.log('Electron userData path:', process.env.USER_DATA_PATH);
 
 // Log ra file để debug khi chạy từ /Applications
 const logPath = path.join(userDataPath, 'electron.log');
@@ -142,13 +142,14 @@ ipcMain.handle('secondary-display:open', async (event, data) => {
 
     // Tạo cửa sổ mới
     secondaryDisplayWindow = new BrowserWindow({
-      width: 1280,
-      height: 720,
+      width: 1920,
+      height: 1080,
       title: 'Màn hình phụ - Bảng điểm',
       webPreferences: {
         preload: path.join(__dirname, 'preload.js'),
         nodeIntegration: false,
-        contextIsolation: true
+        contextIsolation: true,
+        sandbox: true,
       },
       backgroundColor: '#1e3a8a' // Blue background
     });
@@ -271,13 +272,11 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1920,
     height: 1080,
-    // webPreferences: {
-    //   nodeIntegration: true
-    // },
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
-      contextIsolation: true
+      contextIsolation: true,
+      sandbox: true,
     }
   });
 
@@ -315,7 +314,7 @@ async function checkLicenseOnStartup() {
       const licenseData = response.data.data;
 
       if (licenseData.valid) {
-        log.info('✅ License valid. Days remaining:', licenseData.daysRemaining);
+        log.info(' License valid. Days remaining:', licenseData.daysRemaining);
 
         // Gửi thông tin license cho renderer process
         if (mainWindow) {
@@ -325,7 +324,7 @@ async function checkLicenseOnStartup() {
           });
         }
       } else {
-        log.warn('⚠️ License invalid or expired. Require activation.');
+        log.warn(' License invalid or expired. Require activation.');
 
         // Gửi thông báo cần kích hoạt
         if (mainWindow) {
@@ -338,7 +337,7 @@ async function checkLicenseOnStartup() {
       }
     }
   } catch (error) {
-    log.error('❌ License check error:', error.message);
+    log.error(' License check error:', error.message);
 
     // Gửi thông báo lỗi
     if (mainWindow) {
@@ -373,7 +372,7 @@ function startServer() {
   const subprocess = fork('./app.js'); // hoặc file Node.js của bạn
 
   subprocess.on('exit', (code, signal) => {
-    console.log(`⚠️ Node process exited with code ${code} and signal ${signal}. Restarting...`);
+    console.log(` Node process exited with code ${code} and signal ${signal}. Restarting...`);
     setTimeout(startServer, 1000); // restart sau 1s
   });
 }
@@ -395,6 +394,12 @@ app.on('activate', function () {
     createWindow();
   }
 });
+
+app.on("certificate-error", (event, webContents, url, error) => {
+  console.log("CERT ERROR:", url, error);
+});
+
+// app.commandLine.appendSwitch("ignore-certificate-errors");
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.

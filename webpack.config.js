@@ -7,8 +7,8 @@ module.exports = {
   watch: true, // Watch mode enabled
   watchOptions: {
     ignored: /node_modules/,
-    aggregateTimeout: 300, // Delay rebuild after first change (ms)
-    poll: 1000 // Check for changes every second
+    aggregateTimeout: 100, // Delay rebuild after first change (ms)
+    poll: 10000 // Check for changes every second
   },
   entry: {
     app: './app/index.js'

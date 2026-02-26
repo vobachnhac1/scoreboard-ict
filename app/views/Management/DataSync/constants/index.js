@@ -1,0 +1,32 @@
+export const META_FIELDS_NAME = {
+    id: "ID",
+    file_name: "Tên file",
+    sheet_name: "Tên sheet",
+    created_at: "Ngày tạo",
+    updated_at: "Ngày cập nhật",
+    status: "Trạng thái",
+    name: "Tên",
+    type: "Loại",
+    title: "Tiêu đề",
+    description: "Mô tả",
+    match_id: "ID Trận đấu",
+    gender: "Giới tính",
+    category: "Hạng cân",
+    data: "Cấu trúc dữ liệu",
+    team_id: "ID Đội",
+    order: "Thứ tự",
+    level: "Cấp độ",
+    round: "Vòng đấu",
+    competition_id: "ID Giải Đấu",
+    match_detail: "Chi tiết trận đấu",
+    match_team_detail: "Chi tiết điểm",
+    red_score: "Điểm đỏ",
+    blue_score: "Điểm xanh",
+};
+
+export const HIDDEN_DETAIL_KEYS = [
+    "match_detail",
+    "red_score",
+    "blue_score",
+    "match_team_detail",
+];

@@ -4,15 +4,15 @@ Modal hiển thị danh sách trận đấu với khả năng tìm kiếm, lọc
 
 ## Features
 
-- ✅ Hiển thị danh sách trận đấu dạng list
-- ✅ Tìm kiếm theo số trận, tên VĐV, đội
-- ✅ Lọc theo trạng thái (Chờ thi đấu, Đang thi đấu, Đã kết thúc)
-- ✅ Chọn trận đấu
-- ✅ Bắt đầu trận đấu trực tiếp từ modal
-- ✅ Hiển thị trận đang thi đấu
-- ✅ Hiển thị người thắng cuộc
-- ✅ Dark mode support
-- ✅ Responsive design
+- Hiển thị danh sách trận đấu dạng list
+- Tìm kiếm theo số trận, tên VĐV, đội
+- Lọc theo trạng thái (Chờ thi đấu, Đang thi đấu, Đã kết thúc)
+- Chọn trận đấu
+- Bắt đầu trận đấu trực tiếp từ modal
+- Hiển thị trận đang thi đấu
+- Hiển thị người thắng cuộc
+- Dark mode support
+- Responsive design
 
 ## Usage
 
@@ -101,14 +101,14 @@ function MyComponent() {
 
 ## Props
 
-| Prop | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `isOpen` | boolean | Yes | - | Trạng thái mở/đóng modal |
-| `onClose` | function | Yes | - | Callback khi đóng modal |
-| `matches` | array | No | [] | Danh sách trận đấu |
-| `onSelectMatch` | function | No | - | Callback khi chọn trận |
-| `onStartMatch` | function | No | - | Callback khi bắt đầu trận |
-| `currentMatchId` | number | No | null | ID trận đang thi đấu |
+| Prop             | Type     | Required | Default | Description               |
+| ---------------- | -------- | -------- | ------- | ------------------------- |
+| `isOpen`         | boolean  | Yes      | -       | Trạng thái mở/đóng modal  |
+| `onClose`        | function | Yes      | -       | Callback khi đóng modal   |
+| `matches`        | array    | No       | []      | Danh sách trận đấu        |
+| `onSelectMatch`  | function | No       | -       | Callback khi chọn trận    |
+| `onStartMatch`   | function | No       | -       | Callback khi bắt đầu trận |
+| `currentMatchId` | number   | No       | null    | ID trận đang thi đấu      |
 
 ## Match Object Structure
 
@@ -138,24 +138,27 @@ function MyComponent() {
 ## Features Detail
 
 ### Search
+
 - Tìm kiếm theo số trận
 - Tìm kiếm theo tên VĐV (đỏ hoặc xanh)
 - Tìm kiếm theo tên đội
 
 ### Filter
+
 - Tất cả
 - Chờ thi đấu
 - Đang thi đấu
 - Đã kết thúc
 
 ### Actions
+
 - **Bắt đầu** - Hiển thị cho trận có status PENDING
 - **Xem** - Hiển thị cho trận có status ONGOING
 - Click vào card để chọn trận
 
 ### Visual Indicators
+
 - Border xanh dương - Trận được chọn
 - Border xanh lá - Trận đang thi đấu
 - Badge "Đang thi đấu" - Hiển thị ở góc trên bên phải
 - Icon ngôi sao vàng - Hiển thị bên người thắng cuộc
-

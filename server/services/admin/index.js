@@ -237,7 +237,7 @@ class Admin {
     //     return base64QR
     // }
 
-    // // ✅ Hàm tạo mã random 10 ký tự
+    // //  Hàm tạo mã random 10 ký tự
     // randomCode(length = 10) {
     //     return [...Array(length)].map(() =>
     //         Math.floor(Math.random() * 36).toString(36)

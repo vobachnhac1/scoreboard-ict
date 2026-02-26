@@ -44,7 +44,7 @@ export const initSocket = async ({
       // Đợi một chút để đảm bảo socket đã sẵn sàng
       await new Promise((resolve) => setTimeout(resolve, 300));
       
-      console.log("✅ Socket connected successfully");
+      console.log(" Socket connected successfully");
       
       if (onSuccess) {
         onSuccess();
@@ -52,7 +52,7 @@ export const initSocket = async ({
       
       return true;
     } else {
-      console.log("✅ Socket already connected");
+      console.log(" Socket already connected");
       
       if (onSuccess) {
         onSuccess();
@@ -61,7 +61,7 @@ export const initSocket = async ({
       return true;
     }
   } catch (error) {
-    console.error("❌ Error initializing socket:", error);
+    console.error(" Error initializing socket:", error);
     
     if (onError) {
       onError(error);
@@ -109,7 +109,7 @@ export const reconnectSocket = async ({
     await new Promise((resolve) => setTimeout(resolve, 500));
     
     if (isSocketConnected(socket)) {
-      console.log("✅ Socket reconnected successfully");
+      console.log(" Socket reconnected successfully");
       
       if (onSuccess) {
         onSuccess();
@@ -120,7 +120,7 @@ export const reconnectSocket = async ({
       throw new Error("Socket reconnection failed");
     }
   } catch (error) {
-    console.error("❌ Error reconnecting socket:", error);
+    console.error(" Error reconnecting socket:", error);
     
     if (onError) {
       onError(error);
@@ -150,7 +150,7 @@ export const disconnectSocketUtil = async ({
     
     await dispatch(disconnectSocket());
     
-    console.log("✅ Socket disconnected successfully");
+    console.log(" Socket disconnected successfully");
     
     if (onSuccess) {
       onSuccess();
@@ -158,7 +158,7 @@ export const disconnectSocketUtil = async ({
     
     return true;
   } catch (error) {
-    console.error("❌ Error disconnecting socket:", error);
+    console.error(" Error disconnecting socket:", error);
     
     if (onError) {
       onError(error);

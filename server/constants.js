@@ -32,6 +32,7 @@ const CONSTANT = {
     SYNC_PROGRESS: 'SYNC_PROGRESS',     // Cập nhật tiến trình
     SYNC_COMPLETE: 'SYNC_COMPLETE',     // Hoàn thành đồng bộ
     SYNC_ERROR: 'SYNC_ERROR',           // Lỗi đồng bộ
+    STAGING_DATA_RECEIVED: 'STAGING_DATA_RECEIVED', // Nhận dữ liệu staging từ máy khác
 }
 const DATABASE_JS = "database.json";
 

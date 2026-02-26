@@ -13,7 +13,7 @@ import {
 } from "../../../config/redux/controller/configSystemSlice";
 import * as XLSX from "xlsx";
 import useConfirmModal from "../../../hooks/useConfirmModal";
-import ConfirmModal from "../../../components/common/ConfirmModal";
+import ConfirmModal from "../../../components/ConfirmModal";
 import {
   getActionTypeLabel,
   getActionTypeColorClass,
@@ -1522,7 +1522,7 @@ export default function CompetitionDataDetail() {
 
       // Nếu không có VĐV thắng, không cần cập nhật
       if (!winnerName) {
-        console.log("⚠️ Không có thông tin VĐV thắng, bỏ qua cập nhật.");
+        console.log(" Không có thông tin VĐV thắng, bỏ qua cập nhật.");
         return 0;
       }
 
@@ -1546,7 +1546,7 @@ export default function CompetitionDataDetail() {
           if (cellValue === winPattern.toLowerCase()) {
             // Tìm thấy pattern, cập nhật tên VĐV thắng
             console.log(
-              `✅ Tìm thấy "${winPattern}" tại trận ${updatedRow[0]}, cột ${j}`,
+              ` Tìm thấy "${winPattern}" tại trận ${updatedRow[0]}, cột ${j}`,
             );
 
             updatedRow[j] = winnerName;
@@ -1573,11 +1573,11 @@ export default function CompetitionDataDetail() {
                 data: updatedRow,
               })
               .then(() => {
-                console.log(`✅ Đã cập nhật backend - Trận ${updatedRow[0]}`);
+                console.log(` Đã cập nhật backend - Trận ${updatedRow[0]}`);
               })
               .catch((err) => {
                 console.error(
-                  `❌ Lỗi cập nhật backend - Trận ${updatedRow[0]}:`,
+                  ` Lỗi cập nhật backend - Trận ${updatedRow[0]}:`,
                   err,
                 );
                 throw err;
@@ -1589,11 +1589,11 @@ export default function CompetitionDataDetail() {
       // Chờ tất cả requests hoàn thành
       if (updateRequests.length > 0) {
         console.log(
-          `⏳ Đang cập nhật ${updateRequests.length} trận vào backend...`,
+          `Đang cập nhật ${updateRequests.length} trận vào backend...`,
         );
         await Promise.all(updateRequests);
         console.log(
-          `✅ Đã cập nhật thành công ${updateRequests.length} trận vào backend!`,
+          ` Đã cập nhật thành công ${updateRequests.length} trận vào backend!`,
         );
       } else {
         console.log("ℹ️ Không tìm thấy trận nào cần cập nhật.");
@@ -1601,7 +1601,7 @@ export default function CompetitionDataDetail() {
 
       return updateCount;
     } catch (error) {
-      console.error("❌ Error updating winner to next matches:", error);
+      console.error(" Error updating winner to next matches:", error);
       throw error; // Throw để handleResult có thể catch
     }
   };
@@ -2817,7 +2817,7 @@ function DeleteConfirm({ onConfirm, onCancel }) {
           Bạn có chắc chắn muốn xóa dòng này?
         </p>
         <p className="text-sm text-red-600 dark:text-red-400 font-medium">
-          ⚠️ Hành động này không thể hoàn tác.
+          Hành động này không thể hoàn tác.
         </p>
       </div>
 

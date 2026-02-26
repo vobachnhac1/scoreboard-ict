@@ -66,7 +66,6 @@ class DBCompetitionMatchTeamService {
         return new Promise((resolve, reject) => {
             const { competition_dk_id, match_no, row_index, match_name, team_name, match_type, config_system, athletes } = body;
             const db = this.db; // Lưu reference
-
             const query = `
                 INSERT INTO competition_match_team (competition_dk_id, match_no, row_index, match_name, team_name, match_type, config_system)
                 VALUES (?, ?, ?, ?, ?, ?, ?)

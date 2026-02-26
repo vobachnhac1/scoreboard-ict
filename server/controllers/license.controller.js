@@ -82,7 +82,7 @@ exports.activateLicense = async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('❌ Activate license error:', error);
+        console.error(' Activate license error:', error);
         return res.status(500).json({
             success: false,
             error: 'Internal server error',
@@ -104,7 +104,7 @@ exports.getLicenseStatus = async (req, res) => {
             data: licenseInfo
         });
     } catch (error) {
-        console.error('❌ Get license status error:', error);
+        console.error(' Get license status error:', error);
         return res.status(500).json({
             success: false,
             error: 'Internal server error',
@@ -135,7 +135,7 @@ exports.checkLicense = async (req, res) => {
             data: result
         });
     } catch (error) {
-        console.error('❌ Check license error:', error);
+        console.error(' Check license error:', error);
         return res.status(500).json({
             success: false,
             error: 'Internal server error',
@@ -167,7 +167,7 @@ exports.deactivateLicense = async (req, res) => {
             message: 'License deactivated successfully'
         });
     } catch (error) {
-        console.error('❌ Deactivate license error:', error);
+        console.error(' Deactivate license error:', error);
         return res.status(500).json({
             success: false,
             error: 'Internal server error',

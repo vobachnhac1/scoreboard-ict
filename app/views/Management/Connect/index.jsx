@@ -24,7 +24,7 @@ import {
 } from "../../../config/redux/reducers/socket-reducer";
 import { useStore } from "react-redux";
 import useConfirmModal from "../../../hooks/useConfirmModal";
-import ConfirmModal from "../../../components/Common/ConfirmModal";
+import ConfirmModal from "../../../components/ConfirmModal";
 
 export default function ManagementConnectionSocket() {
   // @ts-ignore
@@ -126,7 +126,10 @@ export default function ManagementConnectionSocket() {
       serverIpHash.current = IpMasker.mask(serverIp, "hash", 999, "Server");
 
       const devices = Object.values(deviceList)
-        ?.filter((ele) => ele?.register_status_code !== "ADMIN" || ele?.device_ip != '::1')
+        ?.filter(
+          (ele) =>
+            ele?.register_status_code !== "ADMIN" || ele?.device_ip != "::1",
+        )
         .map((conn, index) => ({
           order: index + 1,
           device_name: conn.device_name ?? "",
@@ -849,7 +852,6 @@ export default function ManagementConnectionSocket() {
                 {data.length}
               </span>
             </div>
-
           </div>
 
           {/* Right side - Action Buttons */}

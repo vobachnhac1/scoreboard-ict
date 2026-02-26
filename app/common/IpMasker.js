@@ -12,17 +12,88 @@
 import CryptoJS from 'crypto-js';
 
 class IpMasker {
+  // Secret key cho AES encryption (có thể lưu trong config)
+  static SECRET_KEY = 'scoreboard-ict-2025-secret-key-v1';
+
   /**
-   * Chuyển IP thành mã hash MD5
+   * Chuyển IP thành mã hash MD5 (one-way, không thể decode)
    * @param {string} ip - Địa chỉ IP
-   * @returns {string} - Mã hash (8 ký tự đầu)
+   * @returns {string}- Mã hash (8 ký tự đầu)
    * @example maskAsHash("192.168.1.100") => "a1b2c3d4"
    */
   static maskAsHash(ip) {
     if (!ip || ip === 'N/A' || ip === '::1') return 'N/A';
-    
+
     const hash = CryptoJS.MD5(ip).toString();
     return hash.substring(0, 8).toUpperCase();
+  }
+
+  /**
+   * Encode IP thành mã hash có thể decode (AES encryption)
+   * @param {string} ip - Địa chỉ IP
+   * @returns {string} - Mã hash encrypted (base64)
+   * @example encodeIP("192.168.1.100") => "U2FsdGVkX1+..."
+   */
+  static encodeIP(ip) {
+    if (!ip || ip === 'N/A' || ip === '::1') return 'N/A';
+
+    try {
+      const encrypted = CryptoJS.AES.encrypt(ip, this.SECRET_KEY).toString();
+      // Convert base64 to URL-safe format (bỏ /, +, =)
+      return encrypted
+        .replace(/\//g, '_')
+        .replace(/\+/g, '-')
+        .replace(/=/g, '');
+    }catch (error) {
+      console.error('Error encoding IP:', error);
+      return 'N/A';
+    }
+  }
+
+  /**
+   * Decode mã hash về IP gốc (AES decryption)
+   * @param {string} encodedHash - Mã hash đã encode
+   * @returns {string}- IP gốc hoặc null nếu decode fail
+   * @example decodeIP("U2FsdGVkX1+...") => "192.168.1.100"
+   */
+  static decodeIP(encodedHash) {
+    if (!encodedHash || encodedHash === 'N/A') return null;
+
+    try {
+      // Convert URL-safe format back to base64
+      const base64 = encodedHash
+        .replace(/_/g, '/')
+        .replace(/-/g, '+');
+
+      // Add padding if needed
+      const padding = '='.repeat((4 - (base64.length % 4)) % 4);
+      const normalized = base64 + padding;
+
+      const decrypted = CryptoJS.AES.decrypt(normalized, this.SECRET_KEY);
+      const ip = decrypted.toString(CryptoJS.enc.Utf8);
+
+      // Validate IP format
+      if (!ip || !ip.match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)) {
+        return null;
+      }
+
+      return ip;
+    } catch (error) {
+      console.error('Error decoding IP:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Encode IP và trả về hash ngắn gọn (12 ký tự đầu)
+   * @param {string} ip - Địa chỉ IP
+   * @returns {string} - Hash ngắn
+   * @example encodeIPShort("192.168.1.100") => "U2FsdGVkX1ab"
+   */
+  static encodeIPShort(ip) {
+    const encoded = this.encodeIP(ip);
+    if (encoded === 'N/A') return 'N/A';
+    return encoded.substring(0, 12).toUpperCase();
   }
 
   /**
@@ -137,6 +208,7 @@ class IpMasker {
       original: ip
     };
   }
+
 }
 
 export default IpMasker;

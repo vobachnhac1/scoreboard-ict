@@ -12,7 +12,7 @@ import ConnectionManagerModal from "./components/ConnectionManagerModal";
 import MatchListModal from "../../components/MatchListModal";
 import axios from "axios";
 import useConfirmModal from "../../hooks/useConfirmModal";
-import ConfirmModal from "../../components/common/ConfirmModal";
+import ConfirmModal from "../../components/ConfirmModal";
 import {
   useSocketEvent,
   emitSocketEvent,
@@ -149,10 +149,10 @@ export default function BangDiemQuyen() {
       socket,
       role: "admin",
       onSuccess: () => {
-        console.log("✅ Socket initialized successfully in BangDiemQuyen");
+        console.log(" Socket initialized successfully in BangDiemQuyen");
       },
       onError: (error) => {
-        console.error("❌ Socket initialization failed:", error);
+        console.error(" Socket initialization failed:", error);
         showError("Không thể kết nối socket. Vui lòng thử lại.");
       },
       forceReConnection: forceReConnection,
@@ -262,7 +262,7 @@ export default function BangDiemQuyen() {
               screenType: "quyen",
               so_giam_dinh: configSystem.so_giam_dinh,
             };
-            console.log("📤 Sending data to secondary display:", dataToSend);
+            console.log(" Sending data to secondary display:", dataToSend);
             const result =
               await window.electron.openSecondaryDisplay(dataToSend);
             console.log("🖥️ Secondary display opened:", result);
@@ -716,7 +716,7 @@ export default function BangDiemQuyen() {
         replace: true, // Replace để không tạo history entry mới
       });
     } catch (error) {
-      console.error("❌ Lỗi khi chuyển trận:", error);
+      console.error(" Lỗi khi chuyển trận:", error);
       await showError(
         "Lỗi khi chuyển sang trận tiếp theo: " +
           (error.response?.data?.message || error.message),
@@ -772,7 +772,7 @@ export default function BangDiemQuyen() {
         replace: true, // Replace để không tạo history entry mới
       });
     } catch (error) {
-      console.error("❌ Lỗi khi chuyển trận:", error);
+      console.error(" Lỗi khi chuyển trận:", error);
       await showError(
         "Lỗi khi chuyển sang trận trước: " +
           (error.response?.data?.message || error.message),
@@ -807,7 +807,7 @@ export default function BangDiemQuyen() {
         await showError("Lưu kết quả thất bại!");
       }
     } catch (error) {
-      console.error("❌ Lỗi khi lưu kết quả:", error);
+      console.error(" Lỗi khi lưu kết quả:", error);
       await showError(
         "Lỗi khi lưu kết quả: " +
           (error.response?.data?.message || error.message),
@@ -898,10 +898,10 @@ export default function BangDiemQuyen() {
           );
           if (configResponse?.data) {
             configSystemData = configResponse.data;
-            console.log("✅ Loaded default config_system from API");
+            console.log(" Loaded default config_system from API");
           }
         } catch (configError) {
-          console.warn("⚠️ Could not load default config_system:", configError);
+          console.warn(" Could not load default config_system:", configError);
           configSystemData = {}; // Fallback to empty object
         }
       }

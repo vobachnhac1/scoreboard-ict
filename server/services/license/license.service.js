@@ -45,7 +45,7 @@ class LicenseService {
                 )
             `);
 
-            console.log('✅ License activation table initialized');
+            console.log(' License activation table initialized');
         });
     }
 
@@ -81,7 +81,7 @@ class LicenseService {
             });
 
             if (response.data && response.status == 201) {
-                console.log('✅ API Response:', JSON.stringify(response.data, null, 2));
+                console.log(' API Response:', JSON.stringify(response.data, null, 2));
                 const resultCheck = response.data;
 
                 // Parse response từ API
@@ -112,7 +112,7 @@ class LicenseService {
                     last_check_date: new Date().toISOString()
                 });
 
-                console.log('✅ License activated successfully');
+                console.log(' License activated successfully');
 
                 // Tính số ngày còn lại
                 const now = new Date();
@@ -141,7 +141,7 @@ class LicenseService {
                 throw new Error(response.data.message || 'Activation failed');
             }
         } catch (error) {
-            console.error('❌ License activation error:', error.message);
+            console.error(' License activation error:', error.message);
 
             // Xử lý các loại lỗi khác nhau
             if (error.response) {
@@ -160,14 +160,14 @@ class LicenseService {
                     if (errorMessage.toLowerCase().includes('revoked') ||
                         errorMessage.toLowerCase().includes('thu hồi') ||
                         errorMessage.toLowerCase().includes('đã bị thu hồi')) {
-                        console.log('⚠️  License has been revoked. Deleting ALL licenses from database...');
+                        console.log('  License has been revoked. Deleting ALL licenses from database...');
 
                         // Xóa TẤT CẢ license khỏi database (không chỉ license key hiện tại)
                         try {
                             await this.deleteAllLicenses();
-                            console.log('✅ All licenses deleted from database');
+                            console.log(' All licenses deleted from database');
                         } catch (deleteError) {
-                            console.error('❌ Failed to delete licenses:', deleteError.message);
+                            console.error(' Failed to delete licenses:', deleteError.message);
                         }
 
                         return {
@@ -337,7 +337,7 @@ class LicenseService {
      */
     async checkLicenseOnline(license_key, device_uuid, mac_address) {
         try {
-            console.log('🌐 Checking license online...');
+            console.log(' Checking license online...');
 
             const response = await axios.post(this.apiUrl, {
                 licenseKey: license_key,
@@ -410,13 +410,13 @@ class LicenseService {
                     errorMessage = error.response.data?.message || error.response.data?.error || '';
                 }
 
-                console.log('⚠️  API returned 400:', errorMessage);
+                console.log('  API returned 400:', errorMessage);
 
                 // Kiểm tra nếu license bị revoked
                 if (errorMessage.toLowerCase().includes('revoked') ||
                     errorMessage.toLowerCase().includes('thu hồi') ||
                     errorMessage.toLowerCase().includes('đã bị thu hồi')) {
-                    console.log('⚠️  License has been revoked. Deleting ALL licenses from database...');
+                    console.log('  License has been revoked. Deleting ALL licenses from database...');
 
                     // Xóa TẤT CẢ license khỏi database
                     await this.deleteAllLicenses();
@@ -433,7 +433,7 @@ class LicenseService {
                 await this.deleteAllLicenses();
 
                 // Lỗi 400 khác (validation error, etc.) - Không xóa database, fallback to offline
-                console.log('⚠️  API validation error, falling back to offline check...');
+                console.log('  API validation error, falling back to offline check...');
                 return {
                     success: false,
                     online: false,
@@ -443,7 +443,7 @@ class LicenseService {
             }
 
             // Lỗi khác (network, timeout, etc.)
-            console.error('❌ Online check error:', error.message);
+            console.error(' Online check error:', error.message);
             return {
                 success: false,
                 online: false,
@@ -591,22 +591,22 @@ class LicenseService {
 
             // Kiểm tra kết nối internet
             const hasInternet = await this.checkInternetConnection();
-            console.log('🌐 Internet connection:', hasInternet ? 'Available' : 'Not available');
+            console.log('Internet connection:', hasInternet ? 'Available' : 'Not available');
 
             if (hasInternet) {
                 // Ưu tiên kiểm tra online
                 const onlineResult = await this.checkLicenseOnline(license_key, uuid_desktop, mac_address);
 
                 if (onlineResult.success) {
-                    console.log('✅ Online check successful');
+                    console.log(' Online check successful');
                     return onlineResult;
                 } else if (onlineResult.revoked) {
                     // License bị revoke - đã xóa khỏi database
-                    console.log('⚠️  License revoked');
+                    console.log('  License revoked');
                     return onlineResult;
                 } else {
                     // Online check failed, fallback to offline
-                    console.log('⚠️  Online check failed, falling back to offline...');
+                    console.log('  Online check failed, falling back to offline...');
                     return await this.checkLicenseOffline(license_key);
                 }
             } else {
@@ -616,7 +616,7 @@ class LicenseService {
             }
 
         } catch (error) {
-            console.error('❌ License check error:', error.message);
+            console.error(' License check error:', error.message);
 
             // Fallback to offline check
             if (license_key) {
@@ -663,7 +663,7 @@ class LicenseService {
             const result = await this.checkLicenseWithPriority();
             return result;
         } catch (error) {
-            console.error('❌ Get current license error:', error.message);
+            console.error(' Get current license error:', error.message);
             return {
                 success: false,
                 valid: false,

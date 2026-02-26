@@ -51,7 +51,8 @@ class SyncController {
                     message: 'Thiếu tham số table hoặc data'
                 });
             }
-            
+            // Thực hiện kiểm tra dữ liệu:
+            console.log('table, data, strategy: ', table, data, strategy);
             const result = await SyncService.importData(table, data, strategy || 'overwrite');
             
             return res.json({
@@ -278,6 +279,192 @@ class SyncController {
             return res.status(500).json({
                 success: false,
                 message: 'Lỗi khi xóa records',
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * POST /api/sync/import-staging
+     * Nhận dữ liệu gửi đến và lưu vào bảng staging (không import trực tiếp)
+     * Body: { table, data, session_id, source_ip, meta }
+     */
+    async importToStaging(req, res) {
+        try {
+            const { table, data, session_id, source_ip, meta, partial_rows } = req.body;
+
+            if (!table || !data || !session_id) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Thiếu tham số table, data hoặc session_id'
+                });
+            }
+
+            const clientIP = source_ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
+
+            // thực hiện 
+            let result;
+            if (partial_rows) {
+                console.log('---------------- Cập nhật từng dòng dữ liệu ----------------')
+                result = await SyncService.saveToStaging(table, data, clientIP, session_id, meta, true);
+            } else {
+                console.log('---------------- Import toàn bộ dữ liệu ----------------')
+                result = await SyncService.saveToStaging(table, data, clientIP, session_id, meta);
+            }
+
+            // Emit socket event để notify client có dữ liệu staging mới
+            const io = req.app.get('io');
+            if (io) {
+                io.emit('STAGING_DATA_RECEIVED', {
+                    status: 200,
+                    message: 'Có dữ liệu mới trong staging',
+                    data: {
+                        session_id,
+                        table,
+                        count: result.saved,
+                        source_ip: clientIP
+                    }
+                });
+            }
+
+            return res.json({
+                success: true,
+                message: `Đã lưu ${result.saved} records vào staging`,
+                data: result
+            });
+        }catch (error) {
+            console.log('Error importToStaging:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Lỗi khi lưu vào staging',
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * GET /api/sync/staging/sessions
+     * Lấy danh sách các phiên đồng bộ đang chờ
+     */
+    async getStagingSessions(req, res) {
+        try {
+            const result = await SyncService.getStagingSessions();
+            return res.json({
+                success: true,
+                message: 'Lấy danh sách sessions thành công',
+                data: result
+            });
+        } catch (error) {
+            console.error('Error getStagingSessions:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Lỗi khi lấy danh sách sessions',
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * GET /api/sync/staging/:sessionId
+     * Lấy dữ liệu staging của một session
+     * Query params: table (optional)
+     */
+    async getStagingData(req, res) {
+        try {
+            const { sessionId }= req.params;
+            const { table }= req.query;
+
+            const result = await SyncService.getStagingData(sessionId, table || null);
+            return res.json({
+                success: true,
+                message: 'Lấy dữ liệu staging thành công',
+                data: result
+            });
+        } catch (error) {
+            console.error('Error getStagingData:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Lỗi khi lấy dữ liệu staging',
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * PUT /api/sync/staging/:stagingId/mapping
+     * Cập nhật mapping cho một staging record
+     * Body: { mapping_to_id, action }
+     */
+    async updateStagingMapping(req, res) {
+        try {
+            const { stagingId } = req.params;
+            const { mapping_to_id, action } = req.body;
+
+            if (!action) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Thiếu tham số action (insert/update/skip)'
+                });
+            }
+
+            const result = await SyncService.updateStagingMapping(parseInt(stagingId), mapping_to_id, action);
+            return res.json({
+                success: true,
+                message: 'Cập nhật mapping thành công',
+                data: result
+            });
+        } catch (error) {
+            console.error('Error updateStagingMapping:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Lỗi khi cập nhật mapping',
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * POST /api/sync/staging/:sessionId/apply
+     * Apply changes từ staging vào database thực
+     */
+    async applyStagingChanges(req, res) {
+        try {
+            const { sessionId } = req.params;
+            const result = await SyncService.applyStagingChanges(sessionId);
+
+            return res.json({
+                success: true,
+                message: `Đã áp dụng: ${result.inserted} thêm mới, ${result.updated} cập nhật, ${result.skipped}bỏ qua`,
+                data: result
+            });
+        } catch (error) {
+            console.error('Error applyStagingChanges:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Lỗi khi áp dụng dữ liệu',
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * DELETE /api/sync/staging/:sessionId
+     * Xóa staging session
+     */
+    async deleteStagingSession(req, res) {
+        try {
+            const { sessionId } = req.params;
+            const result = await SyncService.deleteStagingSession(sessionId);
+            return res.json({
+                success: true,
+                message: 'Đã xóa session staging',
+                data: result
+            });
+        } catch (error) {
+            console.error('Error deleteStagingSession:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Lỗi khi xóa session',
                 error: error.message
             });
         }

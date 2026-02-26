@@ -1,24 +1,15 @@
 {
-  "name": "score-board-dht",
+  "name": "digisports",
   "author": "NhacVB",
   "version": "1.0.0",
-  "license": "DHT-NHACVB",
-  "description": "Phần mềm chấm điểm thi đấu Võ Hiện Đại",
+  "license": "DIGISPORTS-NHACVB",
+  "description": "PHẦN MỀN THI ĐẤU - DIGISPORTS",
   "main": "electron.js",
   "build": {
-    "productName": "VO HIEN DAI SCOREBOARD",
-    "appId": "com.dht.scoreboard",
-    "copyright": "Copyright (C) 2026 Võ Hiện Đại JSC",
+    "productName": "DigiSports",
+    "appId": "com.dht.digisports",
+    "copyright": "Copyright (C) 2026 DigiSports",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "binhtanict",
-        "repo": "scoreboard-ict",
-        "private": false,
-        "releaseType": "release"
-      }
-    ],
     "files": [
       "**/*",
       "!**/*.ts",
@@ -154,10 +145,7 @@
     "mac:secure": "yarn dist:mac:secure",
     "win:secure": "yarn dist:win:nsis:secure",
     "win:portable:secure": "yarn dist:win:portable:secure",
-    "win:nsis:secure": "yarn dist:win:nsis:secure",
-    "publish:mac": "npm run prebuild:mac && electron-builder --mac --publish always",
-    "publish:win": "npm run prebuild:win && electron-builder --win --publish always",
-    "publish:all": "npm run prebuild:mac && npm run prebuild:win && electron-builder --mac --win --publish always"
+    "win:nsis:secure": "yarn dist:win:nsis:secure"
   },
   "devDependencies": {
     "@babel/core": "7.24.5",
@@ -207,9 +195,9 @@
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
     "dotenv": "16.4.5",
-    "electron-log": "^5.2.4",
+    "electron-log": "^5.4.3",
     "electron-reloader": "^1.2.3",
-    "electron-updater": "^6.3.9",
+    "electron-updater": "^6.7.3",
     "excel4node": "^1.8.2",
     "exceljs": "^4.4.0",
     "express": "^5.1.0",

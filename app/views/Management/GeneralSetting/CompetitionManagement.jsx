@@ -6,7 +6,7 @@ import axios from "axios";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { useNavigate } from "react-router-dom";
 import useConfirmModal from "../../../hooks/useConfirmModal";
-import ConfirmModal from "../../../components/Common/ConfirmModal";
+import ConfirmModal from "../../../components/ConfirmModal";
 
 export default function CompetitionManagement() {
   const navigate = useNavigate();
@@ -90,7 +90,7 @@ export default function CompetitionManagement() {
             console.log("📋 Format: Võ Nhạc/Đồng đội - 6-16 VĐV/team");
             handleSaveVONToDatabase(sheetName, rows);
           } else {
-            console.warn("⚠️ Format không xác định:", formatType);
+            console.warn(" Format không xác định:", formatType);
             showWarning(
               `Format "${formatType}" không được hỗ trợ. Các format hợp lệ: DK, DOL, SOL, TUV, DAL`,
               { title: "Format không hỗ trợ", showCancel: false },
@@ -217,7 +217,7 @@ export default function CompetitionManagement() {
           );
         }
 
-        await showSuccess(`✅ Lưu ${teamsToCreate.length} VĐV DOL thành công!`);
+        await showSuccess(` Lưu ${teamsToCreate.length} VĐV DOL thành công!`);
         fetchSavedData();
       }
     } catch (error) {
@@ -276,7 +276,7 @@ export default function CompetitionManagement() {
           });
         }
 
-        console.log("📊 Total teams:", teamsToCreate.length);
+        console.log(" Total teams:", teamsToCreate.length);
 
         if (teamsToCreate.length > 0) {
           await axios.post(
@@ -287,7 +287,7 @@ export default function CompetitionManagement() {
           );
         }
 
-        await showSuccess(`✅ Lưu ${teamsToCreate.length} teams thành công!`);
+        await showSuccess(` Lưu ${teamsToCreate.length} teams thành công!`);
         fetchSavedData();
       }
     } catch (error) {
@@ -352,9 +352,7 @@ export default function CompetitionManagement() {
           );
         }
 
-        await showSuccess(
-          `✅ Lưu ${teamsToCreate.length} teams TUV thành công!`,
-        );
+        await showSuccess(` Lưu ${teamsToCreate.length} teams TUV thành công!`);
         fetchSavedData();
       }
     } catch (error) {
@@ -428,9 +426,7 @@ export default function CompetitionManagement() {
           );
         }
 
-        await showSuccess(
-          `✅ Lưu ${teamsToCreate.length} teams DAL thành công!`,
-        );
+        await showSuccess(` Lưu ${teamsToCreate.length} teams DAL thành công!`);
         fetchSavedData();
       }
     } catch (error) {
@@ -501,12 +497,9 @@ export default function CompetitionManagement() {
           );
         }
 
-        await showSuccess(
-          `✅ Lưu ${teamsToCreate.length} teams DAL thành công!`,
-        );
+        await showSuccess(` Lưu ${teamsToCreate.length} teams DAL thành công!`);
         fetchSavedData();
       }
-
     } catch (error) {}
   };
 
@@ -563,7 +556,7 @@ export default function CompetitionManagement() {
 
   // Chuyển đến trang chi tiết
   const handleViewDetail = (item) => {
-    // Todo: Chặn chế độ Đối Kháng/Quyền/Võ Nhạc 
+    // Todo: Chặn chế độ Đối Kháng/Quyền/Võ Nhạc
     if (item.sheet_name.startsWith("DK")) {
       navigate(`/management/competition-data/${item.id}`);
     } else {
@@ -1107,7 +1100,7 @@ export default function CompetitionManagement() {
                 {selectedFile && (
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600">
-                      📄 {selectedFile.name}
+                       {selectedFile.name}
                     </span>
                     <Button
                       type="button"
@@ -1367,21 +1360,29 @@ export default function CompetitionManagement() {
                             teams.push(currentTeam);
                           });
                         } else {
-                          let _matchType = selectedSheet.startsWith("VON") ? "VON" : null;
-                          if(_matchType != null){
-                            const dataRows = sheetData
+                          let _matchType = selectedSheet.startsWith("VON")
+                            ? "VON"
+                            : null;
+                          if (_matchType != null) {
+                            const dataRows = sheetData;
                             // 1. Lấy dòng 1 kiểm tra cột số lượng cột số 5
                             let count = 1;
                             for (let i = 0; i < dataRows.length; i += count) {
                               const rowMain = dataRows[i];
                               const athletes = [];
                               if (rowMain.length > 0) {
-                                if (rowMain[5] != undefined && rowMain[5] != null) {
+                                if (
+                                  rowMain[5] != undefined &&
+                                  rowMain[5] != null
+                                ) {
                                   count = rowMain[5] > 1 ? rowMain[5] : 1;
                                   for (let row = 0; row < count; row++) {
                                     // push vào mảng
                                     const item = dataRows[i + row] ?? {};
-                                    athletes.push({ name: item[3] ?? rowMain[2] ?? "", unit: rowMain[2] || "" });
+                                    athletes.push({
+                                      name: item[3] ?? rowMain[2] ?? "",
+                                      unit: rowMain[2] || "",
+                                    });
                                   }
                                 }
                                 // thực hiện push vào danh sách
@@ -1393,34 +1394,33 @@ export default function CompetitionManagement() {
                                   athletes: athletes,
                                   extraCols: rowMain.slice(5),
                                 });
-                              }                              
+                              }
                             }
                           } else {
                             sheetData.forEach((row, rowIndex) => {
                               const isTeamStart = row[0] && row[0] !== "";
                               if (isTeamStart) {
-                                  // Start new team
-                                  currentTeam = {
-                                    teamNo: teams.length + 1,
-                                    matchNo: row[0],
-                                    matchType: row[1] || "",
-                                    matchName: row[4] || "",
-                                    redName: row[2] || "",
-                                    blueName: row[3] || "",
-                                    athletes: [
-                                      { name: row[2] || "", unit: row[3] || "" },
-                                    ],
-                                    extraCols: row.slice(5),
-                                  };
-                                  teams.push(currentTeam);
-                                } else if (currentTeam && row[2]) {
-                                  // Add athlete to current team
-                                  currentTeam.athletes.push({
-                                    name: row[2] || "",
-                                    unit: row[3] || "",
-                                  });
-                                }
-                             
+                                // Start new team
+                                currentTeam = {
+                                  teamNo: teams.length + 1,
+                                  matchNo: row[0],
+                                  matchType: row[1] || "",
+                                  matchName: row[4] || "",
+                                  redName: row[2] || "",
+                                  blueName: row[3] || "",
+                                  athletes: [
+                                    { name: row[2] || "", unit: row[3] || "" },
+                                  ],
+                                  extraCols: row.slice(5),
+                                };
+                                teams.push(currentTeam);
+                              } else if (currentTeam && row[2]) {
+                                // Add athlete to current team
+                                currentTeam.athletes.push({
+                                  name: row[2] || "",
+                                  unit: row[3] || "",
+                                });
+                              }
                             });
                           }
                         }

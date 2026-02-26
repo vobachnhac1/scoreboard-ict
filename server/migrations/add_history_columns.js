@@ -11,7 +11,7 @@
 //     // Kiểm tra xem cột đã tồn tại chưa
 //     db.all("PRAGMA table_info(competition_match_history)", (err, columns) => {
 //         if (err) {
-//             console.error('❌ Lỗi khi kiểm tra cấu trúc bảng:', err);
+//             console.error(' Lỗi khi kiểm tra cấu trúc bảng:', err);
 //             db.close();
 //             return;
 //         }
@@ -23,9 +23,9 @@
 //         if (!columnNames.includes('notes')) {
 //             db.run('ALTER TABLE competition_match_history ADD COLUMN notes TEXT', (err) => {
 //                 if (err) {
-//                     console.error('❌ Lỗi khi thêm cột notes:', err);
+//                     console.error(' Lỗi khi thêm cột notes:', err);
 //                 } else {
-//                     console.log('✅ Đã thêm cột notes');
+//                     console.log(' Đã thêm cột notes');
 //                 }
 //             });
 //         } else {
@@ -36,9 +36,9 @@
 //         if (!columnNames.includes('logs')) {
 //             db.run('ALTER TABLE competition_match_history ADD COLUMN logs TEXT', (err) => {
 //                 if (err) {
-//                     console.error('❌ Lỗi khi thêm cột logs:', err);
+//                     console.error(' Lỗi khi thêm cột logs:', err);
 //                 } else {
-//                     console.log('✅ Đã thêm cột logs');
+//                     console.log(' Đã thêm cột logs');
 //                 }
 //             });
 //         } else {
@@ -49,16 +49,16 @@
 //         if (!columnNames.includes('round_history')) {
 //             db.run('ALTER TABLE competition_match_history ADD COLUMN round_history TEXT', (err) => {
 //                 if (err) {
-//                     console.error('❌ Lỗi khi thêm cột round_history:', err);
+//                     console.error(' Lỗi khi thêm cột round_history:', err);
 //                 } else {
-//                     console.log('✅ Đã thêm cột round_history');
+//                     console.log(' Đã thêm cột round_history');
 //                 }
                 
 //                 // Đóng database sau khi hoàn thành
 //                 setTimeout(() => {
 //                     db.close((err) => {
 //                         if (err) {
-//                             console.error('❌ Lỗi khi đóng database:', err);
+//                             console.error(' Lỗi khi đóng database:', err);
 //                         } else {
 //                             console.log('🎉 Migration hoàn thành!');
 //                         }
@@ -71,7 +71,7 @@
 //             // Đóng database
 //             db.close((err) => {
 //                 if (err) {
-//                     console.error('❌ Lỗi khi đóng database:', err);
+//                     console.error(' Lỗi khi đóng database:', err);
 //                 } else {
 //                     console.log('🎉 Migration hoàn thành!');
 //                 }

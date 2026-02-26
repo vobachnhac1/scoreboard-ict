@@ -9,7 +9,7 @@ const safeSocketHandler = (handlerName, handler) => {
         try {
             await handler.apply(this, args);
         } catch (error) {
-            console.error(`❌ Error in socket handler [${handlerName}]:`, {
+            console.error(` Error in socket handler [${handlerName}]:`, {
                 error: error.message,
                 stack: error.stack,
                 timestamp: new Date().toISOString()
@@ -26,7 +26,7 @@ const safeSocketHandler = (handlerName, handler) => {
                     });
                 }
             } catch (emitError) {
-                console.error(`❌ Error khi emit error message:`, emitError);
+                console.error(` Error khi emit error message:`, emitError);
             }
         }
     };
@@ -476,34 +476,34 @@ InitSocket = async (io) => {
                         // Xanh cộng 1
                         if(socketSetXanh1.size >= 2 ){
                             config.vdv_xanh.diem_cong += 1;
-                            console.log(`✅ Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                            console.log(` Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                         }
 
                         // Xanh cộng 2
                         if(socketSetXanh2.size >= 2 ){
                             config.vdv_xanh.diem_cong += 2;
-                            console.log(`✅ Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                            console.log(` Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                         }
 
                         // Xanh cộng 3
                         if(socketSetXanh3.size >= 2 ){
                             config.vdv_xanh.diem_cong += 3;
-                            console.log(`✅ Xanh được +3 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                            console.log(` Xanh được +3 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                         }
                         // Đỏ cộng 1
                         if(socketSetDo1.size >= 2 ){
                             config.vdv_do.diem_cong += 1;
-                            console.log(`✅ Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                            console.log(` Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                         }
                         // Đỏ cộng 2
                         if(socketSetDo2.size >= 2 ){
                             config.vdv_do.diem_cong += 2;
-                            console.log(`✅ Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                            console.log(` Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                         }
                         // Đỏ cộng 3
                         if(socketSetDo3.size >= 2 ){
                             config.vdv_do.diem_cong += 3;
-                            console.log(`✅ Đỏ được +3 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                            console.log(` Đỏ được +3 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                         }
 
                         // thực hiện điểm thấp
@@ -512,26 +512,26 @@ InitSocket = async (io) => {
                             if((socketSetXanh1.size == 1 && socketSetXanh2.size == 1 && socketSetXanh3.size == 0) 
                                 || (socketSetXanh1.size == 1 && socketSetXanh2.size == 1 && socketSetXanh3.size == 1) ){
                                 config.vdv_xanh.diem_cong += 1;
-                                console.log(`✅ Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                                console.log(` Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                             }
 
                             // Xanh cộng 2
                             if(socketSetXanh1.size == 0 && socketSetXanh2.size == 1 && socketSetXanh3.size == 1 ){
                                 config.vdv_xanh.diem_cong += 2;
-                                console.log(`✅ Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                                console.log(` Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                             }
 
                             // Đỏ cộng 1
                             if((socketSetDo1.size == 1 && socketSetDo2.size == 1 && socketSetDo3.size == 0) 
                                 || (socketSetDo1.size == 1 && socketSetDo2.size == 1 && socketSetDo3.size == 1) ){
                                 config.vdv_do.diem_cong += 1;
-                                console.log(`✅ Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                                console.log(` Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                             }
 
                             // Đỏ cộng 2
                             if(socketSetDo1.size == 0 && socketSetDo2.size == 1 && socketSetDo3.size == 1 ){
                                 config.vdv_do.diem_cong += 2;
-                                console.log(`✅ Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                                console.log(` Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                             }
                         }
                     }else if(config.so_giam_dinh == 5){
@@ -539,34 +539,34 @@ InitSocket = async (io) => {
                         // Xanh cộng 1
                         if(socketSetXanh1.size >= 3 ){
                             config.vdv_xanh.diem_cong += 1;
-                            console.log(`✅ Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                            console.log(` Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                         }
 
                         // Xanh cộng 2
                         if(socketSetXanh2.size >= 3 ){
                             config.vdv_xanh.diem_cong += 2;
-                            console.log(`✅ Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                            console.log(` Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                         }
 
                         // Xanh cộng 3
                         if(socketSetXanh3.size >= 3 ){
                             config.vdv_xanh.diem_cong += 3;
-                            console.log(`✅ Xanh được +3 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                            console.log(` Xanh được +3 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                         }
                         // Đỏ cộng 1
                         if(socketSetDo1.size >= 3 ){
                             config.vdv_do.diem_cong += 1;
-                            console.log(`✅ Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                            console.log(` Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                         }
                         // Đỏ cộng 2
                         if(socketSetDo2.size >= 3 ){
                             config.vdv_do.diem_cong += 2;
-                            console.log(`✅ Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                            console.log(` Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                         }
                         // Đỏ cộng 3
                         if(socketSetDo3.size >= 3 ){
                             config.vdv_do.diem_cong += 3;
-                            console.log(`✅ Đỏ được +3 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                            console.log(` Đỏ được +3 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                         }
                         // thực hiện điểm thấp
                         if(config.cau_hinh_lay_diem_thap){
@@ -575,7 +575,7 @@ InitSocket = async (io) => {
                                 || (socketSetXanh1.size == 1 && socketSetXanh2.size == 1 && socketSetXanh3.size == 1)
                                 ){
                                 config.vdv_xanh.diem_cong += 1;
-                                console.log(`✅ Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                                console.log(` Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                             }
 
                             // Xanh cộng 2
@@ -584,7 +584,7 @@ InitSocket = async (io) => {
                                 || (socketSetXanh1.size == 1 && socketSetXanh2.size == 1 && socketSetXanh3.size == 2) 
                             ){
                                 config.vdv_xanh.diem_cong += 2;
-                                console.log(`✅ Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                                console.log(` Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                             }
 
                             // Đỏ cộng 1
@@ -592,7 +592,7 @@ InitSocket = async (io) => {
                                 || (socketSetDo1.size == 1 && socketSetDo2.size == 1 && socketSetDo3.size == 1)
                                 ){
                                 config.vdv_do.diem_cong += 1;
-                                console.log(`✅ Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                                console.log(` Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                             }
 
                             // Đỏ cộng 2
@@ -601,7 +601,7 @@ InitSocket = async (io) => {
                                 || (socketSetDo1.size == 1 && socketSetDo2.size == 1 && socketSetDo3.size == 2) 
                             ){
                                 config.vdv_do.diem_cong += 2;
-                                console.log(`✅ Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                                console.log(` Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                             }
                         }
                     }
@@ -709,28 +709,28 @@ InitSocket = async (io) => {
             const size3 = scoreSets[3].size; // điểm hệ 3
             const totalReferees = size1 + size2 + size3;
 
-            console.log(`📊 Tính điểm: size1=${size1}, size2=${size2}, size3=${size3}, soGiamDinh=${soGiamDinh}, totalReferees=${totalReferees}`);
+            console.log(` Tính điểm: size1=${size1}, size2=${size2}, size3=${size3}, soGiamDinh=${soGiamDinh}, totalReferees=${totalReferees}`);
 
             if (soGiamDinh == 3) {
                 // Logic cơ bản: >= 2 giám định đồng ý
                 if (size1 >= 2) {
                     finalScore = 1;
                     finalRowIndex = 0; // vàng
-                    console.log(`✅ Đạt đa số: +1 điểm (row vàng)`);
+                    console.log(` Đạt đa số: +1 điểm (row vàng)`);
                 } else if (size2 >= 2) {
                     finalScore = 2;
                     finalRowIndex = 1; // xanh lá
-                    console.log(`✅ Đạt đa số: +2 điểm (row xanh lá)`);
+                    console.log(` Đạt đa số: +2 điểm (row xanh lá)`);
                 } else if (size3 >= 2) {
                     finalScore = 3;
                     finalRowIndex = 2; // đỏ
-                    console.log(`✅ Đạt đa số: +3 điểm (row đỏ)`);
+                    console.log(` Đạt đa số: +3 điểm (row đỏ)`);
                 }
                 // Logic điểm thấp: Chỉ áp dụng khi size1 = 1 VÀ size2 = 1
                 if (cauHinhLayDiemThap && finalScore === 0) {
                     // 1 GĐ cho điểm hệ 1 + 1 GĐ cho điểm hệ 2 → lấy điểm hệ 1 (điểm thấp)
                     if (size1 == 1 && size2 == 1) {
-                        // ⚠️ KIỂM TRA: scoreSets[1] và scoreSets[2] phải có socket_id KHÁC NHAU
+                        //  KIỂM TRA: scoreSets[1] và scoreSets[2] phải có socket_id KHÁC NHAU
                         const socket1 = Array.from(scoreSets[1])[0]; // socket_id của điểm hệ 1
                         const socket2 = Array.from(scoreSets[2])[0]; // socket_id của điểm hệ 2
 
@@ -738,10 +738,10 @@ InitSocket = async (io) => {
                             // 2 socket_id khác nhau → OK, tính điểm thấp
                             finalScore = 1;
                             finalRowIndex = 0; // vàng
-                            console.log(`✅ Điểm thấp: +1 điểm (row vàng) - size1=1, size2=1, socket khác nhau`);
+                            console.log(` Điểm thấp: +1 điểm (row vàng) - size1=1, size2=1, socket khác nhau`);
                         } else {
                             // Cùng socket_id → KHÔNG tính điểm
-                            console.log(`❌ Điểm thấp: Không tính - scoreSets[1] và scoreSets[2] có cùng socket_id`);
+                            console.log(` Điểm thấp: Không tính - scoreSets[1] và scoreSets[2] có cùng socket_id`);
                         }
                     }
                 }
@@ -750,23 +750,23 @@ InitSocket = async (io) => {
                 if (size1 >= 3) {
                     finalScore = 1;
                     finalRowIndex = 0; // vàng
-                    console.log(`✅ Đạt đa số: +1 điểm (row vàng)`);
+                    console.log(` Đạt đa số: +1 điểm (row vàng)`);
                 } else if (size2 >= 3) {
                     finalScore = 2;
                     finalRowIndex = 1; // xanh lá
-                    console.log(`✅ Đạt đa số: +2 điểm (row xanh lá)`);
+                    console.log(` Đạt đa số: +2 điểm (row xanh lá)`);
                 } else if (size3 >= 3) {
                     finalScore = 3;
                     finalRowIndex = 2; // đỏ
-                    console.log(`✅ Đạt đa số: +3 điểm (row đỏ)`);
+                    console.log(` Đạt đa số: +3 điểm (row đỏ)`);
                 }
                 // Logic điểm thấp: Chỉ áp dụng khi size1 = 1 VÀ size2 = 1 VÀ totalReferees >= 3
                 if (cauHinhLayDiemThap && finalScore === 0) {
-                    // ⚠️ KIỂM TRA: Với 5 GĐ, cần ít nhất 3 GĐ gửi điểm
+                    //  KIỂM TRA: Với 5 GĐ, cần ít nhất 3 GĐ gửi điểm
                     if (totalReferees < 3) {
-                        console.log(`❌ Điểm thấp (5 GĐ): Không đủ giám định - totalReferees=${totalReferees} < 3`);
+                        console.log(` Điểm thấp (5 GĐ): Không đủ giám định - totalReferees=${totalReferees} < 3`);
                     } else if (size1 >= 1 && size2 >= 1) {
-                        // ⚠️ KIỂM TRA: Loại bỏ socket trùng lặp giữa scoreSets[1] và scoreSets[2]
+                        //  KIỂM TRA: Loại bỏ socket trùng lặp giữa scoreSets[1] và scoreSets[2]
                         const socket1 = Array.from(scoreSets[1]); // array socket_id của điểm hệ 1
                         const socket2 = Array.from(scoreSets[2]); // array socket_id của điểm hệ 2
 
@@ -779,9 +779,9 @@ InitSocket = async (io) => {
                         if (totalUniqueReferees >= 3) {
                             finalScore = 1;
                             finalRowIndex = 0; // vàng
-                            console.log(`✅ Điểm thấp (5 GĐ): +1 điểm - socket1=${socket1.length}, socket2_filtered=${socket2Filtered.length}, total_unique=${totalUniqueReferees} >= 3`);
+                            console.log(` Điểm thấp (5 GĐ): +1 điểm - socket1=${socket1.length}, socket2_filtered=${socket2Filtered.length}, total_unique=${totalUniqueReferees} >= 3`);
                         } else {
-                            console.log(`❌ Điểm thấp (5 GĐ): Không đủ socket unique - total_unique=${totalUniqueReferees} < 3`);
+                            console.log(` Điểm thấp (5 GĐ): Không đủ socket unique - total_unique=${totalUniqueReferees} < 3`);
                         }
                     }
                 }
@@ -794,7 +794,7 @@ InitSocket = async (io) => {
             console.log('🔴 Điểm đỏ nhận được: ', input);
             const client = MapConn[`${socket.id}`];
             if (!client || !client.token) {
-                console.log('❌ Client chưa được xác thực');
+                console.log(' Client chưa được xác thực');
                 return;
             }
             const { score } = input; // score: 1, 2, hoặc 3
@@ -824,7 +824,7 @@ InitSocket = async (io) => {
                 console.log(`⏱️ Bắt đầu đếm ĐỎ trong ${config.thoi_gian_tinh_diem}ms`);
 
                 setTimeout(() => {
-                    console.log(`\n📊 Kết thúc đếm ĐỎ:`);
+                    console.log(`\n Kết thúc đếm ĐỎ:`);
                     console.log(`   - Điểm 1 (vàng): ${redScoreSets[1].size} GĐ`);
                     console.log(`   - Điểm 2 (xanh lá): ${redScoreSets[2].size} GĐ`);
                     console.log(`   - Điểm 3 (đỏ): ${redScoreSets[3].size} GĐ`);
@@ -857,9 +857,9 @@ InitSocket = async (io) => {
                             }
                         });
 
-                        console.log(`✅ ĐỎ: +${result.point} điểm`);
+                        console.log(` ĐỎ: +${result.point} điểm`);
                     } else {
-                        console.log(`❌ ĐỎ: Không đủ điều kiện cộng điểm`);
+                        console.log(` ĐỎ: Không đủ điều kiện cộng điểm`);
                     }
 
                     // Reset
@@ -880,7 +880,7 @@ InitSocket = async (io) => {
 
             const client = MapConn[`${socket.id}`];
             if (!client || !client.token) {
-                console.log('❌ Client chưa được xác thực');
+                console.log(' Client chưa được xác thực');
                 return;
             }
 
@@ -913,7 +913,7 @@ InitSocket = async (io) => {
                 console.log(`⏱️ Bắt đầu đếm XANH trong ${config.thoi_gian_tinh_diem}ms`);
 
                 setTimeout(() => {
-                    console.log(`\n📊 Kết thúc đếm XANH:`);
+                    console.log(`\n Kết thúc đếm XANH:`);
                     console.log(`   - Điểm 1 (vàng): ${blueScoreSets[1].size} GĐ`);
                     console.log(`   - Điểm 2 (xanh lá): ${blueScoreSets[2].size} GĐ`);
                     console.log(`   - Điểm 3 (đỏ): ${blueScoreSets[3].size} GĐ`);
@@ -944,9 +944,9 @@ InitSocket = async (io) => {
                                 }
                             }
                         });
-                        console.log(`✅ XANH: +${result.point} điểm.`);
+                        console.log(` XANH: +${result.point} điểm.`);
                     } else {
-                        console.log(`❌ XANH: Không đủ điều kiện cộng điểm`);
+                        console.log(` XANH: Không đủ điều kiện cộng điểm`);
                     }
 
                     // Reset

@@ -13,7 +13,7 @@ import {
 } from "../../../config/redux/controller/configSystemSlice";
 import * as XLSX from "xlsx";
 import useConfirmModal from "../../../hooks/useConfirmModal";
-import ConfirmModal from "../../../components/common/ConfirmModal";
+import ConfirmModal from "../../../components/ConfirmModal";
 
 // Component Card cho mỗi đội/VĐV thi đấu
 function TeamCard({
@@ -948,7 +948,6 @@ export default function CompetitionDataDetailOrther() {
     }
 
     try {
-
       // Nếu chưa có match_id, tạo team mới
       if (!row.match_id) {
         const createPayload = {
@@ -997,7 +996,6 @@ export default function CompetitionDataDetailOrther() {
         scores: row?.scores || {},
       };
 
-
       // Chuyển màn hình thi đấu Võ Nhạc
       if (_match_type == "VON") {
         // Chuyển màn hình thi Võ Nhạc
@@ -1039,13 +1037,14 @@ export default function CompetitionDataDetailOrther() {
         status: "FIN",
       };
 
-      // Nếu có match_id, thêm vào history
-      if (row.match_id) {
-        await axios.post(
-          `http://localhost:6789/api/competition-match-team/${row.match_id}/history`,
-          historyData,
-        );
-      }
+      // Ngày 19.02
+      // Nếu có match_id,  thêm vào history
+      // if (row.match_id) {
+      //   await axios.post(
+      //     `http://localhost:6789/api/competition-match-team/${row.match_id}/history`,
+      //     historyData,
+      //   );
+      // }
 
       // 2. Cập nhật status thành FIN
       if (row.match_id) {
@@ -1965,7 +1964,7 @@ function DeleteConfirm({ onConfirm, onCancel }) {
           Bạn có chắc chắn muốn xóa dòng này?
         </p>
         <p className="text-sm text-red-600 dark:text-red-400 font-semibold">
-          ⚠️ Hành động này không thể hoàn tác
+          Hành động này không thể hoàn tác
         </p>
       </div>
 

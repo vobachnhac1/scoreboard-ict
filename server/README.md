@@ -51,6 +51,7 @@ npm run migrate
 ```
 
 Migration sẽ tạo:
+
 - Bảng `matches` với các trường kết quả
 - Bảng `round_results` để lưu chi tiết từng hiệp
 - View `v_match_results` để xem kết quả
@@ -60,11 +61,13 @@ Migration sẽ tạo:
 ### 5. Khởi động server
 
 **Development mode (với nodemon):**
+
 ```bash
 npm run dev
 ```
 
 **Production mode:**
+
 ```bash
 npm start
 ```
@@ -78,6 +81,7 @@ Server sẽ chạy tại: `http://localhost:6789`
 Kết thúc trận đấu và lưu kết quả.
 
 **Request:**
+
 ```json
 {
   "match_id": "ABC123",
@@ -112,6 +116,7 @@ Kết thúc trận đấu và lưu kết quả.
 ```
 
 **Response Success:**
+
 ```json
 {
   "success": true,
@@ -128,6 +133,7 @@ Kết thúc trận đấu và lưu kết quả.
 ```
 
 **Response Error:**
+
 ```json
 {
   "success": false,
@@ -140,6 +146,7 @@ Kết thúc trận đấu và lưu kết quả.
 Health check endpoint.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -152,36 +159,36 @@ Health check endpoint.
 
 ### Table: matches
 
-| Column | Type | Description |
-|--------|------|-------------|
-| match_id | VARCHAR(50) | ID trận đấu (PK) |
-| status | VARCHAR(10) | PENDING, LIVE, FIN, CANCELLED |
-| red_score | INT | Điểm số đỏ |
-| blue_score | INT | Điểm số xanh |
-| red_remind | INT | Số lần nhắc nhở đỏ |
-| blue_remind | INT | Số lần nhắc nhở xanh |
-| red_warn | INT | Số lần cảnh cáo đỏ |
-| blue_warn | INT | Số lần cảnh cáo xanh |
-| red_kick | INT | Số đòn chân đỏ |
-| blue_kick | INT | Số đòn chân xanh |
-| winner | VARCHAR(10) | red, blue, null |
-| total_rounds | INT | Tổng số hiệp |
-| final_time | VARCHAR(10) | Thời gian kết thúc |
-| action_history | JSON | Lịch sử thao tác |
-| round_history | JSON | Lịch sử từng hiệp |
-| finished_at | DATETIME | Thời điểm kết thúc |
+| Column         | Type        | Description                   |
+| -------------- | ----------- | ----------------------------- |
+| match_id       | VARCHAR(50) | ID trận đấu (PK)              |
+| status         | VARCHAR(10) | PENDING, LIVE, FIN, CANCELLED |
+| red_score      | INT         | Điểm số đỏ                    |
+| blue_score     | INT         | Điểm số xanh                  |
+| red_remind     | INT         | Số lần nhắc nhở đỏ            |
+| blue_remind    | INT         | Số lần nhắc nhở xanh          |
+| red_warn       | INT         | Số lần cảnh cáo đỏ            |
+| blue_warn      | INT         | Số lần cảnh cáo xanh          |
+| red_kick       | INT         | Số đòn chân đỏ                |
+| blue_kick      | INT         | Số đòn chân xanh              |
+| winner         | VARCHAR(10) | red, blue, null               |
+| total_rounds   | INT         | Tổng số hiệp                  |
+| final_time     | VARCHAR(10) | Thời gian kết thúc            |
+| action_history | JSON        | Lịch sử thao tác              |
+| round_history  | JSON        | Lịch sử từng hiệp             |
+| finished_at    | DATETIME    | Thời điểm kết thúc            |
 
 ### Table: round_results
 
-| Column | Type | Description |
-|--------|------|-------------|
-| id | INT | Auto increment (PK) |
-| match_id | VARCHAR(50) | ID trận đấu (FK) |
-| round | INT | Số hiệp |
-| red_score | INT | Điểm đỏ trong hiệp |
-| blue_score | INT | Điểm xanh trong hiệp |
-| round_type | VARCHAR(10) | MAIN, EXTRA |
-| status | VARCHAR(10) | COMPLETED, CANCELLED |
+| Column     | Type        | Description          |
+| ---------- | ----------- | -------------------- |
+| id         | INT         | Auto increment (PK)  |
+| match_id   | VARCHAR(50) | ID trận đấu (FK)     |
+| round      | INT         | Số hiệp              |
+| red_score  | INT         | Điểm đỏ trong hiệp   |
+| blue_score | INT         | Điểm xanh trong hiệp |
+| round_type | VARCHAR(10) | MAIN, EXTRA          |
+| status     | VARCHAR(10) | COMPLETED, CANCELLED |
 
 ## 🧪 Testing
 
@@ -206,6 +213,7 @@ Import collection từ `postman/scoreboard-ict.json`
 ## 📝 Logs
 
 Server logs sẽ hiển thị:
+
 - Request method và path
 - Database connection status
 - Migration status
@@ -223,7 +231,7 @@ Server logs sẽ hiển thị:
 ### Lỗi kết nối database:
 
 ```
-❌ Database connection failed: Access denied
+ Database connection failed: Access denied
 ```
 
 **Giải pháp:** Kiểm tra lại thông tin trong file `.env`
@@ -231,9 +239,7 @@ Server logs sẽ hiển thị:
 ### Lỗi migration:
 
 ```
-❌ Migration failed: Table already exists
+ Migration failed: Table already exists
 ```
 
 **Giải pháp:** Migration sử dụng `IF NOT EXISTS`, có thể chạy lại an toàn
-
-

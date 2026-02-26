@@ -1,16 +1,16 @@
-import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 /**
  * FeatureLock Component
  * Khóa tính năng nếu license không hợp lệ hoặc feature không được bật
- * 
+ *
  * Usage:
  * <FeatureLock>
  *   <YourComponent />
  * </FeatureLock>
- * 
+ *
  * Hoặc khóa feature cụ thể:
  * <FeatureLock feature="scoreboard">
  *   <ScoreboardComponent />
@@ -18,20 +18,24 @@ import { useNavigate } from 'react-router-dom';
  */
 export default function FeatureLock({ children, feature = null }) {
   const navigate = useNavigate();
-  const { valid, features, requireActivation } = useSelector((state) => state.license);
+  const { valid, features, requireActivation } = useSelector(
+    (state) => state.license,
+  );
 
   useEffect(() => {
     // Nếu license không hợp lệ -> redirect đến trang activation
     if (!valid || requireActivation) {
-      console.log('⚠️ License invalid. Redirecting to activation page...');
-      navigate('/license-activation');
+      console.log(" License invalid. Redirecting to activation page...");
+      navigate("/license-activation");
       return;
     }
 
     // Nếu yêu cầu feature cụ thể nhưng feature không được bật
     if (feature && features && !features[feature]) {
-      console.log(`⚠️ Feature "${feature}" not enabled. Redirecting to activation page...`);
-      navigate('/license-activation');
+      console.log(
+        ` Feature "${feature}" not enabled. Redirecting to activation page...`,
+      );
+      navigate("/license-activation");
       return;
     }
   }, [valid, requireActivation, feature, features, navigate]);
@@ -53,10 +57,10 @@ export default function FeatureLock({ children, feature = null }) {
 /**
  * withFeatureLock HOC
  * Higher Order Component để wrap component với FeatureLock
- * 
+ *
  * Usage:
  * export default withFeatureLock(YourComponent);
- * 
+ *
  * Hoặc với feature cụ thể:
  * export default withFeatureLock(YourComponent, 'scoreboard');
  */
@@ -69,4 +73,3 @@ export function withFeatureLock(Component, feature = null) {
     );
   };
 }
-

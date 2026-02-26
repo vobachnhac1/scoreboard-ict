@@ -16,13 +16,11 @@ InitProject = () => {
             if(macAddress) break;
                 if (!iface.internal && iface.mac !== '00:00:00:00:00:00') {
                 macAddress = iface.mac
-            //    console.log(`Interface: ${name}, MAC: ${iface.mac}`);
                 }
             }
             }
         }  
         return macAddress;
-
     } catch (error) {
         return null;
     }
@@ -41,7 +39,6 @@ getMacAddress = () => {
             if(macAddress) break;
                 if (!iface.internal && iface.mac !== '00:00:00:00:00:00') {
                 macAddress = iface.mac
-            //    console.log(`Interface: ${name}, MAC: ${iface.mac}`);
                 }
             }
             }
@@ -57,7 +54,6 @@ getUUID = async ()=>{
         const data = await si.uuid()
         return data.hardware
     } catch (error) {
-        console.error('❌ Error:', error)
         return null
     }
 }
@@ -67,11 +63,9 @@ getIP = async ()=>{
         const networkInterfaces = os.networkInterfaces();
         let ip = null
         for (const iface of Object.values(networkInterfaces)) {
-            console.log('iface: ', iface);
             for (const info of iface) {
               if (info.family === 'IPv4' && !info.internal) {
                 ip = info.address
-                console.log('🌐 Local IP:', info.address);
               }
             }
           }

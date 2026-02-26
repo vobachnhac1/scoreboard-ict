@@ -11,43 +11,49 @@ Hệ thống chấm điểm thi đấu Vovinam hiện đại, được xây dự
 ## ✨ Tính năng chính
 
 ### 🎯 Chấm điểm thi đấu
-- ✅ Chấm điểm theo hệ điểm 2, 3, 4
-- ✅ Hỗ trợ nhiều giám định (3, 5, 7)
-- ✅ Tính điểm tự động theo quy định
-- ✅ Hiển thị điểm real-time
+
+- Chấm điểm theo hệ điểm 2, 3, 4
+- Hỗ trợ nhiều giám định (3, 5, 7)
+- Tính điểm tự động theo quy định
+- Hiển thị điểm real-time
 
 ### ⏱️ Quản lý thời gian
-- ✅ Đồng hồ đếm ngược với độ chính xác 0.1 giây
-- ✅ Tự động chuyển hiệp
-- ✅ Thời gian nghỉ giữa các hiệp
-- ✅ Hiệp phụ (nếu cần)
-- ✅ Thời gian y tế
 
-### 📊 Quản lý trận đấu
-- ✅ Nhắc nhở, cảnh cáo, truất quyền
-- ✅ Lịch sử thao tác (action tracking)
-- ✅ Hoàn tác (undo) thao tác
-- ✅ **Kết thúc trận đấu và lưu kết quả** ⭐ NEW
+- Đồng hồ đếm ngược với độ chính xác 0.1 giây
+- Tự động chuyển hiệp
+- Thời gian nghỉ giữa các hiệp
+- Hiệp phụ (nếu cần)
+- Thời gian y tế
+
+###  Quản lý trận đấu
+
+- Nhắc nhở, cảnh cáo, truất quyền
+- Lịch sử thao tác (action tracking)
+- Hoàn tác (undo) thao tác
+- **Kết thúc trận đấu và lưu kết quả** ⭐ NEW
 
 ### 🎨 Giao diện
-- ✅ Responsive design
-- ✅ Dark/Light mode
-- ✅ Hiển thị logo giải đấu
-- ✅ Banner thời gian nghỉ/tạm dừng
-- ✅ Animations mượt mà
+
+- Responsive design
+- Dark/Light mode
+- Hiển thị logo giải đấu
+- Banner thời gian nghỉ/tạm dừng
+- Animations mượt mà
 
 ### 🔌 Backend API
-- ✅ RESTful API với Express
-- ✅ MySQL database
-- ✅ Lưu kết quả trận đấu
-- ✅ Lưu lịch sử từng hiệp
-- ✅ Statistics và reports
+
+- RESTful API với Express
+- MySQL database
+- Lưu kết quả trận đấu
+- Lưu lịch sử từng hiệp
+- Statistics và reports
 
 ---
 
 ## 🚀 Quick Start
 
 ### Yêu cầu:
+
 - Node.js >= 14.x
 - MySQL >= 5.7 hoặc MariaDB >= 10.3
 - npm hoặc yarn
@@ -79,7 +85,7 @@ npm run dev
 
 ---
 
-## 📁 Cấu trúc thư mục
+## Cấu trúc thư mục
 
 ```
 scoreboard-ict/
@@ -111,15 +117,17 @@ scoreboard-ict/
 
 ---
 
-## 🔧 Cấu hình
+## Cấu hình
 
 ### Frontend:
+
 ```javascript
 // app/config/config.js
-export const API_URL = 'http://localhost:6789';
+export const API_URL = "http://localhost:6789";
 ```
 
 ### Backend:
+
 ```env
 # server/.env
 PORT=6789
@@ -135,9 +143,11 @@ DB_NAME=scoreboard_ict
 ## 📡 API Endpoints
 
 ### POST /api/matches/finish
+
 Kết thúc trận đấu và lưu kết quả.
 
 **Request:**
+
 ```json
 {
   "match_id": "ABC123",
@@ -150,6 +160,7 @@ Kết thúc trận đấu và lưu kết quả.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -164,15 +175,18 @@ Kết thúc trận đấu và lưu kết quả.
 ## 🗄️ Database
 
 ### Bảng chính:
+
 - **matches** - Thông tin trận đấu và kết quả
 - **round_results** - Chi tiết từng hiệp
 - **competitions** - Giải đấu
 - **athletes** - Vận động viên
 
 ### Views:
+
 - **v_match_results** - Kết quả trận đấu
 
 ### Stored Procedures:
+
 - **sp_get_match_statistics** - Thống kê trận đấu
 
 👉 Xem schema: [server/migrations/add_match_result_fields.sql](server/migrations/add_match_result_fields.sql)
@@ -182,6 +196,7 @@ Kết thúc trận đấu và lưu kết quả.
 ## 🧪 Testing
 
 ### Test Backend:
+
 ```bash
 cd server
 npm run migrate
@@ -192,12 +207,14 @@ curl http://localhost:6789/health
 ```
 
 ### Test Frontend:
+
 ```bash
 npm run dev
 # Mở http://localhost:3000
 ```
 
 ### Test Database:
+
 ```sql
 SELECT * FROM v_match_results;
 SELECT * FROM round_results;
@@ -220,12 +237,13 @@ SELECT * FROM round_results;
 ### ⭐ Finish Match Feature (2025-12-25)
 
 **Tính năng:**
-- ✅ Nút "KẾT THÚC" trên giao diện
-- ✅ Confirm dialog với thông tin kết quả
-- ✅ Lưu kết quả vào database
-- ✅ Lưu lịch sử từng hiệp (round_history)
-- ✅ API endpoint `/api/matches/finish`
-- ✅ Database schema mới
+
+- Nút "KẾT THÚC" trên giao diện
+- Confirm dialog với thông tin kết quả
+- Lưu kết quả vào database
+- Lưu lịch sử từng hiệp (round_history)
+- API endpoint `/api/matches/finish`
+- Database schema mới
 
 **Xem chi tiết:** [CHANGELOG_FINISH_MATCH.md](CHANGELOG_FINISH_MATCH.md)
 
@@ -237,7 +255,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
-## 📄 License
+##  License
 
 [MIT License](LICENSE.md)
 

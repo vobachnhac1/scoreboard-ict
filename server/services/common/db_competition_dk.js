@@ -26,10 +26,17 @@ class DBCompetitionDKService {
                     reject(err);
                 } else {
                     // Parse JSON data
-                    const parsedRows = rows.map(row => ({
-                        ...row,
-                        data: JSON.parse(row.data)
-                    }));
+                    const parsedRows = rows.map(row => {
+                        try {
+                            return {
+                                ...row,
+                                data: row.data ? JSON.parse(row.data) : {}
+                            };
+                        } catch (e) {
+                            console.error(`Lỗi parse dữ liệu JSON ở ID ${row.id}:`, e.message);
+                            return { ...row, data: {} };
+                        }
+                    });
                     resolve(parsedRows);
                 }
             });
@@ -44,7 +51,12 @@ class DBCompetitionDKService {
                     reject(err);
                 } else {
                     if (row) {
-                        row.data = JSON.parse(row.data);
+                        try {
+                            row.data = row.data ? JSON.parse(row.data) : {};
+                        } catch (e) {
+                            console.error(`Lỗi parse dữ liệu JSON ở ID ${row.id}:`, e.message);
+                            row.data = {};
+                        }
                     }
                     resolve(row);
                 }
@@ -135,8 +147,13 @@ class DBCompetitionDKService {
                 if (err) {
                     reject(err);
                 } else {
-                    if (row && row.data) {
-                        row.data = JSON.parse(row.data);
+                    if (row) {
+                        try {
+                            row.data = row.data ? JSON.parse(row.data) : {};
+                        } catch (e) {
+                            console.error(`Lỗi parse dữ liệu JSON ở sheet_name ${sheet_name}:`, e.message);
+                            row.data = {};
+                        }
                     }
                     resolve(row);
                 }

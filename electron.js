@@ -1,4 +1,4 @@
-const { app, globalShortcut, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, globalShortcut, BrowserWindow, ipcMain, dialog, Menu } = require('electron');
 const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-assembler');
 const { fork } = require('child_process');
 const { autoUpdater } = require('electron-updater');
@@ -23,7 +23,7 @@ const userDataPath = app.getPath('userData');
 
 // Tạo thư mục userData nếu chưa tồn tại
 if (!fs.existsSync(userDataPath)) {
-    fs.mkdirSync(userDataPath, { recursive: true });
+  fs.mkdirSync(userDataPath, { recursive: true });
 }
 
 process.env.USER_DATA_PATH = userDataPath;
@@ -40,7 +40,7 @@ const server = require('./app');
 try {
   require('electron-reloader')(module);
 } catch (err) {
-    console.log('Reload failed:', err);
+  console.log('Reload failed:', err);
 }
 
 let mainWindow;
@@ -269,9 +269,20 @@ function setupAutoUpdater() {
 }
 
 function createWindow() {
+  // Thay đổi icon trên thanh Dock của macOS nếu đây là máy Mac
+  if (process.platform === 'darwin') {
+    const { nativeImage } = require('electron');
+    const appIcon = nativeImage.createFromPath(path.join(__dirname, 'build/icons/256x256.png'));
+    if (!appIcon.isEmpty()) {
+      app.dock.setIcon(appIcon);
+    }
+  }
+
   mainWindow = new BrowserWindow({
     width: 1920,
     height: 1080,
+    icon: path.join(__dirname, 'build/icons/256x256.png'), // Thêm icon cho Window chính (Taskbar Windows/Linux)
+    autoHideMenuBar: true, // Ẩn hoàn toàn Menu Bar trên Windows (không hiện khi bấm ALT)
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -279,6 +290,9 @@ function createWindow() {
       sandbox: true,
     }
   });
+
+  // Vô hiệu hóa tiếp tục Menu nếu vẫn lỡ bị kích hoạt
+  mainWindow.setMenu(null);
 
   mainWindow.loadURL('http://localhost:6789/');
   // mainWindow.loadURL(url.format({
@@ -353,7 +367,21 @@ async function checkLicenseOnStartup() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', ()=>{
+app.on('ready', () => {
+  // Ẩn Menu Bar mặc định (File | Edit | Window | Help...) của Electron
+  Menu.setApplicationMenu(null);
+
+  // Thay đổi cài đặt About Panel của OS (Ví dụ MacOS Menu App > About)
+  app.setAboutPanelOptions({
+    applicationName: 'DigiSports',
+    applicationVersion: app.getVersion(),
+    version: 'Production',
+    copyright: 'Copyright (C) 2026 NhacVB - DigiSports.',
+    credits: 'Phát triển bởi NhacVB',
+    authors: ['NhacVB'],
+    iconPath: path.join(__dirname, 'build/icons/256x256.png') // Sử dụng bản PNG đã được chuẩn hoá bởi icon-builder cho Mac
+  });
+
   createWindow()
   setupAutoUpdater();
   checkLicenseOnStartup(); // Kiểm tra license khi khởi động
@@ -366,7 +394,7 @@ app.whenReady().then(() => {
   // globalShortcut.register('F2', () => {
   //   mainWindow.loadURL('http://localhost:6789/#/versus');
   // });
-  });
+});
 
 function startServer() {
   const subprocess = fork('./app.js'); // hoặc file Node.js của bạn

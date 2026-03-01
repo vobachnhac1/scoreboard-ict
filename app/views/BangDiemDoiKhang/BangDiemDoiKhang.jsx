@@ -907,7 +907,15 @@ const BangDiemDoiKhang = () => {
         showError("Không tìm thấy thông tin phòng. Vui lòng kết nối lại.");
         return null;
       }
-      const roomData = JSON.parse(savedRoom);
+      let roomData;
+      try {
+        roomData = JSON.parse(savedRoom);
+      } catch (e) {
+        console.error("Failed to parse admin_room from localStorage in QR method:", e);
+        localStorage.removeItem("admin_room");
+        showError("Dữ liệu kết nối bị lỗi. Vui lòng thử lại.");
+        return null;
+      }
 
       let config = {
         method: "get",
@@ -1132,11 +1140,16 @@ const BangDiemDoiKhang = () => {
           : `Hiệp ${currentRound}`,
     });
 
-    // Load current room
+    // Load current room with try/catch for safety
     const savedRoom = localStorage.getItem("admin_room");
     if (savedRoom) {
-      const roomData = JSON.parse(savedRoom);
-      setCurrentRoom(roomData);
+      try {
+        const roomData = JSON.parse(savedRoom);
+        setCurrentRoom(roomData);
+      } catch (error) {
+        console.error("Failed to parse admin_room from localStorage:", error);
+        localStorage.removeItem("admin_room"); // clear corrupted data
+      }
     }
 
     // Fetch devices list
@@ -3872,7 +3885,7 @@ const BangDiemDoiKhang = () => {
               {/* Nút Thoát */}
               <button
                 onClick={() => btnGoBack()}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2 transition-all text-sm shadow-lg hover:shadow-xl"
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center gap-2 transition-all text-sm shadow-lg hover:shadow-xl"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -4081,7 +4094,7 @@ const BangDiemDoiKhang = () => {
       )}
 
       {!showControlBar && (
-        <div className="fixed bottom-0 left-0 right-0 w-full backdrop-blur-sm z-50">
+        <div className="fixed bottom-[65px] left-0 right-0 w-full backdrop-blur-sm z-50 pl-10 pr-10">
           {/* Grid layout: 2 cột cho Đỏ và Xanh */}
           <div className="grid grid-cols-2 gap-2">
             {/* Cột ĐỎ */}

@@ -26,7 +26,7 @@ function RoundHistoryCard({ round, roundIndex, logs }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm transition-all duration-200 mb-3 hover:shadow-md">
+    <div className="bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm transition-all duration-200 mb-3 hover:shadow-md">
       {/* Header - Tóm tắt hiệp */}
       <div
         className="p-4 cursor-pointer hover:bg-gray-50/80 dark:hover:bg-gray-800/80 transition-colors flex items-center justify-between group"
@@ -317,7 +317,7 @@ function MatchCard({
   if (viewMode === "list") {
     return (
       <div
-        className={`${cardBgClass} rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border ${cardBorderClass} ${cardGlowClass} overflow-hidden group relative flex h-full`}
+        className={`${cardBgClass} rounded shadow-sm hover:shadow-md transition-all duration-200 border ${cardBorderClass} ${cardGlowClass} overflow-hidden group relative flex h-full`}
         onDoubleClick={() => onDoubleClick(row)}
       >
         {/* Winner Badge cho List View */}
@@ -447,7 +447,7 @@ function MatchCard({
   // Grid View - Original card layout
   return (
     <div
-      className={`${cardBgClass} rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border ${cardBorderClass} ${cardGlowClass} overflow-hidden group relative flex flex-col h-full`}
+      className={`${cardBgClass} rounded shadow-sm hover:shadow-md transition-all duration-300 border ${cardBorderClass} ${cardGlowClass} overflow-hidden group relative flex flex-col h-full`}
       onDoubleClick={() => onDoubleClick(row)}
     >
       {/* Winner Badge cho Grid View */}
@@ -487,7 +487,7 @@ function MatchCard({
         <div className="grid grid-cols-2 gap-4 mb-auto">
           {/* Giáp Đỏ */}
           <div
-            className={`bg-white dark:bg-gray-800/50 rounded-lg p-3.5 border transition-all duration-300 relative ${status === "FIN" && winner === "RED"
+            className={`bg-white dark:bg-gray-800/50 rounded p-3.5 border transition-all duration-300 relative ${status === "FIN" && winner === "RED"
               ? "border-red-300 dark:border-red-700 shadow-sm"
               : "border-gray-100 dark:border-gray-700/60"
               }`}
@@ -515,7 +515,7 @@ function MatchCard({
 
           {/* Giáp Xanh */}
           <div
-            className={`bg-white dark:bg-gray-800/50 rounded-lg p-3.5 border transition-all duration-300 relative ${status === "FIN" && winner === "BLUE"
+            className={`bg-white dark:bg-gray-800/50 rounded p-3.5 border transition-all duration-300 relative ${status === "FIN" && winner === "BLUE"
               ? "border-blue-300 dark:border-blue-700 shadow-sm"
               : "border-gray-100 dark:border-gray-700/60"
               }`}
@@ -749,30 +749,30 @@ export default function CompetitionDataDetail() {
         });
       },
     },
-    {
-      key: Constants.ACTION_MATCH_RESULT,
-      btnText: "Kết quả",
-      color:
-        "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white hover:from-yellow-600 hover:to-yellow-700",
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      ),
-      description: "Kết quả",
-      callback: (row) => {
-        setOpenActions({
-          isOpen: true,
-          key: Constants.ACTION_MATCH_RESULT,
-          row: row,
-        });
-      },
-    },
+    // {
+    //   key: Constants.ACTION_MATCH_RESULT,
+    //   btnText: "Kết quả",
+    //   color:
+    //     "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white hover:from-yellow-600 hover:to-yellow-700",
+    //   icon: (
+    //     <svg
+    //       xmlns="http://www.w3.org/2000/svg"
+    //       className="h-4 w-4"
+    //       viewBox="0 0 20 20"
+    //       fill="currentColor"
+    //     >
+    //       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+    //     </svg>
+    //   ),
+    //   description: "Kết quả",
+    //   callback: (row) => {
+    //     setOpenActions({
+    //       isOpen: true,
+    //       key: Constants.ACTION_MATCH_RESULT,
+    //       row: row,
+    //     });
+    //   },
+    // },
     {
       key: Constants.ACTION_MATCH_CONFIG,
       btnText: "Cấu hình",
@@ -887,17 +887,17 @@ export default function CompetitionDataDetail() {
   const getActionsByStatus = (status) => {
     switch (status) {
       case "FIN": // Kết thúc
-        return [Constants.ACTION_MATCH_RESULT, Constants.ACTION_MATCH_HISTORY];
+        return [Constants.ACTION_UPDATE, Constants.ACTION_MATCH_HISTORY];
       case "IN": // Đang diễn ra
         return [
           Constants.ACTION_MATCH_START,
-          Constants.ACTION_MATCH_RESULT,
+          // Constants.ACTION_MATCH_RESULT,
           Constants.ACTION_MATCH_HISTORY,
         ];
       case "WAI": // Chờ
         return [
           Constants.ACTION_MATCH_START,
-          Constants.ACTION_MATCH_RESULT,
+          // Constants.ACTION_MATCH_RESULT,
           Constants.ACTION_UPDATE,
           Constants.ACTION_DELETE,
         ];
@@ -1170,6 +1170,15 @@ export default function CompetitionDataDetail() {
         (_, index) => formData[`col_${index}`] || "",
       );
 
+      // Tính toán text winner
+      let winnerText = "";
+      if (formData.winner === "red") {
+        winnerText = formData.col_3 ? formData.col_3 + (formData.col_4 ? ` - ${formData.col_4}` : "") : "Đỏ";
+      } else if (formData.winner === "blue") {
+        winnerText = formData.col_6 ? formData.col_6 + (formData.col_7 ? ` - ${formData.col_7}` : "") : "Xanh";
+      }
+      rowData.push(winnerText);
+
       const newRowObject = {
         data: rowData,
         match_id: null,
@@ -1206,6 +1215,17 @@ export default function CompetitionDataDetail() {
         (_, index) => formData[`col_${index}`] || "",
       );
 
+      // Tính toán text winner
+      let winnerText = row.data[row.data.length - 1] || "";
+      if (formData.winner === "red") {
+        winnerText = formData.col_3 ? formData.col_3 + (formData.col_4 ? ` - ${formData.col_4}` : "") : "Đỏ";
+      } else if (formData.winner === "blue") {
+        winnerText = formData.col_6 ? formData.col_6 + (formData.col_7 ? ` - ${formData.col_7}` : "") : "Xanh";
+      } else if (formData.winner === "") {
+        winnerText = "";
+      }
+      rowData.push(winnerText);
+
       // 2. Gọi API cập nhật row riêng lẻ
       await axios.put(
         `http://localhost:6789/api/competition-dk/${id}/row/${row.rowIndex}`,
@@ -1222,6 +1242,17 @@ export default function CompetitionDataDetail() {
             status: formData.match_status,
           },
         );
+
+        // 3b. Cập nhật winner
+        if (formData.winner !== undefined) {
+          await axios.put(
+            `http://localhost:6789/api/competition-match/${row.match_id}/winner`,
+            { winner: formData.winner }
+          );
+          if (formData.winner !== "") {
+            await updateWinnerToNextMatches(row, formData.winner);
+          }
+        }
       }
 
       // 4. Cập nhật state local
@@ -1578,15 +1609,15 @@ export default function CompetitionDataDetail() {
             onCancel={() => setOpenActions({ ...openActions, isOpen: false })}
           />
         );
-      case Constants.ACTION_MATCH_RESULT:
-        return (
-          <ResultForm
-            row={openActions.row}
-            onSubmit={handleResult}
-            onCancel={() => setOpenActions({ ...openActions, isOpen: false })}
-            showAlert={showAlert}
-          />
-        );
+      // case Constants.ACTION_MATCH_RESULT:
+      //   return (
+      //     <ResultForm
+      //       row={openActions.row}
+      //       onSubmit={handleResult}
+      //       onCancel={() => setOpenActions({ ...openActions, isOpen: false })}
+      //       showAlert={showAlert}
+      //     />
+      //   );
       case Constants.ACTION_MATCH_CONFIG:
         return <ConfigSystem />;
       case Constants.ACTION_MATCH_HISTORY:
@@ -2159,7 +2190,7 @@ export default function CompetitionDataDetail() {
       {openActions?.isOpen &&
         openActions?.key === Constants.ACTION_MATCH_HISTORY && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity">
-            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl w-[1000px] max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-900 rounded shadow-2xl w-[1000px] max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
               <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 px-6 py-4 flex justify-between items-center relative flex-shrink-0 shadow-md z-10">
                 <h2 className="text-xl font-bold text-white m-0">LỊCH SỬ TRẬN ĐẤU</h2>
                 <button onClick={() => setOpenActions({ ...openActions, isOpen: false })} className="text-white hover:text-gray-200 transition-colors focus:outline-none p-1 rounded-full hover:bg-white/20">
@@ -2184,12 +2215,12 @@ export default function CompetitionDataDetail() {
       {/* Modal Cập nhật - Custom style */}
       {openActions?.isOpen && openActions?.key === Constants.ACTION_UPDATE && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity">
-          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
-            <div className="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 px-6 py-4 flex justify-between items-center relative flex-shrink-0 shadow-md z-10">
+          <div className="bg-white dark:bg-gray-900 rounded shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 px-6 py-4 flex justify-between items-center relative flex-shrink-0 shadow-md z-10">
               <h2 className="text-xl font-bold text-white flex items-center gap-3 m-0">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                </svg>
+                </svg> */}
                 CẬP NHẬT TRẬN ĐẤU
               </h2>
               <button onClick={() => setOpenActions({ ...openActions, isOpen: false })} className="text-white hover:text-gray-200 transition-colors focus:outline-none p-1 rounded-full hover:bg-white/20">
@@ -2244,6 +2275,19 @@ function DataForm({
       initialData[`col_${index}`] = data ? data[index] || "" : "";
     });
     initialData.match_status = row?.match_status || "WAI";
+
+    // Khởi tạo winner
+    const existingWinner = data ? data[data.length - 1] : "";
+    const redName = data ? data[3] : "";
+    const blueName = data ? data[6] : "";
+
+    let initialWinner = "";
+    if (existingWinner && existingWinner !== "-") {
+      if (redName && existingWinner.includes(redName)) initialWinner = "red";
+      else if (blueName && existingWinner.includes(blueName)) initialWinner = "blue";
+    }
+    initialData.winner = initialWinner;
+
     return initialData;
   });
 
@@ -2297,10 +2341,11 @@ function DataForm({
                     {editableHeaders[0] || "STT"} <span className="text-red-500">*</span>
                   </label>
                   <input
+                    disabled
                     type="text"
                     value={formData.col_0 || ""}
                     onChange={(e) => setFormData({ ...formData, col_0: e.target.value })}
-                    className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                    className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
                     placeholder="Nhập STT"
                     required
                   />
@@ -2312,7 +2357,7 @@ function DataForm({
                   <select
                     value={formData.match_status}
                     onChange={(e) => setFormData({ ...formData, match_status: e.target.value })}
-                    className={`w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-shadow ${getStatusColor(formData.match_status)}`}
+                    className={`w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-shadow ${getStatusColor(formData.match_status)}`}
                   >
                     <option value="WAI">Chờ thi đấu</option>
                     <option value="IN">Đang diễn ra</option>
@@ -2330,7 +2375,7 @@ function DataForm({
                   type="text"
                   value={formData.col_1 || ""}
                   onChange={(e) => setFormData({ ...formData, col_1: e.target.value })}
-                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
                   placeholder="Nhập nội dung"
                   required
                 />
@@ -2344,10 +2389,70 @@ function DataForm({
                   type="text"
                   value={formData.col_2 || ""}
                   onChange={(e) => setFormData({ ...formData, col_2: e.target.value })}
-                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
                   placeholder="Nhập hạng cân"
                   required
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center justify-between gap-2">
+                  <span>VĐV Thắng cuộc</span>
+                  {formData.winner && (
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, winner: "" })}
+                      className="text-xs text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 flex items-center gap-1 transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                      Bỏ chọn
+                    </button>
+                  )}
+                </label>
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, winner: "red" })}
+                    className={`py-2 px-3 border rounded shadow-sm text-sm font-bold flex items-center justify-center gap-2 transition-all ${formData.winner === "red"
+                      ? "bg-red-600 border-red-600 text-white ring-2 ring-red-500 ring-offset-1 dark:ring-offset-gray-900"
+                      : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-red-400 dark:hover:border-red-500 hover:text-red-600 dark:hover:text-red-400"
+                      }`}
+                  >
+                    {formData.winner === "red" ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                    ) : (
+                      <span className="w-4 h-4 rounded-full bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 flex items-center justify-center text-[10px] border border-red-200 dark:border-red-800">Đ</span>
+                    )}
+                    ĐỎ THẮNG
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, winner: "blue" })}
+                    className={`py-2 px-3 border rounded shadow-sm text-sm font-bold flex items-center justify-center gap-2 transition-all ${formData.winner === "blue"
+                      ? "bg-blue-600 border-blue-600 text-white ring-2 ring-blue-500 ring-offset-1 dark:ring-offset-gray-900"
+                      : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
+                      }`}
+                  >
+                    {formData.winner === "blue" ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                    ) : (
+                      <span className="w-4 h-4 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-[10px] border border-blue-200 dark:border-blue-800">X</span>
+                    )}
+                    XANH THẮNG
+                  </button>
+                </div>
+
+                <select
+                  value={formData.winner}
+                  onChange={(e) => setFormData({ ...formData, winner: e.target.value })}
+                  className={`w-full px-3 py-2 bg-white dark:bg-gray-800 border ${formData.winner ? 'border-yellow-400 ring-1 ring-yellow-400 dark:border-yellow-500 text-yellow-700 dark:text-yellow-500 bg-yellow-50 dark:bg-yellow-900/10' : 'border-gray-300 dark:border-gray-600'} rounded shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm font-semibold transition-shadow`}
+                >
+                  <option value="">-- Chưa phân định --</option>
+                  <option value="red">VĐV Đỏ: {formData.col_3 || "Đang cập nhật..."}</option>
+                  <option value="blue">VĐV Xanh: {formData.col_6 || "Đang cập nhật..."}</option>
+                </select>
               </div>
             </div>
           </section>
@@ -2369,7 +2474,7 @@ function DataForm({
                   type="text"
                   value={formData.col_3 || ""}
                   onChange={(e) => setFormData({ ...formData, col_3: e.target.value })}
-                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
                   placeholder="Tên VĐV Đỏ"
                   required
                 />
@@ -2383,7 +2488,7 @@ function DataForm({
                     type="text"
                     value={formData.col_4 || ""}
                     onChange={(e) => setFormData({ ...formData, col_4: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
                     placeholder="Đơn vị"
                   />
                 </div>
@@ -2392,11 +2497,12 @@ function DataForm({
                     {editableHeaders[5] || "Năm sinh"}
                   </label>
                   <input
+                    disabled
                     type="text"
                     value={formData.col_5 || ""}
                     onChange={(e) => setFormData({ ...formData, col_5: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
-                    placeholder="Năm sinh"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                    placeholder="Quốc kỳ"
                   />
                 </div>
               </div>
@@ -2417,7 +2523,7 @@ function DataForm({
                   type="text"
                   value={formData.col_6 || ""}
                   onChange={(e) => setFormData({ ...formData, col_6: e.target.value })}
-                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
                   placeholder="Tên VĐV Xanh"
                   required
                 />
@@ -2431,7 +2537,7 @@ function DataForm({
                     type="text"
                     value={formData.col_7 || ""}
                     onChange={(e) => setFormData({ ...formData, col_7: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
                     placeholder="Đơn vị"
                   />
                 </div>
@@ -2440,11 +2546,12 @@ function DataForm({
                     {editableHeaders[8] || "Năm sinh"}
                   </label>
                   <input
+                    disabled
                     type="text"
                     value={formData.col_8 || ""}
                     onChange={(e) => setFormData({ ...formData, col_8: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
-                    placeholder="Năm sinh"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                    placeholder="Quốc kỳ"
                   />
                 </div>
               </div>
@@ -2458,13 +2565,13 @@ function DataForm({
         <button
           type="button"
           onClick={onCancel}
-          className="px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-600 transition-all"
+          className="px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-600 transition-all"
         >
           Hủy
         </button>
         <button
           type="submit"
-          className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+          className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -3402,7 +3509,7 @@ function HistoryView({
   return (
     <div className="space-y-6">
       {/* 1. KẾT QUẢ TỔNG */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded p-6 shadow-sm border border-gray-200 dark:border-gray-700">
         <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-6 border-b border-gray-100 dark:border-gray-700 pb-3 flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
@@ -3413,7 +3520,7 @@ function HistoryView({
 
         <div className="flex justify-between items-stretch gap-6">
           {/* Giáp Đỏ */}
-          <div className={`flex-1 flex flex-col justify-center items-center bg-white dark:bg-gray-800 border-2 rounded-xl p-6 transition-all ${winner?.toUpperCase() === "RED" ? "border-red-400 shadow-md ring-4 ring-red-500/10" : "border-gray-100 dark:border-gray-700"}`}>
+          <div className={`flex-1 flex flex-col justify-center items-center bg-white dark:bg-gray-800 border-2 rounded p-6 transition-all ${winner?.toUpperCase() === "RED" ? "border-red-400 shadow-md ring-4 ring-red-500/10" : "border-gray-100 dark:border-gray-700"}`}>
             <span className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 flex items-center justify-center font-bold mb-4 border border-red-200 dark:border-red-800">
               Đ
             </span>
@@ -3439,7 +3546,7 @@ function HistoryView({
           </div>
 
           {/* Giáp Xanh */}
-          <div className={`flex-1 flex flex-col justify-center items-center bg-white dark:bg-gray-800 border-2 rounded-xl p-6 transition-all ${winner?.toUpperCase() === "BLUE" ? "border-blue-400 shadow-md ring-4 ring-blue-500/10" : "border-gray-100 dark:border-gray-700"}`}>
+          <div className={`flex-1 flex flex-col justify-center items-center bg-white dark:bg-gray-800 border-2 rounded p-6 transition-all ${winner?.toUpperCase() === "BLUE" ? "border-blue-400 shadow-md ring-4 ring-blue-500/10" : "border-gray-100 dark:border-gray-700"}`}>
             <span className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold mb-4 border border-blue-200 dark:border-blue-800">
               X
             </span>
@@ -3459,7 +3566,7 @@ function HistoryView({
 
       {/* 2. KẾT QUẢ TỪNG HIỆP */}
       {roundHistory.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-6">
+        <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-6">
           <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
             <h3 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-500" viewBox="0 0 20 20" fill="currentColor">
@@ -3489,7 +3596,7 @@ function HistoryView({
 
       {/* 3. LỊCH SỬ CHI TIẾT HÀNH ĐỘNG */}
       {allLogs.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-6">
+        <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-6">
           <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
             <h3 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-orange-500" viewBox="0 0 20 20" fill="currentColor">

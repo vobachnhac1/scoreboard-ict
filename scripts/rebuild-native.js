@@ -13,7 +13,7 @@ const fs = require('fs');
 const packageJson = require('../package.json');
 const electronVersion = packageJson.devDependencies.electron.replace('^', '');
 
-console.log('🔧 Rebuilding native dependencies cho Electron...');
+console.log(' Rebuilding native dependencies cho Electron...');
 console.log(`📦 Electron version: ${electronVersion}`);
 
 // Kiểm tra tham số
@@ -40,7 +40,7 @@ try {
     execSync(baseCommand, { stdio: 'inherit' });
   }
   
-  console.log('✅ Rebuild hoàn tất!');
+  console.log(' Rebuild hoàn tất!');
   console.log('');
   console.log('Bây giờ bạn có thể chạy:');
   console.log('  npm run dist:mac      (cho kiến trúc hiện tại)');
@@ -48,7 +48,7 @@ try {
   console.log('  npm run dist:win      (cho Windows)');
   
 } catch (error) {
-  console.error('❌ Lỗi khi rebuild:', error.message);
+  console.error(' Lỗi khi rebuild:', error.message);
   process.exit(1);
 }
 

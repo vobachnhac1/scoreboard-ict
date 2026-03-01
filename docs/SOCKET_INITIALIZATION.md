@@ -19,12 +19,12 @@ Redux: connectSocket('admin')
   ↓
 socketClient.init('admin').connect()
   ↓
-Socket.IO Connected ✅
+Socket.IO Connected
 ```
 
 ---
 
-## 📁 File Structure
+## File Structure
 
 ```
 app/
@@ -44,12 +44,12 @@ app/
 
 ---
 
-## 🔧 Implementation
+## Implementation
 
 ### **1. SocketClient Singleton** (`app/config/socket/SocketClient.js`)
 
 ```javascript
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client";
 
 class SocketClient {
   constructor() {
@@ -57,26 +57,28 @@ class SocketClient {
     this.role = null;
   }
 
-  init(role = 'guest') {
+  init(role = "guest") {
     if (!this.socket) {
       this.role = role;
-      this.socket = io('http://localhost:6789', {
+      this.socket = io("http://localhost:6789", {
         autoConnect: true,
-        transports: ['websocket'],
+        transports: ["websocket"],
         query: { role },
       });
 
       // Log connection events
-      this.socket.on('connect', () => {
-        console.log(`✅ Socket connected with role: ${role}, ID: ${this.socket.id}`);
+      this.socket.on("connect", () => {
+        console.log(
+          ` Socket connected with role: ${role}, ID: ${this.socket.id}`,
+        );
       });
 
-      this.socket.on('disconnect', (reason) => {
-        console.log(`❌ Socket disconnected. Reason: ${reason}`);
+      this.socket.on("disconnect", (reason) => {
+        console.log(` Socket disconnected. Reason: ${reason}`);
       });
 
-      this.socket.on('connect_error', (error) => {
-        console.error('❌ Socket connection error:', error);
+      this.socket.on("connect_error", (error) => {
+        console.error(" Socket connection error:", error);
       });
     }
     return this;
@@ -85,7 +87,7 @@ class SocketClient {
   connect() {
     if (this.socket && !this.socket.connected) {
       this.socket.connect();
-      console.log('🔄 Reconnecting socket...');
+      console.log("🔄 Reconnecting socket...");
     }
     return this;
   }
@@ -93,16 +95,16 @@ class SocketClient {
   disconnect() {
     if (this.socket?.connected) {
       this.socket.disconnect();
-      console.log('🔌 Socket disconnected');
+      console.log("🔌 Socket disconnected");
     }
   }
 
   emit(event, payload) {
     if (this.socket) {
       this.socket.emit(event, payload);
-      console.log(`📤 Emit event: ${event}`, payload);
+      console.log(` Emit event: ${event}`, payload);
     } else {
-      console.warn('⚠️ Socket not initialized. Call init() first.');
+      console.warn(" Socket not initialized. Call init() first.");
     }
   }
 
@@ -110,7 +112,7 @@ class SocketClient {
     if (this.socket) {
       this.socket.on(event, callback);
     } else {
-      console.warn('⚠️ Socket not initialized. Call init() first.');
+      console.warn(" Socket not initialized. Call init() first.");
     }
   }
 
@@ -143,35 +145,42 @@ export default socketClient;
 ```
 
 **Tính năng:**
-- ✅ **Singleton pattern** - Chỉ có 1 instance duy nhất
-- ✅ **Auto connect** - Tự động kết nối khi init
-- ✅ **Role-based** - Gửi role khi connect (admin, judge, guest)
-- ✅ **Event logging** - Log tất cả connection events
-- ✅ **Error handling** - Handle connection errors
-- ✅ **Reconnection** - Hỗ trợ reconnect
+
+- **Singleton pattern** - Chỉ có 1 instance duy nhất
+- **Auto connect** - Tự động kết nối khi init
+- **Role-based** - Gửi role khi connect (admin, judge, guest)
+- **Event logging** - Log tất cả connection events
+- **Error handling** - Handle connection errors
+- **Reconnection** - Hỗ trợ reconnect
 
 ---
 
 ### **2. Redux Socket Slice** (`app/config/redux/reducers/socket-reducer.js`)
 
 ```javascript
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import socketClient from '../../socket/SocketClient';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import socketClient from "../../socket/SocketClient";
 
-export const connectSocket = createAsyncThunk('socket/connect', async (role) => {
-  console.log('Connecting socket with role:', role);
-  socketClient.init(role).connect();
-});
+export const connectSocket = createAsyncThunk(
+  "socket/connect",
+  async (role) => {
+    console.log("Connecting socket with role:", role);
+    socketClient.init(role).connect();
+  },
+);
 
-export const disconnectSocket = createAsyncThunk('socket/disconnect', async () => {
-  socketClient.disconnect();
-});
+export const disconnectSocket = createAsyncThunk(
+  "socket/disconnect",
+  async () => {
+    socketClient.disconnect();
+  },
+);
 
 const socketSlice = createSlice({
-  name: 'socket',
+  name: "socket",
   initialState: {
     connected: false,
-    role: '',
+    role: "",
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -188,20 +197,24 @@ export default socketSlice.reducer;
 ```
 
 **Tính năng:**
-- ✅ **Redux Thunk** - Async actions
-- ✅ **State management** - Track connection status
-- ✅ **Lifecycle** - Connect/Disconnect actions
+
+- **Redux Thunk** - Async actions
+- **State management** - Track connection status
+- **Lifecycle** - Connect/Disconnect actions
 
 ---
 
 ### **3. App Component** (`app/App.js`)
 
 ```javascript
-import React, { useEffect } from 'react';
-import Routes from './config/routes';
-import { HashRouter } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { connectSocket, disconnectSocket } from './config/redux/reducers/socket-reducer';
+import React, { useEffect } from "react";
+import Routes from "./config/routes";
+import { HashRouter } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  connectSocket,
+  disconnectSocket,
+} from "./config/redux/reducers/socket-reducer";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -210,7 +223,7 @@ const App = () => {
   useEffect(() => {
     // Khởi tạo socket khi app start
     if (!connectionStatus) {
-      dispatch(connectSocket('admin'));
+      dispatch(connectSocket("admin"));
     }
 
     // Cleanup khi app unmount
@@ -230,12 +243,13 @@ export default App;
 ```
 
 **Flow:**
+
 1. App component mount
 2. Check `connectionStatus` từ Redux
 3. Nếu chưa connect → dispatch `connectSocket('admin')`
 4. Redux thunk gọi `socketClient.init('admin').connect()`
 5. Socket.IO kết nối đến server
-6. Log `✅ Socket connected with role: admin, ID: xxx`
+6. Log ` Socket connected with role: admin, ID: xxx`
 7. Khi app unmount → dispatch `disconnectSocket()`
 
 ---
@@ -243,8 +257,8 @@ export default App;
 ### **4. Custom Hooks** (`app/config/hooks/useSocketEvents.js`)
 
 ```javascript
-import { useEffect } from 'react';
-import socketClient from '../socket/SocketClient';
+import { useEffect } from "react";
+import socketClient from "../socket/SocketClient";
 
 // Hook lắng nghe event từ server
 export function useSocketEvent(event, callback) {
@@ -265,7 +279,10 @@ export function emitSocketEvent(event, data) {
 **Usage:**
 
 ```javascript
-import { useSocketEvent, emitSocketEvent } from './config/hooks/useSocketEvents';
+import {
+  useSocketEvent,
+  emitSocketEvent,
+} from "./config/hooks/useSocketEvents";
 
 // Lắng nghe event
 useSocketEvent("RES_ROOM_ADMIN", (response) => {
@@ -281,7 +298,7 @@ emitSocketEvent("ADMIN_FETCH_CONN", {});
 ### **5. Export từ routes.js** (`app/config/routes.js`)
 
 ```javascript
-import socketClient from './socket/SocketClient';
+import socketClient from "./socket/SocketClient";
 
 // Export socketClient để sử dụng ở các component khác
 export { socketClient };
@@ -290,13 +307,13 @@ export { socketClient };
 **Usage:**
 
 ```javascript
-import { socketClient } from './config/routes';
+import { socketClient } from "./config/routes";
 
 // Check connection
-console.log('Connected:', socketClient.isConnected());
+console.log("Connected:", socketClient.isConnected());
 
 // Get socket ID
-console.log('Socket ID:', socketClient.getSocketId());
+console.log("Socket ID:", socketClient.getSocketId());
 ```
 
 ---
@@ -336,13 +353,13 @@ Server receives connection
   ↓
 Client receives 'connect' event
   ↓
-Log: ✅ Socket connected with role: admin, ID: xxx
+Log:  Socket connected with role: admin, ID: xxx
 ```
 
 ### **Step 4: Ready to Use**
 
 ```
-Socket connected ✅
+Socket connected
   ↓
 Components can use useSocketEvent()
   ↓
@@ -351,38 +368,38 @@ Components can use emitSocketEvent()
 
 ---
 
-## 📊 Console Logs
+##  Console Logs
 
 Khi app start, bạn sẽ thấy logs sau trong console:
 
 ```
 Connecting socket with role: admin
-✅ Socket connected with role: admin, ID: abc123xyz
+ Socket connected with role: admin, ID: abc123xyz
 ```
 
 Khi emit event:
 
 ```
-📤 Emit event: REGISTER_ROOM_ADMIN { room_id: '1AZJM9JL8D', uuid_desktop: 'CO2GJ74NMD6M', permission: 9 }
+ Emit event: REGISTER_ROOM_ADMIN { room_id: '1AZJM9JL8D', uuid_desktop: 'CO2GJ74NMD6M', permission: 9 }
 ```
 
 Khi disconnect:
 
 ```
 🔌 Socket disconnected
-❌ Socket disconnected. Reason: client namespace disconnect
+ Socket disconnected. Reason: client namespace disconnect
 ```
 
 ---
 
-## ⚠️ Lưu ý quan trọng
+## Lưu ý quan trọng
 
-1. ✅ **Singleton pattern** - `socketClient` chỉ được khởi tạo 1 lần
-2. ✅ **Auto connect** - Socket tự động connect khi init
-3. ✅ **Cleanup** - Socket disconnect khi app unmount
-4. ✅ **Redux state** - Track connection status trong Redux
-5. ✅ **Error handling** - Log errors khi connection failed
-6. ✅ **Reconnection** - Hỗ trợ reconnect nếu mất kết nối
+1.  **Singleton pattern** - `socketClient` chỉ được khởi tạo 1 lần
+2.  **Auto connect** - Socket tự động connect khi init
+3.  **Cleanup** - Socket disconnect khi app unmount
+4.  **Redux state** - Track connection status trong Redux
+5.  **Error handling** - Log errors khi connection failed
+6.  **Reconnection** - Hỗ trợ reconnect nếu mất kết nối
 
 ---
 
@@ -392,14 +409,14 @@ Khi disconnect:
 
 ```javascript
 // Check socket instance
-console.log('Socket:', socketClient.getInstance());
+console.log("Socket:", socketClient.getInstance());
 
 // Check connection status
-console.log('Connected:', socketClient.isConnected());
+console.log("Connected:", socketClient.isConnected());
 
 // Check Redux state
 const connectionStatus = useSelector((state) => state.socket.connected);
-console.log('Redux connected:', connectionStatus);
+console.log("Redux connected:", connectionStatus);
 ```
 
 ### **Server không nhận được connection**
@@ -412,6 +429,7 @@ console.log('Redux connected:', connectionStatus);
 ### **Multiple connections**
 
 Nếu thấy nhiều connections:
+
 1. Check `useEffect` dependencies
 2. Check React.StrictMode (double render)
 3. Check cleanup function
@@ -423,4 +441,3 @@ Nếu thấy nhiều connections:
 - [Socket.IO Client API](https://socket.io/docs/v4/client-api/)
 - [Redux Toolkit](https://redux-toolkit.js.org/)
 - [React Hooks](https://react.dev/reference/react)
-

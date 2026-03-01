@@ -50,33 +50,39 @@ const MatchListModal = ({
   const getStatusBadge = (status) => {
     const badges = {
       PENDING: {
-        bg: "bg-yellow-100 dark:bg-yellow-900",
-        text: "text-yellow-700 dark:text-yellow-300",
+        bg: "bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20",
+        text: "text-amber-600 dark:text-amber-400",
+        dot: "bg-amber-500",
         label: "Chờ thi đấu",
       },
       WAI: {
-        bg: "bg-yellow-100 dark:bg-yellow-900",
-        text: "text-yellow-700 dark:text-yellow-300",
+        bg: "bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20",
+        text: "text-amber-600 dark:text-amber-400",
+        dot: "bg-amber-500",
         label: "Chờ thi đấu",
       },
       ONGOING: {
-        bg: "bg-green-100 dark:bg-green-900",
-        text: "text-green-700 dark:text-green-300",
+        bg: "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20",
+        text: "text-emerald-600 dark:text-emerald-400",
+        dot: "bg-emerald-500",
         label: "Đang thi đấu",
       },
       IN: {
-        bg: "bg-green-100 dark:bg-green-900",
-        text: "text-green-700 dark:text-green-300",
+        bg: "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20",
+        text: "text-emerald-600 dark:text-emerald-400",
+        dot: "bg-emerald-500",
         label: "Đang thi đấu",
       },
       FINISHED: {
-        bg: "bg-gray-100 dark:bg-gray-700",
-        text: "text-gray-700 dark:text-gray-300",
+        bg: "bg-gray-50 dark:bg-gray-500/10 border-gray-200 dark:border-gray-500/20",
+        text: "text-gray-600 dark:text-gray-400",
+        dot: "bg-gray-500",
         label: "Đã kết thúc",
       },
       FIN: {
-        bg: "bg-gray-100 dark:bg-gray-700",
-        text: "text-gray-700 dark:text-gray-300",
+        bg: "bg-gray-50 dark:bg-gray-500/10 border-gray-200 dark:border-gray-500/20",
+        text: "text-gray-600 dark:text-gray-400",
+        dot: "bg-gray-500",
         label: "Đã kết thúc",
       },
     };
@@ -84,8 +90,9 @@ const MatchListModal = ({
     const badge = badges[status] || badges.PENDING;
     return (
       <span
-        className={`px-2 py-1 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold border ${badge.bg} ${badge.text}`}
       >
+        <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`}></span>
         {badge.label}
       </span>
     );
@@ -110,56 +117,50 @@ const MatchListModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/70 backdrop-blur-sm">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col animate-scale-in">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 rounded-t-xl">
+    <div className="fixed inset-0 z-[105] flex items-center justify-center p-4 sm:p-6 bg-gray-900/60 transition-opacity">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-scale-in">
+        {/* Header - Professional Minimalist */}
+        <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-700/80 bg-white dark:bg-gray-800 flex justify-between items-center z-10">
           <div className="flex items-center gap-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8 text-white"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-              <path
-                fillRule="evenodd"
-                d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                clipRule="evenodd"
+            <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 10h16M4 14h16M4 18h16"
               />
-            </svg>
+            </div>
             <div>
-              <h2 className="text-2xl font-bold text-white">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Danh sách trận đấu
               </h2>
-              <p className="text-sm text-blue-100">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
                 Tổng số: {filteredMatches.length} trận
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-white hover:bg-white/20 rounded-lg p-2 transition-colors"
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-gray-700/50 rounded-lg transition-colors border border-transparent focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 outline-none"
+            aria-label="Close modal"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
+              className="h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
           </button>
         </div>
 
         {/* Filters */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700/80 bg-gray-50/50 dark:bg-gray-900/50">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1">
@@ -169,41 +170,36 @@ const MatchListModal = ({
                   placeholder="Tìm kiếm theo số trận, tên VĐV, đội..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
+                  className="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500/50 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 outline-none transition-shadow placeholder-gray-400 dark:placeholder-gray-500"
                 />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
+                  strokeWidth={2}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
             </div>
 
             {/* Status Filter */}
-            <div className="flex gap-2">
+            <div className="flex items-center bg-gray-200/50 dark:bg-gray-800 p-1 rounded-lg">
               {[
                 { key: "ALL", label: "Tất cả" },
-                { key: "PENDING", label: "Chờ thi đấu" },
+                { key: "PENDING", label: "Chờ đấu" },
                 { key: "ONGOING", label: "Đang thi đấu" },
-                { key: "FINISHED", label: "Đã kết thúc" },
+                { key: "FINISHED", label: "Đã xong" },
               ].map((filter) => (
                 <button
                   key={filter.key}
                   onClick={() => setFilterStatus(filter.key)}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                    filterStatus === filter.key
-                      ? "bg-blue-600 text-white shadow-lg"
-                      : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                  }`}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${filterStatus === filter.key
+                    ? "bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-white"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50"
+                    }`}
                 >
                   {filter.label}
                 </button>
@@ -213,7 +209,7 @@ const MatchListModal = ({
         </div>
 
         {/* Match List */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto bg-slate-50/50 dark:bg-gray-900/30 p-4 md:p-6">
           {filteredMatches.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-400">
               <svg
@@ -234,7 +230,7 @@ const MatchListModal = ({
               <p className="text-sm">Thử thay đổi bộ lọc hoặc tìm kiếm</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {filteredMatches.map((match) => (
                 <MatchCard
                   key={match.id || match.match_no}
@@ -251,25 +247,25 @@ const MatchListModal = ({
           )}
         </div>
 
-        {/* Footer */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-          <div className="flex justify-between items-center">
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              {selectedMatch ? (
-                <span className="font-semibold text-blue-600 dark:text-blue-400">
-                  Đã chọn: Trận {selectedMatch.match_no}
-                </span>
-              ) : (
-                <span>Chọn một trận để xem chi tiết</span>
-              )}
-            </div>
-            <button
-              onClick={onClose}
-              className="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-semibold transition-colors"
-            >
-              Đóng
-            </button>
+        {/* Footer Professional Action Bar */}
+        <div className="bg-white dark:bg-gray-800 px-6 py-4 flex justify-between items-center border-t border-gray-100 dark:border-gray-700/80">
+          <div className="text-sm">
+            {selectedMatch ? (
+              <span className="font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg border border-blue-100 dark:border-blue-800">
+                Lựa chọn xử lý: Trận số {selectedMatch.match_no}
+              </span>
+            ) : (
+              <span className="text-gray-500 dark:text-gray-400">
+                Nhấp vào một trận đấu để xem chi tiết
+              </span>
+            )}
           </div>
+          <button
+            onClick={onClose}
+            className="px-5 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 outline-none"
+          >
+            Thoát
+          </button>
         </div>
       </div>
 
@@ -311,29 +307,26 @@ const MatchCard = ({
     return (
       <div
         onClick={onSelect}
-        className={`group relative bg-white dark:bg-gray-800 rounded-lg border-2 transition-all cursor-pointer hover:shadow-lg ${
-          isSelected
-            ? "border-blue-500 shadow-lg"
-            : isCurrent
-              ? "border-green-500 shadow-md"
-              : "border-gray-200 dark:border-gray-700 hover:border-blue-300"
-        }`}
+        className={`group relative bg-white dark:bg-gray-800 rounded-xl border transition-all cursor-pointer ${isSelected
+          ? "border-blue-500 shadow-md ring-1 ring-blue-500/20"
+          : isCurrent
+            ? "border-emerald-500 shadow-md ring-1 ring-emerald-500/20 bg-emerald-50/10 dark:bg-emerald-900/10"
+            : "border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-gray-600 hover:shadow-sm hover:bg-gray-50 dark:hover:bg-gray-800/80"
+          }`}
       >
-        {/* Current Match Badge */}
-        {isCurrent && (
-          <div className="absolute -top-2 -right-2 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
-            Đang thi đấu
-          </div>
-        )}
-
         <div className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            {/* Match Number */}
-            <div className="flex items-center gap-3">
-              <div className="bg-blue-600 dark:bg-blue-500 text-white rounded-lg px-4 py-2 font-bold text-lg shadow-md">
+          <div className="flex items-center justify-between mb-3 border-b border-gray-100 dark:border-gray-700/50 pb-3">
+            {/* Match Number & Status */}
+            <div className="flex items-center flex-wrap gap-2">
+              <div className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md px-2.5 py-1 font-bold text-sm border border-gray-200 dark:border-gray-600">
                 Trận {match.match_no}
               </div>
               {getStatusBadge(match.status)}
+              {isCurrent && (
+                <span className="px-2 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-widest rounded-md border border-emerald-200 dark:border-emerald-800/50">
+                  Đang đấu
+                </span>
+              )}
             </div>
 
             {/* Actions */}
@@ -344,11 +337,11 @@ const MatchCard = ({
                     e.stopPropagation();
                     onStart();
                   }}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors shadow-md flex items-center gap-2"
+                  className="px-3 py-1.5 bg-green-50 hover:bg-green-100 dark:bg-green-500/10 dark:hover:bg-green-500/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/30 rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
+                    className="h-4 w-4"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -367,11 +360,11 @@ const MatchCard = ({
                     e.stopPropagation();
                     onStart();
                   }}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors shadow-md flex items-center gap-2"
+                  className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
+                    className="h-4 w-4"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -443,29 +436,26 @@ const MatchCard = ({
   return (
     <div
       onClick={onSelect}
-      className={`group relative bg-white dark:bg-gray-800 rounded-lg border-2 transition-all cursor-pointer hover:shadow-lg ${
-        isSelected
-          ? "border-blue-500 shadow-lg"
-          : isCurrent
-            ? "border-green-500 shadow-md"
-            : "border-gray-200 dark:border-gray-700 hover:border-blue-300"
-      }`}
+      className={`group relative bg-white dark:bg-gray-800 rounded-xl border transition-all cursor-pointer ${isSelected
+        ? "border-blue-500 shadow-md ring-1 ring-blue-500/20"
+        : isCurrent
+          ? "border-emerald-500 shadow-md ring-1 ring-emerald-500/20 bg-emerald-50/10 dark:bg-emerald-900/10"
+          : "border-gray-200 dark:border-gray-700/80 hover:border-blue-300 dark:hover:border-gray-600 hover:shadow-sm hover:bg-gray-50 dark:hover:bg-gray-800/80"
+        }`}
     >
-      {/* Current Match Badge */}
-      {isCurrent && (
-        <div className="absolute -top-2 -right-2 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
-          Đang thi đấu
-        </div>
-      )}
-
       <div className="p-4">
-        <div className="flex items-center justify-between mb-3">
-          {/* Match Number */}
-          <div className="flex items-center gap-3">
-            <div className="bg-blue-600 dark:bg-blue-500 text-white rounded-lg px-4 py-2 font-bold text-lg shadow-md">
+        <div className="flex items-center justify-between mb-3 border-b border-gray-100 dark:border-gray-700/50 pb-3">
+          {/* Match Number & Status */}
+          <div className="flex items-center flex-wrap gap-2">
+            <div className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md px-2.5 py-1 font-bold text-sm border border-gray-200 dark:border-gray-600">
               Trận {match.match_no}
             </div>
             {getStatusBadge(match.status)}
+            {isCurrent && (
+              <span className="px-2 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-widest rounded-md border border-emerald-200 dark:border-emerald-800/50">
+                Đang đấu
+              </span>
+            )}
           </div>
 
           {/* Actions */}
@@ -476,11 +466,11 @@ const MatchCard = ({
                   e.stopPropagation();
                   onStart();
                 }}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors shadow-md flex items-center gap-2"
+                className="px-3 py-1.5 bg-green-50 hover:bg-green-100 dark:bg-green-500/10 dark:hover:bg-green-500/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/30 rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
+                  className="h-4 w-4"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -499,11 +489,11 @@ const MatchCard = ({
                   e.stopPropagation();
                   onStart();
                 }}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors shadow-md flex items-center gap-2"
+                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
+                  className="h-4 w-4"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -523,27 +513,27 @@ const MatchCard = ({
         {/* Match Info */}
         <div className="grid grid-cols-2 gap-4">
           {/* Red Corner */}
-          <div className="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+          <div className="flex items-center gap-3 p-3 bg-red-50/50 dark:bg-red-900/10 rounded-lg border border-red-100 dark:border-red-900/30">
             <img
               src={redFlag}
               alt="Red flag"
-              className="w-8 h-6 object-cover rounded shadow-sm"
+              className="w-7 h-5 object-cover rounded shadow-sm border border-black/5"
             />
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase mb-1">
-                Đỏ
+              <div className="text-[10px] font-bold text-red-600/80 dark:text-red-400/80 uppercase mb-0.5 tracking-wider">
+                Góc Đỏ
               </div>
-              <div className="font-bold text-gray-900 dark:text-white truncate">
+              <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
                 {match.red_name || "-"}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400 truncate">
+              <div className="text-[11px] text-gray-500 dark:text-gray-400 truncate mt-0.5">
                 {match.red_unit || match.team_name || "-"}
               </div>
             </div>
             {match.winner === "RED" && (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-yellow-500"
+                className="h-5 w-5 text-yellow-500"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -553,27 +543,27 @@ const MatchCard = ({
           </div>
 
           {/* Blue Corner */}
-          <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <div className="flex items-center gap-3 p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
             <img
               src={blueFlag}
               alt="Blue flag"
-              className="w-8 h-6 object-cover rounded shadow-sm"
+              className="w-7 h-5 object-cover rounded shadow-sm border border-black/5"
             />
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase mb-1">
-                Xanh
+              <div className="text-[10px] font-bold text-blue-600/80 dark:text-blue-400/80 uppercase mb-0.5 tracking-wider">
+                Góc Xanh
               </div>
-              <div className="font-bold text-gray-900 dark:text-white truncate">
+              <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
                 {match.blue_name || "-"}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400 truncate">
+              <div className="text-[11px] text-gray-500 dark:text-gray-400 truncate mt-0.5">
                 {match.blue_unit || match.team_name || "-"}
               </div>
             </div>
             {match.winner === "BLUE" && (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-yellow-500"
+                className="h-5 w-5 text-yellow-500"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >

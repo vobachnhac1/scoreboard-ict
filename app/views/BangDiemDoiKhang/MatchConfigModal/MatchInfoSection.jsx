@@ -6,13 +6,13 @@ import React from "react";
  */
 const MatchInfoSection = ({ matchInfo }) => {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div className="bg-gradient-to-r from-blue-500 via-blue-500 to-blue-500 dark:from-blue-600 dark:via-blue-700 dark:to-blue-700 px-6 py-4">
-        <h3 className="text-2xl font-bold text-white flex items-center gap-3">
-          <div className="bg-white/20 dark:bg-white/10 backdrop-blur-sm p-2 rounded">
+    <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-gray-50 dark:bg-gray-800/80 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+        <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+          <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-1.5 rounded-lg">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
+              className="h-4 w-4"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -27,14 +27,14 @@ const MatchInfoSection = ({ matchInfo }) => {
         </h3>
       </div>
 
-      <div className="p-6 bg-gray-50 dark:bg-gray-900 grid grid-cols-3 gap-5">
+      <div className="p-4 bg-white dark:bg-gray-900 grid grid-cols-3 gap-3">
         {/* Hệ điểm */}
-        <div className="group bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border-2 border-blue-200 dark:border-blue-700 p-5 rounded hover:shadow-lg transition-all duration-300 hover:scale-105">
+        <div className="group bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 p-3 rounded hover:shadow-md transition-all duration-300">
           <div className="flex items-center gap-2 mb-2">
-            <div className="bg-blue-500 dark:bg-blue-600 p-1.5 rounded">
+            <div className="text-blue-500 dark:text-blue-400">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 text-white"
+                className="h-4 w-4"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -46,50 +46,50 @@ const MatchInfoSection = ({ matchInfo }) => {
                 />
               </svg>
             </div>
-            <label className="text-blue-700 dark:text-blue-300 text-sm font-bold uppercase tracking-wide">
+            <label className="text-gray-500 dark:text-gray-400 text-[11px] font-semibold uppercase tracking-wider">
               Hệ điểm
             </label>
           </div>
-          <div className="text-3xl font-black text-blue-900 dark:text-blue-100">
+          <div className="text-xl font-bold text-gray-900 dark:text-gray-100">
             Hệ điểm {matchInfo.he_diem || "2"}
           </div>
-          <p className="text-blue-600 dark:text-blue-400 text-xs mt-1 font-medium">
+          <p className="text-gray-400 dark:text-gray-500 text-[10px] mt-0.5">
             Theo Quản lý cài đặt
           </p>
         </div>
 
         {/* Số giám định */}
-        <div className="group bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900 dark:to-blue-900 border-2 border-blue-200 dark:border-blue-700 p-5 rounded hover:shadow-lg transition-all duration-300 hover:scale-105">
+        <div className="group bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 p-3 rounded hover:shadow-md transition-all duration-300">
           <div className="flex items-center gap-2 mb-2">
-            <div className="bg-blue-500 dark:bg-blue-600 p-1.5 rounded">
+            <div className="text-indigo-500 dark:text-indigo-400">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 text-white"
+                className="h-4 w-4"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
                 <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
               </svg>
             </div>
-            <label className="text-blue-700 dark:text-blue-300 text-sm font-bold uppercase tracking-wide">
+            <label className="text-gray-500 dark:text-gray-400 text-[11px] font-semibold uppercase tracking-wider">
               Số giám định
             </label>
           </div>
-          <div className="text-3xl font-black text-blue-900 dark:text-blue-100">
+          <div className="text-xl font-bold text-gray-900 dark:text-gray-100">
             {matchInfo.so_giam_dinh || "3"} GĐ
           </div>
-          <p className="text-blue-600 dark:text-blue-400 text-xs mt-1 font-medium">
+          <p className="text-gray-400 dark:text-gray-500 text-[10px] mt-0.5">
             Theo Quản lý cài đặt
           </p>
         </div>
 
         {/* Tổng số hiệp */}
-        <div className="group bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900 dark:to-blue-900 border-2 border-blue-200 dark:border-blue-700 p-5 rounded hover:shadow-lg transition-all duration-300 hover:scale-105">
+        <div className="group bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 p-3 rounded hover:shadow-md transition-all duration-300">
           <div className="flex items-center gap-2 mb-2">
-            <div className="bg-blue-500 dark:bg-blue-600 p-1.5 rounded">
+            <div className="text-blue-500 dark:text-blue-400">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 text-white"
+                className="h-4 w-4"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -100,14 +100,14 @@ const MatchInfoSection = ({ matchInfo }) => {
                 />
               </svg>
             </div>
-            <label className="text-blue-700 dark:text-blue-300 text-sm font-bold uppercase tracking-wide">
+            <label className="text-gray-500 dark:text-gray-400 text-[11px] font-semibold uppercase tracking-wider">
               Tổng số hiệp
             </label>
           </div>
-          <div className="text-3xl font-black text-blue-900 dark:text-blue-100">
+          <div className="text-xl font-bold text-gray-900 dark:text-gray-100">
             {(matchInfo.so_hiep || 3) + (matchInfo.so_hiep_phu || 0)} hiệp
           </div>
-          <p className="text-blue-600 dark:text-blue-400 text-xs mt-1 font-medium">
+          <p className="text-gray-400 dark:text-gray-500 text-[10px] mt-0.5">
             {matchInfo.so_hiep || 3} chính + {matchInfo.so_hiep_phu || 0} phụ
           </p>
         </div>

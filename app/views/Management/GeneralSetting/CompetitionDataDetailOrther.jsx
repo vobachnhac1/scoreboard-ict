@@ -14,6 +14,7 @@ import {
 import * as XLSX from "xlsx";
 import useConfirmModal from "../../../hooks/useConfirmModal";
 import ConfirmModal from "../../../components/ConfirmModal";
+import ConfigSystem from "./ConfigSystem";
 
 // Component Card cho mỗi đội/VĐV thi đấu
 function TeamCard({
@@ -445,7 +446,7 @@ export default function CompetitionDataDetailOrther() {
       console.error("Error fetching data:", error);
       showError(
         "Lỗi khi tải dữ liệu: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     } finally {
       setLoading(false);
@@ -537,6 +538,34 @@ export default function CompetitionDataDetailOrther() {
       },
     },
     {
+      key: Constants.ACTION_MATCH_CONFIG,
+      btnText: "Cấu hình",
+      color:
+        "bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700",
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+            clipRule="evenodd"
+          />
+        </svg>
+      ),
+      description: "Cấu hình hệ thống",
+      callback: (row) => {
+        setOpenActions({
+          isOpen: true,
+          key: Constants.ACTION_MATCH_CONFIG,
+          row: row,
+        });
+      },
+    },
+    {
       key: Constants.ACTION_DELETE,
       btnText: "Xóa",
       color:
@@ -576,6 +605,7 @@ export default function CompetitionDataDetailOrther() {
       case "WAI": // Chờ
         return [
           Constants.ACTION_MATCH_START,
+          Constants.ACTION_MATCH_CONFIG,
           Constants.ACTION_UPDATE,
           Constants.ACTION_DELETE,
         ];
@@ -1018,7 +1048,7 @@ export default function CompetitionDataDetailOrther() {
       console.error("Error starting match:", error);
       showError(
         "Lỗi khi bắt đầu trận: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -1068,7 +1098,7 @@ export default function CompetitionDataDetailOrther() {
       console.error("Error saving result:", error);
       showError(
         "Lỗi khi lưu kết quả: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -1096,7 +1126,7 @@ export default function CompetitionDataDetailOrther() {
       console.error("Error saving config:", error);
       showError(
         "Lỗi khi lưu cấu hình: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -1198,6 +1228,8 @@ export default function CompetitionDataDetailOrther() {
             showAlert={showAlert}
           />
         );
+      case Constants.ACTION_MATCH_CONFIG:
+        return <ConfigSystem />;
       case Constants.ACTION_DELETE:
         return (
           <DeleteConfirm
@@ -1518,11 +1550,10 @@ export default function CompetitionDataDetailOrther() {
             <div className="flex items-center gap-1 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600 p-1">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2 rounded transition-all ${
-                  viewMode === "grid"
-                    ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
+                className={`p-2 rounded transition-all ${viewMode === "grid"
+                  ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
                 title="Grid View"
               >
                 <svg
@@ -1536,11 +1567,10 @@ export default function CompetitionDataDetailOrther() {
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2 rounded transition-all ${
-                  viewMode === "list"
-                    ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
+                className={`p-2 rounded transition-all ${viewMode === "list"
+                  ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
                 title="List View"
               >
                 <svg
@@ -1645,11 +1675,10 @@ export default function CompetitionDataDetailOrther() {
                   <button
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
-                    className={`px-3 py-2 rounded font-medium text-sm transition-all ${
-                      page === 1
-                        ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
-                    }`}
+                    className={`px-3 py-2 rounded font-medium text-sm transition-all ${page === 1
+                      ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                      : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
+                      }`}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -1678,11 +1707,10 @@ export default function CompetitionDataDetailOrther() {
                             <button
                               key={pageNum}
                               onClick={() => setPage(pageNum)}
-                              className={`px-3 py-2 rounded font-medium text-sm transition-all ${
-                                page === pageNum
-                                  ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
-                                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
-                              }`}
+                              className={`px-3 py-2 rounded font-medium text-sm transition-all ${page === pageNum
+                                ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
+                                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
+                                }`}
                             >
                               {pageNum}
                             </button>
@@ -1709,11 +1737,10 @@ export default function CompetitionDataDetailOrther() {
                   <button
                     onClick={() => setPage(page + 1)}
                     disabled={page === totalPages}
-                    className={`px-3 py-2 rounded font-medium text-sm transition-all ${
-                      page === totalPages
-                        ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
-                    }`}
+                    className={`px-3 py-2 rounded font-medium text-sm transition-all ${page === totalPages
+                      ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                      : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
+                      }`}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -1775,34 +1802,22 @@ export default function CompetitionDataDetailOrther() {
       {/* Modal Kết quả */}
       {openActions?.isOpen &&
         openActions?.key === Constants.ACTION_MATCH_RESULT && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
-            <div className="bg-white dark:bg-gray-800 rounded shadow-2xl w-[900px] max-h-[95vh] overflow-hidden flex flex-col">
-              {/* Header - Căn giữa */}
-              <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 dark:from-yellow-600 dark:to-yellow-700 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
-                <h2 className="text-2xl font-bold text-white">KẾT QUẢ</h2>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl w-[900px] max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
+              <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 dark:from-yellow-600 dark:to-yellow-700 px-6 py-4 flex justify-between items-center relative flex-shrink-0 shadow-md z-10">
+                <h2 className="text-xl font-bold text-white m-0">KẾT QUẢ</h2>
                 <button
-                  onClick={() =>
-                    setOpenActions({ ...openActions, isOpen: false })
-                  }
-                  className="text-white hover:text-gray-300 dark:hover:text-gray-400 transition-colors absolute right-6"
+                  onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                  className="text-white hover:text-gray-200 transition-colors focus:outline-none p-1 rounded-full hover:bg-white/20"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-8 w-8"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
                 </button>
               </div>
 
               {/* Content - Scrollable */}
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-gray-900 p-6">
                 {renderContentModal(openActions, modalProps)}
               </div>
             </div>
@@ -1811,39 +1826,22 @@ export default function CompetitionDataDetailOrther() {
 
       {/* Modal Cập nhật */}
       {openActions?.isOpen && openActions?.key === Constants.ACTION_UPDATE && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
-          <div className="bg-white dark:bg-gray-800 rounded shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
-            {/* Header - Căn giữa */}
-            <div className="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
-              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                </svg> */}
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
+            <div className="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 px-6 py-4 flex justify-between items-center relative flex-shrink-0 shadow-md z-10">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3 m-0">
                 CẬP NHẬT THÔNG TIN
               </h2>
               <button
-                onClick={() =>
-                  setOpenActions({ ...openActions, isOpen: false })
-                }
-                className="text-white hover:text-gray-300 dark:hover:text-gray-400 transition-colors absolute right-6"
+                onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                className="text-white hover:text-gray-200 transition-colors focus:outline-none p-1 rounded-full hover:bg-white/20"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
               </button>
             </div>
 
             {/* Content - Scrollable */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-gray-900 p-6">
               {renderContentModal(openActions, modalProps)}
             </div>
           </div>
@@ -1852,48 +1850,47 @@ export default function CompetitionDataDetailOrther() {
 
       {/* Modal Thêm mới */}
       {openActions?.isOpen && openActions?.key === Constants.ACTION_CREATE && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
-          <div className="bg-white dark:bg-gray-800 rounded shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
-              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-7 w-7"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                    clipRule="evenodd"
-                  />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 px-6 py-4 flex justify-between items-center relative flex-shrink-0 shadow-md z-10">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3 m-0">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
                 </svg>
                 THÊM MỚI TRẬN ĐẤU
               </h2>
               <button
-                onClick={() =>
-                  setOpenActions({ ...openActions, isOpen: false })
-                }
-                className="text-white hover:text-gray-300 dark:hover:text-gray-400 transition-colors absolute right-6"
+                onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                className="text-white hover:text-gray-200 transition-colors focus:outline-none p-1 rounded-full hover:bg-white/20"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
               </button>
             </div>
 
             {/* Content - Scrollable */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-gray-900 p-6">
+              {renderContentModal(openActions, modalProps)}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Cấu hình */}
+      {openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_CONFIG && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl w-[1000px] max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
+            <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 dark:from-blue-800 dark:via-blue-700 dark:to-indigo-800 px-6 py-4 flex justify-between items-center relative flex-shrink-0 shadow-md z-10">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3 m-0">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+                </svg>
+                CẤU HÌNH HỆ THỐNG
+              </h2>
+              <button onClick={() => setOpenActions({ ...openActions, isOpen: false })} className="text-white hover:text-gray-200 transition-colors focus:outline-none p-1 rounded-full hover:bg-white/20">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-gray-900 p-6">
               {renderContentModal(openActions, modalProps)}
             </div>
           </div>
@@ -2078,138 +2075,152 @@ function DataFormOther({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      {/* STT */}
-
-      {/* STT - Nội dung thi nằm chung hàng */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-            STT <span className="text-red-500 dark:text-red-400">*</span>
-          </label>
-          <input
-            readOnly={!isCreate}
-            id="match_no"
-            type="text"
-            value={formData.match_no}
-            onChange={(e) =>
-              setFormData({ ...formData, match_no: e.target.value })
-            }
-            className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
-            placeholder="Nhập STT"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-            Nội dung thi
-          </label>
-          <input
-            readOnly={!isCreate}
-            id="match_name"
-            type="text"
-            value={formData.match_name || ""}
-            onChange={(e) =>
-              setFormData({ ...formData, match_name: e.target.value })
-            }
-            className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
-            placeholder="Nhập nội dung thi"
-          />
-        </div>
-      </div>
-
-      {/* Đơn vị */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-          Đơn vị
-        </label>
-        <input
-          type="text"
-          value={formData.team_name}
-          onChange={(e) => {
-            // Cập nhật đơn vị cho tất cả VĐV
-            const newAthletes = formData.athletes.map((a) => ({
-              ...a,
-              athlete_unit: e.target.value,
-            }));
-            setFormData({
-              ...formData,
-              athletes: newAthletes,
-              team_name: e.target.value,
-            });
-          }}
-          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
-          placeholder="Nhập đơn vị"
-        />
-      </div>
-
-      {/* Danh sách VĐV */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-          Danh sách VĐV{" "}
-          <span className="text-red-500 dark:text-red-400">*</span>
-        </label>
-        <div className="space-y-3">
-          {formData.athletes.map((athlete, idx) => (
-            <div
-              key={`athlete-form-${idx}`}
-              className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 p-4 rounded border-2 border-blue-200 dark:border-blue-700 hover:border-blue-400 dark:hover:border-blue-500 transition-all"
-            >
-              <div className="flex items-start gap-3">
-                {/* Số thứ tự */}
-                <div className="flex-shrink-0">
-                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 text-white text-base font-bold shadow-lg">
-                    {idx + 1}
-                  </span>
-                </div>
-
-                {/* Thông tin VĐV */}
-                <div className="flex-1">
-                  <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">
-                    Họ tên VĐV {idx + 1}
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Cột trái: Thông tin chung & Trạng thái */}
+        <div className="space-y-8">
+          <section>
+            <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
+              Thông tin chung
+            </h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    STT <span className="text-red-500">*</span>
                   </label>
                   <input
+                    readOnly={!isCreate}
+                    id="match_no"
                     type="text"
-                    value={athlete.athlete_name}
+                    value={formData.match_no}
                     onChange={(e) =>
-                      handleAthleteChange(idx, "athlete_name", e.target.value)
+                      setFormData({ ...formData, match_no: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-all font-medium"
-                    placeholder={`Nhập họ tên VĐV ${idx + 1}`}
+                    className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow disabled:bg-gray-100 read-only:bg-gray-100 dark:read-only:bg-gray-900"
+                    placeholder="Nhập STT"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    Trạng thái
+                  </label>
+                  <select
+                    value={formData.match_status}
+                    onChange={(e) =>
+                      setFormData({ ...formData, match_status: e.target.value })
+                    }
+                    className={`w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-shadow ${getStatusColor(formData.match_status)}`}
+                  >
+                    <option value="WAI">Chờ thi đấu</option>
+                    <option value="IN">Đang diễn ra</option>
+                    <option value="FIN">Kết thúc</option>
+                    <option value="CAN">Hủy bỏ</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  Nội dung thi
+                </label>
+                <input
+                  readOnly={!isCreate}
+                  id="match_name"
+                  type="text"
+                  value={formData.match_name || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, match_name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow read-only:bg-gray-100 dark:read-only:bg-gray-900"
+                  placeholder="Nhập nội dung thi"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  Đơn vị
+                </label>
+                <input
+                  type="text"
+                  value={formData.team_name}
+                  onChange={(e) => {
+                    // Cập nhật đơn vị cho tất cả VĐV
+                    const newAthletes = formData.athletes.map((a) => ({
+                      ...a,
+                      athlete_unit: e.target.value,
+                    }));
+                    setFormData({
+                      ...formData,
+                      athletes: newAthletes,
+                      team_name: e.target.value,
+                    });
+                  }}
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                  placeholder="Nhập đơn vị"
+                />
               </div>
             </div>
-          ))}
+          </section>
+        </div>
+
+        {/* Cột phải: Danh sách VĐV */}
+        <div className="space-y-8">
+          <section>
+            <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
+              Danh sách Vận Động Viên ({formData.athletes.length})
+            </h3>
+            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+              {formData.athletes.map((athlete, idx) => (
+                <div key={`athlete-form-${idx}`} className="flex gap-3 items-center">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-sm border border-blue-200 dark:border-blue-800">
+                    {idx + 1}
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={athlete.athlete_name}
+                      onChange={(e) =>
+                        handleAthleteChange(idx, "athlete_name", e.target.value)
+                      }
+                      className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                      placeholder={`Họ tên VĐV ${idx + 1}`}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
       </div>
 
-      {/* Trạng thái */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-          Trạng thái <span className="text-red-500 dark:text-red-400">*</span>
-        </label>
-        <select
-          value={formData.match_status}
-          onChange={(e) =>
-            setFormData({ ...formData, match_status: e.target.value })
-          }
-          className={`w-full px-4 py-3 border-2 rounded font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ${getStatusColor(formData.match_status)}`}
+      {/* Footer buttons */}
+      <div className="flex justify-end gap-3 pt-6 mt-8 border-t border-gray-200 dark:border-gray-700">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-600 transition-all"
         >
-          <option value="WAI">Chờ thi đấu</option>
-          <option value="IN">Đang diễn ra</option>
-          <option value="FIN">Kết thúc</option>
-          <option value="CAN">Hủy bỏ</option>
-        </select>
-      </div>
-
-      {/* Buttons */}
-      <div className="flex justify-end gap-3 pt-4 border-t-2 border-gray-200 dark:border-gray-700">
-        <Button variant="outline" onClick={onCancel}>
           Hủy
-        </Button>
-        <Button variant="primary" type="submit">
+        </button>
+        <button
+          type="submit"
+          className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clipRule="evenodd"
+            />
+          </svg>
           {row ? "Cập nhật" : "Thêm mới"}
-        </Button>
+        </button>
       </div>
     </form>
   );
@@ -2275,226 +2286,195 @@ function ResultForm({ row, onSubmit, onCancel }) {
   const hasScores = scores && Object.keys(scores).length > 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 bg-white dark:bg-gray-900 max-w-4xl mx-auto p-4">
       {/* Match Info */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 p-5 rounded shadow-lg border-2 border-blue-400 dark:border-blue-600">
-        <div className="text-white space-y-2">
-          <p className="text-center font-bold text-xl">
+      <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+        <div className="space-y-3">
+          <p className="text-center font-bold text-xl text-gray-900 dark:text-gray-100 uppercase tracking-widest">
             {row?.match_name || row?.match_type}
           </p>
-          <p className="text-center font-semibold text-lg">{row?.team_name}</p>
-          <p className="text-center text-sm opacity-90">STT: {row?.match_no}</p>
+          <div className="flex items-center justify-center gap-4 text-sm">
+            <span className="font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-full border border-blue-200 dark:border-blue-800">
+              {row?.team_name}
+            </span>
+            <span className="text-gray-400 border-l border-gray-300 dark:border-gray-600 pl-4">
+              STT: {row?.match_no}
+            </span>
+          </div>
         </div>
       </div>
 
       {hasScores ? (
-        <>
-          {/* Scores Display */}
-          <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg border-2 border-gray-200 dark:border-gray-700">
-            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6 text-center">
-              KẾT QUẢ THI
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 mb-6">
+            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
+              Điểm Giám Định
             </h3>
+            <div className="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
+          </div>
 
-            {/* Judge Scores Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-              {/* Render JudgeScores */}
+          {/* Judge Scores Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {(() => {
+              // Tính toán selectedMaxIndex và selectedMinIndex
+              let selectedMaxIndex = -1;
+              let selectedMinIndex = -1;
 
-              {(() => {
-                // Tính toán selectedMaxIndex và selectedMinIndex một lần duy nhất
-                let selectedMaxIndex = -1;
-                let selectedMinIndex = -1;
+              if (soGiamDinh === 5) {
+                const allScores = [
+                  scores.judge1 || 0,
+                  scores.judge2 || 0,
+                  scores.judge3 || 0,
+                  scores.judge4 || 0,
+                  scores.judge5 || 0,
+                ];
 
-                if (soGiamDinh === 5) {
-                  const allScores = [
-                    scores.judge1 || 0,
-                    scores.judge2 || 0,
-                    scores.judge3 || 0,
-                    scores.judge4 || 0,
-                    scores.judge5 || 0,
-                  ];
+                const maxScore = Math.max(...allScores);
+                const minScore = Math.min(...allScores);
+                const hasNonZeroScores = allScores.some((s) => s > 0);
 
-                  const maxScore = Math.max(...allScores);
-                  const minScore = Math.min(...allScores);
-                  const hasNonZeroScores = allScores.some((s) => s > 0);
+                if (hasNonZeroScores) {
+                  const maxIndices = allScores
+                    .map((score, idx) => ({ score: Number(score), idx }))
+                    .filter((item) => item.score === Number(maxScore))
+                    .map((item) => item.idx);
 
-                  if (hasNonZeroScores) {
-                    // Tìm tất cả các index có điểm cao nhất
-                    const maxIndices = allScores
-                      .map((score, idx) => ({ score: Number(score), idx }))
-                      .filter((item) => item.score === Number(maxScore))
-                      .map((item) => item.idx);
+                  const minIndices = allScores
+                    .map((score, idx) => ({ score: Number(score), idx }))
+                    .filter(
+                      (item) => item.score === Number(minScore) && item.score > 0,
+                    )
+                    .map((item) => item.idx);
 
-                    // Tìm tất cả các index có điểm thấp nhất
-                    const minIndices = allScores
-                      .map((score, idx) => ({ score: Number(score), idx }))
-                      .filter(
-                        (item) =>
-                          item.score === Number(minScore) && item.score > 0,
-                      )
-                      .map((item) => item.idx);
+                  if (maxIndices.length > 0) {
+                    selectedMaxIndex =
+                      maxIndices.length > 1
+                        ? maxIndices[Math.floor(Math.random() * maxIndices.length)]
+                        : maxIndices[0];
+                  }
 
-                    // Random chọn 1 index từ danh sách điểm cao nhất
-                    if (maxIndices.length > 0) {
-                      selectedMaxIndex =
-                        maxIndices.length > 1
-                          ? maxIndices[
-                              Math.floor(Math.random() * maxIndices.length)
-                            ]
-                          : maxIndices[0];
-                    }
-
-                    // Random chọn 1 index từ danh sách điểm thấp nhất
-                    if (minIndices.length > 0) {
-                      selectedMinIndex =
-                        minIndices.length > 1
-                          ? minIndices[
-                              Math.floor(Math.random() * minIndices.length)
-                            ]
-                          : minIndices[0];
-                    }
+                  if (minIndices.length > 0) {
+                    selectedMinIndex =
+                      minIndices.length > 1
+                        ? minIndices[Math.floor(Math.random() * minIndices.length)]
+                        : minIndices[0];
                   }
                 }
+              }
 
-                // Render các judge scores
-                return Array.from({ length: soGiamDinh }).map((_, index) => {
-                  const judgeIndex = index + 1;
-                  const judgeScore = scores[`judge${judgeIndex}`] || 0;
+              return Array.from({ length: soGiamDinh }).map((_, index) => {
+                const judgeIndex = index + 1;
+                const judgeScore = scores[`judge${judgeIndex}`] || 0;
 
-                  const isHighest = index === selectedMaxIndex;
-                  const isLowest = index === selectedMinIndex;
-                  const isGrayed = isHighest || isLowest;
+                const isHighest = index === selectedMaxIndex;
+                const isLowest = index === selectedMinIndex;
+                const isGrayed = isHighest || isLowest;
 
-                  const cardBgColor = isGrayed
-                    ? "bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800"
-                    : "bg-gradient-to-br from-sky-50 to-sky-100 dark:from-sky-900 dark:to-sky-800";
-                  const borderColor = isGrayed
-                    ? "border-gray-400 dark:border-gray-600"
-                    : "border-sky-300 dark:border-sky-700";
-                  const textColor = isGrayed
-                    ? "text-gray-700 dark:text-gray-300"
-                    : "text-sky-800 dark:text-sky-300";
-                  const scoreColor = isGrayed
-                    ? "text-gray-800 dark:text-gray-200"
-                    : "text-sky-900 dark:text-sky-200";
+                const styleWrapper = isGrayed
+                  ? "bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 opacity-60 grayscale-[50%]"
+                  : "bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700/50 shadow-sm ring-1 ring-black/5 hover:ring-blue-500/20";
 
-                  return (
-                    <div key={judgeIndex} className="relative group">
-                      <div
-                        className={`${cardBgColor} p-4 rounded border-2 ${borderColor} shadow-md`}
-                      >
-                        <div className="text-center">
-                          <p className={`text-xs font-bold ${textColor} mb-2`}>
-                            GIÁM ĐỊNH {judgeIndex}
-                          </p>
-                          <p className={`text-3xl font-black ${scoreColor}`}>
-                            {judgeScore}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                });
-              })()}
+                const textColor = isGrayed ? "text-gray-400" : "text-blue-500 dark:text-blue-400";
+                const scoreColor = isGrayed ? "text-gray-500 dark:text-gray-400 font-semibold text-2xl" : "text-gray-900 dark:text-gray-100 font-bold text-3xl";
 
-              {/* Total Score */}
-              <div className="relative group">
-                <div className="bg-gradient-to-br from-orange-400 via-orange-500 to-red-600 dark:from-orange-600 dark:via-orange-700 dark:to-red-800 p-4 rounded border-4 border-yellow-400 dark:border-yellow-600 shadow-2xl h-full flex flex-col items-center justify-center">
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-orange-600 dark:from-yellow-600 dark:to-orange-700 px-3 py-1 rounded-full border-2 border-yellow-300 dark:border-yellow-500 shadow-lg">
-                    <p className="text-xs font-black tracking-widest text-white">
-                      TỔNG
+                return (
+                  <div key={judgeIndex} className={`relative flex flex-col justify-center items-center p-4 rounded-xl transition-all duration-300 ${styleWrapper}`}>
+                    <p className={`text-[10px] font-bold uppercase tracking-wider mb-2 ${textColor}`}>
+                      Giám định {judgeIndex}
                     </p>
+                    <p className={scoreColor}>
+                      {judgeScore}
+                    </p>
+                    {isGrayed && (
+                      <span className="absolute -top-2 -right-2 bg-gray-200 dark:bg-gray-700 text-gray-500 text-[10px] px-2 py-0.5 rounded-full border border-gray-300 dark:border-gray-600 font-semibold shadow-sm">
+                        Bỏ
+                      </span>
+                    )}
                   </div>
-                  <p className="text-4xl font-black text-white drop-shadow-2xl mt-2">
+                );
+              });
+            })()}
+
+            {/* Total Score */}
+            <div className="relative flex flex-col justify-center items-center p-4 rounded-xl bg-gradient-to-br from-yellow-400/10 to-orange-500/10 dark:from-yellow-500/5 dark:to-orange-500/5 border border-yellow-300 dark:border-yellow-700/50 shadow-sm ring-2 ring-yellow-400/20">
+              <p className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest mb-1">
+                Tổng Điểm
+              </p>
+              <p className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-orange-500 to-red-600 dark:from-orange-400 dark:to-red-500 drop-shadow-sm">
+                {scores.total || 0}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 mt-8 mb-6">
+            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
+              Chi Tiết Tổng Hợp
+            </h3>
+            <div className="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
+          </div>
+
+          {/* Score Details Table */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                <tr>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs">
+                    Vị Trí Giám Định
+                  </th>
+                  <th className="text-right py-3 px-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs">
+                    Điểm Số
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                {Array.from({ length: soGiamDinh }).map((_, index) => (
+                  <tr key={index} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
+                      Giám định {index + 1}
+                    </td>
+                    <td className="py-3 px-4 text-right font-semibold text-blue-600 dark:text-blue-400">
+                      {scores[`judge${index + 1}`] || 0}
+                    </td>
+                  </tr>
+                ))}
+                <tr className="bg-orange-50/30 dark:bg-orange-900/10">
+                  <td className="py-4 px-4 font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider">
+                    TỔNG ĐIỂM CHÍNH THỨC
+                  </td>
+                  <td className="py-4 px-4 text-right font-black text-orange-600 dark:text-orange-400 text-xl">
                     {scores.total || 0}
-                  </p>
-
-                  {/* Decorative stars */}
-                  <div className="absolute top-1 left-1 text-yellow-300 dark:text-yellow-400 text-sm">
-                    ⭐
-                  </div>
-                  <div className="absolute top-1 right-1 text-yellow-300 dark:text-yellow-400 text-sm">
-                    ⭐
-                  </div>
-                  <div className="absolute bottom-1 left-1 text-yellow-300 dark:text-yellow-400 text-sm">
-                    ⭐
-                  </div>
-                  <div className="absolute bottom-1 right-1 text-yellow-300 dark:text-yellow-400 text-sm">
-                    ⭐
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Score Details Table */}
-            <div className="bg-gray-50 dark:bg-gray-900 rounded p-4 border border-gray-200 dark:border-gray-700">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b-2 border-gray-300 dark:border-gray-600">
-                    <th className="text-left py-2 px-3 font-bold text-gray-700 dark:text-gray-300">
-                      Giám định
-                    </th>
-                    <th className="text-center py-2 px-3 font-bold text-gray-700 dark:text-gray-300">
-                      Điểm
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.from({ length: soGiamDinh }).map((_, index) => (
-                    <tr
-                      key={index}
-                      className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    >
-                      <td className="py-2 px-3 font-semibold text-gray-700 dark:text-gray-300">
-                        Giám định {index + 1}
-                      </td>
-                      <td className="py-2 px-3 text-center font-bold text-sky-700 dark:text-sky-400">
-                        {scores[`judge${index + 1}`] || 0}
-                      </td>
-                    </tr>
-                  ))}
-                  <tr className="bg-orange-100 dark:bg-orange-900 border-t-2 border-orange-300 dark:border-orange-700">
-                    <td className="py-3 px-3 font-black text-gray-800 dark:text-gray-200 text-lg">
-                      TỔNG ĐIỂM
-                    </td>
-                    <td className="py-3 px-3 text-center font-black text-orange-700 dark:text-orange-300 text-2xl">
-                      {scores.total || 0}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           {/* Status Badge */}
-          <div className="flex justify-center">
-            <div className="bg-gradient-to-r from-green-500 to-green-700 dark:from-green-600 dark:to-green-800 px-6 py-3 !rounded shadow-lg border-2 border-green-300 dark:border-green-600">
-              <p className="text-white font-bold text-lg flex items-center gap-2">
-                HOÀN THÀNH
-              </p>
-            </div>
+          <div className="flex justify-center mt-6">
+            <span className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-green-700 bg-green-50 border border-green-200 rounded-full dark:bg-green-900/30 dark:text-green-400 dark:border-green-800">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              KẾT QUẢ ĐÃ HOÀN THÀNH
+            </span>
           </div>
-        </>
+        </div>
       ) : (
-        <div className="bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-500 dark:border-yellow-600 p-6 rounded">
-          <div className="flex items-center gap-3">
-            <div>
-              <p className="text-lg font-bold text-yellow-800 dark:text-yellow-300">
-                Chưa có kết quả
-              </p>
-            </div>
-          </div>
+        <div className="bg-gray-50 dark:bg-gray-800/50 border border-dashed border-gray-300 dark:border-gray-700 p-8 rounded-xl flex flex-col items-center justify-center text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+          <p className="text-lg font-medium text-gray-500 dark:text-gray-400">
+            Chưa có kết quả điểm số
+          </p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Trận đấu này chưa được chấm điểm hoặc giám định chưa tổng hợp.</p>
         </div>
       )}
 
       {/* Close Button */}
-      <div className="flex justify-center pt-4 border-t-2 border-gray-200 dark:border-gray-700">
-        <Button
-          variant="outline"
+      <div className="flex justify-end pt-6 mt-8 border-t border-gray-200 dark:border-gray-700">
+        <button
           onClick={onCancel}
-          className="min-w-40 bg-gray-500 hover:bg-gray-600 text-white"
+          className="px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-600 transition-all"
         >
           Đóng
-        </Button>
+        </button>
       </div>
     </div>
   );

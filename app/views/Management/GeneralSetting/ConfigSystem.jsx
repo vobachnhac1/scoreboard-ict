@@ -8,6 +8,7 @@ import {
   updateConfigSystem,
 } from "../../../config/redux/controller/configSystemSlice";
 import axios from "axios";
+import { KEYBOARD_MODES, CONFIG_PRESETS } from "../../BangDiemDoiKhang/keyboardConfig";
 
 const inputFields = {
   "Thông tin giải đấu": [
@@ -77,6 +78,14 @@ const inputFields = {
 const selectFields = {
   "Cài đặt số lượng": [
     {
+      name: "keyboard_mode",
+      label: "Chế độ",
+      options: Object.entries(KEYBOARD_MODES).map(([key, mode]) => ({
+        value: key,
+        label: `${mode.description}`,
+      })),
+    },
+    {
       name: "he_diem",
       label: "Hệ điểm",
       options: [
@@ -114,6 +123,16 @@ const selectFields = {
       ],
     },
   ],
+  // "Cấu hình bàn phím": [
+  //   {
+  //     name: "keyboard_mode",
+  //     label: "Chế độ",
+  //     options: Object.entries(KEYBOARD_MODES).map(([key, mode]) => ({
+  //       value: key,
+  //       label: `${mode.description}`,
+  //     })),
+  //   },
+  // ],
 };
 
 const textareaFields = {
@@ -149,12 +168,15 @@ const switchFields = {
     { name: "ap_dung_doikhang", label: "Bật/tắt chế độ Đối kháng" },
     { name: "ap_dung_quyen", label: "Bật/tắt chế độ Quyền" },
     { name: "ap_dung_vonhac", label: "Bật/tắt chế độ Võ Nhạc" },
-  ],
-  "Chế độ áp dụng điểm biên": [
+    { name: "bat_am_thanh", label: "Bật âm thanh" },
     { name: "ap_dung_diem_bien_tru", label: "Áp dụng điểm biên (trừ điểm)" },
     { name: "ap_dung_diem_bien_cong", label: "Áp dụng điểm biên (cộng điểm)" },
   ],
-  "Cài đặt âm thanh": [{ name: "bat_am_thanh", label: "Bật âm thanh" }],
+  // "Chế độ áp dụng điểm biên": [
+  //   { name: "ap_dung_diem_bien_tru", label: "Áp dụng điểm biên (trừ điểm)" },
+  //   { name: "ap_dung_diem_bien_cong", label: "Áp dụng điểm biên (cộng điểm)" },
+  // ],
+  // "Cài đặt âm thanh": [],
   "Quyền hiển thị buttons - Điểm số": [
     { name: "hien_thi_button_diem_1", label: "Hiển thị button +1/-1 điểm" },
     { name: "hien_thi_button_diem_2", label: "Hiển thị button +2/-2 điểm" },
@@ -220,7 +242,7 @@ export default function ConfigSystem() {
     setValue,
     reset,
   } = useForm({
-    defaultValues: data,
+    defaultValues: { keyboard_mode: "vovinam", ...data },
   });
 
   // State cho quản lý logos
@@ -246,11 +268,62 @@ export default function ConfigSystem() {
     fetchLogos();
   }, [dispatch]);
 
+  const initialPresetApplied = useRef(false);
+
   useEffect(() => {
     if (data) {
-      reset(data);
+      // Nếu server không có keyboard_mode, mặc định vovinam
+      const mergedData = { keyboard_mode: "vovinam", ...data };
+      reset(mergedData);
+
+      // Apply preset lần đầu nếu chưa apply
+      if (!initialPresetApplied.current) {
+        const mode = mergedData.keyboard_mode;
+        if (mode && CONFIG_PRESETS[mode]) {
+          const preset = CONFIG_PRESETS[mode];
+          Object.entries(preset).forEach(([key, value]) => {
+            if (key !== "disabledFields") {
+              setValue(key, value);
+            }
+          });
+          console.log(`⚙️ Đã áp dụng preset cấu hình lần đầu: ${mode}`);
+        }
+        initialPresetApplied.current = true;
+      }
     }
   }, [data, reset]);
+
+  // Watch keyboard_mode để auto-fill preset khi thay đổi chế độ
+  const selectedKeyboardMode = watch("keyboard_mode");
+  const prevKeyboardMode = useRef(selectedKeyboardMode);
+
+  useEffect(() => {
+    // Chỉ apply khi user thực sự thay đổi chế độ (không phải lần đầu load)
+    if (
+      selectedKeyboardMode &&
+      CONFIG_PRESETS[selectedKeyboardMode] &&
+      prevKeyboardMode.current !== selectedKeyboardMode
+    ) {
+      const preset = CONFIG_PRESETS[selectedKeyboardMode];
+      Object.entries(preset).forEach(([key, value]) => {
+        if (key !== "disabledFields") {
+          setValue(key, value);
+        }
+      });
+      console.log(`⚙️ Đã áp dụng preset cấu hình: ${selectedKeyboardMode}`);
+    }
+    prevKeyboardMode.current = selectedKeyboardMode;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedKeyboardMode]);
+
+  // Danh sách fields bị khoá theo chế độ hiện tại
+  const disabledFields = (selectedKeyboardMode && CONFIG_PRESETS[selectedKeyboardMode]?.disabledFields) || [];
+  // Danh sách fields ẩn hoàn toàn theo chế độ hiện tại
+  const hiddenFields = (selectedKeyboardMode && CONFIG_PRESETS[selectedKeyboardMode]?.hiddenFields) || [];
+  // Giá trị được phép hiển thị cho select fields theo chế độ hiện tại
+  const allowedOptions = (selectedKeyboardMode && CONFIG_PRESETS[selectedKeyboardMode]?.allowedOptions) || {};
+  // Danh sách nhóm (group key) ẩn hoàn toàn theo chế độ hiện tại
+  const hiddenGroups = (selectedKeyboardMode && CONFIG_PRESETS[selectedKeyboardMode]?.hiddenGroups) || [];
 
   // Fetch logos từ API
   const fetchLogos = async () => {
@@ -436,7 +509,7 @@ export default function ConfigSystem() {
       await fetchLogos();
       alert(
         "Lỗi khi sắp xếp logos: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -445,6 +518,12 @@ export default function ConfigSystem() {
     console.log(formData);
 
     if (!formData) return;
+
+    // Đảm bảo keyboard_mode luôn có giá trị
+    if (!formData.keyboard_mode) {
+      formData.keyboard_mode = "vovinam";
+    }
+
     dispatch(updateConfigSystem(formData))
       .unwrap()
       .then(() => {
@@ -567,31 +646,39 @@ export default function ConfigSystem() {
         </span>
       </div>
       <div className="space-y-3">
-        {fields.map(({ name, label, placeholder, type = "text" }, i) => (
-          <div key={i} className="grid grid-cols-3 gap-2 items-center">
-            <label
-              htmlFor={name}
-              className="text-sm font-semibold text-gray-700 dark:text-gray-300"
-            >
-              {label}
-            </label>
-            <div className="col-span-2">
-              <input
-                id={name}
-                readOnly={loading}
-                {...register(name, { required: `${label} là bắt buộc` })}
-                type={type}
-                placeholder={placeholder}
-                className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded  text-sm transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              />
-              {errors[name] && (
-                <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-medium">
-                  {errors[name].message}
-                </p>
-              )}
+        {fields.filter(f => !hiddenFields.includes(f.name)).map(({ name, label, placeholder, type = "text" }, i) => {
+          const isDisabled = disabledFields.includes(name);
+          return (
+            <div key={i} className={`grid grid-cols-3 gap-2 items-center ${isDisabled ? 'opacity-60' : ''}`}>
+              <label
+                htmlFor={name}
+                className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1"
+              >
+                {label}
+                {isDisabled && (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </label>
+              <div className="col-span-2">
+                <input
+                  id={name}
+                  readOnly={loading || isDisabled}
+                  {...register(name, { required: `${label} là bắt buộc` })}
+                  type={type}
+                  placeholder={placeholder}
+                  className={`w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded text-sm transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${isDisabled ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''}`}
+                />
+                {errors[name] && (
+                  <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-medium">
+                    {errors[name].message}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -620,36 +707,52 @@ export default function ConfigSystem() {
         </span>
       </div>
       <div className="space-y-3">
-        {fields.map(({ name, label, options }, i) => (
-          <div key={i} className="grid grid-cols-3 gap-2 items-center">
-            <label
-              htmlFor={name}
-              className="text-sm font-semibold text-gray-700 dark:text-gray-300"
-            >
-              {label}
-            </label>
-            <div className="col-span-2">
-              <select
-                id={name}
-                disabled={loading}
-                {...register(name, { required: `${label} là bắt buộc` })}
-                className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded  text-sm transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+        {fields.filter(f => !hiddenFields.includes(f.name)).map(({ name, label, options }, i) => {
+          // keyboard_mode không bị disable để user có thể chuyển chế độ
+          const isDisabled = name !== "keyboard_mode" && disabledFields.includes(name);
+          return (
+            <div key={i} className={`grid grid-cols-3 gap-2 items-center ${isDisabled ? 'opacity-60' : ''}`}>
+              <label
+                htmlFor={name}
+                className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1"
               >
-                <option value="">-- Chọn {label.toLowerCase()} --</option>
-                {options.map((option, idx) => (
-                  <option key={idx} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              {errors[name] && (
-                <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-medium">
-                  {errors[name].message}
-                </p>
-              )}
+                {label}
+                {isDisabled && (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </label>
+              <div className="col-span-2">
+                <select
+                  id={name}
+                  disabled={loading || isDisabled}
+                  {...register(name, { required: `${label} là bắt buộc` })}
+                  className={`w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded text-sm transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${isDisabled ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''}`}
+                >
+                  <option value="">-- Chọn {label.toLowerCase()} --</option>
+                  {options
+                    .filter(option => {
+                      if (allowedOptions[name]) {
+                        return allowedOptions[name].includes(option.value);
+                      }
+                      return true;
+                    })
+                    .map((option, idx) => (
+                      <option key={idx} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                </select>
+                {errors[name] && (
+                  <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-medium">
+                    {errors[name].message}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -729,16 +832,31 @@ export default function ConfigSystem() {
         </span>
       </div>
       <div className="space-y-2">
-        {fields.map(({ name, label }, i) => (
-          <SwitchField
-            key={i}
-            id={name}
-            disabled={loading}
-            label={label}
-            value={watch(name) === 1}
-            onChange={(val) => setValue(name, val ? 1 : 0)}
-          />
-        ))}
+        {fields.filter(f => !hiddenFields.includes(f.name)).map(({ name, label }, i) => {
+          const isDisabled = disabledFields.includes(name);
+          return (
+            <div key={i} className={isDisabled ? 'opacity-60' : ''}>
+              <SwitchField
+                id={name}
+                disabled={loading || isDisabled}
+                label={
+                  <span className="flex items-center gap-1">
+                    {label}
+                    {isDisabled && (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </span>
+                }
+                value={watch(name) === 1}
+                onChange={(val) => {
+                  if (!isDisabled) setValue(name, val ? 1 : 0);
+                }}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -1494,18 +1612,26 @@ export default function ConfigSystem() {
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-          {Object.entries(inputFields).map(([groupTitle, fields], index) =>
-            renderInputGroup(groupTitle, fields, index),
-          )}
-          {Object.entries(selectFields).map(([groupTitle, fields], index) =>
-            renderSelectGroup(groupTitle, fields, index),
-          )}
-          {Object.entries(textareaFields).map(([groupTitle, fields], index) =>
-            renderTextareaGroup(groupTitle, fields, index),
-          )}
-          {Object.entries(switchFields).map(([groupTitle, fields], index) =>
-            renderSwitchGroup(groupTitle, fields, index),
-          )}
+          {Object.entries(inputFields)
+            .filter(([groupTitle]) => !hiddenGroups.includes(groupTitle))
+            .map(([groupTitle, fields], index) =>
+              renderInputGroup(groupTitle, fields, index),
+            )}
+          {Object.entries(selectFields)
+            .filter(([groupTitle]) => !hiddenGroups.includes(groupTitle))
+            .map(([groupTitle, fields], index) =>
+              renderSelectGroup(groupTitle, fields, index),
+            )}
+          {Object.entries(textareaFields)
+            .filter(([groupTitle]) => !hiddenGroups.includes(groupTitle))
+            .map(([groupTitle, fields], index) =>
+              renderTextareaGroup(groupTitle, fields, index),
+            )}
+          {Object.entries(switchFields)
+            .filter(([groupTitle]) => !hiddenGroups.includes(groupTitle))
+            .map(([groupTitle, fields], index) =>
+              renderSwitchGroup(groupTitle, fields, index),
+            )}
 
           {/* Background Settings Section */}
           {renderBackgroundSettings()}

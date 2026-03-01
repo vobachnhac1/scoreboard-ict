@@ -77,9 +77,9 @@ function obfuscateFile(filePath) {
     // Ghi file đã obfuscate
     fs.writeFileSync(filePath, obfuscatedCode, 'utf8');
     
-    console.log(`✅ Obfuscated: ${filePath}`);
+    console.log(` Obfuscated: ${filePath}`);
   } catch (error) {
-    console.error(`❌ Error obfuscating ${filePath}:`, error.message);
+    console.error(` Error obfuscating ${filePath}:`, error.message);
   } finally {
     processingFiles.delete(filePath);
   }
@@ -135,12 +135,12 @@ function watchDirectory(dirPath) {
 console.log('🔐 Starting dev mode with obfuscation...\n');
 
 // Obfuscate tất cả file lần đầu
-console.log('📁 Initial obfuscation...');
+console.log(' Initial obfuscation...');
 dirsToWatch.forEach(dir => {
   obfuscateDirectory(dir);
 });
 
-console.log('\n✅ Initial obfuscation complete!\n');
+console.log('\n Initial obfuscation complete!\n');
 
 // Start watching
 console.log('👀 Starting file watchers...');
@@ -160,7 +160,7 @@ function restoreBackups() {
     restoreBackupsInDir(dir);
   });
 
-  console.log('✅ Backup restored\n');
+  console.log(' Backup restored\n');
 }
 
 function restoreBackupsInDir(dirPath) {
@@ -178,7 +178,7 @@ function restoreBackupsInDir(dirPath) {
       const originalPath = filePath.replace('.backup', '');
       fs.copyFileSync(filePath, originalPath);
       fs.unlinkSync(filePath);
-      console.log(`✅ Restored: ${originalPath}`);
+      console.log(` Restored: ${originalPath}`);
     }
   });
 }

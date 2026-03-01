@@ -209,34 +209,147 @@ const CompetitionDKMultiView = ({
                               </tr>
                             </thead>
                             <tbody>
-                              {rows.map((row, rowIdx) => {
-                                const isRowSelected = selectedRows.includes(rowIdx);
-                                let isHeader = false;
-                                // nếu rowIdx = 0 thì bỏ qua
-                                if (rowIdx % 2 == 0 && ['SOL', 'TUV']?.includes(row[1])) {
-                                  // lấy row[1]
-                                  isHeader = true;
-                                } else if (rowIdx % 4 == 0 && ['DAL']?.includes(row[1])) {
-                                  // lấy row[1]
-                                  isHeader = true;
-                                } else if (['VON']?.includes(row[1]) && row[5] != null) {
-                                  isHeader = true;
-                                }
-                                console.log(row);
-                                return (
-                                  <tr key={rowIdx} className={`border-t border-gray-100 dark:border-gray-700 cursor-pointer transition-colors ${isRowSelected ? "bg-blue-50 dark:bg-blue-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-800/60"}`} onClick={() => toggleRow(rowIdx)}>
-                                    <td className="px-2 py-1.5 text-center border-r border-gray-100 dark:border-gray-700" onClick={(e) => e.stopPropagation()}>
-                                      <input disabled={!isHeader} type="checkbox" checked={isRowSelected} onChange={() => toggleRow(rowIdx)} className="w-3 h-3" />
-                                    </td>
-                                    <td className="px-2 py-1.5 text-center text-gray-400 dark:text-gray-500 border-r border-gray-100 dark:border-gray-700 select-none">{rowIdx + 1}</td>
-                                    {row.map((cell, cellIdx) => (
-                                      <td key={cellIdx} className="px-3 py-1.5 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700">
-                                        <div className="max-w-[180px] truncate" title={String(cell ?? "")}>{cell ?? "-"}</div>
-                                      </td>
-                                    ))}
-                                  </tr>
-                                );
-                              })}
+                              {
+                                (() => {
+                                  const formatTableData = () => {
+                                    const type = headers[0];
+                                    const formatted = [];
+                                    if (type === "DK" || type === "DOL" || (!['TUV', 'SOL', 'DAL', 'VON'].includes(type) && !['TUV', 'SOL', 'DAL', 'VON'].includes(rows[0]?.[1]))) return rows;
+
+                                    const checkType = ['TUV', 'SOL', 'DAL', 'VON'].includes(type) ? type : rows[0]?.[1];
+                                    if (checkType === "TUV" || checkType === "SOL") {
+                                      for (let i = 0; i < rows.length; i += 2) {
+                                        formatted.push([rows[i], rows[i + 1]]);
+                                      }
+                                    } else if (checkType === "DAL") {
+                                      for (let i = 0; i < rows.length; i += 4) {
+                                        formatted.push([rows[i], rows[i + 1], rows[i + 2], rows[i + 3]]);
+                                      }
+                                    } else if (checkType === "VON") {
+                                      let count = 0;
+                                      for (let i = 0; i < rows.length; i += count) {
+                                        let arrRow = []
+                                        if (rows[i][1] == "VON" && rows[i][5] != null) {
+                                          count = Number(rows[i][5]) > 1 ? Number(rows[i][5]) : 1;
+                                        }
+                                        for (let j = 0; j < count; j++) {
+                                          arrRow.push(rows[i + j]);
+                                        }
+                                        formatted.push(arrRow);
+                                      }
+                                    } else {
+                                      return rows;
+                                    }
+                                    return formatted;
+                                  };
+
+                                  let cumulativeIdx = 0;
+                                  return formatTableData().map((item, groupIdx) => {
+                                    const isGrouped = Array.isArray(item) && item.length > 0 && Array.isArray(item[0]);
+                                    const displayRow = isGrouped ? item[0] : item;
+                                    const rowIdx = cumulativeIdx; // Real index mapped to `rows` original indices
+                                    cumulativeIdx += isGrouped ? item.length : 1;
+
+                                    const isRowSelected = selectedRows.includes(rowIdx);
+                                    let isHeader = false;
+
+                                    if (!isGrouped) {
+                                      if (rowIdx % 2 == 0 && ['SOL', 'TUV']?.includes(item[1])) isHeader = true;
+                                      else if (rowIdx % 4 == 0 && ['DAL']?.includes(item[1])) isHeader = true;
+                                      else if (['VON']?.includes(item[1]) && item[5] != null) isHeader = true;
+                                    } else {
+                                      isHeader = true; // For grouped rows, the first row checkbox can control the group
+                                    }
+
+                                    return (
+                                      <tr key={groupIdx} className={`border-t border-gray-100 dark:border-gray-700 cursor-pointer transition-colors ${isRowSelected ? "bg-blue-50 dark:bg-blue-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-800/60"}`} onClick={() => toggleRow(rowIdx)}>
+                                        <td className="px-2 py-1.5 text-center border-r border-gray-100 dark:border-gray-700" onClick={(e) => e.stopPropagation()}>
+                                          <input disabled={!isHeader} type="checkbox" checked={isRowSelected} onChange={() => toggleRow(rowIdx)} className="w-3 h-3" />
+                                        </td>
+                                        <td className="px-2 py-1.5 text-center text-gray-400 dark:text-gray-500 border-r border-gray-100 dark:border-gray-700 select-none">{groupIdx + 1}</td>
+                                        {headers.map((headerStr, cellIdx) => {
+                                          if (!isGrouped) {
+                                            const cell = displayRow[cellIdx];
+                                            return (
+                                              <td key={cellIdx} className="px-3 py-1.5 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700">
+                                                <div className="max-w-[180px] truncate" title={String(cell ?? "")}>{cell ?? "-"}</div>
+                                              </td>
+                                            );
+                                          }
+
+                                          const val1 = displayRow[cellIdx];
+                                          const headerLower = String(headerStr).toLowerCase();
+                                          let isNameCol = headerLower.includes('họ tên') || headerLower.includes('họ và tên') || headerLower === 'tên' || cellIdx === 2;
+                                          if (headers[0] == 'VON') {
+                                            isNameCol = headerLower.includes('họ tên') || headerLower.includes('họ và tên') || headerLower === 'tên' || cellIdx === 3;
+                                          }
+
+                                          if (isNameCol) {
+                                            return (
+                                              <td key={cellIdx} className="px-3 py-1.5 text-gray-800 dark:text-gray-200 border-r border-b border-gray-100 dark:border-gray-700 align-middle bg-blue-50/30 dark:bg-blue-900/10 z-10 w-[180px] max-w-[200px]">
+                                                <div className="flex flex-col gap-1.5 leading-none">
+                                                  {item.map((r, subIdx) => {
+                                                    if (!r) return null;
+                                                    const dotColors = ["bg-blue-500", "bg-indigo-500", "bg-green-500", "bg-orange-500"];
+                                                    const textColors = ["text-blue-700 dark:text-blue-400", "text-indigo-700 dark:text-indigo-400", "text-green-700 dark:text-green-400", "text-orange-700 dark:text-orange-400"];
+                                                    return (
+                                                      <React.Fragment key={subIdx}>
+                                                        {subIdx > 0 && <div className="w-full h-px bg-blue-200 dark:bg-blue-800"></div>}
+                                                        <div className={`truncate flex items-center gap-1.5`} title={String(r[cellIdx] ?? "")}>
+                                                          <span className="truncate">
+                                                            {r[cellIdx] !== null && r[cellIdx] !== undefined
+                                                              ? subIdx + 1 + ". " + String(r[cellIdx])
+                                                              : <span className="text-gray-300 dark:text-gray-600 italic">—</span>}
+                                                          </span>
+                                                        </div>
+                                                      </React.Fragment>
+                                                    )
+                                                  })}
+                                                </div>
+                                              </td>
+                                            );
+                                          }
+
+                                          let isStaticCol = cellIdx === 0 || cellIdx === 1 || cellIdx === 3 || cellIdx === 4;
+                                          if (headers[0] == "VON") {
+                                            isStaticCol = cellIdx === 0 || cellIdx === 1 || cellIdx === 2 || cellIdx === 4 || cellIdx === 5;
+                                          }
+
+                                          if (isStaticCol) {
+                                            return (
+                                              <td key={cellIdx} className="px-3 py-1.5 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700 align-middle">
+                                                <div className="max-w-[180px] truncate font-medium text-gray-900 dark:text-white" title={String(val1 ?? "")}>{val1 ?? "-"}</div>
+                                              </td>
+                                            );
+                                          }
+
+                                          const allSame = item.every((r) => r && String(r[cellIdx] || "") === String(val1 || ""));
+                                          if (allSame) {
+                                            return (
+                                              <td key={cellIdx} className="px-3 py-1.5 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700 align-middle">
+                                                <div className="max-w-[180px] truncate" title={String(val1 ?? "")}>{val1 ?? "-"}</div>
+                                              </td>
+                                            );
+                                          }
+
+                                          return (
+                                            <td key={cellIdx} className="px-3 py-1.5 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700 align-middle">
+                                              <div className="flex flex-col gap-1.5 leading-none">
+                                                {item.map((r, subIdx) => (
+                                                  <React.Fragment key={subIdx}>
+                                                    {subIdx > 0 && <div className="w-full h-px bg-gray-200 dark:bg-gray-700"></div>}
+                                                    <div className="truncate max-w-[180px]" title={String(r?.[cellIdx] ?? "")}>{r?.[cellIdx] ?? "-"}</div>
+                                                  </React.Fragment>
+                                                ))}
+                                              </div>
+                                            </td>
+                                          );
+                                        })}
+                                      </tr>
+                                    );
+                                  });
+                                })()
+                              }
                             </tbody>
                           </table>
                         </div>

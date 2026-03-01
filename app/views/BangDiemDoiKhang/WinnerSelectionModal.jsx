@@ -12,8 +12,8 @@ const WinnerSelectionModal = ({
   if (!showWinnerModal) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[100]">
-      <div className="bg-white dark:bg-gray-800 rounded p-8 max-w-2xl w-full mx-4 shadow-2xl border-4 border-blue-500 dark:border-blue-600">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 transition-opacity">
+      <div className="bg-white dark:bg-gray-900 rounded-lg p-8 max-w-2xl w-full mx-4 shadow-2xl border-4 border-blue-500 dark:border-blue-600">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-block bg-blue-500 dark:bg-blue-600 rounded-full p-3 mb-4">

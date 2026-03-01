@@ -14,11 +14,12 @@ const MatchControlSection = ({
 }) => {
   // Helper functions
   const jumpToStart = () => {
-    setTimeLeft(roundDuration);
+    console.log("jumpToStart", roundDuration);
+    setTimeLeft(roundDuration * 10);
   };
 
   const jumpToMiddle = () => {
-    setTimeLeft(Math.floor(roundDuration / 2));
+    setTimeLeft(Math.floor(roundDuration * 10 / 2));
   };
 
   const jumpToEnd = () => {
@@ -31,13 +32,13 @@ const MatchControlSection = ({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div className="bg-gradient-to-r from-blue-500 via-blue-500 to-blue-500 dark:from-blue-600 dark:via-blue-700 dark:to-blue-700 px-6 py-4">
-        <h3 className="text-2xl font-bold text-white flex items-center gap-3">
-          <div className="bg-white/20 dark:bg-white/10 backdrop-blur-sm p-2 rounded">
+    <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-gray-50 dark:bg-gray-800/80 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+        <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+          <div className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 p-1.5 rounded">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
+              className="h-4 w-4"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -52,14 +53,14 @@ const MatchControlSection = ({
         </h3>
       </div>
 
-      <div className="p-6 bg-gray-50 dark:bg-gray-900">
-        <div className="grid grid-cols-2 gap-6 mb-6">
+      <div className="p-4 bg-white dark:bg-gray-900">
+        <div className="grid grid-cols-2 gap-4 mb-4">
           {/* Hiệp hiện tại */}
-          <div className="bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900 dark:to-blue-900 border-2 border-blue-200 dark:border-blue-700 p-5 rounded">
-            <label className="flex items-center gap-2 text-blue-700 dark:text-blue-300 font-bold mb-3 text-sm uppercase tracking-wide">
-              <svg
+          <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 p-3 rounded">
+            <label className="flex items-center gap-2 text-gray-600 dark:text-gray-300 font-semibold mb-2 text-[11px] uppercase tracking-wider">
+              {/* <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
+                className="h-3.5 w-3.5"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -68,7 +69,7 @@ const MatchControlSection = ({
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
                   clipRule="evenodd"
                 />
-              </svg>
+              </svg> */}
               Hiệp hiện tại
             </label>
             <input
@@ -77,16 +78,16 @@ const MatchControlSection = ({
               max={totalRounds}
               value={currentRound}
               onChange={(e) => setCurrentRound(parseInt(e.target.value) || 1)}
-              className="w-full bg-white dark:bg-gray-700 text-blue-900 dark:text-blue-100 px-4 py-3 rounded focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:focus:ring-indigo-600 text-center text-3xl font-black border-2 border-indigo-300 dark:border-indigo-600 shadow-inner"
+              className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:focus:ring-indigo-500 text-center text-xl font-bold border border-gray-300 dark:border-gray-600 transition-shadow"
             />
           </div>
 
           {/* Thời gian còn lại */}
-          <div className="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900 dark:to-pink-900 border-2 border-rose-200 dark:border-rose-700 p-5 rounded">
-            <label className="flex items-center gap-2 text-rose-700 dark:text-rose-300 font-bold mb-3 text-sm uppercase tracking-wide">
-              <svg
+          <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 p-3 rounded">
+            <label className="flex items-center gap-2 text-gray-600 dark:text-gray-300 font-semibold mb-2 text-[11px] uppercase tracking-wider">
+              {/* <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
+                className="h-3.5 w-3.5"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -95,7 +96,7 @@ const MatchControlSection = ({
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
                   clipRule="evenodd"
                 />
-              </svg>
+              </svg> */}
               Thời gian còn lại (giây)
             </label>
             <input
@@ -104,38 +105,41 @@ const MatchControlSection = ({
               max={roundDuration}
               value={timeLeft / 10}
               onChange={(e) => setTimeLeft(parseInt(e.target.value * 10) || 0)}
-              className="w-full bg-white dark:bg-gray-700 text-rose-900 dark:text-rose-100 px-4 py-3 rounded focus:outline-none focus:ring-4 focus:ring-rose-300 dark:focus:ring-rose-600 text-center text-3xl font-black border-2 border-rose-300 dark:border-rose-600 shadow-inner"
+              className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-rose-500/50 dark:focus:ring-rose-500 text-center text-xl font-bold border border-gray-300 dark:border-gray-600 transition-shadow"
             />
           </div>
         </div>
 
         {/* Quick jump buttons */}
-        <div className="bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 p-4 rounded border border-gray-200 dark:border-gray-700">
-          <p className="text-gray-700 dark:text-gray-300 font-bold text-sm mb-3 uppercase tracking-wide">
-            ⚡ Điều chỉnh nhanh
+        <div className="bg-gray-50 dark:bg-gray-800/30 p-3 rounded border border-gray-100 dark:border-gray-700/60">
+          <p className="text-gray-600 dark:text-gray-400 font-semibold text-[10px] mb-2 uppercase tracking-wider flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clipRule="evenodd" />
+            </svg>
+            Điều chỉnh nhanh
           </p>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-4 gap-2">
             <button
               onClick={jumpToStart}
-              className="bg-gradient-to-br from-yellow-400 to-amber-500 dark:from-yellow-600 dark:to-amber-700 hover:from-yellow-500 hover:to-amber-600 dark:hover:from-yellow-700 dark:hover:to-amber-800 text-white px-4 py-3 rounded text-sm font-bold transition-all shadow-md hover:shadow-lg hover:scale-105"
+              className="bg-white hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 px-2 py-1.5 rounded text-xs font-semibold transition-colors shadow-sm"
             >
               Đầu hiệp
             </button>
             <button
               onClick={jumpToMiddle}
-              className="bg-gradient-to-br from-blue-400 to-blue-500 dark:from-blue-600 dark:to-blue-700 hover:from-blue-500 hover:to-blue-600 dark:hover:from-blue-700 dark:hover:to-blue-800 text-white px-4 py-3 rounded text-sm font-bold transition-all shadow-md hover:shadow-lg hover:scale-105"
+              className="bg-white hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 px-2 py-1.5 rounded text-xs font-semibold transition-colors shadow-sm"
             >
               Giữa hiệp
             </button>
             <button
               onClick={jumpToEnd}
-              className="bg-gradient-to-br from-blue-400 to-blue-500 dark:from-blue-600 dark:to-blue-700 hover:from-blue-500 hover:to-blue-600 dark:hover:from-blue-700 dark:hover:to-blue-800 text-white px-4 py-3 rounded text-sm font-bold transition-all shadow-md hover:shadow-lg hover:scale-105"
+              className="bg-white hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 px-2 py-1.5 rounded text-xs font-semibold transition-colors shadow-sm"
             >
               Cuối hiệp
             </button>
             <button
               onClick={pauseTimer}
-              className="bg-gradient-to-br from-gray-400 to-gray-500 dark:from-gray-600 dark:to-gray-700 hover:from-gray-500 hover:to-gray-600 dark:hover:from-gray-700 dark:hover:to-gray-800 text-white px-4 py-3 rounded text-sm font-bold transition-all shadow-md hover:shadow-lg hover:scale-105"
+              className="bg-white hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 px-2 py-1.5 rounded text-xs font-semibold transition-colors shadow-sm"
             >
               Tạm dừng
             </button>

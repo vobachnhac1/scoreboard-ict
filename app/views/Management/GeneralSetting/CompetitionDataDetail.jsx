@@ -19,23 +19,24 @@ import {
   getActionTypeColorClass,
   getActionTypeColorClassWithBorder,
 } from "../../../helpers/actionType";
+import ConfigSystem from "./ConfigSystem";
 
 // Component hiển thị chi tiết từng hiệp
 function RoundHistoryCard({ round, roundIndex, logs }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm transition-all duration-200 mb-3 hover:shadow-md">
       {/* Header - Tóm tắt hiệp */}
       <div
-        className="p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        className="p-4 cursor-pointer hover:bg-gray-50/80 dark:hover:bg-gray-800/80 transition-colors flex items-center justify-between group"
         onClick={() => setExpanded(!expanded)}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 rounded">
+        <div className="flex items-center gap-3">
+          <div className={`p-1.5 rounded-md transition-colors ${expanded ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" : "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300"}`}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`h-4 w-4 transition-transform text-gray-400 dark:text-gray-500 ${expanded ? "rotate-90" : ""}`}
+              className={`h-4 w-4 transition-transform duration-200 ${expanded ? "rotate-90" : ""}`}
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -45,109 +46,85 @@ function RoundHistoryCard({ round, roundIndex, logs }) {
                 clipRule="evenodd"
               />
             </svg>
-            <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              Hiệp {round.round}
-              {round.roundType && round.roundType !== "NORMAL" && (
-                <span className="ml-2 text-xs px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded">
-                  {round.roundType === "EXTRA" ? "Hiệp phụ" : round.roundType}
-                </span>
-              )}
-            </div>
           </div>
-
-          <div className="flex items-center gap-4 rounded">
-            {/* Điểm số */}
-            <div className="flex items-center gap-2">
-              <div className="text-center">
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  Đỏ
-                </div>
-                <div className="text-lg font-bold text-red-600 dark:text-red-400">
-                  {round.red?.match?.score || 0}
-                </div>
-              </div>
-              <div className="text-gray-400 dark:text-gray-500">-</div>
-              <div className="text-center">
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  Xanh
-                </div>
-                <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                  {round.blue?.match?.score || 0}
-                </div>
-              </div>
-            </div>
-
-            {/* Số lượng logs */}
-            {logs.length > 0 && (
-              <div className="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-1 rounded">
-                {logs.length} hành động
-              </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-gray-800 dark:text-gray-200 tracking-wide uppercase">
+              Hiệp {round.round}
+            </span>
+            {round.roundType && round.roundType !== "NORMAL" && (
+              <span className="px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full border border-purple-200 dark:border-purple-800">
+                {round.roundType === "EXTRA" ? "Hiệp phụ" : round.roundType}
+              </span>
             )}
           </div>
+        </div>
+
+        <div className="flex items-center gap-6">
+          {/* Điểm số */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+              <span className="text-lg font-black text-red-600 dark:text-red-400 w-6 text-right">
+                {round.red?.match?.score || 0}
+              </span>
+            </div>
+            <div className="text-gray-300 dark:text-gray-600 font-light text-xl">-</div>
+            <div className="flex items-center gap-2 flex-row-reverse">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+              <span className="text-lg font-black text-blue-600 dark:text-blue-400 w-6 text-left">
+                {round.blue?.match?.score || 0}
+              </span>
+            </div>
+          </div>
+
+          {/* Số lượng logs */}
+          {logs.length > 0 && (
+            <div className="text-[10px] font-bold tracking-wider text-gray-500 dark:text-gray-400 uppercase">
+              {logs.length} <span className="hidden sm:inline">Hành Động</span>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Expanded - Chi tiết logs */}
       {expanded && logs.length > 0 && (
-        <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3">
-          <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">
-            📋 Chi tiết hành động
-          </div>
-          <div className="max-h-60 overflow-y-auto bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-            <table className="min-w-full text-xs">
-              <thead className="bg-gray-100 dark:bg-gray-700 sticky top-0">
+        <div className="border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 p-4">
+          <div className="max-h-60 overflow-y-auto bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm mb-4">
+            <table className="w-full text-xs text-left">
+              <thead className="bg-gray-50/80 dark:bg-gray-900/50 sticky top-0 border-b border-gray-200 dark:border-gray-700 backdrop-blur-sm z-10">
                 <tr>
-                  <th className="px-2 py-1.5 text-left font-medium text-gray-600 dark:text-gray-300">
-                    Thời gian
-                  </th>
-                  <th className="px-2 py-1.5 text-left font-medium text-gray-600 dark:text-gray-300">
-                    Loại
-                  </th>
-                  <th className="px-2 py-1.5 text-left font-medium text-gray-600 dark:text-gray-300">
-                    Đội
-                  </th>
-                  <th className="px-2 py-1.5 text-left font-medium text-gray-600 dark:text-gray-300">
-                    Mô tả
-                  </th>
-                  <th className="px-2 py-1.5 text-center font-medium text-gray-600 dark:text-gray-300">
-                    Điểm
-                  </th>
+                  <th className="px-4 py-2 font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Thời gian</th>
+                  <th className="px-4 py-2 font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Loại</th>
+                  <th className="px-4 py-2 font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center">Đội</th>
+                  <th className="px-4 py-2 font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Mô tả</th>
+                  <th className="px-4 py-2 font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center">Tỷ số</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700/50">
                 {logs.map((log, logIndex) => (
-                  <tr
-                    key={`round-${round.round}-log-${logIndex}`}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <td className="px-2 py-1.5 text-gray-600 dark:text-gray-400">
+                  <tr key={`round-${round.round}-log-${logIndex}`} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-2 text-gray-600 dark:text-gray-400 font-medium">
                       {log.time || "-"}
                     </td>
-                    <td className="px-2 py-1.5">
-                      <span
-                        className={`px-1.5 py-0.5 rounded text-xs font-medium ${getActionTypeColorClass(log.actionType)}`}
-                      >
+                    <td className="px-4 py-2">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border shadow-sm ${getActionTypeColorClassWithBorder(log.actionType)}`}>
                         {getActionTypeLabel(log.actionType)}
                       </span>
                     </td>
-                    <td className="px-2 py-1.5">
+                    <td className="px-4 py-2 text-center">
                       {log.team === "red" ? (
-                        <span className="text-red-600 font-medium">🔴 Đỏ</span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 font-bold text-[10px] uppercase tracking-wider">Đỏ</span>
                       ) : log.team === "blue" ? (
-                        <span className="text-blue-600 font-medium">
-                          🔵 Xanh
-                        </span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 font-bold text-[10px] uppercase tracking-wider">Xanh</span>
                       ) : (
-                        <span className="text-gray-400 dark:text-gray-500">
-                          -
-                        </span>
+                        <span className="text-gray-400 dark:text-gray-500">—</span>
                       )}
                     </td>
-                    <td className="px-2 py-1.5 text-gray-700 dark:text-gray-300">
+                    <td className="px-4 py-2 text-gray-600 dark:text-gray-300">
                       {log.description || "-"}
                     </td>
-                    <td className="px-2 py-1.5 text-center">
-                      <span className="font-mono text-gray-900 dark:text-gray-100 font-medium">
+                    <td className="px-4 py-2 text-center">
+                      <span className="font-mono text-gray-900 dark:text-gray-100 font-bold bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded shadow-sm border border-gray-200 dark:border-gray-700">
                         {log.redScore || 0} - {log.blueScore || 0}
                       </span>
                     </td>
@@ -159,37 +136,54 @@ function RoundHistoryCard({ round, roundIndex, logs }) {
 
           {/* Thống kê hiệp */}
           {round.red && round.blue && (
-            <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-red-50 dark:bg-red-900 rounded p-2">
-                <div className="font-semibold text-red-700 dark:text-red-300 mb-1">
-                  🔴 Giáp Đỏ
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-red-50/50 dark:bg-red-900/10 rounded-lg p-3 border border-red-100 dark:border-red-900/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                  <span className="text-xs font-bold text-red-800 dark:text-red-300 uppercase tracking-widest">Giáp Đỏ</span>
                 </div>
-                <div className="space-y-0.5 text-gray-600 dark:text-gray-400">
-                  <div>
-                    Điểm:{" "}
-                    <span className="font-bold text-red-600 dark:text-red-400">
-                      {round.red.match?.score || 0}
-                    </span>
+                <div className="grid grid-cols-2 gap-y-2 text-xs text-gray-600 dark:text-gray-400">
+                  <div className="flex justify-between pr-2 border-r border-red-200 dark:border-red-800">
+                    <span>Điểm:</span>
+                    <span className="font-bold text-red-600 dark:text-red-400">{round.red.match?.score || 0}</span>
                   </div>
-                  <div>Nhắc nhở: {round.red.match?.remind || 0}</div>
-                  <div>Cảnh cáo: {round.red.match?.warn || 0}</div>
-                  <div>Ngã: {round.red.match?.fall || 0}</div>
+                  <div className="flex justify-between pl-2">
+                    <span>Ngã:</span>
+                    <span className="font-semibold text-gray-900 dark:text-gray-200">{round.red.match?.fall || 0}</span>
+                  </div>
+                  <div className="flex justify-between pr-2 border-r border-red-200 dark:border-red-800">
+                    <span>Nhắc:</span>
+                    <span className="font-semibold text-gray-900 dark:text-gray-200">{round.red.match?.remind || 0}</span>
+                  </div>
+                  <div className="flex justify-between pl-2">
+                    <span>Cảnh:</span>
+                    <span className="font-semibold text-gray-900 dark:text-gray-200">{round.red.match?.warn || 0}</span>
+                  </div>
                 </div>
               </div>
-              <div className="bg-blue-50 dark:bg-blue-900 rounded p-2">
-                <div className="font-semibold text-blue-700 dark:text-blue-300 mb-1">
-                  🔵 Giáp Xanh
+
+              <div className="bg-blue-50/50 dark:bg-blue-900/10 rounded-lg p-3 border border-blue-100 dark:border-blue-900/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                  <span className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase tracking-widest">Giáp Xanh</span>
                 </div>
-                <div className="space-y-0.5 text-gray-600 dark:text-gray-400">
-                  <div>
-                    Điểm:{" "}
-                    <span className="font-bold text-blue-600 dark:text-blue-400">
-                      {round.blue.match?.score || 0}
-                    </span>
+                <div className="grid grid-cols-2 gap-y-2 text-xs text-gray-600 dark:text-gray-400">
+                  <div className="flex justify-between pr-2 border-r border-blue-200 dark:border-blue-800">
+                    <span>Điểm:</span>
+                    <span className="font-bold text-blue-600 dark:text-blue-400">{round.blue.match?.score || 0}</span>
                   </div>
-                  <div>Nhắc nhở: {round.blue.match?.remind || 0}</div>
-                  <div>Cảnh cáo: {round.blue.match?.warn || 0}</div>
-                  <div>Ngã: {round.blue.match?.fall || 0}</div>
+                  <div className="flex justify-between pl-2">
+                    <span>Ngã:</span>
+                    <span className="font-semibold text-gray-900 dark:text-gray-200">{round.blue.match?.fall || 0}</span>
+                  </div>
+                  <div className="flex justify-between pr-2 border-r border-blue-200 dark:border-blue-800">
+                    <span>Nhắc:</span>
+                    <span className="font-semibold text-gray-900 dark:text-gray-200">{round.blue.match?.remind || 0}</span>
+                  </div>
+                  <div className="flex justify-between pl-2">
+                    <span>Cảnh:</span>
+                    <span className="font-semibold text-gray-900 dark:text-gray-200">{round.blue.match?.warn || 0}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -199,8 +193,11 @@ function RoundHistoryCard({ round, roundIndex, logs }) {
 
       {/* Thông báo khi không có logs */}
       {expanded && logs.length === 0 && (
-        <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-3 text-center text-xs text-gray-500 dark:text-gray-400">
-          Không có hành động nào trong hiệp này
+        <div className="bg-gray-50/50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700 p-6 flex flex-col items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-300 dark:text-gray-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Không có hành động nào trong hiệp này</p>
         </div>
       )}
     </div>
@@ -306,15 +303,13 @@ function MatchCard({
 
   if (status === "FIN" && winner) {
     if (winner === "RED") {
-      cardBorderClass = "border-red-400 dark:border-red-600 border-2";
-      cardBgClass =
-        "bg-gradient-to-br from-red-50 via-white to-red-50 dark:from-red-900 dark:via-gray-800 dark:to-red-900";
-      cardGlowClass = "shadow-red-200 dark:shadow-red-900 shadow-lg";
+      cardBorderClass = "border-red-200 dark:border-red-800/60";
+      cardBgClass = "bg-red-50/30 dark:bg-red-900/10";
+      cardGlowClass = "shadow-sm shadow-red-100/50 dark:shadow-none";
     } else if (winner === "BLUE") {
-      cardBorderClass = "border-blue-400 dark:border-blue-600 border-2";
-      cardBgClass =
-        "bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-blue-900 dark:via-gray-800 dark:to-blue-900";
-      cardGlowClass = "shadow-blue-200 dark:shadow-blue-900 shadow-lg";
+      cardBorderClass = "border-blue-200 dark:border-blue-800/60";
+      cardBgClass = "bg-blue-50/30 dark:bg-blue-900/10";
+      cardGlowClass = "shadow-sm shadow-blue-100/50 dark:shadow-none";
     }
   }
 
@@ -322,144 +317,127 @@ function MatchCard({
   if (viewMode === "list") {
     return (
       <div
-        className={`${cardBgClass} rounded shadow-sm hover:shadow-md transition-all duration-200 border ${cardBorderClass} ${cardGlowClass} overflow-hidden group relative`}
+        className={`${cardBgClass} rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border ${cardBorderClass} ${cardGlowClass} overflow-hidden group relative flex h-full`}
         onDoubleClick={() => onDoubleClick(row)}
       >
         {/* Winner Badge cho List View */}
         {status === "FIN" && winner && (
           <div
-            className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-bold shadow-md ${
-              winner === "RED"
-                ? "bg-red-500 text-white"
-                : "bg-blue-500 text-white"
-            }`}
+            className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] tracking-wider uppercase font-bold shadow-sm border ${winner === "RED"
+              ? "bg-red-50 text-red-600 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
+              : "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800"
+              }`}
           >
-            🏆 {winner === "RED" ? "ĐỎ THẮNG" : "XANH THẮNG"}
+            {winner === "RED" ? "ĐỎ THẮNG" : "XANH THẮNG"}
           </div>
         )}
-        <div className="flex items-center gap-4 p-4">
+        <div className="flex items-center gap-4 p-4 w-full">
           {/* Trận số */}
           <div className="flex-shrink-0">
-            <div className="bg-blue-600 dark:bg-blue-500 text-white rounded px-4 py-2 font-bold text-base shadow-md min-w-[80px] text-center">
-              Trận {row.data[0]}
+            <div className="bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-md px-3 py-1.5 font-bold text-sm font-mono shadow-sm min-w-[70px] text-center">
+              T{row.data[0]}
             </div>
           </div>
 
           {/* Giáp Đỏ */}
           <div
-            className={`flex-1 min-w-0 transition-all duration-300 ${
-              status === "FIN" && winner === "RED" ? "scale-105" : ""
-            }`}
+            className={`flex-1 min-w-0 transition-all duration-300 ${status === "FIN" && winner === "RED" ? "scale-[1.02]" : ""
+              }`}
           >
             <div className="flex items-center gap-2 mb-1">
               <div
-                className={`w-2 h-2 bg-red-600 dark:bg-red-500 rounded-full ${status === "FIN" && winner === "RED" ? "animate-pulse" : ""}`}
+                className={`w-2 h-2 rounded-full ${status === "FIN" && winner === "RED" ? "bg-red-500 animate-pulse" : "bg-red-400 dark:bg-red-500"}`}
               ></div>
-              <span className="text-xs font-semibold text-red-700 dark:text-red-400 uppercase">
+              <span className="text-[10px] font-bold text-red-600/80 dark:text-red-400/80 uppercase tracking-widest">
                 Đỏ
               </span>
-              {status === "FIN" && winner === "RED" && (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-yellow-500 dark:text-yellow-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              )}
             </div>
             <div
-              className={`font-bold truncate ${
-                status === "FIN" && winner === "RED"
-                  ? "text-red-700 dark:text-red-400 text-lg"
-                  : "text-red-900 dark:text-red-300"
-              }`}
+              className={`font-bold truncate ${status === "FIN" && winner === "RED"
+                ? "text-red-700 dark:text-red-400 text-base"
+                : "text-gray-800 dark:text-gray-200 text-sm"
+                }`}
             >
-              {row.data[3] || "-"}
+              {row.data[3] || "—"}
             </div>
-            <div className="text-sm text-red-700 dark:text-red-400 truncate">
-              {row.data[4] || "-"}
+            <div className="text-xs text-gray-500 dark:text-gray-400 font-medium truncate">
+              {row.data[4] || "—"}
             </div>
           </div>
 
           {/* VS */}
-          <div className="flex-shrink-0 text-gray-400 dark:text-gray-500 font-bold text-lg">
+          <div className="flex-shrink-0 text-gray-300 dark:text-gray-600 font-black text-xl px-2">
             VS
           </div>
 
           {/* Giáp Xanh */}
           <div
-            className={`flex-1 min-w-0 transition-all duration-300 ${
-              status === "FIN" && winner === "BLUE" ? "scale-105" : ""
-            }`}
+            className={`flex-1 min-w-0 transition-all duration-300 ${status === "FIN" && winner === "BLUE" ? "scale-[1.02]" : ""
+              }`}
           >
             <div className="flex items-center gap-2 mb-1">
               <div
-                className={`w-2 h-2 bg-blue-600 dark:bg-blue-500 rounded-full ${status === "FIN" && winner === "BLUE" ? "animate-pulse" : ""}`}
+                className={`w-2 h-2 rounded-full ${status === "FIN" && winner === "BLUE" ? "bg-blue-500 animate-pulse" : "bg-blue-400 dark:bg-blue-500"}`}
               ></div>
-              <span className="text-xs font-semibold text-blue-700 dark:text-blue-400 uppercase">
+              <span className="text-[10px] font-bold text-blue-600/80 dark:text-blue-400/80 uppercase tracking-widest">
                 Xanh
               </span>
-              {status === "FIN" && winner === "BLUE" && (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-yellow-500 dark:text-yellow-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              )}
             </div>
             <div
-              className={`font-bold truncate ${
-                status === "FIN" && winner === "BLUE"
-                  ? "text-blue-700 dark:text-blue-400 text-lg"
-                  : "text-blue-900 dark:text-blue-300"
-              }`}
+              className={`font-bold truncate ${status === "FIN" && winner === "BLUE"
+                ? "text-blue-700 dark:text-blue-400 text-base"
+                : "text-gray-800 dark:text-gray-200 text-sm"
+                }`}
             >
-              {row.data[6] || "-"}
+              {row.data[6] || "—"}
             </div>
-            <div className="text-sm text-blue-700 dark:text-blue-400 truncate">
-              {row.data[7] || "-"}
+            <div className="text-xs text-gray-500 dark:text-gray-400 font-medium truncate">
+              {row.data[7] || "—"}
             </div>
           </div>
 
           {/* Trạng thái */}
-          <div className="flex-shrink-0">
-            <div
-              className={`px-3 py-1.5 rounded font-semibold text-xs border-2 ${currentStatus.color} flex items-center gap-1.5 whitespace-nowrap`}
-            >
-              <span>{currentStatus.icon}</span>
-              <span>{currentStatus.label}</span>
+          <div className="flex-shrink-0 flex items-center justify-center w-28">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2.5 w-2.5">
+                {status === "IN" && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>}
+                <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${status === "IN" ? "bg-blue-500" : status === "FIN" ? "bg-green-500" : status === "WAI" ? "bg-amber-500" : "bg-gray-400"}`}></span>
+              </span>
+              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">{currentStatus.label}</span>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex-shrink-0 flex items-center gap-2">
+          <div className="flex-shrink-0 flex items-center gap-2 border-l border-gray-100 dark:border-gray-700/60 pl-4 ml-2">
             {listActions
               .filter((action) => availableActions.includes(action.key))
-              .map((action) => (
-                <button
-                  onClick={() => action.callback(row)}
-                  key={action.key}
-                  className={`
-                    flex items-center gap-1.5
-                    px-2.5 py-1.5
-                    rounded
-                    text-xs font-semibold
-                    shadow-sm hover:shadow-md
-                    transform hover:scale-105
-                    transition-all duration-200
-                    whitespace-nowrap
-                    ${action.color}
-                  `}
-                >
-                  {action.icon}
-                  <span className="hidden xl:inline">{action.btnText}</span>
-                </button>
-              ))}
+              .map((action) => {
+                let actionStyle = "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-700";
+
+                if (action.key === Constants.ACTION_MATCH_START) actionStyle = "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/50";
+                if (action.key === Constants.ACTION_MATCH_RESULT) actionStyle = "bg-yellow-50 text-yellow-600 border-yellow-200 hover:bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800 dark:hover:bg-yellow-900/50";
+                if (action.key === Constants.ACTION_DELETE) actionStyle = "bg-red-50 text-red-600 border-red-200 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/50";
+
+                return (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      action.callback(row);
+                    }}
+                    key={action.key}
+                    title={action.btnText}
+                    className={`
+                      flex items-center justify-center
+                      h-8 w-8 rounded-md
+                      border shadow-sm
+                      transition-colors duration-200
+                      ${actionStyle}
+                    `}
+                  >
+                    {React.cloneElement(action.icon, { className: "h-3.5 w-3.5" })}
+                  </button>
+                );
+              })}
           </div>
         </div>
       </div>
@@ -469,199 +447,154 @@ function MatchCard({
   // Grid View - Original card layout
   return (
     <div
-      className={`${cardBgClass} rounded shadow-md hover:shadow-xl transition-all duration-300 border ${cardBorderClass} ${cardGlowClass} overflow-hidden group relative`}
+      className={`${cardBgClass} rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border ${cardBorderClass} ${cardGlowClass} overflow-hidden group relative flex flex-col h-full`}
       onDoubleClick={() => onDoubleClick(row)}
     >
       {/* Winner Badge cho Grid View */}
       {status === "FIN" && winner && (
         <div
-          className={`absolute top-3 right-3 z-10 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5 ${
-            winner === "RED"
-              ? "bg-gradient-to-r from-red-500 to-red-600 text-white"
-              : "bg-gradient-to-r from-blue-500 to-blue-600 text-white"
-          }`}
+          className={`absolute top-3 right-3 z-10 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase flex items-center gap-1 shadow-sm border ${winner === "RED"
+            ? "bg-red-50 text-red-600 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
+            : "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800"
+            }`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1zm-5 8.274l-.818 2.552c.25.112.526.174.818.174.292 0 .569-.062.818-.174L5 10.274zm10 0l-.818 2.552c.25.112.526.174.818.174.292 0 .56-.062.818-.174L15 10.274z" clipRule="evenodd" />
           </svg>
           <span>{winner === "RED" ? "ĐỎ THẮNG" : "XANH THẮNG"}</span>
         </div>
       )}
 
       {/* Header - Trận số và Trạng thái */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-blue-600 dark:bg-blue-500 text-white rounded px-3 py-1.5 font-bold text-sm shadow-md">
-              Trận {row.data[0]}
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              <span className="font-medium">{row.data[1]}</span>
-              {row.data[2] && (
-                <span className="ml-2 text-gray-400 dark:text-gray-500">
-                  • {row.data[2]}
-                </span>
-              )}
-            </div>
+      <div className="bg-gray-50/80 dark:bg-gray-800/40 px-5 py-3.5 border-b border-gray-100 dark:border-gray-700/60 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-md px-2.5 py-1 text-xs font-bold font-mono shadow-sm">
+            T{row.data[0]}
           </div>
-          <div
-            className={`px-3 py-1.5 rounded font-semibold text-xs border-2 ${currentStatus.color} flex items-center gap-1.5`}
-          >
-            <span>{currentStatus.icon}</span>
-            <span>{currentStatus.label}</span>
+          <div className="text-xs font-medium text-gray-500 dark:text-gray-400">
+            <span className="text-gray-700 dark:text-gray-300 font-bold">{row.data[1]}</span>
+            {row.data[2] && (
+              <span className="ml-1.5 opacity-75">
+                • {row.data[2]}
+              </span>
+            )}
           </div>
         </div>
       </div>
 
       {/* Body - Thông tin VĐV */}
-      <div className="p-5">
-        <div className="grid grid-cols-2 gap-6 mb-5">
+      <div className="p-5 flex-1 flex flex-col">
+        <div className="grid grid-cols-2 gap-4 mb-auto">
           {/* Giáp Đỏ */}
           <div
-            className={`bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 rounded  p-4 border-2 shadow-sm transition-all duration-300 ${
-              status === "FIN" && winner === "RED"
-                ? "border-red-500 dark:border-red-600 ring-4 ring-red-200 dark:ring-red-900 scale-105"
-                : "border-red-200 dark:border-red-700"
-            }`}
+            className={`bg-white dark:bg-gray-800/50 rounded-lg p-3.5 border transition-all duration-300 relative ${status === "FIN" && winner === "RED"
+              ? "border-red-300 dark:border-red-700 shadow-sm"
+              : "border-gray-100 dark:border-gray-700/60"
+              }`}
           >
-            <div className="flex items-center gap-2 mb-3">
-              <div
-                className={`w-3 h-3 bg-red-600 dark:bg-red-500 rounded-full ${status === "FIN" && winner === "RED" ? "animate-pulse" : ""}`}
-              ></div>
-              <h3 className="text-sm font-bold text-red-700 dark:text-red-300 uppercase tracking-wide">
-                Giáp Đỏ
+            <div className="flex items-center gap-2 mb-2">
+              <div className={`w-2 h-2 rounded-full ${status === "FIN" && winner === "RED" ? "bg-red-500 animate-pulse" : "bg-red-400 dark:bg-red-500"}`}></div>
+              <h3 className="text-[10px] font-bold text-red-600/80 dark:text-red-400/80 uppercase tracking-widest">
+                Đỏ
               </h3>
-              {status === "FIN" && winner === "RED" && (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-yellow-500 dark:text-yellow-400 ml-auto"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              )}
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <div
-                className={`font-bold text-lg leading-tight ${
-                  status === "FIN" && winner === "RED"
-                    ? "text-red-700 dark:text-red-400 text-xl"
-                    : "text-red-900 dark:text-red-300"
-                }`}
+                className={`font-bold leading-tight line-clamp-2 ${status === "FIN" && winner === "RED"
+                  ? "text-red-700 dark:text-red-400 text-base"
+                  : "text-gray-800 dark:text-gray-200 text-sm"
+                  }`}
               >
-                {row.data[3] || "-"}
+                {row.data[3] || "—"}
               </div>
-              <div className="text-sm text-red-700 dark:text-red-400 font-medium">
-                {row.data[4] || "-"}
+              <div className="text-xs text-gray-500 dark:text-gray-400 font-medium truncate">
+                {row.data[4] || "—"}
               </div>
-              {row.data[5] && (
-                <div className="text-xs text-red-600 dark:text-red-400 bg-red-200 dark:bg-red-900 rounded px-2 py-1 inline-block">
-                  {row.data[5]}
-                </div>
-              )}
             </div>
           </div>
 
           {/* Giáp Xanh */}
           <div
-            className={`bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 rounded  p-4 border-2 shadow-sm transition-all duration-300 ${
-              status === "FIN" && winner === "BLUE"
-                ? "border-blue-500 dark:border-blue-600 ring-4 ring-blue-200 dark:ring-blue-900 scale-105"
-                : "border-blue-200 dark:border-blue-700"
-            }`}
+            className={`bg-white dark:bg-gray-800/50 rounded-lg p-3.5 border transition-all duration-300 relative ${status === "FIN" && winner === "BLUE"
+              ? "border-blue-300 dark:border-blue-700 shadow-sm"
+              : "border-gray-100 dark:border-gray-700/60"
+              }`}
           >
-            <div className="flex items-center gap-2 mb-3">
-              <div
-                className={`w-3 h-3 bg-blue-600 dark:bg-blue-500 rounded-full ${status === "FIN" && winner === "BLUE" ? "animate-pulse" : ""}`}
-              ></div>
-              <h3 className="text-sm font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wide">
-                Giáp Xanh
+            <div className="flex items-center justify-end gap-2 mb-2">
+              <h3 className="text-[10px] font-bold text-blue-600/80 dark:text-blue-400/80 uppercase tracking-widest text-right">
+                Xanh
               </h3>
-              {status === "FIN" && winner === "BLUE" && (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-yellow-500 dark:text-yellow-400 ml-auto"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              )}
+              <div className={`w-2 h-2 rounded-full ${status === "FIN" && winner === "BLUE" ? "bg-blue-500 animate-pulse" : "bg-blue-400 dark:bg-blue-500"}`}></div>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1 text-right">
               <div
-                className={`font-bold text-lg leading-tight ${
-                  status === "FIN" && winner === "BLUE"
-                    ? "text-blue-700 dark:text-blue-400 text-xl"
-                    : "text-blue-900 dark:text-blue-300"
-                }`}
+                className={`font-bold leading-tight line-clamp-2 ${status === "FIN" && winner === "BLUE"
+                  ? "text-blue-700 dark:text-blue-400 text-base"
+                  : "text-gray-800 dark:text-gray-200 text-sm"
+                  }`}
               >
-                {row.data[6] || "-"}
+                {row.data[6] || "—"}
               </div>
-              <div className="text-sm text-blue-700 dark:text-blue-400 font-medium">
-                {row.data[7] || "-"}
+              <div className="text-xs text-gray-500 dark:text-gray-400 font-medium truncate">
+                {row.data[7] || "—"}
               </div>
-              {row.data[8] && (
-                <div className="text-xs text-blue-600 bg-blue-200 rounded px-2 py-1 inline-block">
-                  {row.data[8]}
-                </div>
-              )}
             </div>
           </div>
         </div>
 
-        {/* VĐV thắng */}
-        {row.winner_text && (
-          <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 border-2 border-yellow-300 rounded p-3 mb-4">
-            <div className="flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-yellow-600"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <span className="text-sm font-semibold text-yellow-800">
-                Người thắng:
-              </span>
-              <span className="text-sm font-bold text-yellow-900">
-                {row.winner_text}
-              </span>
-            </div>
+        {/* Trạng thái Mini và VĐV thắng */}
+        <div className="mt-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2.5 w-2.5">
+              {status === "IN" && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>}
+              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${status === "IN" ? "bg-blue-500" : status === "FIN" ? "bg-green-500" : status === "WAI" ? "bg-amber-500" : "bg-gray-400"}`}></span>
+            </span>
+            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">{currentStatus.label}</span>
           </div>
-        )}
 
-        {/* Actions */}
-        <div className="flex items-center justify-center gap-2 flex-wrap pt-3 border-t border-gray-200 dark:border-gray-700">
-          {listActions
-            .filter((action) => availableActions.includes(action.key))
-            .map((action) => (
-              <button
-                onClick={() => action.callback(row)}
-                key={action.key}
-                className={`
-                  flex items-center gap-1.5
-                  px-3 py-2
-                  rounded
-                  text-xs font-semibold
-                  shadow-md hover:shadow-lg
-                  transform hover:scale-105
-                  transition-all duration-200
-                  whitespace-nowrap
-                  ${action.color}
-                `}
-              >
-                {action.icon}
-                <span>{action.btnText}</span>
-              </button>
-            ))}
+          {row.winner_text && (
+            <div className="max-w-[140px]">
+              <div className="text-[10px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider text-right mb-0.5">Thắng</div>
+              <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 truncate text-right">{row.winner_text.split(" - ")[0]}</div>
+            </div>
+          )}
+        </div>
+
+
+        {/* Actions Menu */}
+        <div className="border-t border-gray-100 dark:border-gray-700/60 pt-3 mt-1 pl-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            {listActions
+              .filter((action) => availableActions.includes(action.key))
+              .map((action) => {
+                // Determine styling based on action type to match minimalist design
+                let actionStyle = "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-700";
+
+                if (action.key === Constants.ACTION_MATCH_START) actionStyle = "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/50";
+                if (action.key === Constants.ACTION_MATCH_RESULT) actionStyle = "bg-yellow-50 text-yellow-600 border-yellow-200 hover:bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800 dark:hover:bg-yellow-900/50";
+                if (action.key === Constants.ACTION_DELETE) actionStyle = "bg-red-50 text-red-600 border-red-200 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/50";
+
+                return (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent triggering onDoubleClick
+                      action.callback(row);
+                    }}
+                    key={action.key}
+                    title={action.btnText}
+                    className={`
+                      flex items-center justify-center
+                      h-8 w-8 rounded-md
+                      border shadow-sm
+                      transition-colors duration-200
+                      ${actionStyle}
+                    `}
+                  >
+                    {React.cloneElement(action.icon, { className: "h-3.5 w-3.5" })}
+                  </button>
+                );
+              })}
+          </div>
         </div>
       </div>
     </div>
@@ -772,7 +705,7 @@ export default function CompetitionDataDetail() {
       console.error("Error fetching data:", error);
       showError(
         "Lỗi khi tải dữ liệu: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     } finally {
       setLoading(false);
@@ -1437,7 +1370,7 @@ export default function CompetitionDataDetail() {
       console.error("Error starting match:", error);
       showError(
         "Lỗi khi bắt đầu trận: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -1493,7 +1426,7 @@ export default function CompetitionDataDetail() {
       console.error("Error saving result:", error);
       showError(
         "Lỗi khi lưu kết quả: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -1629,7 +1562,7 @@ export default function CompetitionDataDetail() {
       console.error("Error saving config:", error);
       showError(
         "Lỗi khi lưu cấu hình: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -1655,13 +1588,7 @@ export default function CompetitionDataDetail() {
           />
         );
       case Constants.ACTION_MATCH_CONFIG:
-        return (
-          <ConfigForm
-            row={openActions.row}
-            onSubmit={handleConfig}
-            onCancel={() => setOpenActions({ ...openActions, isOpen: false })}
-          />
-        );
+        return <ConfigSystem />;
       case Constants.ACTION_MATCH_HISTORY:
         return (
           <HistoryView
@@ -1928,11 +1855,10 @@ export default function CompetitionDataDetail() {
             <div className="flex items-center gap-1 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600 p-1">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2 rounded transition-all ${
-                  viewMode === "grid"
-                    ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
+                className={`p-2 rounded transition-all ${viewMode === "grid"
+                  ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
                 title="Grid View"
               >
                 <svg
@@ -1946,11 +1872,10 @@ export default function CompetitionDataDetail() {
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2 rounded transition-all ${
-                  viewMode === "list"
-                    ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
+                className={`p-2 rounded transition-all ${viewMode === "list"
+                  ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
                 title="List View"
               >
                 <svg
@@ -2056,11 +1981,10 @@ export default function CompetitionDataDetail() {
                   <button
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
-                    className={`px-3 py-2 rounded font-medium text-sm transition-all ${
-                      page === 1
-                        ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
-                    }`}
+                    className={`px-3 py-2 rounded font-medium text-sm transition-all ${page === 1
+                      ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                      : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
+                      }`}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -2090,11 +2014,10 @@ export default function CompetitionDataDetail() {
                             <button
                               key={pageNum}
                               onClick={() => setPage(pageNum)}
-                              className={`px-3 py-2 rounded font-medium text-sm transition-all ${
-                                page === pageNum
-                                  ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
-                                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
-                              }`}
+                              className={`px-3 py-2 rounded font-medium text-sm transition-all ${page === pageNum
+                                ? "bg-blue-600 dark:bg-blue-500 text-white shadow-md"
+                                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
+                                }`}
                             >
                               {pageNum}
                             </button>
@@ -2121,11 +2044,10 @@ export default function CompetitionDataDetail() {
                   <button
                     onClick={() => setPage(page + 1)}
                     disabled={page === totalPages}
-                    className={`px-3 py-2 rounded font-medium text-sm transition-all ${
-                      page === totalPages
-                        ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
-                    }`}
+                    className={`px-3 py-2 rounded font-medium text-sm transition-all ${page === totalPages
+                      ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                      : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
+                      }`}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -2187,48 +2109,22 @@ export default function CompetitionDataDetail() {
       {/* Modal Config - Custom style giống Vovinam */}
       {openActions?.isOpen &&
         openActions?.key === Constants.ACTION_MATCH_CONFIG && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
-            <div className="bg-white rounded shadow-2xl w-[900px] h-[600px] overflow-hidden flex flex-col">
-              {/* Header */}
-              <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-2 flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-7 w-7"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-                      clipRule="evenodd"
-                    />
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl w-[900px] max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
+              <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 dark:from-blue-800 dark:via-blue-700 dark:to-indigo-800 px-6 py-4 flex justify-between items-center relative flex-shrink-0 shadow-md z-10">
+                <h2 className="text-xl font-bold text-white flex items-center gap-3 m-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
                   </svg>
                   CẤU HÌNH TRẬN ĐẤU
                 </h2>
-                <button
-                  onClick={() =>
-                    setOpenActions({ ...openActions, isOpen: false })
-                  }
-                  className="text-white hover:text-gray-300 transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-8 w-8"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                <button onClick={() => setOpenActions({ ...openActions, isOpen: false })} className="text-white hover:text-gray-200 transition-colors focus:outline-none p-1 rounded-full hover:bg-white/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
                 </button>
               </div>
-
-              {/* Content */}
-              {renderContentModal(openActions, modalProps)}
+              <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-gray-900 p-6">
+                {renderContentModal(openActions, modalProps)}
+              </div>
             </div>
           </div>
         )}
@@ -2236,69 +2132,22 @@ export default function CompetitionDataDetail() {
       {/* Modal Kết quả - Custom style giống Vovinam */}
       {openActions?.isOpen &&
         openActions?.key === Constants.ACTION_MATCH_RESULT && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
-            <div className="bg-white dark:bg-gray-800 rounded shadow-2xl w-[900px] max-h-[95vh] overflow-hidden flex flex-col">
-              {/* Header - Căn giữa */}
-              <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 dark:from-yellow-600 dark:to-yellow-700 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
-                <h2 className="text-2xl font-bold text-white">
-                  KẾT QUẢ TRẬN ĐẤU
-                </h2>
-                <button
-                  onClick={() =>
-                    setOpenActions({ ...openActions, isOpen: false })
-                  }
-                  className="text-white hover:text-gray-300 dark:hover:text-gray-400 transition-colors absolute right-6"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-8 w-8"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl w-[900px] max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
+              <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 dark:from-yellow-600 dark:to-yellow-700 px-6 py-4 flex justify-between items-center relative flex-shrink-0 shadow-md z-10">
+                <h2 className="text-xl font-bold text-white m-0">KẾT QUẢ TRẬN ĐẤU</h2>
+                <button onClick={() => setOpenActions({ ...openActions, isOpen: false })} className="text-white hover:text-gray-200 transition-colors focus:outline-none p-1 rounded-full hover:bg-white/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
                 </button>
               </div>
-
-              {/* Content - Scrollable */}
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-gray-900 p-6">
                 {renderContentModal(openActions, modalProps)}
               </div>
-
-              {/* Footer - Cố định */}
-              <div className="bg-gray-50 dark:bg-gray-900 px-6 py-4 flex justify-between items-center gap-3 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
-                <button
-                  onClick={() => {
-                    if (exportToExcelRef.current) {
-                      exportToExcelRef.current();
-                    }
-                  }}
-                  className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-6 py-2.5 rounded font-semibold transition-colors shadow-md hover:shadow-lg flex items-center gap-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Xuất Excel
+              <div className="bg-white dark:bg-gray-800 px-6 py-4 flex justify-end items-center gap-3 border-t border-gray-200 dark:border-gray-700 flex-shrink-0 z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+                <button onClick={() => { if (exportToExcelRef.current) exportToExcelRef.current(); }} className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-2.5 rounded font-semibold transition-colors shadow-md hover:shadow-lg flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" /></svg> Xuất Excel
                 </button>
-                <button
-                  onClick={() =>
-                    setOpenActions({ ...openActions, isOpen: false })
-                  }
-                  className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-6 py-2.5 rounded font-semibold transition-colors shadow-md hover:shadow-lg"
-                >
+                <button onClick={() => setOpenActions({ ...openActions, isOpen: false })} className="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 px-6 py-2.5 rounded font-semibold transition-colors shadow-sm hover:shadow-md">
                   Đóng
                 </button>
               </div>
@@ -2309,69 +2158,22 @@ export default function CompetitionDataDetail() {
       {/* Modal Lịch sử - Custom style giống Vovinam */}
       {openActions?.isOpen &&
         openActions?.key === Constants.ACTION_MATCH_HISTORY && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
-            <div className="bg-white dark:bg-gray-800 rounded shadow-2xl w-[1000px] max-h-[90vh] overflow-hidden flex flex-col">
-              {/* Header - Căn giữa */}
-              <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
-                <h2 className="text-2xl font-bold text-white">
-                  LỊCH SỬ TRẬN ĐẤU
-                </h2>
-                <button
-                  onClick={() =>
-                    setOpenActions({ ...openActions, isOpen: false })
-                  }
-                  className="text-white hover:text-gray-300 dark:hover:text-gray-400 transition-colors absolute right-6"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-8 w-8"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl w-[1000px] max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 px-6 py-4 flex justify-between items-center relative flex-shrink-0 shadow-md z-10">
+                <h2 className="text-xl font-bold text-white m-0">LỊCH SỬ TRẬN ĐẤU</h2>
+                <button onClick={() => setOpenActions({ ...openActions, isOpen: false })} className="text-white hover:text-gray-200 transition-colors focus:outline-none p-1 rounded-full hover:bg-white/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
                 </button>
               </div>
-
-              {/* Content - Scrollable */}
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-gray-900 p-6">
                 {renderContentModal(openActions, modalProps)}
               </div>
-
-              {/* Footer - Cố định */}
-              <div className="bg-gray-50 dark:bg-gray-900 px-6 py-4 flex justify-between items-center gap-3 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
-                <button
-                  onClick={() => {
-                    if (exportToExcelRef.current) {
-                      exportToExcelRef.current();
-                    }
-                  }}
-                  className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-6 py-2.5 rounded font-semibold transition-colors shadow-md hover:shadow-lg flex items-center gap-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Xuất Excel
+              <div className="bg-white dark:bg-gray-800 px-6 py-4 flex justify-end items-center gap-3 border-t border-gray-200 dark:border-gray-700 flex-shrink-0 z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+                <button onClick={() => { if (exportToExcelRef.current) exportToExcelRef.current(); }} className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-2.5 rounded font-semibold transition-colors shadow-md hover:shadow-lg flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" /></svg> Xuất Excel
                 </button>
-                <button
-                  onClick={() =>
-                    setOpenActions({ ...openActions, isOpen: false })
-                  }
-                  className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-6 py-2.5 rounded font-semibold transition-colors shadow-md hover:shadow-lg"
-                >
+                <button onClick={() => setOpenActions({ ...openActions, isOpen: false })} className="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 px-6 py-2.5 rounded font-semibold transition-colors shadow-sm hover:shadow-md">
                   Đóng
                 </button>
               </div>
@@ -2381,44 +2183,20 @@ export default function CompetitionDataDetail() {
 
       {/* Modal Cập nhật - Custom style */}
       {openActions?.isOpen && openActions?.key === Constants.ACTION_UPDATE && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-2">
-          <div className="bg-white dark:bg-gray-800 rounded shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
-            {/* Header - Căn giữa */}
-            <div className="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 px-6 py-4 flex justify-center items-center relative flex-shrink-0">
-              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-7 w-7"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
+            <div className="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 px-6 py-4 flex justify-between items-center relative flex-shrink-0 shadow-md z-10">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3 m-0">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                 </svg>
                 CẬP NHẬT TRẬN ĐẤU
               </h2>
-              <button
-                onClick={() =>
-                  setOpenActions({ ...openActions, isOpen: false })
-                }
-                className="text-white hover:text-gray-300 dark:hover:text-gray-400 transition-colors absolute right-6"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+              <button onClick={() => setOpenActions({ ...openActions, isOpen: false })} className="text-white hover:text-gray-200 transition-colors focus:outline-none p-1 rounded-full hover:bg-white/20">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
               </button>
             </div>
-
-            {/* Content - Scrollable */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-gray-900 p-6">
               {renderContentModal(openActions, modalProps)}
             </div>
           </div>
@@ -2504,274 +2282,193 @@ function DataForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Trường trạng thái - Nổi bật */}
-      <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded border border-gray-200 dark:border-gray-700">
-        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-blue-600 dark:text-blue-400"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Trạng thái trận đấu
-        </label>
-        <select
-          value={formData.match_status}
-          onChange={(e) =>
-            setFormData({ ...formData, match_status: e.target.value })
-          }
-          className={`w-full px-4 py-3 border-2 rounded font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ${getStatusColor(formData.match_status)}`}
-        >
-          <option value="WAI">Chờ thi đấu</option>
-          <option value="IN">Đang diễn ra</option>
-          <option value="FIN">Kết thúc</option>
-          <option value="CAN">Hủy bỏ</option>
-        </select>
-      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Cột trái: Thông tin chung & Đỏ */}
+        <div className="space-y-8">
+          {/* Thông tin chung & Trạng thái */}
+          <section>
+            <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
+              Thông tin chung
+            </h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    {editableHeaders[0] || "STT"} <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.col_0 || ""}
+                    onChange={(e) => setFormData({ ...formData, col_0: e.target.value })}
+                    className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                    placeholder="Nhập STT"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    Trạng thái
+                  </label>
+                  <select
+                    value={formData.match_status}
+                    onChange={(e) => setFormData({ ...formData, match_status: e.target.value })}
+                    className={`w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-shadow ${getStatusColor(formData.match_status)}`}
+                  >
+                    <option value="WAI">Chờ thi đấu</option>
+                    <option value="IN">Đang diễn ra</option>
+                    <option value="FIN">Kết thúc</option>
+                    <option value="CAN">Hủy bỏ</option>
+                  </select>
+                </div>
+              </div>
 
-      {/* Thông tin chung */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-green-600 dark:text-green-400"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-            <path
-              fillRule="evenodd"
-              d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Thông tin chung
-        </h3>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  {editableHeaders[1] || "Nội dung"} <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.col_1 || ""}
+                  onChange={(e) => setFormData({ ...formData, col_1: e.target.value })}
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                  placeholder="Nhập nội dung"
+                  required
+                />
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* STT */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {editableHeaders[0] || "STT"}
-              <span className="text-red-500 dark:text-red-400 ml-1">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.col_0 || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, col_0: e.target.value })
-              }
-              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
-              placeholder="Nhập STT (bắt buộc)"
-              required
-            />
-          </div>
-
-          {/* Nội dung */}
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {editableHeaders[1] || "Nội dung"}
-              <span className="text-red-500 dark:text-red-400 ml-1">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.col_1 || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, col_1: e.target.value })
-              }
-              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
-              placeholder="Nhập nội dung (bắt buộc)"
-              required
-            />
-          </div>
-
-          {/* Hạng cân */}
-          <div className="md:col-span-3">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {editableHeaders[2] || "Hạng cân"}
-              <span className="text-red-500 dark:text-red-400 ml-1">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.col_2 || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, col_2: e.target.value })
-              }
-              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-              placeholder="Nhập hạng cân (bắt buộc)"
-              required
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Thông tin VĐV - 2 cột đỏ/xanh */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Cột ĐỎ */}
-        <div className="bg-red-50 dark:bg-red-900 p-4 rounded border-2 border-red-200 dark:border-red-700">
-          <h3 className="text-lg font-bold text-red-700 dark:text-red-300 flex items-center gap-2 pb-3 mb-4 border-b-2 border-red-300 dark:border-red-700">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                clipRule="evenodd"
-              />
-            </svg>
-            VĐV ĐỎ
-          </h3>
-
-          <div className="space-y-4">
-            {/* Tên VĐV đỏ */}
-            <div>
-              <label className="block text-sm font-semibold text-red-800 dark:text-red-300 mb-2">
-                {editableHeaders[3] || "Tên VĐV"}
-                <span className="text-red-600 dark:text-red-400 ml-1">*</span>
-              </label>
-              <input
-                type="text"
-                value={formData.col_3 || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, col_3: e.target.value })
-                }
-                className="w-full px-4 py-2.5 border-2 border-red-300 dark:border-red-700 rounded focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                placeholder="Nhập tên VĐV đỏ"
-                required
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  {editableHeaders[2] || "Hạng cân"} <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.col_2 || ""}
+                  onChange={(e) => setFormData({ ...formData, col_2: e.target.value })}
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                  placeholder="Nhập hạng cân"
+                  required
+                />
+              </div>
             </div>
-
-            {/* Đơn vị đỏ */}
-            <div>
-              <label className="block text-sm font-semibold text-red-800 dark:text-red-300 mb-2">
-                {editableHeaders[4] || "Đơn vị"}
-              </label>
-              <input
-                type="text"
-                value={formData.col_4 || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, col_4: e.target.value })
-                }
-                className="w-full px-4 py-2.5 border border-red-200 dark:border-red-700 rounded focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 bg-red-50 dark:bg-red-900 text-gray-900 dark:text-gray-100"
-                placeholder="Nhập đơn vị"
-              />
-            </div>
-
-            {/* Năm sinh đỏ */}
-            <div>
-              <label className="block text-sm font-semibold text-red-800 dark:text-red-300 mb-2">
-                {editableHeaders[5] || "Năm sinh"}
-              </label>
-              <input
-                type="text"
-                value={formData.col_5 || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, col_5: e.target.value })
-                }
-                className="w-full px-4 py-2.5 border border-red-200 dark:border-red-700 rounded focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 bg-red-50 dark:bg-red-900 text-gray-900 dark:text-gray-100"
-                placeholder="Nhập năm sinh"
-              />
-            </div>
-          </div>
+          </section>
         </div>
 
-        {/* Cột XANH */}
-        <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded border-2 border-blue-200 dark:border-blue-700">
-          <h3 className="text-lg font-bold text-blue-700 dark:text-blue-300 flex items-center gap-2 pb-3 mb-4 border-b-2 border-blue-300 dark:border-blue-700">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                clipRule="evenodd"
-              />
-            </svg>
-            VĐV XANH
-          </h3>
-
-          <div className="space-y-4">
-            {/* Tên VĐV xanh */}
-            <div>
-              <label className="block text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">
-                {editableHeaders[6] || "Tên VĐV"}
-                <span className="text-blue-600 dark:text-blue-400 ml-1">*</span>
-              </label>
-              <input
-                type="text"
-                value={formData.col_6 || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, col_6: e.target.value })
-                }
-                className="w-full px-4 py-2.5 border-2 border-blue-300 dark:border-blue-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                placeholder="Nhập tên VĐV xanh"
-                required
-              />
+        {/* Cột phải: Các VĐV */}
+        <div className="space-y-8">
+          {/* VĐV ĐỎ */}
+          <section>
+            <h3 className="text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-widest mb-4 border-b border-red-100 dark:border-red-900/50 pb-2">
+              Vận Động Viên Đỏ
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  {editableHeaders[3] || "Họ và tên"} <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.col_3 || ""}
+                  onChange={(e) => setFormData({ ...formData, col_3: e.target.value })}
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                  placeholder="Tên VĐV Đỏ"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    {editableHeaders[4] || "Đơn vị"}
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.col_4 || ""}
+                    onChange={(e) => setFormData({ ...formData, col_4: e.target.value })}
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                    placeholder="Đơn vị"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    {editableHeaders[5] || "Năm sinh"}
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.col_5 || ""}
+                    onChange={(e) => setFormData({ ...formData, col_5: e.target.value })}
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                    placeholder="Năm sinh"
+                  />
+                </div>
+              </div>
             </div>
+          </section>
 
-            {/* Đơn vị xanh */}
-            <div>
-              <label className="block text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">
-                {editableHeaders[7] || "Đơn vị"}
-              </label>
-              <input
-                type="text"
-                value={formData.col_7 || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, col_7: e.target.value })
-                }
-                className="w-full px-4 py-2.5 border border-blue-200 dark:border-blue-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-blue-50 dark:bg-blue-900 text-gray-900 dark:text-gray-100"
-                placeholder="Nhập đơn vị"
-              />
+          {/* VĐV XANH */}
+          <section>
+            <h3 className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-4 border-b border-blue-100 dark:border-blue-900/50 pb-2">
+              Vận Động Viên Xanh
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  {editableHeaders[6] || "Họ và tên"} <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.col_6 || ""}
+                  onChange={(e) => setFormData({ ...formData, col_6: e.target.value })}
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                  placeholder="Tên VĐV Xanh"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    {editableHeaders[7] || "Đơn vị"}
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.col_7 || ""}
+                    onChange={(e) => setFormData({ ...formData, col_7: e.target.value })}
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                    placeholder="Đơn vị"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    {editableHeaders[8] || "Năm sinh"}
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.col_8 || ""}
+                    onChange={(e) => setFormData({ ...formData, col_8: e.target.value })}
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
+                    placeholder="Năm sinh"
+                  />
+                </div>
+              </div>
             </div>
-
-            {/* Năm sinh xanh */}
-            <div>
-              <label className="block text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">
-                {editableHeaders[8] || "Năm sinh"}
-              </label>
-              <input
-                type="text"
-                value={formData.col_8 || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, col_8: e.target.value })
-                }
-                className="w-full px-4 py-2.5 border border-blue-200 dark:border-blue-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-blue-50 dark:bg-blue-900 text-gray-900 dark:text-gray-100"
-                placeholder="Nhập năm sinh"
-              />
-            </div>
-          </div>
+          </section>
         </div>
       </div>
 
       {/* Footer buttons */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex justify-end gap-3 pt-6 mt-8 border-t border-gray-200 dark:border-gray-700">
         <button
           type="button"
           onClick={onCancel}
-          className="px-6 py-2.5 bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white rounded font-semibold transition-colors shadow-md hover:shadow-lg"
+          className="px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-600 transition-all"
         >
           Hủy
         </button>
         <button
           type="submit"
-          className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded font-semibold transition-colors shadow-md hover:shadow-lg flex items-center gap-2"
+          className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-4 w-4"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -2957,159 +2654,129 @@ function ResultForm({ row, onSubmit, onCancel, showAlert }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col h-full">
-      {/* Content - Scrollable */}
-      <div className="p-6 overflow-y-auto flex-1 bg-gray-50 dark:bg-gray-900">
-        <div className="space-y-6">
+    <form onSubmit={handleSubmit} className="flex flex-col h-full bg-white dark:bg-gray-900">
+      <div className="p-6 overflow-y-auto flex-1">
+        <div className="space-y-8 max-w-4xl mx-auto">
           {/* Hiển thị VĐV thắng phía trên */}
           {existingWinner && existingWinner !== "-" && (
-            <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 dark:from-yellow-600 dark:to-yellow-700 p-6 rounded text-center shadow-lg">
-              <div className="text-white text-sm font-semibold mb-2 uppercase tracking-wide">
-                🏆 VĐV THẮNG CUỘC
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-6 rounded-lg text-center shadow-sm">
+              <div className="text-yellow-600 dark:text-yellow-400 text-xs font-bold mb-2 uppercase tracking-wide flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1zm-5 8.274l-.818 2.552c.25.112.526.174.818.174.292 0 .569-.062.818-.174L5 10.274zm10 0l-.818 2.552c.25.112.526.174.818.174.292 0 .56-.062.818-.174L15 10.274z" clipRule="evenodd" /></svg>
+                Vận động viên thắng cuộc
               </div>
-              <div className="text-white text-3xl font-bold">
+              <div className="text-yellow-700 dark:text-yellow-500 text-3xl font-bold">
                 {existingWinner}
               </div>
             </div>
           )}
 
-          {/* Hiển thị thông tin VĐV xanh/đỏ - Luôn hiển thị, disable khi không chỉnh sửa */}
-          <div className="bg-white dark:bg-gray-800 p-6  shadow-md rounded border border-gray-200 dark:border-gray-700">
-            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6 text-center">
-              Thông tin VĐV và chọn người thắng
-            </h3>
-
-            <div className="grid grid-cols-2 gap-6">
-              {/* Giáp Đỏ */}
-              <div
-                className={`bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 border-4 p-6 rounded transition-all ${
-                  formData.winner === "red"
-                    ? "border-red-500 dark:border-red-400 shadow-xl shadow-red-200 dark:shadow-red-900 scale-105"
-                    : "border-red-200 dark:border-red-700 hover:border-red-300 dark:hover:border-red-600 hover:shadow-lg"
-                } ${!isEditing ? "opacity-75" : ""}`}
-              >
-                <div className="text-center mb-6">
-                  <div className="inline-block rounded bg-red-600 dark:bg-red-700 text-white px-4 py-1  text-xs font-bold mb-3 uppercase tracking-wide">
-                    Giáp Đỏ
-                  </div>
-                  <div className="text-2xl font-bold text-red-700 dark:text-red-300 mb-2">
-                    {redName}
-                  </div>
-                  {redUnit && (
-                    <div className="text-sm text-red-600 dark:text-red-400 font-medium">
-                      {redUnit}
-                    </div>
-                  )}
-                </div>
-
-                <div className="mb-6">
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">
-                    Điểm số
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.red_score}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        red_score: parseInt(e.target.value) || 0,
-                      })
-                    }
-                    disabled={!isEditing}
-                    className="w-full px-4 py-4 border-2 border-red-300 dark:border-red-700 rounded text-center text-3xl font-bold focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-red-500 dark:focus:border-red-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
-                    placeholder="0"
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleSelectWinner("red")}
-                  disabled={!isEditing}
-                  className={`w-full py-4  font-bold text-lg transition-all rounded disabled:cursor-not-allowed ${
-                    formData.winner === "red"
-                      ? "bg-red-600 dark:bg-red-700 text-white shadow-xl transform scale-105"
-                      : "bg-white dark:bg-gray-800 text-red-600 dark:text-red-400 border-2 border-red-600 dark:border-red-700 hover:bg-red-50 dark:hover:bg-red-900"
-                  } ${!isEditing ? "opacity-50" : ""}`}
-                >
-                  {formData.winner === "red" ? "✓ NGƯỜI THẮNG" : "CHỌN THẮNG"}
-                </button>
+          {/* Chọn người thắng */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Giáp Đỏ */}
+            <div className={`relative p-6 rounded-xl border-2 transition-all duration-300 ${formData.winner === "red"
+              ? "border-red-500 bg-red-50/50 dark:bg-red-900/10 shadow-md ring-4 ring-red-500/10"
+              : "border-gray-200 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-700 bg-white dark:bg-gray-800"
+              } ${!isEditing ? "opacity-70 grayscale-[20%]" : ""}`}>
+              {/* VĐV Đỏ Header */}
+              <div className="flex flex-col items-center mb-6">
+                <span className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 flex items-center justify-center font-bold mb-3 border border-red-200 dark:border-red-800">
+                  Đ
+                </span>
+                <h4 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1 text-center">{redName}</h4>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{redUnit || "—"}</p>
               </div>
 
-              {/* Giáp Xanh */}
-              <div
-                className={`bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 border-4 p-6 rounded transition-all ${
-                  formData.winner === "blue"
-                    ? "border-blue-500 dark:border-blue-400 shadow-xl shadow-blue-200 dark:shadow-blue-900 scale-105"
-                    : "border-blue-200 dark:border-blue-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg"
-                } ${!isEditing ? "opacity-75" : ""}`}
-              >
-                <div className="text-center mb-6">
-                  <div className="inline-block rounded bg-blue-600 dark:bg-blue-700 text-white px-4 py-1  text-xs font-bold mb-3 uppercase tracking-wide">
-                    Giáp Xanh
-                  </div>
-                  <div className="text-2xl font-bold text-blue-700 dark:text-blue-300 mb-2">
-                    {blueName}
-                  </div>
-                  {blueUnit && (
-                    <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">
-                      {blueUnit}
-                    </div>
-                  )}
-                </div>
-
-                <div className="mb-6">
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">
-                    Điểm số
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.blue_score}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        blue_score: parseInt(e.target.value) || 0,
-                      })
-                    }
-                    disabled={!isEditing}
-                    className="w-full px-4 py-4 border-2 border-blue-300 dark:border-blue-700 rounded text-center text-3xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
-                    placeholder="0"
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleSelectWinner("blue")}
+              {/* Input Điểm */}
+              <div className="mb-6">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 text-center">
+                  Điểm số
+                </label>
+                <input
+                  type="number"
+                  value={formData.red_score}
+                  onChange={(e) => setFormData({ ...formData, red_score: parseInt(e.target.value) || 0 })}
                   disabled={!isEditing}
-                  className={`w-full py-4  font-bold text-lg transition-all rounded disabled:cursor-not-allowed ${
-                    formData.winner === "blue"
-                      ? "bg-blue-600 dark:bg-blue-700 text-white shadow-xl transform scale-105"
-                      : "bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 border-2 border-blue-600 dark:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900"
-                  } ${!isEditing ? "opacity-50" : ""}`}
-                >
-                  {formData.winner === "blue" ? "✓ NGƯỜI THẮNG" : "CHỌN THẮNG"}
-                </button>
+                  className="w-full text-center text-4xl font-bold p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all disabled:opacity-50"
+                  placeholder="0"
+                />
               </div>
+
+              {/* Nút chọn */}
+              <button
+                type="button"
+                onClick={() => handleSelectWinner("red")}
+                disabled={!isEditing}
+                className={`w-full py-3 px-4 rounded-lg font-bold text-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-offset-gray-900 ${formData.winner === "red"
+                  ? "bg-red-600 text-white shadow-md hover:bg-red-700"
+                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  } disabled:cursor-not-allowed`}
+              >
+                {formData.winner === "red" ? "✓ ĐÃ CHỌN THẮNG" : "CHỌN LÀM NGƯỜI THẮNG"}
+              </button>
+            </div>
+
+            {/* Giáp Xanh */}
+            <div className={`relative p-6 rounded-xl border-2 transition-all duration-300 ${formData.winner === "blue"
+              ? "border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 shadow-md ring-4 ring-blue-500/10"
+              : "border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 bg-white dark:bg-gray-800"
+              } ${!isEditing ? "opacity-70 grayscale-[20%]" : ""}`}>
+              {/* VĐV Xanh Header */}
+              <div className="flex flex-col items-center mb-6">
+                <span className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold mb-3 border border-blue-200 dark:border-blue-800">
+                  X
+                </span>
+                <h4 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1 text-center">{blueName}</h4>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{blueUnit || "—"}</p>
+              </div>
+
+              {/* Input Điểm */}
+              <div className="mb-6">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 text-center">
+                  Điểm số
+                </label>
+                <input
+                  type="number"
+                  value={formData.blue_score}
+                  onChange={(e) => setFormData({ ...formData, blue_score: parseInt(e.target.value) || 0 })}
+                  disabled={!isEditing}
+                  className="w-full text-center text-4xl font-bold p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all disabled:opacity-50"
+                  placeholder="0"
+                />
+              </div>
+
+              {/* Nút chọn */}
+              <button
+                type="button"
+                onClick={() => handleSelectWinner("blue")}
+                disabled={!isEditing}
+                className={`w-full py-3 px-4 rounded-lg font-bold text-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-900 ${formData.winner === "blue"
+                  ? "bg-blue-600 text-white shadow-md hover:bg-blue-700"
+                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  } disabled:cursor-not-allowed`}
+              >
+                {formData.winner === "blue" ? "✓ ĐÃ CHỌN THẮNG" : "CHỌN LÀM NGƯỜI THẮNG"}
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Footer - Giống Vovinam */}
-      <div className="bg-gray-100 dark:bg-gray-800 px-6 py-4 flex justify-end gap-3 border-t border-gray-200 dark:border-gray-700">
+      {/* Footer */}
+      <div className="flex justify-end gap-3 px-6 py-5 mt-4 border-t border-gray-200 dark:border-gray-700">
         {!isEditing ? (
           // Khi không chỉnh sửa - Hiển thị button Cập nhật và Đóng
           <>
             <button
               type="button"
               onClick={handleCancel}
-              className="bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white px-6 py-2 rounded font-semibold transition-colors"
+              className="px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-600 transition-all"
             >
               Đóng
             </button>
             <button
               type="button"
               onClick={handleUpdate}
-              className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 text-white px-6 py-2 rounded font-semibold transition-colors shadow-md"
+              className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow transition-all focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
             >
               Cập nhật
             </button>
@@ -3126,17 +2793,15 @@ function ResultForm({ row, onSubmit, onCancel, showAlert }) {
                   onCancel();
                 }
               }}
-              className="bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white px-6 py-2 rounded font-semibold transition-colors"
+              className="px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-600 transition-all"
             >
-              {existingWinner && existingWinner !== "-"
-                ? "Hủy chỉnh sửa"
-                : "Hủy"}
+              {existingWinner && existingWinner !== "-" ? "Hủy chỉnh sửa" : "Hủy"}
             </button>
             <button
               type="submit"
-              className="bg-yellow-500 dark:bg-yellow-600 hover:bg-yellow-600 dark:hover:bg-yellow-700 text-white px-6 py-2 rounded font-semibold transition-colors shadow-md"
+              className="px-6 py-2 text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg shadow transition-all focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
             >
-              Lưu
+              Lưu Kết Quả
             </button>
           </>
         )}
@@ -3191,373 +2856,231 @@ function ConfigForm({ row, onSubmit, onCancel }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col flex-1">
+    <form onSubmit={handleSubmit} className="flex flex-col flex-1 h-full">
       {/* Content - Scrollable */}
-      <div className="p-6 overflow-y-auto max-h-[calc(600px-140px)] bg-gray-50 dark:bg-gray-900">
-        <div className="space-y-6">
-          {/* Section: Thông tin trận đấu */}
-          <div className="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-700 dark:to-green-800 p-4 ">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Thông tin trận đấu
-            </h3>
+      <div className="p-6 overflow-y-auto max-h-[calc(70vh-140px)] bg-white dark:bg-gray-900 space-y-8">
+        {/* Section: Thông tin chung về thể thức */}
+        <div className="bg-gray-50/50 dark:bg-gray-800/20 rounded-xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm">
+          <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            Tổng Quan Thể Thức
+          </h3>
 
-            <div className="grid grid-cols-3 gap-4">
-              {/* Hệ điểm */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 ">
-                <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold mb-1">
-                  Hệ điểm
-                </label>
-                <div className="text-gray-800 dark:text-gray-200 text-lg font-bold">
-                  {configData.he_diem === "1" || configData.he_diem === 1
-                    ? "Hệ điểm 1"
-                    : configData.he_diem === "2" || configData.he_diem === 2
-                      ? "Hệ điểm 2"
-                      : configData.he_diem === "3" || configData.he_diem === 3
-                        ? "Hệ điểm 3"
-                        : "Hệ điểm 2"}
-                </div>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Hệ điểm */}
+            <div className="bg-white dark:bg-gray-800/80 rounded border border-gray-200 dark:border-gray-700 p-3 flex justify-between items-center text-sm shadow-sm">
+              <span className="text-gray-500 dark:text-gray-400 font-medium">Hệ điểm:</span>
+              <span className="font-bold text-gray-800 dark:text-gray-200 uppercase">
+                {String(configData.he_diem) === "1" ? "Hệ 1" : String(configData.he_diem) === "2" ? "Hệ 2" : String(configData.he_diem) === "3" ? "Hệ 3" : "Hệ 2"}
+              </span>
+            </div>
 
-              {/* Số giám định */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 ">
-                <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold mb-1">
-                  Số giám định
-                </label>
-                <div className="text-gray-800 dark:text-gray-200 text-lg font-bold">
-                  {configData.so_giam_dinh === "3" ||
-                  configData.so_giam_dinh === 3
-                    ? "3 giám định"
-                    : configData.so_giam_dinh === "5" ||
-                        configData.so_giam_dinh === 5
-                      ? "5 giám định"
-                      : configData.so_giam_dinh === "10" ||
-                          configData.so_giam_dinh === 10
-                        ? "10 giám định"
-                        : "3 giám định"}
-                </div>
-              </div>
+            {/* Số giám định */}
+            <div className="bg-white dark:bg-gray-800/80 rounded border border-gray-200 dark:border-gray-700 p-3 flex justify-between items-center text-sm shadow-sm">
+              <span className="text-gray-500 dark:text-gray-400 font-medium">Giám định:</span>
+              <span className="font-bold text-gray-800 dark:text-gray-200">
+                {String(configData.so_giam_dinh) === "3" ? "3 GĐ" : String(configData.so_giam_dinh) === "5" ? "5 GĐ" : String(configData.so_giam_dinh) === "10" ? "10 GĐ" : "3 GĐ"}
+              </span>
+            </div>
 
-              {/* Tổng số hiệp */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 ">
-                <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold mb-1">
-                  Tổng số hiệp
-                </label>
-                <div className="text-gray-800 dark:text-gray-200 text-lg font-bold">
-                  {(configData.so_hiep || 3) + (configData.so_hiep_phu || 0)}{" "}
-                  hiệp
-                </div>
-                <div className="text-gray-500 dark:text-gray-400 text-xs mt-1">
-                  ({configData.so_hiep || 3} chính +{" "}
-                  {configData.so_hiep_phu || 0} phụ)
-                </div>
-              </div>
+            {/* Tổng số hiệp */}
+            <div className="bg-white dark:bg-gray-800/80 rounded border border-gray-200 dark:border-gray-700 p-3 flex justify-between items-center text-sm shadow-sm">
+              <span className="text-gray-500 dark:text-gray-400 font-medium">Tổng hiệp:</span>
+              <span className="font-bold text-gray-800 dark:text-gray-200">
+                {(configData.so_hiep || 3) + (configData.so_hiep_phu || 0)} hiệp
+              </span>
             </div>
           </div>
+        </div>
 
-          {/* Section: Cấu hình hiệp */}
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-700 dark:to-blue-800 p-4 ">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+        {/* Section: Cấu hình hiệp */}
+        <div>
+          <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-gray-100 dark:border-gray-800 pb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+              <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+            </svg>
+            Cấu Hình Hiệp Đấu
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Số hiệp chính */}
+            <div className="group flex flex-col pt-1">
+              <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Số hiệp chính</label>
+              <select
+                value={configData.so_hiep || "3"}
+                onChange={(e) => handleChange("so_hiep", parseInt(e.target.value))}
+                className="w-full bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-4 py-2.5 rounded border border-gray-200 dark:border-gray-700 shadow-sm outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
               >
-                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                <path
-                  fillRule="evenodd"
-                  d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Cấu hình hiệp
-            </h3>
+                <option value="1">1 hiệp</option>
+                <option value="2">2 hiệp</option>
+                <option value="3">3 hiệp</option>
+              </select>
+            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              {/* Số hiệp chính */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
-                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
-                  Số hiệp chính
-                </label>
-                <select
-                  value={configData.so_hiep || "3"}
-                  onChange={(e) =>
-                    handleChange("so_hiep", parseInt(e.target.value))
-                  }
-                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
-                >
-                  <option value="1">1 hiệp</option>
-                  <option value="2">2 hiệp</option>
-                  <option value="3">3 hiệp</option>
-                </select>
-                <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
-                  Theo Quản lý cài đặt
-                </p>
-              </div>
+            {/* Số hiệp phụ */}
+            <div className="group flex flex-col pt-1">
+              <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Số hiệp phụ</label>
+              <select
+                value={configData.so_hiep_phu || "0"}
+                onChange={(e) => handleChange("so_hiep_phu", parseInt(e.target.value))}
+                className="w-full bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-4 py-2.5 rounded border border-gray-200 dark:border-gray-700 shadow-sm outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
+              >
+                <option value="0">Không có</option>
+                <option value="1">1 hiệp phụ</option>
+                <option value="2">2 hiệp phụ</option>
+                <option value="3">3 hiệp phụ</option>
+              </select>
+            </div>
 
-              {/* Số hiệp phụ */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
-                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
-                  Số hiệp phụ
-                </label>
-                <select
-                  value={configData.so_hiep_phu || "0"}
-                  onChange={(e) =>
-                    handleChange("so_hiep_phu", parseInt(e.target.value))
-                  }
-                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
-                >
-                  <option value="0">Không có</option>
-                  <option value="1">1 hiệp phụ</option>
-                  <option value="2">2 hiệp phụ</option>
-                  <option value="3">3 hiệp phụ</option>
-                </select>
-                <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
-                  Theo Quản lý cài đặt
-                </p>
-              </div>
+            {/* Hệ điểm */}
+            <div className="group flex flex-col pt-1">
+              <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Hệ điểm</label>
+              <select
+                value={configData.he_diem || "2"}
+                onChange={(e) => handleChange("he_diem", e.target.value)}
+                className="w-full bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-4 py-2.5 rounded border border-gray-200 dark:border-gray-700 shadow-sm outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
+              >
+                <option value="1">Hệ điểm 1</option>
+                <option value="2">Hệ điểm 2</option>
+                <option value="3">Hệ điểm 3</option>
+              </select>
+            </div>
 
-              {/* Hệ điểm */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
-                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
-                  Hệ điểm
-                </label>
-                <select
-                  value={configData.he_diem || "2"}
-                  onChange={(e) => handleChange("he_diem", e.target.value)}
-                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
-                >
-                  <option value="1">Hệ điểm 1</option>
-                  <option value="2">Hệ điểm 2</option>
-                  <option value="3">Hệ điểm 3</option>
-                </select>
-                <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
-                  Theo Quản lý cài đặt
-                </p>
-              </div>
-
-              {/* Số giám định */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
-                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
-                  Số giám định
-                </label>
-                <select
-                  value={configData.so_giam_dinh || "3"}
-                  onChange={(e) => handleChange("so_giam_dinh", e.target.value)}
-                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
-                >
-                  <option value="3">3 giám định</option>
-                  <option value="5">5 giám định</option>
-                  <option value="10">10 giám định</option>
-                </select>
-                <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
-                  Theo Quản lý cài đặt
-                </p>
-              </div>
+            {/* Số giám định */}
+            <div className="group flex flex-col pt-1">
+              <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Số giám định</label>
+              <select
+                value={configData.so_giam_dinh || "3"}
+                onChange={(e) => handleChange("so_giam_dinh", e.target.value)}
+                className="w-full bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-4 py-2.5 rounded border border-gray-200 dark:border-gray-700 shadow-sm outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
+              >
+                <option value="3">3 giám định</option>
+                <option value="5">5 giám định</option>
+                <option value="10">10 giám định</option>
+              </select>
             </div>
           </div>
+        </div>
 
-          {/* Section: Cấu hình thời gian */}
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-700 dark:to-blue-800 p-4 ">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Cấu hình thời gian
-            </h3>
+        {/* Section: Cấu hình thời gian */}
+        <div>
+          <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-gray-100 dark:border-gray-800 pb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+            </svg>
+            Cấu Hình Thời Gian
+          </h3>
 
-            <div className="grid grid-cols-3 gap-4">
-              {/* Thời gian tính điểm */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
-                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
-                  Thời gian tính điểm (ms)
-                </label>
-                <input
-                  type="number"
-                  value={configData.thoi_gian_tinh_diem}
-                  onChange={(e) =>
-                    handleChange(
-                      "thoi_gian_tinh_diem",
-                      parseInt(e.target.value),
-                    )
-                  }
-                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
-                />
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {/* Thời gian tính điểm */}
+            <div className="flex flex-col group pt-1">
+              <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Tính điểm (ms)</label>
+              <input
+                type="number"
+                value={configData.thoi_gian_tinh_diem}
+                onChange={(e) => handleChange("thoi_gian_tinh_diem", parseInt(e.target.value))}
+                className="w-full bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-4 py-2.5 rounded border border-gray-200 dark:border-gray-700 shadow-sm outline-none focus:ring-2 focus:ring-orange-500/50 transition-all font-mono font-medium"
+              />
+            </div>
 
-              {/* Thời gian thi đấu */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
-                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
-                  Thời gian thi đấu (giây)
-                </label>
-                <input
-                  type="number"
-                  value={configData.thoi_gian_thi_dau}
-                  onChange={(e) =>
-                    handleChange("thoi_gian_thi_dau", parseInt(e.target.value))
-                  }
-                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
-                />
-              </div>
+            {/* Thời gian thi đấu */}
+            <div className="flex flex-col group pt-1">
+              <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Đấu (giây)</label>
+              <input
+                type="number"
+                value={configData.thoi_gian_thi_dau}
+                onChange={(e) => handleChange("thoi_gian_thi_dau", parseInt(e.target.value))}
+                className="w-full bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-4 py-2.5 rounded border border-gray-200 dark:border-gray-700 shadow-sm outline-none focus:ring-2 focus:ring-orange-500/50 transition-all font-mono font-medium"
+              />
+            </div>
 
-              {/* Thời gian nghỉ */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
-                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
-                  Thời gian nghỉ (giây)
-                </label>
-                <input
-                  type="number"
-                  value={configData.thoi_gian_nghi}
-                  onChange={(e) =>
-                    handleChange("thoi_gian_nghi", parseInt(e.target.value))
-                  }
-                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
-                />
-              </div>
+            {/* Thời gian nghỉ */}
+            <div className="flex flex-col group pt-1">
+              <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Nghỉ (giây)</label>
+              <input
+                type="number"
+                value={configData.thoi_gian_nghi}
+                onChange={(e) => handleChange("thoi_gian_nghi", parseInt(e.target.value))}
+                className="w-full bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-4 py-2.5 rounded border border-gray-200 dark:border-gray-700 shadow-sm outline-none focus:ring-2 focus:ring-orange-500/50 transition-all font-mono font-medium"
+              />
+            </div>
 
-              {/* Thời gian hiệp phụ */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
-                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
-                  Thời gian hiệp phụ (giây)
-                </label>
-                <input
-                  type="number"
-                  value={configData.thoi_gian_hiep_phu}
-                  onChange={(e) =>
-                    handleChange("thoi_gian_hiep_phu", parseInt(e.target.value))
-                  }
-                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
-                />
-              </div>
+            {/* Thời gian hiệp phụ */}
+            <div className="flex flex-col group pt-1">
+              <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Hiệp phụ (giây)</label>
+              <input
+                type="number"
+                value={configData.thoi_gian_hiep_phu}
+                onChange={(e) => handleChange("thoi_gian_hiep_phu", parseInt(e.target.value))}
+                className="w-full bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-4 py-2.5 rounded border border-gray-200 dark:border-gray-700 shadow-sm outline-none focus:ring-2 focus:ring-orange-500/50 transition-all font-mono font-medium"
+              />
+            </div>
 
-              {/* Thời gian y tế */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
-                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
-                  Thời gian y tế (giây)
-                </label>
-                <input
-                  type="number"
-                  value={configData.thoi_gian_y_te}
-                  onChange={(e) =>
-                    handleChange("thoi_gian_y_te", parseInt(e.target.value))
-                  }
-                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
-                />
-              </div>
+            {/* Thời gian y tế */}
+            <div className="flex flex-col group pt-1">
+              <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Y Tế (giây)</label>
+              <input
+                type="number"
+                value={configData.thoi_gian_y_te}
+                onChange={(e) => handleChange("thoi_gian_y_te", parseInt(e.target.value))}
+                className="w-full bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-4 py-2.5 rounded border border-gray-200 dark:border-gray-700 shadow-sm outline-none focus:ring-2 focus:ring-orange-500/50 transition-all font-mono font-medium"
+              />
             </div>
           </div>
+        </div>
 
-          {/* Section: Điểm áp dụng */}
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-700 dark:to-blue-800 p-4 ">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
+        {/* Section: Điểm áp dụng & Chế độ */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest flex items-center gap-2 border-b border-gray-100 dark:border-gray-800 pb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-purple-500" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
-              Điểm áp dụng
+              Luật Điểm Tối Đa
             </h3>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 ">
-                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2">
-                  Khoảng điểm tuyệt đối
-                </label>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Khoảng Điểm Tuyệt Đối</label>
+              <div className="relative">
                 <input
                   type="number"
                   value={configData.khoang_diem_tuyet_toi}
-                  onChange={(e) =>
-                    handleChange(
-                      "khoang_diem_tuyet_toi",
-                      parseInt(e.target.value),
-                    )
-                  }
-                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border border-gray-300 dark:border-gray-600"
+                  onChange={(e) => handleChange("khoang_diem_tuyet_toi", parseInt(e.target.value))}
+                  className="w-full bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-4 py-2.5 rounded border border-gray-200 dark:border-gray-700 shadow-sm outline-none focus:ring-2 focus:ring-purple-500/50 transition-all font-mono font-medium pr-16"
                 />
-                <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
-                  Khoảng cách điểm để thắng tuyệt đối
-                </p>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400">ĐIỂM</span>
               </div>
             </div>
           </div>
 
-          {/* Section: Chế độ áp dụng */}
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-700 dark:to-blue-800 p-4 ">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-                  clipRule="evenodd"
-                />
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest flex items-center gap-2 border-b border-gray-100 dark:border-gray-800 pb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-indigo-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
               </svg>
-              Chế độ áp dụng
+              Luật Áp Dụng
             </h3>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {[
-                {
-                  key: "cau_hinh_doi_khang_diem_thap",
-                  label: "Đối kháng tính điểm thấp",
-                },
-                {
-                  key: "cau_hinh_quyen_tinh_tong",
-                  label: "Quyền tính điểm tổng",
-                },
-                { key: "cau_hinh_y_te", label: "Tính thời gian y tế" },
-                {
-                  key: "cau_hinh_tinh_diem_tuyet_doi",
-                  label: "Tính điểm thắng tuyệt đối",
-                },
-                { key: "cau_hinh_xoa_nhac_nho", label: "Xoá nhắc nhở" },
-                { key: "cau_hinh_xoa_canh_cao", label: "Xoá cảnh cáo" },
+                { key: "cau_hinh_doi_khang_diem_thap", label: "Điểm thấp (Đ.kháng)" },
+                { key: "cau_hinh_quyen_tinh_tong", label: "Điểm tổng (Quyền)" },
+                { key: "cau_hinh_y_te", label: "Thời gian y tế" },
+                { key: "cau_hinh_tinh_diem_tuyet_doi", label: "Thắng tuyệt đối" },
+                { key: "cau_hinh_xoa_nhac_nho", label: "Xóa nhắc nhở" },
+                { key: "cau_hinh_xoa_canh_cao", label: "Xóa cảnh cáo" },
               ].map(({ key, label }) => (
-                <div
-                  key={key}
-                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 "
-                >
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      id={key}
-                      checked={configData[key] || false}
-                      onChange={(e) => handleChange(key, e.target.checked)}
-                      className="w-5 h-5 text-blue-600 dark:text-blue-500 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-400"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">
-                      {label}
-                    </span>
-                  </label>
-                </div>
+                <label key={key} className="flex items-center gap-3 p-2.5 rounded hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    id={key}
+                    checked={configData[key] || false}
+                    onChange={(e) => handleChange(key, e.target.checked)}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                </label>
               ))}
             </div>
           </div>
@@ -3569,13 +3092,13 @@ function ConfigForm({ row, onSubmit, onCancel }) {
         <button
           type="button"
           onClick={onCancel}
-          className="bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white px-6 py-2  font-semibold transition-colors"
+          className="bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white px-6 py-2  font-semibold transition-colors rounded-md"
         >
           Hủy
         </button>
         <button
           type="submit"
-          className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 text-white px-6 py-2  font-semibold transition-colors"
+          className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 text-white px-6 py-2  font-semibold transition-colors rounded-md shadow-sm"
         >
           Lưu thay đổi
         </button>
@@ -3878,113 +3401,78 @@ function HistoryView({
 
   return (
     <div className="space-y-6">
-      {/* 1. KẾT QUẢ TỔNG - Bảng điểm giống Vovinam */}
-      <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 rounded p-6 shadow-2xl">
-        <div className="bg-gradient-to-r from-purple-600 to-purple-800 dark:from-purple-700 dark:to-purple-900 rounded px-4 py-2 -mx-6 -mt-6 mb-6">
-          <h3 className="text-xl font-bold text-white flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-              <path
-                fillRule="evenodd"
-                d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clipRule="evenodd"
-              />
-            </svg>
-            KẾT QUẢ TỔNG
-          </h3>
-        </div>
+      {/* 1. KẾT QUẢ TỔNG */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+        <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-6 border-b border-gray-100 dark:border-gray-700 pb-3 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+            <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+          Kết Quả Tổng Của Trận Đấu
+        </h3>
 
-        <div className="flex justify-between items-center gap-6">
+        <div className="flex justify-between items-stretch gap-6">
           {/* Giáp Đỏ */}
-          <div
-            className={`flex-1 bg-red-600 dark:bg-red-700 rounded p-6 shadow-lg transition-all ${
-              winner?.toUpperCase() === "RED"
-                ? "ring-4 ring-yellow-400 dark:ring-yellow-500 ring-offset-2 ring-offset-gray-900 dark:ring-offset-gray-800"
-                : ""
-            }`}
-          >
-            <div className="text-white text-center">
-              <div className="text-8xl font-bold mb-4">{redScore}</div>
-              <div className="border-t-2 border-white/30 pt-4">
-                <p className="text-2xl font-bold">{redName}</p>
-                <p className="text-lg opacity-90">{redUnit}</p>
-              </div>
-              {winner?.toUpperCase() === "RED" && (
-                <div className="mt-4 bg-yellow-400 dark:bg-yellow-500 text-gray-900 dark:text-gray-800 font-bold py-2 px-4  inline-block">
-                  🏆 CHIẾN THẮNG
-                </div>
-              )}
+          <div className={`flex-1 flex flex-col justify-center items-center bg-white dark:bg-gray-800 border-2 rounded-xl p-6 transition-all ${winner?.toUpperCase() === "RED" ? "border-red-400 shadow-md ring-4 ring-red-500/10" : "border-gray-100 dark:border-gray-700"}`}>
+            <span className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 flex items-center justify-center font-bold mb-4 border border-red-200 dark:border-red-800">
+              Đ
+            </span>
+            <div className="text-6xl font-black text-red-600 dark:text-red-400 mb-4">{redScore}</div>
+            <div className="text-center w-full pt-4 border-t border-gray-100 dark:border-gray-700">
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{redName}</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">{redUnit || "—"}</p>
             </div>
+            {winner?.toUpperCase() === "RED" && (
+              <div className="mt-4 px-3 py-1 bg-red-600 text-white text-xs font-bold uppercase tracking-wider rounded-md shadow-sm">
+                Chiến Thắng
+              </div>
+            )}
           </div>
 
-          {/* Giữa */}
-          <div className="flex flex-col items-center justify-center px-6 text-white">
-            <div className="text-3xl font-bold mb-2">VS</div>
-            <div className="text-xl opacity-75">Trận {row.data[0]}</div>
-            <div className="mt-4 bg-yellow-400 dark:bg-yellow-500 rounded text-gray-900 dark:text-gray-800 font-bold px-6 py-2 ">
-              {row.match_status === "FIN"
-                ? "ĐÃ KẾT THÚC"
-                : row.match_status === "IN"
-                  ? "ĐANG THI ĐẤU"
-                  : "CHỜ THI ĐẤU"}
+          {/* VS */}
+          <div className="flex flex-col items-center justify-center px-4">
+            <div className="text-2xl font-black text-gray-300 dark:text-gray-600 mb-2">VS</div>
+            <div className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest text-center">Trận<br />{row.data[0]}</div>
+            <div className="mt-6 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+              {row.match_status === "FIN" ? "Đã Kết Thúc" : row.match_status === "IN" ? "Đang Thi Đấu" : "Chờ Thi Đấu"}
             </div>
           </div>
 
           {/* Giáp Xanh */}
-          <div
-            className={`flex-1 bg-blue-600 dark:bg-blue-700 rounded p-6 shadow-lg transition-all ${
-              winner?.toUpperCase() === "BLUE"
-                ? "ring-4 ring-yellow-400 dark:ring-yellow-500 ring-offset-2 ring-offset-gray-900 dark:ring-offset-gray-800"
-                : ""
-            }`}
-          >
-            <div className="text-white text-center">
-              <div className="text-8xl font-bold mb-4">{blueScore}</div>
-              <div className="border-t-2 border-white/30 pt-4">
-                <p className="text-2xl font-bold">{blueName}</p>
-                <p className="text-lg opacity-90">{blueUnit}</p>
-              </div>
-              {winner?.toUpperCase() === "BLUE" && (
-                <div className="mt-4 bg-yellow-400 dark:bg-yellow-500 text-gray-900 dark:text-gray-800 font-bold py-2 px-4  inline-block">
-                  🏆 CHIẾN THẮNG
-                </div>
-              )}
+          <div className={`flex-1 flex flex-col justify-center items-center bg-white dark:bg-gray-800 border-2 rounded-xl p-6 transition-all ${winner?.toUpperCase() === "BLUE" ? "border-blue-400 shadow-md ring-4 ring-blue-500/10" : "border-gray-100 dark:border-gray-700"}`}>
+            <span className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold mb-4 border border-blue-200 dark:border-blue-800">
+              X
+            </span>
+            <div className="text-6xl font-black text-blue-600 dark:text-blue-400 mb-4">{blueScore}</div>
+            <div className="text-center w-full pt-4 border-t border-gray-100 dark:border-gray-700">
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{blueName}</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">{blueUnit || "—"}</p>
             </div>
+            {winner?.toUpperCase() === "BLUE" && (
+              <div className="mt-4 px-3 py-1 bg-blue-600 text-white text-xs font-bold uppercase tracking-wider rounded-md shadow-sm">
+                Chiến Thắng
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* 2. KẾT QUẢ TỪNG HIỆP */}
       {roundHistory.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-green-600 to-green-800 dark:from-green-700 dark:to-green-900 px-6 py-4 rounded">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                  clipRule="evenodd"
-                />
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-6">
+          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <h3 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
               </svg>
-              KẾT QUẢ TỪNG HIỆP ({roundHistory.length})
+              Kết Quả Từng Hiệp ({roundHistory.length})
             </h3>
           </div>
 
-          <div className="p-6 space-y-3 bg-gray-50 dark:bg-gray-900">
+          <div className="p-6 space-y-4 bg-gray-50/50 dark:bg-gray-900/20">
             {roundHistory.map((round, roundIndex) => {
               // Lọc logs theo hiệp
-              const roundLogs =
-                allLogs.filter((log) => log.round === round.round) || [];
+              const roundLogs = allLogs.filter((log) => log.round === round.round) || [];
 
               return (
                 <RoundHistoryCard
@@ -4001,26 +3489,17 @@ function HistoryView({
 
       {/* 3. LỊCH SỬ CHI TIẾT HÀNH ĐỘNG */}
       {allLogs.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 px-6 py-4">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                  clipRule="evenodd"
-                />
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-6">
+          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <h3 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
               </svg>
-              LỊCH SỬ CHI TIẾT HÀNH ĐỘNG ({allLogs.length})
+              Lịch Sử Chi Tiết Hành Động ({allLogs.length})
             </h3>
           </div>
 
-          <div className="max-h-[500px] overflow-y-auto border border-gray-200 dark:border-gray-700 ">
+          <div className="max-h-[500px] overflow-y-auto">
             {allLogs.length === 0 ? (
               <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                 <svg
@@ -4041,27 +3520,27 @@ function HistoryView({
               </div>
             ) : (
               <table className="min-w-full text-sm">
-                <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 sticky top-0 z-10 shadow-sm">
+                <thead className="bg-gray-50/80 dark:bg-gray-900/50 backdrop-blur-md sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700">
                   <tr>
-                    <th className="px-3 py-3 text-center font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-gray-300 dark:border-gray-600 w-12">
+                    <th className="px-4 py-3 text-center font-semibold text-gray-500 dark:text-gray-400 w-12 text-xs uppercase tracking-wider">
                       #
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-gray-300 dark:border-gray-600">
+                    <th className="px-4 py-3 text-left font-semibold text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
                       Thời gian
                     </th>
-                    <th className="px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-gray-300 dark:border-gray-600 w-20">
+                    <th className="px-4 py-3 text-center font-semibold text-gray-500 dark:text-gray-400 w-20 text-xs uppercase tracking-wider">
                       Hiệp
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-gray-300 dark:border-gray-600">
+                    <th className="px-4 py-3 text-left font-semibold text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
                       Loại hành động
                     </th>
-                    <th className="px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-gray-300 dark:border-gray-600 w-24">
+                    <th className="px-4 py-3 text-center font-semibold text-gray-500 dark:text-gray-400 w-24 text-xs uppercase tracking-wider">
                       Đội
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-gray-300 dark:border-gray-600">
+                    <th className="px-4 py-3 text-left font-semibold text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
                       Mô tả
                     </th>
-                    <th className="px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-gray-300 dark:border-gray-600 w-50">
+                    <th className="px-4 py-3 text-center font-semibold text-gray-500 dark:text-gray-400 w-32 text-xs uppercase tracking-wider">
                       Tỷ số
                     </th>
                   </tr>
@@ -4073,44 +3552,40 @@ function HistoryView({
                         key={`all-logs-${log.round}-${log.time}-${log.actionType}-${logIndex}`}
                         className="hover:bg-blue-50 dark:hover:bg-blue-900 transition-colors duration-150"
                       >
-                        <td className="px-3 py-3 text-center text-gray-500 dark:text-gray-400 font-medium border-r border-gray-100 dark:border-gray-700">
+                        <td className="px-4 py-3 text-center text-gray-400 dark:text-gray-500 text-xs font-mono">
                           {logIndex + 1}
                         </td>
-                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300 font-medium">
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">
                           {log.time || "-"}
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <span className="inline-flex items-center rounded justify-center px-2 py-1  bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-semibold">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 text-xs font-bold font-mono">
                             {log.round || "-"}
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <span
-                            className={`inline-flex items-center px-3 py-1.5 rounded text-xs font-semibold ${getActionTypeColorClassWithBorder(log.actionType)}`}
-                          >
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded text-xs font-bold border shadow-sm ${getActionTypeColorClassWithBorder(log.actionType)}`}>
                             {getActionTypeLabel(log.actionType)}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-center">
                           {log.team === "red" ? (
-                            <span className="inline-flex items-center px-3 py-1 rounded bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 font-bold text-sm border border-red-200 dark:border-red-700">
+                            <span className="inline-flex items-center px-2.5 py-1 rounded text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 font-bold text-xs uppercase tracking-wider">
                               Đỏ
                             </span>
                           ) : log.team === "blue" ? (
-                            <span className="inline-flex items-center px-3 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold text-sm border border-blue-200 dark:border-blue-700">
+                            <span className="inline-flex items-center px-2.5 py-1 rounded text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 font-bold text-xs uppercase tracking-wider">
                               Xanh
                             </span>
                           ) : (
-                            <span className="text-gray-400 dark:text-gray-500">
-                              -
-                            </span>
+                            <span className="text-gray-400 dark:text-gray-600">—</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 text-sm">
                           {log.description || "-"}
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <span className="inline-flex items-center justify-center rounded px-3 py-1.5  bg-gray-100 dark:bg-gray-700 font-mono text-gray-900 dark:text-gray-100 font-bold text-sm border border-gray-300 dark:border-gray-600">
+                          <span className="inline-flex items-center justify-center font-mono text-gray-900 dark:text-gray-100 font-bold text-sm bg-gray-50 dark:bg-gray-900/50 px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700">
                             {log.redScore || 0} - {log.blueScore || 0}
                           </span>
                         </td>
@@ -4125,11 +3600,9 @@ function HistoryView({
       )}
 
       {/* Action Buttons */}
-      <div className="flex justify-end gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-        <Button
-          variant="secondary"
+      <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700 mt-8">
+        <button
           onClick={() => {
-            // Tạo preview modal với template đối kháng
             const previewData = {
               redName,
               redUnit,
@@ -4142,57 +3615,26 @@ function HistoryView({
               allLogs,
               matchDate: new Date().toLocaleDateString("vi-VN"),
             };
-
-            // Mở modal preview với template đối kháng
             window.openDoiKhangPreview?.(previewData);
           }}
-          className="flex items-center gap-2"
+          className="px-5 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm font-semibold rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-            />
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
           </svg>
           Preview Template
-        </Button>
+        </button>
 
-        <Button
-          variant="primary"
-          onClick={() => {
-            // Export Excel với khổ A5
-            exportToExcelA5();
-          }}
-          className="flex items-center gap-2"
+        <button
+          onClick={exportToExcelA5}
+          className="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded shadow-sm hover:bg-blue-700 active:bg-blue-800 transition-colors flex items-center gap-2"
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           Export Excel A5
-        </Button>
+        </button>
       </div>
 
       {/* Modal thông báo chung */}

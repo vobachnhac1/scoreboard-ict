@@ -26,136 +26,112 @@ const MatchConfigModal = ({
   setTimeLeft,
   totalRounds,
   roundDuration,
+  keyboardMode,
 }) => {
   if (!showConfigModal) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-      <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
-        {/* Header - Modern Design */}
-        <div className="relative bg-gradient-to-r from-blue-600 via-blue-700 to-blue-700 dark:from-blue-700 dark:via-blue-800 dark:to-blue-800 px-8 py-6">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div className="bg-white/20 backdrop-blur-sm p-3 rounded">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-white"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h2 className="text-3xl font-bold text-white tracking-tight">
-                  Cấu hình trận đấu
-                </h2>
-                <p className="text-blue-100 dark:text-blue-200 text-sm mt-1">
-                  Điều chỉnh thông số và quyền hiển thị
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowConfigModal(false)}
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-2 rounded transition-all hover:rotate-90 duration-300"
-            >
+    <div className="fixed inset-0 bg-gray-900/60 flex items-center justify-center z-[100] p-4 sm:p-6">
+      <div className="bg-white dark:bg-gray-800 rounded shadow-xl max-w-6xl w-full max-h-[95vh] flex flex-col overflow-hidden">
+        {/* Header - Professional Minimalist */}
+        <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-700/80 bg-white dark:bg-gray-800 flex justify-between items-center z-10">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
               >
                 <path
-                  fillRule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clipRule="evenodd"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
                 />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-            </button>
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                Cấu hình trận đấu
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                Thiết lập thông số và điều khiển
+              </p>
+            </div>
           </div>
-          {/* Decorative gradient line */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
-        </div>
-
-        {/* Content - Scrollable */}
-        <div className="p-8 overflow-y-auto max-h-[calc(90vh-180px)] bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
-          <div className="space-y-8">
-            {/* Section: Thông tin trận đấu */}
-            <MatchInfoSection matchInfo={matchInfo} />
-
-            {/* Section: Điều khiển trận đấu */}
-            <MatchControlSection
-              currentRound={currentRound}
-              setCurrentRound={setCurrentRound}
-              timeLeft={timeLeft}
-              setTimeLeft={setTimeLeft}
-              totalRounds={totalRounds}
-              roundDuration={roundDuration}
-            />
-
-            {/* Section: Cấu hình thời gian */}
-            <TimeConfigSection
-              matchInfo={matchInfo}
-              setMatchInfo={setMatchInfo}
-            />
-
-            {/* Section: Quyền hiển thị buttons */}
-            <ButtonPermissionsSection
-              buttonPermissions={buttonPermissions}
-              setButtonPermissions={setButtonPermissions}
-              disableRedButtons={disableRedButtons}
-              setDisableRedButtons={setDisableRedButtons}
-              disableBlueButtons={disableBlueButtons}
-              setDisableBlueButtons={setDisableBlueButtons}
-            />
-          </div>
-        </div>
-
-        {/* Footer - Redesigned */}
-        <div className="bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 px-8 py-5 pb-8 flex justify-end gap-4 border-t-2 border-gray-300 dark:border-gray-700">
           <button
             onClick={() => setShowConfigModal(false)}
-            className="bg-gradient-to-r from-gray-500 to-gray-600 dark:from-gray-600 dark:to-gray-700 hover:from-gray-600 hover:to-gray-700 dark:hover:from-gray-700 dark:hover:to-gray-800 text-white px-8 py-3 rounded font-bold transition-all shadow-md hover:shadow-lg hover:scale-105 flex items-center gap-2"
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-gray-700/50 rounded-lg transition-colors border border-transparent focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 outline-none"
+            aria-label="Close modal"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
+          </button>
+        </div>
+
+        {/* Content - Graceful Scroll on Small Screens */}
+        <div className="p-4 sm:p-5 bg-gray-50/30 dark:bg-gray-900/20 flex-1 relative overflow-y-auto min-h-0">
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 h-full">
+            {/* Lệ Trái: Thông tin, Thời gian, Điều khiển */}
+            <div className="xl:col-span-5 flex flex-col gap-4">
+              {/* Section: Thông tin trận đấu */}
+              <MatchInfoSection matchInfo={matchInfo} />
+
+              {/* Section: Cấu hình thời gian */}
+              <TimeConfigSection
+                matchInfo={matchInfo}
+                setMatchInfo={setMatchInfo}
+              />
+
+              {/* Section: Điều khiển trận đấu */}
+              <MatchControlSection
+                currentRound={currentRound}
+                setCurrentRound={setCurrentRound}
+                timeLeft={timeLeft}
+                setTimeLeft={setTimeLeft}
+                totalRounds={totalRounds}
+                roundDuration={roundDuration}
+              />
+            </div>
+
+            {/* Lệ Phải: Quyền hiển thị */}
+            <div className="xl:col-span-7 flex flex-col gap-4">
+              {/* Section: Quyền hiển thị buttons */}
+              <ButtonPermissionsSection
+                buttonPermissions={buttonPermissions}
+                setButtonPermissions={setButtonPermissions}
+                disableRedButtons={disableRedButtons}
+                setDisableRedButtons={setDisableRedButtons}
+                disableBlueButtons={disableBlueButtons}
+                setDisableBlueButtons={setDisableBlueButtons}
+                keyboardMode={keyboardMode}
+              />
+            </div>
+          </div>
+        </div>
+
+
+        {/* Footer - Professional Action Bar */}
+        <div className="bg-white dark:bg-gray-800 px-6 py-4 flex justify-end gap-3 items-center border-t border-gray-100 dark:border-gray-700/80">
+          <button
+            onClick={() => setShowConfigModal(false)}
+            className="px-5 py-2 rounded text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 outline-none"
+          >
             Hủy
           </button>
           <button
             onClick={async () => {
-              // Lưu button permissions về server
               const saved = await saveButtonPermissions();
-              if (saved) {
-                setShowConfigModal(false);
-              }
+              if (saved) setShowConfigModal(false);
             }}
-            className="bg-gradient-to-r from-green-600 via-green-700 to-green-700 dark:from-green-700 dark:via-green-800 dark:to-green-800 hover:from-green-700 hover:via-green-800 hover:to-green-800 dark:hover:from-green-800 dark:hover:via-green-900 dark:hover:to-green-900 text-white px-8 py-3 rounded font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2"
+            className="px-5 py-2 rounded text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 border border-transparent transition-colors focus:ring-2 focus:ring-indigo-500/50 outline-none shadow-sm flex items-center gap-2"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
             Lưu thay đổi
           </button>

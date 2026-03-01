@@ -72,10 +72,10 @@ function obfuscateFile(filePath) {
     // Ghi file đã obfuscate
     fs.writeFileSync(filePath, obfuscatedCode, 'utf8');
     
-    console.log(`✅ Obfuscated: ${filePath}`);
+    console.log(` Obfuscated: ${filePath}`);
     return true;
   } catch (error) {
-    console.error(`❌ Error obfuscating ${filePath}:`, error.message);
+    console.error(` Error obfuscating ${filePath}:`, error.message);
     return false;
   }
 }
@@ -85,7 +85,7 @@ function obfuscateFile(filePath) {
  */
 function obfuscateDirectory(dirPath) {
   if (!fs.existsSync(dirPath)) {
-    console.warn(`⚠️  Directory not found: ${dirPath}`);
+    console.warn(`  Directory not found: ${dirPath}`);
     return;
   }
 
@@ -118,7 +118,7 @@ function cleanupBackups() {
     cleanupBackupsInDir(dir);
   });
 
-  console.log('✅ Backup files cleaned up\n');
+  console.log(' Backup files cleaned up\n');
 }
 
 function cleanupBackupsInDir(dirPath) {
@@ -149,7 +149,7 @@ function restoreBackups() {
     restoreBackupsInDir(dir);
   });
 
-  console.log('✅ Backup restored\n');
+  console.log(' Backup restored\n');
 }
 
 function restoreBackupsInDir(dirPath) {
@@ -167,7 +167,7 @@ function restoreBackupsInDir(dirPath) {
       const originalPath = filePath.replace('.backup', '');
       fs.copyFileSync(filePath, originalPath);
       fs.unlinkSync(filePath);
-      console.log(`✅ Restored: ${originalPath}`);
+      console.log(` Restored: ${originalPath}`);
     }
   });
 }
@@ -183,11 +183,11 @@ if (args.includes('--restore')) {
   cleanupBackups();
 } else {
   dirsToObfuscate.forEach(dir => {
-    console.log(`📁 Obfuscating directory: ${dir}`);
+    console.log(` Obfuscating directory: ${dir}`);
     obfuscateDirectory(dir);
   });
 
-  console.log('\n✅ Obfuscation complete!');
+  console.log('\n Obfuscation complete!');
   console.log('💡 To restore original files, run: node scripts/compile-server.js --restore\n');
 }
 

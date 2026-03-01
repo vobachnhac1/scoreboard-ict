@@ -12,6 +12,11 @@ import {
   useSocketEvent,
   emitSocketEvent,
 } from "../../config/hooks/useSocketEvents";
+import {
+  createKeyDownHandler,
+  getNextMode,
+  KEYBOARD_MODES,
+} from "./keyboardConfig";
 import { MSG_TP_CLIENT } from "../../common/Constants";
 import {
   connectSocket,
@@ -359,7 +364,6 @@ const BangDiemDoiKhang = () => {
 
   // Connection manager states
   const [showConnectionModal, setShowConnectionModal] = useState(false);
-  const [showRefConnectionState, setShowRefConnectionState] = useState(false);
   const [referrerDevices, setReferrerDevices] = useState([]);
   const [currentRoom, setCurrentRoom] = useState(null);
 
@@ -522,8 +526,8 @@ const BangDiemDoiKhang = () => {
     ten_giai_dau:
       matchData.config_system.ten_giai_dau ||
       matchData.ten_giai_dau ||
-      "GIẢI VÔ ĐỊCH VÕ HIỆN ĐẠI",
-    ten_mon_thi: matchData.ten_mon_thi || "VÕ HIỆN ĐẠI",
+      "GIẢI VÔ ĐỊCH DIGISPORTS",
+    ten_mon_thi: matchData.ten_mon_thi || "DIGISPORTS",
 
     // Cấu hình hiệp
     so_hiep: matchData.config_system.so_hiep || 3,
@@ -594,7 +598,10 @@ const BangDiemDoiKhang = () => {
   const [medicalTeam, setMedicalTeam] = useState(null); // 'red' hoặc 'blue'
   const [showControlBar, setShowControlBar] = useState(true); // true = Control Bar, false = Grid 2 cột
   const timerRef = useRef(null);
+  const medicalTimerRef = useRef(null);
+  const wasRunningBeforeMedical = useRef(false);
   const isHandlingRound = useRef(false);
+  const isTogglingTimer = useRef(false);
 
   // Tạm ngừng công bố kết quả
   const [pauseMatch, setPauseMatch] = useState(false);
@@ -1149,7 +1156,7 @@ const BangDiemDoiKhang = () => {
   // F9 hotkey listener - Toggle secondary display window (Electron)
   useEffect(() => {
     const handleKeyPress = async (event) => {
-      if (event.key === "F9") {
+      if (event.key === "F2") {
         event.preventDefault();
 
         // Toggle secondary display window
@@ -1303,6 +1310,8 @@ const BangDiemDoiKhang = () => {
       isBreakTime,
       btnPreviousMatch,
       btnNextMatch,
+      handleKick,
+      handleStopMedical,
     };
   });
 
@@ -1324,230 +1333,50 @@ const BangDiemDoiKhang = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showConfigModal, showHistoryModal, showWinnerModal, announcedWinner]);
 
-  // Hotkey F6 để toggle hiển thị controls
+  // State cho chế độ bàn phím — đọc từ configSystem đã lưu
+  const [keyboardMode, setKeyboardMode] = useState(
+    matchInfo.config_system?.keyboard_mode || "vovinam"
+  );
+  const [showKeyboardModeToast, setShowKeyboardModeToast] = useState(false);
+
+  // Sync keyboardMode khi config_system thay đổi (ví dụ chuyển trận)
   useEffect(() => {
-    const handleKeyDown = async (e) => {
-      console.log("e.key: ", e.key);
+    const savedMode = matchInfo.config_system?.keyboard_mode;
+    if (savedMode && KEYBOARD_MODES[savedMode]) {
+      setKeyboardMode(savedMode);
+    }
+  }, [matchInfo.config_system?.keyboard_mode]);
 
-      // Bỏ qua nếu đang focus vào input/textarea
-      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
-        return;
-      }
-
-      const key = e.key.toLowerCase();
-      const handlers = handlersRef.current;
-
-      if (e.key === "Escape") {
-        e.preventDefault();
-        btnGoBack();
-        return;
-      }
-
-      // ========== CHỈ CHO PHÉP F1, F5, F6, F7 KHI ĐANG MỞ MODAL ==========
-      // F1: Connection Manager Modal
-      if (e.key === "F1") {
-        e.preventDefault();
-        setShowConnectionModal((prev) => !prev);
-        return;
-      }
-      // F5 và F6 luôn hoạt động để mở/đóng modal
-      else if (e.key === "F5") {
-        // Cấu hình
-        e.preventDefault();
-        setShowConfigModal((prev) => !prev);
-        return;
-      } else if (e.key === "F6") {
-        // Lịch sử
-        e.preventDefault();
-        setShowHistoryModal((prev) => !prev);
-        return;
-      } else if (e.key === "F7") {
-        // Toggle Referee Connection State
-        e.preventDefault();
-        setShowControlBar((prev) => !prev);
-        return;
-      }
-      // thêm nút F10 để mở kết nối thử điểm
-      // else if (e.key === "F10") {
-      //   e.preventDefault();
-      //   // setShowTestConnection((prev) => !prev);
-      //   return;
-      // }
-
-      // ========== TẮT TẤT CẢ HOTKEY KHÁC KHI ĐANG MỞ MODAL ==========
-      if (showConfigModal || showHistoryModal || showConnectionModal) {
-        return;
-      }
-
-      // ========== PHÍM ĐIỀU KHIỂN CHÍNH ==========
-      // Space: Start/Pause timer
-      if (key === " ") {
-        e.preventDefault();
-        console.log("⌨️ Space pressed - isBreakTime:", handlers.isBreakTime);
-        if (!handlers.isBreakTime) {
-          console.log("🎬 Calling toggleTimer()");
-          handlers.toggleTimer();
-        }
-        return;
-      }
-
-      // Ctrl+Z: Undo
-      if (e.ctrlKey && key === "z") {
-        e.preventDefault();
-        console.log("⌨️ Ctrl+Z pressed - isBreakTime:", handlers.isBreakTime);
-        if (!handlers.isBreakTime) {
-          console.log("↩️ Calling undoLastAction()");
-          handlers.undoLastAction();
-        }
-        return;
-      }
-
-      // F10: Hiển thị button
-      // if (e.key === 'F10') {
-      //   e.preventDefault();
-      //   setShowControls(prev => !prev);
-      //   return;
-      // }
-
-      // ========== PHÍM TẮT ĐỎ ==========
-      // Điểm số ĐỎ
-      else if (key === "q") {
-        // Đỏ +1
-        e.preventDefault();
-        handlers.handleScoreChange("red", 1);
-      } else if (key === "w") {
-        // Đỏ +2
-        e.preventDefault();
-        handlers.handleScoreChange("red", 2);
-      } else if (key === "e") {
-        // Đỏ +3
-        e.preventDefault();
-        handlers.handleScoreChange("red", 3);
-      } else if (key === "a") {
-        // Đỏ -1
-        e.preventDefault();
-        handlers.handleScoreChange("red", -1);
-      } else if (key === "s") {
-        // Đỏ -2
-        e.preventDefault();
-        handlers.handleScoreChange("red", -2);
-      } else if (key === "d") {
-        // Đỏ -3
-        e.preventDefault();
-        handlers.handleScoreChange("red", -3);
-      }
-      // Nhắc nhở & Cảnh cáo ĐỎ
-      else if (key === "r") {
-        // Đỏ Nhắc nhở +1
-        e.preventDefault();
-        handlers.handleRemind("red", 1);
-      } else if (key === "f") {
-        // Đỏ Nhắc nhở -1
-        e.preventDefault();
-        handlers.handleRemind("red", -1);
-      } else if (key === "z") {
-        // Đỏ Cảnh cáo +1
-        e.preventDefault();
-        handlers.handleWarn("red", 1);
-      } else if (key === "x") {
-        // Đỏ Cảnh cáo -1
-        e.preventDefault();
-        handlers.handleWarn("red", -1);
-      }
-      // Hành động ĐỎ
-      else if (key === "t") {
-        // Đỏ Thắng
-        e.preventDefault();
-        handlers.handleWinner("red");
-      } else if (key === "c") {
-        // Đỏ Y tế
-        e.preventDefault();
-        handlers.handleMedical("red");
-      }
-
-      // ========== PHÍM TẮT XANH ==========
-      // Điểm số XANH
-      else if (key === "p") {
-        // Xanh +1
-        e.preventDefault();
-        handlers.handleScoreChange("blue", 1);
-      } else if (key === "o") {
-        // Xanh +2
-        e.preventDefault();
-        handlers.handleScoreChange("blue", 2);
-      } else if (key === "i") {
-        // Xanh +3
-        e.preventDefault();
-        handlers.handleScoreChange("blue", 3);
-      } else if (key === "l") {
-        // Xanh -1
-        e.preventDefault();
-        handlers.handleScoreChange("blue", -1);
-      } else if (key === "k") {
-        // Xanh -2
-        e.preventDefault();
-        handlers.handleScoreChange("blue", -2);
-      } else if (key === "j") {
-        // Xanh -3
-        e.preventDefault();
-        handlers.handleScoreChange("blue", -3);
-      }
-      // Nhắc nhở & Cảnh cáo XANH
-      else if (key === "u") {
-        // Xanh Nhắc nhở +1
-        e.preventDefault();
-        handlers.handleRemind("blue", 1);
-      } else if (key === "h") {
-        // Xanh Nhắc nhở -1
-        e.preventDefault();
-        handlers.handleRemind("blue", -1);
-      } else if (key === "m") {
-        // Xanh Cảnh cáo +1
-        e.preventDefault();
-        handlers.handleWarn("blue", 1);
-      } else if (key === "n") {
-        // Xanh Cảnh cáo -1
-        e.preventDefault();
-        handlers.handleWarn("blue", -1);
-      }
-      // Hành động XANH
-      else if (key === "y") {
-        // Xanh Thắng
-        e.preventDefault();
-        handlers.handleWinner("blue");
-      } else if (key === "b") {
-        // Xanh Y tế
-        e.preventDefault();
-        handlers.handleMedical("blue");
-      }
-
-      // ========== PHÍM TẮT CHUNG ==========
-      else if (key === "g") {
-        // Reset
-        e.preventDefault();
-        const confirmed = await showConfirm(
-          "Bạn có chắc chắn muốn bắt đầu lại trận đấu từ đầu không?",
-          {
-            title: "Thông báo",
-          },
-        );
-        if (confirmed === false) return;
-        handlers.resetTimer();
-      } else if (e.key === "ArrowLeft") {
-        // Trận trước (Mũi tên trái)
-        e.preventDefault();
-        handlers.btnPreviousMatch();
-      } else if (e.key === "ArrowRight") {
-        // Trận sau (Mũi tên phải)
-        e.preventDefault();
-        handlers.btnNextMatch();
-      }
-    };
+  // Hotkey handler - sử dụng keyboardConfig
+  useEffect(() => {
+    const handleKeyDown = createKeyDownHandler({
+      mode: keyboardMode,
+      handlers: handlersRef,
+      showConfirm,
+      btnGoBack,
+      setShowConnectionModal,
+      setShowConfigModal,
+      setShowHistoryModal,
+      setShowControlBar,
+      onSwitchMode: () => {
+        setKeyboardMode((prev) => {
+          const next = getNextMode(prev);
+          console.log(`⌨️ Chuyển chế độ bàn phím: ${prev} → ${next}`);
+          // Hiện toast thông báo
+          setShowKeyboardModeToast(true);
+          setTimeout(() => setShowKeyboardModeToast(false), 2000);
+          return next;
+        });
+      },
+      showConfigModal,
+      showHistoryModal,
+      showConnectionModal,
+    });
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showConfigModal, showHistoryModal]);
+  }, [showConfigModal, showHistoryModal, showConnectionModal, keyboardMode]);
 
   // Hiển thị kết quả khi quay lại trận đã kết thúc
   useEffect(() => {
@@ -1630,11 +1459,11 @@ const BangDiemDoiKhang = () => {
   // });
 
   // Hotkey F7 để hiển thị danh sách trận đấu
-  useHotkeys("f7", (e) => {
-    e.preventDefault();
-    fetchMatchesList();
-    setShowMatchListModal(true);
-  });
+  // useHotkeys("f7", (e) => {
+  //   e.preventDefault();
+  //   fetchMatchesList();
+  //   setShowMatchListModal(true);
+  // });
 
   // Fetch danh sách trận đấu
   const fetchMatchesList = async () => {
@@ -1996,137 +1825,145 @@ const BangDiemDoiKhang = () => {
 
   // Toggle timer (từ Timer.jsx)
   const toggleTimer = async () => {
-    // Không cho phép start/pause khi đang trong thời gian y tế
-    if (isMedicalTime) {
-      await showError(
-        "Vui lòng kết thúc thời gian y tế trước khi tiếp tục trận đấu",
-      );
-      return;
-    }
+    // Tránh gọi trùng lặp
+    if (isTogglingTimer.current) return;
+    isTogglingTimer.current = true;
 
-    // kiếm tra có vận động viên thắng không nếu có thì hiển thị thông báo
-    if (announcedWinner) {
-      const confirmed = await showConfirm(
-        "Trận đấu đã có kết quả, bạn muốn tiếp tục trận đấu?",
-        {
-          title: "Thông báo",
-        },
-      );
-      if (confirmed === false) return;
-      setAnnouncedWinner(null);
-      // cập nhật lại thông trạng thái
-      const currentStatus = matchInfo.match_status;
-      if (currentStatus === "FIN") {
-        try {
-          // xoá history trước đó
-          // tạo thông tin trận
-          console.log("🔄 Cập nhật trạng thái từ FIN → IN");
-          await axios.put(
-            `http://localhost:6789/api/competition-match/${matchInfo.match_id}/status`,
-            {
-              status: "IN",
-              winner: "none",
-            },
-          );
-          // Cập nhật matchInfo
-          setMatchInfo({ ...matchInfo, match_status: "IN" });
-          console.log(" Đã cập nhật trạng thái thành IN");
-        } catch (error) {
-          console.error(" Lỗi khi cập nhật trạng thái:", error);
-          await showError(
-            "Lỗi khi cập nhật trạng thái trận đấu: " +
+    try {
+      // Không cho phép start/pause khi đang trong thời gian y tế
+      if (isMedicalTime) {
+        await showError(
+          "Vui lòng kết thúc thời gian y tế trước khi tiếp tục trận đấu",
+        );
+        return;
+      }
+
+      // kiếm tra có vận động viên thắng không nếu có thì hiển thị thông báo
+      if (announcedWinner) {
+        const confirmed = await showConfirm(
+          "Trận đấu đã có kết quả, bạn muốn tiếp tục trận đấu?",
+          {
+            title: "Thông báo",
+          },
+        );
+        if (confirmed === false) return;
+        setAnnouncedWinner(null);
+        // cập nhật lại thông trạng thái
+        const currentStatus = matchInfo.match_status;
+        if (currentStatus === "FIN") {
+          try {
+            // xoá history trước đó
+            // tạo thông tin trận
+            console.log("🔄 Cập nhật trạng thái từ FIN → IN");
+            await axios.put(
+              `http://localhost:6789/api/competition-match/${matchInfo.match_id}/status`,
+              {
+                status: "IN",
+                winner: "none",
+              },
+            );
+            // Cập nhật matchInfo
+            setMatchInfo({ ...matchInfo, match_status: "IN" });
+            console.log(" Đã cập nhật trạng thái thành IN");
+          } catch (error) {
+            console.error(" Lỗi khi cập nhật trạng thái:", error);
+            await showError(
+              "Lỗi khi cập nhật trạng thái trận đấu: " +
               (error.response?.data?.message || error.message),
-          );
-          return; // Dừng lại nếu lỗi
+            );
+            return; // Dừng lại nếu lỗi
+          }
         }
       }
-    }
-    setReady(false);
-    setPauseMatch(false);
-    const totalMainRounds = matchInfo.so_hiep || 3;
-    const extraRounds = matchInfo.so_hiep_phu || 0;
-    const totalRounds = totalMainRounds + extraRounds;
-    if (currentRound === totalRounds && timeLeft === 0) {
-      return;
-    }
+      setReady(false);
+      setPauseMatch(false);
+      const totalMainRounds = matchInfo.so_hiep || 3;
+      const extraRounds = matchInfo.so_hiep_phu || 0;
+      const totalRounds = totalMainRounds + extraRounds;
+      if (currentRound === totalRounds && timeLeft === 0) {
+        return;
+      }
 
-    // Kiểm tra match_status nếu trạng thái = 'WAI' thì gọi API cập nhật trạng thái 'IN'
-    if (!isRunning && !isBreakTime) {
-      const currentStatus = matchInfo.match_status;
-      if (currentStatus === "WAI") {
-        try {
-          console.log("🔄 Cập nhật trạng thái từ WAI → IN");
-          await axios.put(
-            `http://localhost:6789/api/competition-match/${matchInfo.match_id}/status`,
-            {
-              status: "IN",
-            },
-          );
-          // Cập nhật matchInfo
-          setMatchInfo({ ...matchInfo, match_status: "IN" });
-          console.log(" Đã cập nhật trạng thái thành IN");
-        } catch (error) {
-          console.error(" Lỗi khi cập nhật trạng thái:", error);
-          await showError(
-            "Lỗi khi cập nhật trạng thái trận đấu: " +
+      // Kiểm tra match_status nếu trạng thái = 'WAI' thì gọi API cập nhật trạng thái 'IN'
+      if (!isRunning && !isBreakTime) {
+        const currentStatus = matchInfo.match_status;
+        if (currentStatus === "WAI") {
+          try {
+            console.log("🔄 Cập nhật trạng thái từ WAI → IN");
+            await axios.put(
+              `http://localhost:6789/api/competition-match/${matchInfo.match_id}/status`,
+              {
+                status: "IN",
+              },
+            );
+            // Cập nhật matchInfo
+            setMatchInfo({ ...matchInfo, match_status: "IN" });
+            console.log(" Đã cập nhật trạng thái thành IN");
+          } catch (error) {
+            console.error(" Lỗi khi cập nhật trạng thái:", error);
+            await showError(
+              "Lỗi khi cập nhật trạng thái trận đấu: " +
               (error.response?.data?.message || error.message),
-          );
-          return; // Dừng lại nếu lỗi
+            );
+            return; // Dừng lại nếu lỗi
+          }
         }
       }
-    }
 
-    if (isBreakTime) {
-      if (isRunning) {
-        clearInterval(timerRef.current);
-        setIsRunning(false);
-      } else {
-        setIsRunning(true);
-        timerRef.current = setInterval(() => {
-          setBreakTimeLeft((prev) => {
-            if (prev <= 1) {
-              clearInterval(timerRef.current);
-              setIsBreakTime(false);
-              setIsRunning(false);
+      if (isBreakTime) {
+        if (isRunning) {
+          clearInterval(timerRef.current);
+          setIsRunning(false);
+        } else {
+          setIsRunning(true);
+          timerRef.current = setInterval(() => {
+            setBreakTimeLeft((prev) => {
+              if (prev <= 1) {
+                clearInterval(timerRef.current);
+                setIsBreakTime(false);
+                setIsRunning(false);
 
-              // Hết thời gian giải lao - Phát chuông
-              playBell();
+                // Hết thời gian giải lao - Phát chuông
+                playBell();
 
-              const nextRound = currentRound + 1;
-              setCurrentRound(nextRound);
+                const nextRound = currentRound + 1;
+                setCurrentRound(nextRound);
 
-              // Nếu hiệp tiếp theo là hiệp phụ (> so_hiep), dùng thời gian hiệp phụ (theo 0.1s)
-              if (nextRound > totalMainRounds) {
-                setTimeLeft((matchInfo.thoi_gian_hiep_phu || 60) * 10);
-              } else {
-                setTimeLeft((matchInfo.thoi_gian_thi_dau || 180) * 10);
+                // Nếu hiệp tiếp theo là hiệp phụ (> so_hiep), dùng thời gian hiệp phụ (theo 0.1s)
+                if (nextRound > totalMainRounds) {
+                  setTimeLeft((matchInfo.thoi_gian_hiep_phu || 60) * 10);
+                } else {
+                  setTimeLeft((matchInfo.thoi_gian_thi_dau || 180) * 10);
+                }
+
+                isHandlingRound.current = false;
+                return 0;
               }
-
-              isHandlingRound.current = false;
-              return 0;
-            }
-            return prev - 1;
-          });
-        }, 100); // 100ms = 0.1s
-      }
-    } else {
-      if (isRunning) {
-        clearInterval(timerRef.current);
-        setIsRunning(false);
+              return prev - 1;
+            });
+          }, 100); // 100ms = 0.1s
+        }
       } else {
-        // Bắt đầu hiệp - Phát chuông
-        playBell();
-        setIsRunning(true);
-        timerRef.current = setInterval(() => {
-          setTimeLeft((prev) => {
-            if (prev <= 1) {
-              handleRoundComplete();
-              return 0;
-            }
-            return prev - 1;
-          });
-        }, 100); // 100ms = 0.1s
+        if (isRunning) {
+          clearInterval(timerRef.current);
+          setIsRunning(false);
+        } else {
+          // Bắt đầu hiệp - Phát chuông
+          playBell();
+          setIsRunning(true);
+          timerRef.current = setInterval(() => {
+            setTimeLeft((prev) => {
+              if (prev <= 1) {
+                handleRoundComplete();
+                return 0;
+              }
+              return prev - 1;
+            });
+          }, 100); // 100ms = 0.1s
+        }
       }
+    } finally {
+      isTogglingTimer.current = false;
     }
   };
 
@@ -2464,19 +2301,38 @@ const BangDiemDoiKhang = () => {
   };
 
   // Hàm xử lý y tế
-  const handleMedical = (team) => {
+  const handleMedical = (team, value) => {
+    if (value) {
+      // Tăng số lần gọi y tế
+      if (team === "red") {
+        setMedicalRed(medicalRed + value);
+      } else {
+        setMedicalBlue(medicalBlue + value);
+      }
+      return;
+    }
+
+    // nếu đang hoạt động thì gọi handleStopMedical (dùng ref để tránh stale closure)
+    if (medicalTimerRef.current) {
+      handleStopMedical();
+      return;
+    }
+
     const teamName = team === "red" ? "Đỏ" : "Xanh";
     setPauseMatch(false);
-    // Tạm dừng timer hiện tại
+    // Lưu trạng thái timer chính và tạm dừng
+    wasRunningBeforeMedical.current = isRunning;
     if (isRunning) {
       clearInterval(timerRef.current);
       setIsRunning(false);
+      console.log("⏸️ Tạm dừng timer chính do y tế");
     }
 
     // Kích hoạt thời gian y tế
     setIsMedicalTime(true);
     setMedicalTeam(team);
     setMedicalTimeLeft((matchInfo.thoi_gian_y_te || 120) * 10); // Lưu theo 0.1s
+
 
     // Tăng số lần gọi y tế
     if (team === "red") {
@@ -2488,15 +2344,19 @@ const BangDiemDoiKhang = () => {
     addActionToHistory("medical", team, 0, `[BTN] ${teamName} Y tế`);
     console.log(`🏥 Medical for ${team} - ${matchInfo.thoi_gian_y_te}s`);
 
-    // Bắt đầu đếm ngược thời gian y tế
-    timerRef.current = setInterval(() => {
+    // Bắt đầu đếm ngược thời gian y tế (dùng ref riêng)
+    if (medicalTimerRef.current) {
+      clearInterval(medicalTimerRef.current);
+    }
+    medicalTimerRef.current = setInterval(() => {
       setMedicalTimeLeft((prev) => {
         if (prev <= 1) {
-          clearInterval(timerRef.current);
+          clearInterval(medicalTimerRef.current);
+          medicalTimerRef.current = null;
           setIsMedicalTime(false);
           setMedicalTeam(null);
+          wasRunningBeforeMedical.current = false;
           console.log(" Hết thời gian y tế");
-          timerRef.current = null;
           return 0;
         }
         return prev - 1;
@@ -2782,7 +2642,14 @@ const BangDiemDoiKhang = () => {
     setShowWinnerAnnouncementModal(false);
   };
 
-  const btnConfirmWinner = () => {
+  const btnConfirmWinner = (reason) => {
+    console.log("🏆 Xác nhận VĐV thắng với lý do:", reason);
+    if (announcedWinner) {
+      setAnnouncedWinner({
+        ...announcedWinner,
+        reason: reason
+      });
+    }
     setShowWinnerAnnouncementModal(false);
   };
 
@@ -3052,7 +2919,7 @@ const BangDiemDoiKhang = () => {
       console.error(" Lỗi khi quay lại trận trước:", error);
       await showError(
         "Lỗi khi quay lại trận trước: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -3296,7 +3163,7 @@ const BangDiemDoiKhang = () => {
       console.error(" Lỗi khi chuyển trận:", error);
       await showError(
         "Lỗi khi chuyển sang trận tiếp theo: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -3318,6 +3185,8 @@ const BangDiemDoiKhang = () => {
   // Reset timer (từ Timer.jsx)
   const resetTimer = () => {
     clearInterval(timerRef.current);
+    clearInterval(medicalTimerRef.current);
+    medicalTimerRef.current = null;
     setIsRunning(false);
     setTimeLeft((matchInfo.thoi_gian_thi_dau || 180) * 10); // Reset theo 0.1s
     setCurrentRound(1);
@@ -3398,6 +3267,20 @@ const BangDiemDoiKhang = () => {
       });
     }, 100); // 100ms = 0.1s
   };
+
+  // ngưng thời gian y tế 
+  const handleStopMedical = () => {
+    clearInterval(medicalTimerRef.current);
+    medicalTimerRef.current = null;
+    setIsMedicalTime(false);
+    setMedicalTeam(null);
+    setMedicalTimeLeft(0);
+    console.log(" Kết thúc thời gian y tế");
+    if (wasRunningBeforeMedical.current) {
+      console.log("▶️ Timer chính đã tạm dừng trước y tế - nhấn Space để tiếp tục");
+      wasRunningBeforeMedical.current = false;
+    }
+  }
 
   return (
     <div className="h-screen w-screen text-white flex flex-col items-center justify-start relative overflow-hidden pb-20">
@@ -3598,9 +3481,8 @@ const BangDiemDoiKhang = () => {
         {/* Đỏ */}
         <div className="flex-1">
           <div
-            className={`text-white p-6 rounded flex flex-col items-center shadow-2xl transition-all duration-500 overflow-hidden relative ${
-              announcedWinner?.team === "red" ? "victory-animation" : ""
-            }`}
+            className={`text-white p-6 rounded flex flex-col items-center shadow-2xl transition-all duration-500 overflow-hidden relative ${announcedWinner?.team === "red" ? "victory-animation" : ""
+              }`}
             style={{
               background: "linear-gradient(135deg, #FF0000 0%, #CC0000 100%)",
               boxShadow:
@@ -3687,11 +3569,10 @@ const BangDiemDoiKhang = () => {
               : `HIỆP ${currentRound}`}
           </div>
           <div
-            className={`font-bold px-10 py-4 rounded shadow-lg min-w-[300px] text-center ${
-              !isRunning && !isBreakTime
-                ? "bg-green-500 text-white"
-                : "bg-white text-black"
-            }`}
+            className={`font-bold px-10 py-4 rounded shadow-lg min-w-[300px] text-center ${!isRunning && !isBreakTime
+              ? "bg-green-500 text-white"
+              : "bg-white text-black"
+              }`}
           >
             {(() => {
               const time = isBreakTime
@@ -3902,9 +3783,8 @@ const BangDiemDoiKhang = () => {
         {/* Xanh */}
         <div className="flex-1">
           <div
-            className={`text-white p-6 rounded flex flex-col items-center shadow-2xl transition-all duration-500 overflow-hidden relative ${
-              announcedWinner?.team === "blue" ? "victory-animation" : ""
-            }`}
+            className={`text-white p-6 rounded flex flex-col items-center shadow-2xl transition-all duration-500 overflow-hidden relative ${announcedWinner?.team === "blue" ? "victory-animation" : ""
+              }`}
             style={{
               background: "linear-gradient(135deg, #0000FF 0%, #0000CC 100%)",
               boxShadow:
@@ -3982,13 +3862,7 @@ const BangDiemDoiKhang = () => {
               {/* Nút kết thúc thời gian y tế */}
               {isMedicalTime && (
                 <button
-                  onClick={() => {
-                    clearInterval(timerRef.current);
-                    setIsMedicalTime(false);
-                    setMedicalTeam(null);
-                    setMedicalTimeLeft(0);
-                    console.log(" Kết thúc thời gian y tế");
-                  }}
+                  onClick={handleStopMedical}
                   className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center font-bold text-sm gap-2 transition-colors animate-pulse"
                 >
                   Y tế
@@ -4167,11 +4041,10 @@ const BangDiemDoiKhang = () => {
                   stopAllAudios();
                   setIsSoundEnabled(!isSoundEnabled);
                 }}
-                className={`${
-                  isSoundEnabled
-                    ? "bg-green-600 hover:bg-green-700"
-                    : "bg-gray-600 hover:bg-gray-700"
-                } text-white px-4 py-2 rounded flex items-center gap-2 transition-all text-sm shadow-lg hover:shadow-xl`}
+                className={`${isSoundEnabled
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-gray-600 hover:bg-gray-700"
+                  } text-white px-4 py-2 rounded flex items-center gap-2 transition-all text-sm shadow-lg hover:shadow-xl`}
               >
                 {isSoundEnabled ? (
                   <svg
@@ -4208,7 +4081,7 @@ const BangDiemDoiKhang = () => {
       )}
 
       {!showControlBar && (
-        <div className="mt-2 w-full max-w-7xl pb-32">
+        <div className="fixed bottom-0 left-0 right-0 w-full backdrop-blur-sm z-50">
           {/* Grid layout: 2 cột cho Đỏ và Xanh */}
           <div className="grid grid-cols-2 gap-2">
             {/* Cột ĐỎ */}
@@ -4816,15 +4689,13 @@ const BangDiemDoiKhang = () => {
                 <span className="text-gray-400 text-xs">Chế độ</span>
                 <button
                   onClick={() => setShowControlBar(!showControlBar)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    showControlBar ? "bg-blue-600" : "bg-gray-600"
-                  }`}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${showControlBar ? "bg-blue-600" : "bg-gray-600"
+                    }`}
                   title={showControlBar ? "Quản lý" : "Thi đấu"}
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      showControlBar ? "translate-x-6" : "translate-x-1"
-                    }`}
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${showControlBar ? "translate-x-6" : "translate-x-1"
+                      }`}
                   />
                 </button>
                 <span className="text-white text-xs font-semibold">
@@ -4867,7 +4738,7 @@ const BangDiemDoiKhang = () => {
 
             {/* Right: Ready Indicator */}
             {referrerDevices.filter((s) => s.ready).length ===
-            (matchInfo.config_system?.so_giam_dinh || 3) ? (
+              (matchInfo.config_system?.so_giam_dinh || 3) ? (
               <div className="flex items-center gap-2 bg-green-500/20 border border-green-500 rounded px-4 py-2">
                 <span className="text-green-400 font-bold text-sm">
                   Tất cả sẵn sàng
@@ -4927,6 +4798,7 @@ const BangDiemDoiKhang = () => {
         setTimeLeft={setTimeLeft}
         totalRounds={(matchInfo.so_hiep || 3) + (matchInfo.so_hiep_phu || 0)}
         roundDuration={matchInfo.thoi_gian_thi_dau || 180}
+        keyboardMode={keyboardMode}
       />
 
       {/* Modal chọn winner - Using WinnerSelectionModal Component */}
@@ -4975,6 +4847,23 @@ const BangDiemDoiKhang = () => {
 
       {/* Modal thông báo chung */}
       <ConfirmModal {...modalProps} />
+
+      {/* Toast thông báo chế độ bàn phím */}
+      {/* {showKeyboardModeToast && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] animate-fade-in">
+          <div className="bg-gray-900/95 backdrop-blur-md text-white px-6 py-3 rounded-xl shadow-2xl border border-gray-700 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clipRule="evenodd" />
+            </svg>
+            <div>
+              <div className="text-xs text-gray-400 uppercase tracking-wider">Chế độ bàn phím</div>
+              <div className="font-bold text-lg">{KEYBOARD_MODES[keyboardMode]?.label || keyboardMode}</div>
+              <div className="text-xs text-gray-400">{KEYBOARD_MODES[keyboardMode]?.description}</div>
+            </div>
+            <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-mono">F8</span>
+          </div>
+        </div>
+      )} */}
     </div>
   );
 };

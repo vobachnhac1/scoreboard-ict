@@ -75,6 +75,43 @@ const CompDKDataTable = ({ value, fileName }) => {
     URL.revokeObjectURL(url);
   };
 
+  // tạo format dữ liệu lại trước khi data theo dạng DK, DOL thì không cần đổi | TUV, SOL thì cần dổi 2 row thì 1 | DAL thì cần đổi 4 row thành 1
+  const formatData = () => {
+    const type = headers[0];
+    const formatted = [];
+    if (type === "DK" || type === "DOL") return rows;
+    if (type === "TUV" || type === "SOL") {
+      for (let i = 0; i < rows.length; i += 2) {
+        const row1 = rows[i];
+        const row2 = rows[i + 1];
+        formatted.push([row1, row2]);
+      }
+    }
+    if (type === "DAL") {
+      for (let i = 0; i < rows.length; i += 4) {
+        const row1 = rows[i];
+        const row2 = rows[i + 1];
+        const row3 = rows[i + 2];
+        const row4 = rows[i + 3];
+        formatted.push([row1, row2, row3, row4]);
+      }
+    }
+    if (type == "VON") {
+      let count = 0;
+      for (let i = 0; i < rows.length; i += count) {
+        let arrRow = []
+        if (rows[i][1] == "VON" && rows[i][5] != null) {
+          count = Number(rows[i][5]) > 1 ? Number(rows[i][5]) : 1;
+        }
+        for (let j = 0; j < count; j++) {
+          arrRow.push(rows[i + j]);
+        }
+        formatted.push(arrRow);
+      }
+    }
+    return formatted;
+  };
+
   return (
     <div className="mt-2">
       {/* Toolbar */}
@@ -162,31 +199,155 @@ const CompDKDataTable = ({ value, fileName }) => {
                     </td>
                   </tr>
                 ) : (
-                  rows.map((row, rowIdx) => (
-                    <tr
-                      key={rowIdx}
-                      className="border-t border-gray-100 dark:border-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent dark:hover:from-blue-900/20 dark:hover:to-transparent transition-all group"
-                    >
-                      <td className="px-3 py-2.5 text-center text-gray-400 dark:text-gray-500 border-r-2 border-gray-100 dark:border-gray-700 select-none font-mono font-semibold text-xs bg-gray-50 dark:bg-gray-900">
-                        {rowIdx + 1}
-                      </td>
-                      {headers.map((_, cellIdx) => (
-                        <td
-                          key={cellIdx}
-                          className="px-4 py-2.5 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700"
-                        >
-                          <div
-                            className="max-w-[250px] truncate"
-                            title={String(row[cellIdx] ?? "")}
-                          >
-                            {row[cellIdx] !== null && row[cellIdx] !== undefined
-                              ? String(row[cellIdx])
-                              : <span className="text-gray-300 dark:text-gray-600 italic">—</span>}
-                          </div>
+                  formatData().map((item, rowIdx) => {
+                    const isGrouped = Array.isArray(item) && item.length > 0 && Array.isArray(item[0]);
+                    const displayRow = isGrouped ? item[0] : item;
+                    return (
+                      <tr
+                        key={rowIdx}
+                        className="border-t border-gray-100 dark:border-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent dark:hover:from-blue-900/20 dark:hover:to-transparent transition-all group"
+                      >
+                        <td className="px-3 py-2.5 text-center text-gray-400 dark:text-gray-500 border-r-2 border-gray-100 dark:border-gray-700 select-none font-mono font-semibold text-xs bg-gray-50 dark:bg-gray-900">
+                          {rowIdx + 1}
                         </td>
-                      ))}
-                    </tr>
-                  ))
+                        {headers.map((headerStr, cellIdx) => {
+                          // headers[0] = STT |  headers[1] = Mã | headers[2] = Họ tên | headers[3] = Đơn vị | headers[4] = Nội dung thi
+                          // nêu row là array -> cột STT, Mã, Đơn vị, Nội dung thi sẽ được gộp lại
+                          if (!isGrouped) {
+                            const val = displayRow[cellIdx];
+                            return (
+                              <td
+                                key={cellIdx}
+                                className="px-4 py-2.5 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700"
+                              >
+                                <div
+                                  className="max-w-[250px] truncate"
+                                  title={String(val ?? "")}
+                                >
+                                  {val !== null && val !== undefined
+                                    ? String(val)
+                                    : <span className="text-gray-300 dark:text-gray-600 italic">—</span>}
+                                </div>
+                              </td>
+                            );
+                          }
+
+                          // Cho trường hợp Grouped (ví dụ: TUV, SOL, DAL)
+                          const val1 = displayRow[cellIdx];
+                          const headerLower = String(headerStr).toLowerCase();
+                          // Xác định những cột cần "gộp" (stack) để hiển thị đồng thời nhiều giá trị
+                          // Ở vị trí 1 và 2 thường là tên hoặc thông tin định danh
+                          let isNameCol = headerLower.includes('họ tên') || headerLower.includes('họ và tên') || headerLower === 'tên' || cellIdx === 2;
+
+                          if (headers[0] == 'VON') {
+                            isNameCol = headerLower.includes('họ tên') || headerLower.includes('họ và tên') || headerLower === 'tên' || cellIdx === 3;
+                          }
+
+                          if (isNameCol) {
+                            return (
+                              <td
+                                key={cellIdx}
+                                className="px-4 py-2 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700 align-middle bg-blue-50/40 dark:bg-blue-900/20 z-10"
+                              >
+                                <div className="flex flex-col gap-1.5 leading-tight">
+                                  {item.map((r, subIdx) => {
+                                    if (!r) return null;
+                                    const textColors = ["text-blue-700 dark:text-blue-400", "text-indigo-700 dark:text-indigo-400", "text-green-700 dark:text-green-400", "text-orange-700 dark:text-orange-400"];
+                                    const dotColors = ["bg-blue-500", "bg-indigo-500", "bg-green-500", "bg-orange-500"];
+                                    const tColor = textColors[subIdx % textColors.length];
+                                    const dColor = dotColors[subIdx % dotColors.length];
+                                    return (
+                                      <React.Fragment key={subIdx}>
+                                        {subIdx > 0 && <div className="w-full h-px bg-blue-200 dark:bg-blue-800"></div>}
+                                        <div
+                                          className={`max-w-[250px] truncate flex items-center gap-2`}
+                                          title={String(r[cellIdx] ?? "")}
+                                        >
+                                          {/* <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dColor}`}></span> */}
+                                          {r[cellIdx] !== null && r[cellIdx] !== undefined
+                                            ? subIdx + 1 + ". " + String(r[cellIdx])
+                                            : <span className="text-gray-300 dark:text-gray-600 italic">—</span>}
+                                        </div>
+                                      </React.Fragment>
+                                    );
+                                  })}
+                                </div>
+                              </td>
+                            );
+                          }
+
+                          // STT (0), Mã (1), Đơn vị (3), Nội dung thi (4) -> Được yêu cầu hiển thị gộp thông tin thành dạng duy nhất
+                          let isStaticCol = cellIdx === 0 || cellIdx === 1 || cellIdx === 3 || cellIdx === 4;
+                          // trường hợp VON thì đơn vị là cột 3
+                          if (headers[0] == "VON") {
+                            isStaticCol = cellIdx === 0 || cellIdx === 1 || cellIdx === 2 || cellIdx === 4 || cellIdx === 5;
+                          }
+
+                          // trường hợp 
+                          if (isStaticCol) {
+                            return (
+                              <td
+                                key={cellIdx}
+                                className="px-4 py-2.5 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700"
+                              >
+                                <div
+                                  className="max-w-[250px] truncate"
+                                  title={String(val1 ?? "")}
+                                >
+                                  {val1 !== null && val1 !== undefined
+                                    ? String(val1)
+                                    : <span className="text-gray-300 dark:text-gray-600 italic">—</span>}
+                                </div>
+                              </td>
+                            );
+                          }
+
+                          // Những cột khác, nếu giá trị giống nhau hoàn toàn thì hiển thị 1 lần, khác thì stack
+                          const allSame = item.every((r) => r && String(r[cellIdx] || "") === String(val1 || ""));
+                          if (allSame) {
+                            return (
+                              <td
+                                key={cellIdx}
+                                className="px-4 py-2.5 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700"
+                              >
+                                <div
+                                  className="max-w-[250px] truncate"
+                                  title={String(val1 ?? "")}
+                                >
+                                  {val1 !== null && val1 !== undefined
+                                    ? String(val1)
+                                    : <span className="text-gray-300 dark:text-gray-600 italic">—</span>}
+                                </div>
+                              </td>
+                            );
+                          } else {
+                            return (
+                              <td
+                                key={cellIdx}
+                                className="px-4 py-2 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700 align-middle"
+                              >
+                                <div className="flex flex-col gap-1.5 leading-tight">
+                                  {item.map((r, subIdx) => (
+                                    <React.Fragment key={subIdx}>
+                                      {subIdx > 0 && <div className="w-full h-px bg-gray-200 dark:bg-gray-700"></div>}
+                                      <div
+                                        className="max-w-[250px] truncate"
+                                        title={String(r?.[cellIdx] ?? "")}
+                                      >
+                                        {r?.[cellIdx] !== null && r?.[cellIdx] !== undefined
+                                          ? String(r[cellIdx])
+                                          : <span className="text-gray-300 dark:text-gray-600 italic">—</span>}
+                                      </div>
+                                    </React.Fragment>
+                                  ))}
+                                </div>
+                              </td>
+                            );
+                          }
+                        })}
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>

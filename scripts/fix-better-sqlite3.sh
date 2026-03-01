@@ -2,7 +2,7 @@
 
 # Script để fix lỗi better-sqlite3 NODE_MODULE_VERSION mismatch
 
-echo "🔧 Fixing better-sqlite3 for Electron..."
+echo " Fixing better-sqlite3 for Electron..."
 echo ""
 
 # Bước 1: Xóa better-sqlite3 cũ
@@ -18,7 +18,7 @@ echo "🔨 Step 3: Rebuilding for Electron..."
 yarn rebuild:native
 
 echo ""
-echo "✅ Done! Now you can run:"
+echo " Done! Now you can run:"
 echo "   yarn dev"
 echo ""
 

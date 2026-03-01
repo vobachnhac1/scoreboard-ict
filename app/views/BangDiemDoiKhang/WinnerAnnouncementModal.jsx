@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 const WinnerAnnouncementModal = ({
   showWinnerAnnouncementModal,
@@ -6,87 +6,127 @@ const WinnerAnnouncementModal = ({
   btnReturnWinner,
   btnConfirmWinner,
 }) => {
+  const [winReason, setWinReason] = useState("Thắng Điểm");
+
+  useEffect(() => {
+    if (showWinnerAnnouncementModal) {
+      setWinReason("Thắng Điểm");
+    }
+  }, [showWinnerAnnouncementModal]);
+
   if (!showWinnerAnnouncementModal || !announcedWinner) return null;
 
+  const reasons = [
+    { id: "Thắng Điểm", label: "Thắng Điểm" },
+    { id: "Thắng Tuyệt Đối", label: "Thắng Tuyệt Đối" },
+    { id: "Thắng Bỏ Cuộc", label: "Thắng Bỏ Cuộc" },
+    { id: "Thắng Bốc Thăm", label: "Thắng Bốc Thăm" },
+  ];
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[100]">
-      <div className="bg-white dark:bg-gray-800 rounded p-8 max-w-2xl w-full mx-4 shadow-2xl border-4 border-yellow-500 dark:border-yellow-600">
-        {/* Header với icon trophy */}
-        <div className="text-center mb-6">
-          <div className="inline-block bg-yellow-500 dark:bg-yellow-600 rounded-full p-4 mb-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-16 w-16 text-white"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-          </div>
-          <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">
-            🏆 VẬN ĐỘNG VIÊN THẮNG
-          </h2>
-        </div>
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[100] p-4 transition-all duration-300">
+      <div className="relative bg-gray-900 rounded-2xl p-10 max-w-2xl w-full mx-4 shadow-[0_0_60px_rgba(234,179,8,0.4)] border border-yellow-500/30 transform transition-all">
+        {/* Glow effect behind the modal */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-yellow-500 via-yellow-300 to-yellow-500 rounded-2xl blur opacity-20 animate-pulse"></div>
 
-        {/* Thông tin vận động viên */}
-        <div
-          className={`p-6 rounded mb-6 ${
-            announcedWinner.team === "red"
-              ? "bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 border-4 border-red-500 dark:border-red-600"
-              : "bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 border-4 border-blue-500 dark:border-blue-600"
-          }`}
-        >
-          <div className="text-center space-y-4">
-            {/* Tên vận động viên */}
-            <div>
-              <div className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-1">
-                TÊN VẬN ĐỘNG VIÊN
-              </div>
-              <div
-                className={`text-4xl font-bold ${
-                  announcedWinner.team === "red"
-                    ? "text-red-700 dark:text-red-300"
-                    : "text-blue-700 dark:text-blue-300"
-                }`}
+        <div className="relative z-10">
+          {/* Header với icon trophy */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full p-5 mb-5 shadow-[0_0_30px_rgba(234,179,8,0.5)] transform hover:scale-110 transition-transform duration-300">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-20 w-20 text-white"
+                viewBox="0 0 20 20"
+                fill="currentColor"
               >
-                {announcedWinner.name}
-              </div>
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
             </div>
+            <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 uppercase tracking-wider drop-shadow-md">
+              Vận Động Viên Thắng
+            </h2>
+          </div>
 
-            {/* Đội */}
-            <div>
-              <div className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-1">
-                ĐỘI
+          {/* Thông tin vận động viên */}
+          <div
+            className={`p-8 rounded-2xl mb-8 border border-white/10 shadow-2xl ${announcedWinner.team === "red"
+              ? "bg-gradient-to-br from-red-600/90 to-red-900/90 shadow-red-500/30"
+              : "bg-gradient-to-br from-blue-600/90 to-blue-900/90 shadow-blue-500/30"
+              }`}
+          >
+            <div className="text-center space-y-6">
+              {/* Tên vận động viên */}
+              <div>
+                <div className="text-sm font-semibold text-white/70 uppercase tracking-widest mb-2">
+                  Tên Vận Động Viên
+                </div>
+                <div className="text-5xl font-black text-white drop-shadow-lg leading-tight uppercase">
+                  {announcedWinner.name}
+                </div>
               </div>
-              <div
-                className={`inline-block px-6 py-2 rounded-full text-2xl font-bold text-white ${
-                  announcedWinner.team === "red"
-                    ? "bg-red-600 dark:bg-red-700"
-                    : "bg-blue-600 dark:bg-blue-700"
-                }`}
-              >
-                {announcedWinner.teamName}
+
+              {/* Đội */}
+              <div>
+                <div className="text-sm font-semibold text-white/70 uppercase tracking-widest mb-2">
+                  Đội
+                </div>
+                <div
+                  className={`inline-block px-8 py-3 rounded-xl text-3xl font-bold text-white shadow-inner border border-white/20 uppercase ${announcedWinner.team === "red"
+                    ? "bg-red-500/50"
+                    : "bg-blue-500/50"
+                    }`}
+                >
+                  {announcedWinner.matchTeamName || announcedWinner.teamName}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Buttons */}
-        <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-4">
-            {/* Button Quay lại */}
+          {/* Lý do Thắng */}
+          <div className="mb-8">
+            <div className="text-center text-sm font-semibold text-white/70 uppercase tracking-widest mb-4">
+              Lý Do Thắng
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {reasons.map((r) => (
+                <label
+                  key={r.id}
+                  className={`cursor-pointer group relative px-4 py-3 rounded-xl font-bold text-center transition-all border ${winReason === r.id
+                      ? "bg-yellow-500/20 text-yellow-500 border-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.3)]"
+                      : "bg-gray-800/50 text-gray-400 border-white/10 hover:border-white/30 hover:bg-gray-800"
+                    }`}
+                >
+                  <input
+                    type="radio"
+                    name="winReason"
+                    value={r.id}
+                    checked={winReason === r.id}
+                    onChange={(e) => setWinReason(e.target.value)}
+                    className="hidden"
+                  />
+                  <span>{r.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Buttons */}
+          <div className="grid grid-cols-2 gap-6 mt-10">
             <button
               onClick={btnReturnWinner}
-              className="bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white py-4 rounded font-bold text-lg transition-all shadow-lg hover:shadow-xl"
+              className="group relative px-6 py-4 rounded-xl font-bold text-lg text-white bg-gray-700 hover:bg-gray-600 transition-all shadow-lg overflow-hidden border border-gray-500/50"
             >
-              Quay lại
+              <div className="relative z-10 flex items-center justify-center gap-2">
+                <span>Quay lại</span>
+              </div>
             </button>
-            {/* Button Xác nhận */}
             <button
-              onClick={btnConfirmWinner}
-              className="bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-800 text-white py-4 rounded font-bold text-lg transition-all shadow-lg hover:shadow-xl"
+              onClick={() => btnConfirmWinner(winReason)}
+              className="group relative px-6 py-4 rounded-xl font-bold text-lg text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 transition-all shadow-lg shadow-green-500/30 overflow-hidden border border-green-400/50"
             >
-              Xác nhận & Kết thúc
+              <div className="relative z-10 flex items-center justify-center gap-2">
+                <span>Xác nhận & Kết thúc</span>
+              </div>
             </button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-# ✅ Socket Features Testing Checklist
+# Socket Features Testing Checklist
 
 ## 🎯 Mục đích
 
@@ -19,9 +19,9 @@ Checklist để test tất cả tính năng Socket.IO đã implement.
 - [ ] Click "📋 Copy" bên UUID → Copy thành công
 - [ ] Click "💾 Download QR Code" → Download file PNG
 - [ ] Click "🔄 Generate New" → Room ID và UUID thay đổi
-- [ ] Click "✅ Tạo Room & Kết nối" → Modal đóng
+- [ ] Click " Tạo Room & Kết nối" → Modal đóng
 - [ ] Room Info Bar xuất hiện
-- [ ] Socket connected (✅ Socket Connected)
+- [ ] Socket connected ( Socket Connected)
 - [ ] localStorage có key "admin_room"
 
 ### **Reload Page**
@@ -39,7 +39,7 @@ Checklist để test tất cả tính năng Socket.IO đã implement.
 - [ ] Edit UUID Desktop → QR Code update
 - [ ] Edit Server URL → QR Code update
 - [ ] Click "🔄 Generate New" → IDs thay đổi
-- [ ] Click "✅ Sử dụng Room này" → Room được update
+- [ ] Click " Sử dụng Room này" → Room được update
 - [ ] Socket reconnect với room mới
 - [ ] localStorage được update
 
@@ -69,7 +69,7 @@ Checklist để test tất cả tính năng Socket.IO đã implement.
 
 ### **After Disconnect**
 
-- [ ] Console log: "✅ Đã ngắt kết nối X thiết bị"
+- [ ] Console log: " Đã ngắt kết nối X thiết bị"
 - [ ] Sau 1 giây → Danh sách refresh
 - [ ] Danh sách thiết bị trống
 - [ ] Button disabled (vì không còn thiết bị)
@@ -93,12 +93,12 @@ Checklist để test tất cả tính năng Socket.IO đã implement.
 - [ ] Button disabled trong quá trình reconnect
 - [ ] Console log: "🔄 Bắt đầu tạo lại kết nối socket..."
 - [ ] Console log: "1️⃣ Ngắt kết nối socket hiện tại..."
-- [ ] Socket status: ❌ Socket Disconnected
+- [ ] Socket status: Socket Disconnected
 - [ ] Console log: "2️⃣ Tạo kết nối socket mới..."
-- [ ] Socket status: ✅ Socket Connected
+- [ ] Socket status: Socket Connected
 - [ ] Console log: "3️⃣ Đăng ký admin vào room..."
 - [ ] Console log: "4️⃣ Refresh danh sách thiết bị..."
-- [ ] Console log: "✅ Tạo lại kết nối socket thành công!"
+- [ ] Console log: " Tạo lại kết nối socket thành công!"
 - [ ] Alert: "Tạo lại kết nối socket thành công!"
 - [ ] Button text trở lại: "🔄 Re-create Socket"
 - [ ] Button enabled
@@ -174,8 +174,8 @@ Checklist để test tất cả tính năng Socket.IO đã implement.
 
 - [ ] Hiển thị đúng số lượng thiết bị
 - [ ] Columns: STT, Tên TB, Quyền GD, Mã TB, IP, TT, Duyệt, Actions
-- [ ] Status icon: ✅ (active) / ❌ (inactive)
-- [ ] Approval status: ✅ (approved) / ⏳ (pending) / ❌ (rejected)
+- [ ] Status icon: (active) / (inactive)
+- [ ] Approval status: (approved) / ⏳ (pending) / (rejected)
 - [ ] Actions buttons: KH, GD, DIS, MSG
 
 ### **Double Click**
@@ -191,16 +191,16 @@ Checklist để test tất cả tính năng Socket.IO đã implement.
 
 ### **Connection Status**
 
-- [ ] Khi connected: "✅ Socket Connected" (màu xanh)
-- [ ] Khi disconnected: "❌ Socket Disconnected" (màu đỏ)
+- [ ] Khi connected: " Socket Connected" (màu xanh)
+- [ ] Khi disconnected: " Socket Disconnected" (màu đỏ)
 - [ ] Status update real-time
 
 ### **Auto Reconnect**
 
 - [ ] Tắt server → Socket disconnect
-- [ ] Status: ❌ Socket Disconnected
+- [ ] Status: Socket Disconnected
 - [ ] Bật server → Socket auto reconnect
-- [ ] Status: ✅ Socket Connected
+- [ ] Status: Socket Connected
 
 ---
 
@@ -247,7 +247,7 @@ Checklist để test tất cả tính năng Socket.IO đã implement.
 ### **Server Offline**
 
 - [ ] Server offline → Socket disconnect
-- [ ] Status: ❌ Socket Disconnected
+- [ ] Status: Socket Disconnected
 - [ ] Không crash app
 
 ### **Network Error**
@@ -257,21 +257,21 @@ Checklist để test tất cả tính năng Socket.IO đã implement.
 
 ---
 
-## 📊 Console Logs
+##  Console Logs
 
 ### **Create Room**
 
 ```
-✅ Created/Connected to room: {room_id: "...", ...}
-📤 Emit event: REGISTER_ROOM_ADMIN {...}
+ Created/Connected to room: {room_id: "...", ...}
+ Emit event: REGISTER_ROOM_ADMIN {...}
 ```
 
 ### **Turn Off All**
 
 ```
-✅ Đã ngắt kết nối 5 thiết bị
-📤 Emit event: DISCONNECT_CLIENT {...}
-📤 Emit event: ADMIN_FETCH_CONN {}
+ Đã ngắt kết nối 5 thiết bị
+ Emit event: DISCONNECT_CLIENT {...}
+ Emit event: ADMIN_FETCH_CONN {}
 ```
 
 ### **Re-create Socket**
@@ -282,16 +282,17 @@ Checklist để test tất cả tính năng Socket.IO đã implement.
 2️⃣ Tạo kết nối socket mới...
 3️⃣ Đăng ký admin vào room...
 4️⃣ Refresh danh sách thiết bị...
-✅ Tạo lại kết nối socket thành công!
+ Tạo lại kết nối socket thành công!
 ```
 
 ---
 
-## ✅ Test Summary
+## Test Summary
 
 **Total Tests:** ~100+
 
 **Categories:**
+
 - 🏠 Create Room: 25 tests
 - 🔴 Turn Off All: 10 tests
 - 🔄 Re-create Socket: 15 tests
@@ -303,8 +304,7 @@ Checklist để test tất cả tính năng Socket.IO đã implement.
 
 ---
 
-**Tester:** _______________  
-**Date:** _______________  
+**Tester:** **\*\***\_\_\_**\*\***  
+**Date:** **\*\***\_\_\_**\*\***  
 **Status:** ⬜ Pass / ⬜ Fail  
-**Notes:** _______________
-
+**Notes:** **\*\***\_\_\_**\*\***

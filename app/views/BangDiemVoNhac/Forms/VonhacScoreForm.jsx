@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAppDispatch } from "../../../config/redux/store";
-import Button from "../../../components/Button";
 
 export default function VonhacScoreForm({
   type,
@@ -26,175 +25,104 @@ export default function VonhacScoreForm({
     defaultValues: defaultValues,
   });
 
+  const watchedJudges = watch();
+
+  // Tính tổng điểm mỗi khi thay đổi
+  const [totalScore, setTotalScore] = useState(0);
+
   useEffect(() => {
     if (data) {
       reset(data);
     }
   }, [data, reset]);
 
+  useEffect(() => {
+    // Array to store current valid judge scores
+    const currentScores = [];
+
+    // Safely collect scores from watch object based on number of judges
+    if (soGiamDinh && soGiamDinh > 0) {
+      for (let i = 1; i <= soGiamDinh; i++) {
+        const val = watchedJudges[`judge${i}`];
+        if (val !== undefined && val !== '') {
+          currentScores.push(Number(val));
+        } else {
+          currentScores.push(0);
+        }
+      }
+    }
+
+    let calculatedTotal = 0;
+
+    if (currentScores.length > 0) {
+      if (soGiamDinh === 7) {
+        // Công thức tính điểm Võ Nhạc
+        const chuyenMonAvg = (currentScores[0] + currentScores[1]) / 2;
+        const ngheThuatAvg = (currentScores[2] + currentScores[3]) / 2;
+        const thucHienAvg = (currentScores[4] + currentScores[5]) / 2;
+        const trongTaiTruong = currentScores[6];
+        calculatedTotal = chuyenMonAvg * 0.3 + ngheThuatAvg * 0.3 + thucHienAvg * 0.3 + trongTaiTruong * 0.1;
+      } else {
+        calculatedTotal = currentScores.reduce((acc, curr) => acc + curr, 0);
+      }
+    }
+
+    setTotalScore(Number(calculatedTotal.toFixed(2)));
+  }, [watchedJudges, soGiamDinh]);
+
   const onSubmit = (formData) => {
-    onAgree(formData);
+    // Đính kèm điểm tổng vào payload gửi đi
+    const finalData = { ...formData, total: totalScore };
+    onAgree(finalData);
   };
 
-  // Render Judge Row
-  const JudgeRow = ({ judgeNumber }) => (
-    <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors">
-      {/* STT */}
-      <td className="px-4 py-4 text-center">
-        <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 dark:bg-blue-700 text-white text-sm font-bold shadow-sm">
-          {judgeNumber}
-        </span>
-      </td>
+  // Render Judge Input Grid Node
+  const renderJudgeInput = (judgeNumber) => {
+    let judgeLabel = `Điểm GĐ ${judgeNumber}`;
+    if (soGiamDinh === 7) {
+      if (judgeNumber === 1 || judgeNumber === 2) judgeLabel = `GĐ ${judgeNumber} (Chuyên môn)`;
+      else if (judgeNumber === 3 || judgeNumber === 4) judgeLabel = `GĐ ${judgeNumber} (Nghệ thuật)`;
+      else if (judgeNumber === 5 || judgeNumber === 6) judgeLabel = `GĐ ${judgeNumber} (Thực hiện)`;
+      else if (judgeNumber === 7) judgeLabel = `GĐ ${judgeNumber} (TT Trưởng)`;
+    }
 
-      {/* Giám định */}
-      <td className="px-6 py-4">
+    return (
+      <div className="space-y-1.5 w-full">
         <label
           htmlFor={`judge${judgeNumber}`}
-          className="text-base font-semibold text-gray-800 dark:text-gray-200 cursor-pointer"
+          className="block text-sm font-semibold text-gray-700 dark:text-gray-300"
         >
-          GIÁM ĐỊNH {judgeNumber}
+          {judgeLabel} <span className="text-red-500">*</span>
         </label>
-      </td>
-
-      {/* Nhập điểm */}
-      <td className="px-6 py-4">
-        <div className="flex flex-col gap-2">
-          <input
-            readOnly={loadingButton}
-            id={`judge${judgeNumber}`}
-            {...register(`judge${judgeNumber}`, {
-              required: "Điểm giám định là bắt buộc",
-              min: { value: 0, message: "Điểm phải từ 0-100" },
-              max: { value: 100, message: "Điểm phải từ 0-100" },
-              pattern: {
-                value: /^[0-9]*\.?[0-9]+$/,
-                message: "Chỉ được nhập số",
-              },
-            })}
-            type="number"
-            step="1"
-            min="0"
-            max="100"
-            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded text-center text-2xl font-bold text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-blue-500 dark:focus:border-blue-600 transition-all bg-white dark:bg-gray-700 hover:border-blue-400 dark:hover:border-blue-500"
-            placeholder="0"
-          />
-          {errors[`judge${judgeNumber}`] && (
-            <p className="text-red-600 dark:text-red-400 text-xs font-medium flex items-center gap-1 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-3 w-3"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              {String(errors[`judge${judgeNumber}`].message)}
-            </p>
-          )}
-        </div>
-      </td>
-    </tr>
-  );
-
-  // Render Category Row for 7 judges (Võ Nhạc layout)
-  const CategoryRow = ({
-    stt,
-    categoryName,
-    judge1,
-    judge2,
-    isSingleJudge = false,
-  }) => (
-    <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 transition-colors">
-      {/* STT */}
-      <td className="px-4 py-4 text-center">
-        <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-purple-600 dark:bg-purple-700 text-white text-sm font-bold shadow-sm">
-          {stt}
-        </span>
-      </td>
-
-      {/* Chức năng */}
-      <td className="px-6 py-4">
-        <label className="text-base font-semibold text-gray-800 dark:text-gray-200">
-          {categoryName}
-        </label>
-      </td>
-
-      {/* Số 1 (GĐ1) */}
-      <td className="px-4 py-4">
-        <div className="flex flex-col gap-1">
-          <input
-            readOnly={loadingButton}
-            id={`judge${judge1}`}
-            {...register(`judge${judge1}`, {
-              required: "Điểm là bắt buộc",
-              min: { value: 0, message: "Điểm phải từ 0-10" },
-              max: { value: 100, message: "Điểm phải từ 0-10" },
-              pattern: {
-                value: /^[0-9]*\.?[0-9]+$/,
-                message: "Chỉ được nhập số",
-              },
-            })}
-            type="number"
-            step="0.1"
-            min="0"
-            max="100"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-center text-xl font-bold text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-600 focus:border-purple-500 dark:focus:border-purple-600 transition-all bg-white dark:bg-gray-700 hover:border-purple-400 dark:hover:border-purple-500"
-            placeholder="0"
-          />
-          {errors[`judge${judge1}`] && (
-            <p className="text-red-600 dark:text-red-400 text-[10px] font-medium">
-              {String(errors[`judge${judge1}`].message)}
-            </p>
-          )}
-        </div>
-      </td>
-
-      {/* Số 2 (GĐ2) */}
-      <td className="px-4 py-4">
-        {!isSingleJudge ? (
-          <div className="flex flex-col gap-1">
-            <input
-              readOnly={loadingButton}
-              id={`judge${judge2}`}
-              {...register(`judge${judge2}`, {
-                required: "Điểm là bắt buộc",
-                min: { value: 0, message: "Điểm phải từ 0-10" },
-                max: { value: 10, message: "Điểm phải từ 0-10" },
-                pattern: {
-                  value: /^[0-9]*\.?[0-9]+$/,
-                  message: "Chỉ được nhập số",
-                },
-              })}
-              type="number"
-              step="0.1"
-              min="0"
-              max="100"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-center text-xl font-bold text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-600 focus:border-purple-500 dark:focus:border-purple-600 transition-all bg-white dark:bg-gray-700 hover:border-purple-400 dark:hover:border-purple-500"
-              placeholder="0"
-            />
-            {errors[`judge${judge2}`] && (
-              <p className="text-red-600 dark:text-red-400 text-[10px] font-medium">
-                {String(errors[`judge${judge2}`].message)}
-              </p>
-            )}
-          </div>
-        ) : (
-          <div className="text-center text-gray-400 dark:text-gray-600">-</div>
+        <input
+          readOnly={loadingButton}
+          id={`judge${judgeNumber}`}
+          {...register(`judge${judgeNumber}`, {
+            min: { value: 0, message: "Phải từ 0-100" },
+            max: { value: 100, message: "Phải từ 0-100" },
+          })}
+          type="number"
+          step="0.01"
+          min="0"
+          max="100"
+          className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow disabled:bg-gray-100 read-only:bg-gray-100 dark:read-only:bg-gray-900"
+          placeholder="Nhập điểm..."
+        />
+        {errors[`judge${judgeNumber}`] && (
+          <p className="text-red-500 text-xs mt-1 font-medium">
+            {String(errors[`judge${judgeNumber}`].message)}
+          </p>
         )}
-      </td>
-    </tr>
-  );
+      </div>
+    );
+  };
 
   return (
     <Fragment>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Match Info */}
         {matchData && (
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 p-5 rounded-lg shadow-md">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 p-5 rounded shadow-sm">
             <div className="text-white space-y-1">
               <div className="flex items-center justify-center gap-2 mb-1">
                 <svg
@@ -220,116 +148,114 @@ export default function VonhacScoreForm({
           </div>
         )}
 
-        {/* Judge Scores Table */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-          {/* Table Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 px-6 py-3">
-            <div className="flex items-center gap-2 text-white">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                <path
-                  fillRule="evenodd"
-                  d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <h3 className="font-bold text-base uppercase tracking-wide">
-                Điểm giám định
-              </h3>
-            </div>
-          </div>
-
-          {/* Table */}
-          <table className="w-full">
+        {/* Judge Scores Input Grid */}
+        <div className="bg-gray-50 dark:bg-gray-800 rounded p-5 border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-visible">
+          <div className="space-y-6">
             {soGiamDinh === 7 ? (
               <>
-                <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-                  <tr>
-                    <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider w-20">
-                      STT
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                      Chức năng
-                    </th>
-                    <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider w-32">
-                      Số 1
-                    </th>
-                    <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider w-32">
-                      Số 2
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  <CategoryRow
-                    stt={1}
-                    categoryName="Chuyên môn"
-                    judge1={1}
-                    judge2={2}
-                  />
-                  <CategoryRow
-                    stt={2}
-                    categoryName="Nghệ thuật"
-                    judge1={3}
-                    judge2={4}
-                  />
-                  <CategoryRow
-                    stt={3}
-                    categoryName="Thực hiện"
-                    judge1={5}
-                    judge2={6}
-                  />
-                  <CategoryRow
-                    stt={4}
-                    categoryName="Trọng tài trưởng"
-                    judge1={7}
-                    isSingleJudge={true}
-                  />
-                </tbody>
+                {/* Chuyên môn */}
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="font-bold text-gray-700 dark:text-gray-300 uppercase mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
+                    1. Chuyên môn
+                  </h4>
+                  <div className="grid grid-cols-3 gap-4">
+                    {renderJudgeInput(1)}
+                    {renderJudgeInput(2)}
+                    <div className="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
+                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">TRUNG BÌNH</span>
+                      <span className="text-2xl font-black text-blue-700 dark:text-blue-300">
+                        {(((Number(watchedJudges.judge1) || 0) + (Number(watchedJudges.judge2) || 0)) / 2).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Nghệ thuật */}
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="font-bold text-gray-700 dark:text-gray-300 uppercase mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
+                    2. Nghệ thuật
+                  </h4>
+                  <div className="grid grid-cols-3 gap-4">
+                    {renderJudgeInput(3)}
+                    {renderJudgeInput(4)}
+                    <div className="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
+                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">TRUNG BÌNH</span>
+                      <span className="text-2xl font-black text-blue-700 dark:text-blue-300">
+                        {(((Number(watchedJudges.judge3) || 0) + (Number(watchedJudges.judge4) || 0)) / 2).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Thực hiện */}
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="font-bold text-gray-700 dark:text-gray-300 uppercase mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
+                    3. Thực hiện
+                  </h4>
+                  <div className="grid grid-cols-3 gap-4">
+                    {renderJudgeInput(5)}
+                    {renderJudgeInput(6)}
+                    <div className="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
+                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">TRUNG BÌNH</span>
+                      <span className="text-2xl font-black text-blue-700 dark:text-blue-300">
+                        {(((Number(watchedJudges.judge5) || 0) + (Number(watchedJudges.judge6) || 0)) / 2).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Trọng tài trưởng */}
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="font-bold text-gray-700 dark:text-gray-300 uppercase mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
+                    4. Trọng tài trưởng
+                  </h4>
+                  <div className="grid grid-cols-3 gap-4">
+                    {renderJudgeInput(7)}
+                  </div>
+                </div>
               </>
             ) : (
-              <>
-                <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-                  <tr>
-                    <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider w-20">
-                      STT
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                      Giám định
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                      Nhập điểm
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {Array.from({ length: soGiamDinh }).map((_, index) => (
-                    <JudgeRow key={index} judgeNumber={index + 1} />
-                  ))}
-                </tbody>
-              </>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                {Array.from({ length: soGiamDinh }).map((_, index) => (
+                  <React.Fragment key={index}>
+                    {renderJudgeInput(index + 1)}
+                  </React.Fragment>
+                ))}
+              </div>
             )}
-          </table>
+          </div>
+
+          <div className="mt-6 pt-5 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              {soGiamDinh === 7 ? (
+                <span>* Hệ thống tự động tính theo tỷ lệ luật định (3 cột 30% - trưởng 10%).</span>
+              ) : (
+                <span>* Khóa cộng tổng điểm tất cả Khảo thí.</span>
+              )}
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-base font-medium text-gray-700 dark:text-gray-300">Tổng điểm:</span>
+              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-4 py-1.5 rounded-md border border-blue-200 dark:border-blue-800">
+                {totalScore}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-4">
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
           <button
             disabled={loadingButton}
             type="button"
             onClick={onGoBack}
-            className="px-6 py-2.5 min-w-[120px] bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded font-semibold transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-600 transition-all shadow-sm"
           >
             Hủy
           </button>
           <button
             disabled={loadingButton}
             type="submit"
-            className="px-6 py-2.5 min-w-[120px] bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-800 text-white rounded font-semibold transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
           >
             {loadingButton ? (
               <>
@@ -353,7 +279,7 @@ export default function VonhacScoreForm({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Đang xử lý...
+                Đang lưu...
               </>
             ) : (
               <>

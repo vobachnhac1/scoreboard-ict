@@ -401,7 +401,7 @@ const BangDiemDoiKhang = () => {
   const [showMatchListModal, setShowMatchListModal] = useState(false); // HIỂN THỊ DANH SÁCH TRẬN ĐẤU
   const [matchesList, setMatchesList] = useState([]); // DANH SÁCH TRẬN ĐẤU
 
-  // Secondary display popup state (F9 hotkey)
+  // Secondary display popup state (F2 hotkey)
   const [showSecondaryDisplay, setShowSecondaryDisplay] = useState(false);
 
   // State vô hiệu hóa button
@@ -556,26 +556,36 @@ const BangDiemDoiKhang = () => {
   // Background style từ config
   const getBackgroundStyle = () => {
     const configSystem = matchInfo.config_system || {};
-    const bgType = configSystem.bg_doikhang_type || "color";
-    const bgColor = configSystem.bg_doikhang_color || "#000000";
-    const bgOpacity = configSystem.bg_doikhang_opacity || 100;
-    const bgImage = configSystem.bg_doikhang_image || "";
 
-    if (bgType === "image" && bgImage) {
+    const type = configSystem.bg_doikhang_type || 'color';
+    const color = configSystem.bg_doikhang_color || '#1e3a8a';
+    const image = configSystem.bg_doikhang_image || '';
+    const opacity = configSystem.bg_doikhang_opacity ?? 100;
+
+    if (type === 'image' && image) {
+      const imageUrl = image.startsWith('http') ? image : `http://localhost:6789${image}`;
       return {
-        backgroundImage: `url(${bgImage.startsWith("http") ? bgImage : `http://localhost:6789${bgImage}`})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        opacity: bgOpacity / 100,
-      };
-    } else {
-      return {
-        backgroundColor: bgColor,
-        opacity: bgOpacity / 100,
+        backgroundImage: `linear-gradient(rgba(0,0,0,${1 - opacity / 100}), rgba(0,0,0,${1 - opacity / 100})), url("${imageUrl}")`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#000000'
       };
     }
+    return {
+      backgroundColor: color,
+    };
   };
+
+  // Sync config_system when location state changes
+  useEffect(() => {
+    if (location.state?.matchData?.config_system) {
+      setMatchInfo(prev => ({
+        ...prev,
+        config_system: location.state.matchData.config_system
+      }));
+    }
+  }, [location.state?.matchData?.config_system]);
 
   // State cho điểm số
   const [redScore, setRedScore] = useState(0);
@@ -1166,7 +1176,7 @@ const BangDiemDoiKhang = () => {
     };
   }, []);
 
-  // F9 hotkey listener - Toggle secondary display window (Electron)
+  // F2 hotkey listener - Toggle secondary display window (Electron)
   useEffect(() => {
     const handleKeyPress = async (event) => {
       if (event.key === "F2") {
@@ -3296,12 +3306,11 @@ const BangDiemDoiKhang = () => {
   }
 
   return (
-    <div className="h-screen w-screen text-white flex flex-col items-center justify-start relative overflow-hidden pb-20">
-      {/* Background layer with opacity */}
-      <div
-        className="absolute inset-0 -z-10"
-        style={getBackgroundStyle()}
-      ></div>
+    <div
+      className="h-screen w-screen text-white flex flex-col items-center justify-start relative overflow-hidden pb-20 transition-all duration-500"
+      style={getBackgroundStyle()}
+    >
+      {/* Background overlay if needed (optional since we use linear-gradient) */}
 
       {/* CSS Animations cho hiệu ứng chiến thắng */}
       <style>{`
@@ -3474,7 +3483,12 @@ const BangDiemDoiKhang = () => {
 
       {/* Header */}
       <div className="text-center mb-8 max-w-7xl mx-auto">
-        <h1 className="text-4xl font-black text-yellow-400 leading-tight uppercase">
+        <h1
+          className="text-4xl font-black leading-tight uppercase"
+          style={{
+            color: matchData.config_system.header_title_color_doikhang || '#FBBF24' // Default yellow-400
+          }}
+        >
           {/* Tự động xuống dòng mỗi từ */}
           {matchInfo.ten_giai_dau?.split("\n").map((word, index) => (
             <React.Fragment key={index}>
@@ -3483,8 +3497,18 @@ const BangDiemDoiKhang = () => {
             </React.Fragment>
           ))}
         </h1>
-        <div className="h-1 w-48 bg-yellow-400 mx-auto my-4"></div>
-        <p className="text-3xl mt-3 font-bold text-gray-300 uppercase tracking-wider">
+        <div
+          className="h-1 w-48 mx-auto my-4"
+          style={{
+            backgroundColor: matchData.config_system.header_title_color_doikhang || '#FBBF24'
+          }}
+        ></div>
+        <p
+          className="text-3xl mt-3 font-bold uppercase tracking-wider"
+          style={{
+            color: matchData.config_system.header_desc_color_doikhang || '#D1D5DB' // Default gray-300
+          }}
+        >
           {matchInfo.ten_mon_thi}
         </p>
       </div>

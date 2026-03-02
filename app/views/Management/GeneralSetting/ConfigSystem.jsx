@@ -861,6 +861,95 @@ export default function ConfigSystem() {
     </div>
   );
 
+  const effectiveBgForPreview = (bgColor, bgType) => {
+    return bgType === 'image' ? '#1a1a2e' : (bgColor || '#1a1a2e');
+  };
+
+  // ===== Hàm đề xuất màu chữ Header dựa trên màu nền =====
+  // Tính relative luminance theo chuẩn WCAG 2.x
+  const getRelativeLuminance = (hex) => {
+    const cleanHex = hex.replace('#', '');
+    if (cleanHex.length !== 6) return 0.5; // fallback nếu hex không hợp lệ
+    const r = parseInt(cleanHex.substring(0, 2), 16) / 255;
+    const g = parseInt(cleanHex.substring(2, 4), 16) / 255;
+    const b = parseInt(cleanHex.substring(4, 6), 16) / 255;
+    const toLinear = (c) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+    return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+  };
+
+  // Tính contrast ratio giữa 2 màu
+  const getContrastRatio = (hex1, hex2) => {
+    const l1 = getRelativeLuminance(hex1);
+    const l2 = getRelativeLuminance(hex2);
+    const lighter = Math.max(l1, l2);
+    const darker = Math.min(l1, l2);
+    return (lighter + 0.05) / (darker + 0.05);
+  };
+
+  // Đề xuất màu chữ tương phản cao với background
+  const suggestHeaderTextColor = (bgColor, bgType) => {
+    // Nếu là hình ảnh → giả định nền tối
+    const effectiveBg = bgType === 'image' ? '#1a1a2e' : (bgColor || '#1a1a2e');
+    const lum = getRelativeLuminance(effectiveBg);
+
+    // Bảng màu tổng hợp cực kỳ đa dạng
+    const colorPool = [
+      // Nhóm màu Sáng / Neon (cho nền tối)
+      { hex: '#FFFFFF', name: 'Trắng tinh' },
+      { hex: '#FDE047', name: 'Vàng chanh' },
+      { hex: '#FFD700', name: 'Vàng Gold' },
+      { hex: '#FACC15', name: 'Vàng rực' },
+      { hex: '#38BDF8', name: 'Xanh Cyan' },
+      { hex: '#00F5FF', name: 'Electric' },
+      { hex: '#FB923C', name: 'Cam Neon' },
+      { hex: '#F472B6', name: 'Pink Sport' },
+      { hex: '#4ADE80', name: 'Xanh Mint' },
+      { hex: '#A855F7', name: 'Tím Neon' },
+      { hex: '#818CF8', name: 'Indigo' },
+      { hex: '#E2E8F0', name: 'Xám khói' },
+      { hex: '#FFF7ED', name: 'Kem nhạt' },
+      { hex: '#22D3EE', name: 'Sky Tech' },
+      { hex: '#F0ABFC', name: 'Lave' },
+      { hex: '#6EE7B7', name: 'Emerald' },
+      { hex: '#FDA4AF', name: 'Rose' },
+      { hex: '#FDBA74', name: 'Cam đào' },
+      { hex: '#93C5FD', name: 'Blue Sky' },
+      { hex: '#C084FC', name: 'Purple' },
+      { hex: '#B8860B', name: 'Đồng cổ' },
+      { hex: '#FF7F50', name: 'San hô' },
+      { hex: '#7FFF00', name: 'Chanh Neon' },
+
+      // Nhóm màu Tối / Đậm (cho nền sáng)
+      { hex: '#0F172A', name: 'Xanh đen' },
+      { hex: '#1E3A8A', name: 'Royal Blue' },
+      { hex: '#B91C1C', name: 'Đỏ chiến' },
+      { hex: '#7C2D12', name: 'Nâu đỏ' },
+      { hex: '#374151', name: 'Xám chì' },
+      { hex: '#581C87', name: 'Tím thẫm' },
+      { hex: '#064E3B', name: 'Emerald' },
+      { hex: '#000000', name: 'Đen sâu' },
+      { hex: '#4338CA', name: 'Indigo Bold' },
+      { hex: '#BE185D', name: 'Rose Dark' },
+      { hex: '#115E59', name: 'Teal Đậm' },
+      { hex: '#92400E', name: 'Hổ phách' },
+      { hex: '#701A75', name: 'Fuchsia' },
+      { hex: '#4D7C0F', name: 'Lime đậm' },
+      { hex: '#1E1B4B', name: 'Blue Black' },
+    ];
+
+    // Tính toán contrast cho toàn bộ pool dựa trên nền hiện tại
+    const candidates = colorPool.map(c => ({
+      ...c,
+      contrast: getContrastRatio(effectiveBg, c.hex)
+    }));
+
+    // Lọc những màu đủ tiêu chuẩn contrast tốt
+    const sorted = candidates.sort((a, b) => b.contrast - a.contrast);
+
+    // Trả về top 16 màu để đa dạng sự lựa chọn
+    return sorted.slice(0, 16);
+  };
+
   // Render Background Settings Section
   const renderBackgroundSettings = () => (
     <div className="col-span-1 lg:col-span-2 xl:col-span-3 p-5 bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900 dark:to-blue-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded transition-all duration-200">
@@ -1085,27 +1174,142 @@ export default function ConfigSystem() {
                 />
               </div>
 
+              {/* ===== Màu chữ Header ===== */}
+              <div className="mb-4 pt-3 border-t border-gray-200 dark:border-gray-600">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-bold text-gray-700 dark:text-gray-200">
+                    Màu chữ Header
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const suggestions = suggestHeaderTextColor(bgColor, bgType);
+                      if (suggestions.length >= 2) {
+                        // Lấy ngẫu nhiên title từ top 6 màu tốt nhất để đảm bảo phong cách
+                        const titleIdx = Math.floor(Math.random() * Math.min(6, suggestions.length));
+                        setValue(`header_title_color_${key}`, suggestions[titleIdx].hex);
+
+                        // Lấy ngẫu nhiên desc từ top 10 (tránh trùng title) để tạo sự khác biệt
+                        let descIdx = Math.floor(Math.random() * Math.min(10, suggestions.length));
+                        while (descIdx === titleIdx) {
+                          descIdx = Math.floor(Math.random() * Math.min(10, suggestions.length));
+                        }
+                        setValue(`header_desc_color_${key}`, suggestions[descIdx].hex);
+                      }
+                    }}
+                    className="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white text-xs font-bold rounded shadow transition-all"
+                    title="Tự đề xuất màu tương phản cao nhất"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Tự đề xuất
+                  </button>
+                </div>
+
+                {/* Title color */}
+                <div className="mb-4">
+                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
+                    Màu Tín hiệu / Tiêu đề (h1)
+                  </label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <input
+                      type="color"
+                      value={watch(`header_title_color_${key}`) || '#FFFFFF'}
+                      onChange={(e) => setValue(`header_title_color_${key}`, e.target.value)}
+                      className="w-10 h-8 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      {...register(`header_title_color_${key}`)}
+                      placeholder="#FFFFFF"
+                      className="flex-1 px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 focus:border-violet-500 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                  {/* Palette gợi ý cho Title */}
+                  <div className="flex flex-wrap gap-1">
+                    {suggestHeaderTextColor(bgColor, bgType).slice(0, 8).map((s) => (
+                      <button
+                        key={s.hex}
+                        type="button"
+                        onClick={() => setValue(`header_title_color_${key}`, s.hex)}
+                        className="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 hover:scale-110 transition-transform shadow-sm"
+                        style={{ backgroundColor: s.hex }}
+                        title={`${s.name} (${s.contrast.toFixed(1)}:1)`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Desc color */}
+                <div className="mb-4">
+                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
+                    Màu mô tả / Phụ đề (p)
+                  </label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <input
+                      type="color"
+                      value={watch(`header_desc_color_${key}`) || '#FDE047'}
+                      onChange={(e) => setValue(`header_desc_color_${key}`, e.target.value)}
+                      className="w-10 h-8 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      {...register(`header_desc_color_${key}`)}
+                      placeholder="#FDE047"
+                      className="flex-1 px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 focus:border-violet-500 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                  {/* Palette gợi ý cho Desc */}
+                  <div className="flex flex-wrap gap-1">
+                    {suggestHeaderTextColor(bgColor, bgType).slice(0, 16).map((s) => (
+                      <button
+                        key={s.hex}
+                        type="button"
+                        onClick={() => setValue(`header_desc_color_${key}`, s.hex)}
+                        className="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 hover:scale-110 transition-transform shadow-sm"
+                        style={{ backgroundColor: s.hex }}
+                        title={`${s.name} (${s.contrast.toFixed(1)}:1)`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               {/* Preview */}
               <div className="mb-2">
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Xem trước
                 </label>
                 <div
-                  className="w-full h-24 rounded-lg border-2 border-gray-300 dark:border-gray-600 overflow-hidden relative"
+                  className="w-full h-32 rounded-lg border-2 border-gray-300 dark:border-gray-600 overflow-hidden relative flex flex-col items-center justify-center gap-1"
                   style={{
-                    backgroundColor:
-                      bgType === "color" ? bgColor : "transparent",
-                    backgroundImage:
-                      bgType === "image" && bgImage
-                        ? `url(${bgImage})`
-                        : "none",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    opacity: bgOpacity / 100,
+                    backgroundColor: "#000000",
+                    backgroundImage: bgType === 'image' && bgImage
+                      ? `linear-gradient(rgba(0,0,0,${1 - bgOpacity / 100}), rgba(0,0,0,${1 - bgOpacity / 100})), url(${bgImage.startsWith('http') ? bgImage : `http://localhost:6789${bgImage}`})`
+                      : 'none',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
                   }}
                 >
-                  {bgType === "image" && !bgImage && (
-                    <div className="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-gray-500 text-xs">
+                  {bgType === 'color' && (
+                    <div className="absolute inset-0" style={{ backgroundColor: bgColor, opacity: bgOpacity / 100 }} />
+                  )}
+                  <p
+                    className="relative z-10 text-lg font-black uppercase tracking-widest drop-shadow-lg"
+                    style={{ color: watch(`header_title_color_${key}`) || '#FFFFFF' }}
+                  >
+                    TÊN GIẢI ĐẤU
+                  </p>
+                  <div className="relative z-10 h-0.5 w-20" style={{ backgroundColor: watch(`header_title_color_${key}`) || '#FFFFFF' }} />
+                  <p
+                    className="relative z-10 text-sm font-semibold uppercase tracking-wider drop-shadow"
+                    style={{ color: watch(`header_desc_color_${key}`) || '#FDE047' }}
+                  >
+                    NỘI DUNG THI ĐẤU
+                  </p>
+                  {bgType === 'image' && !bgImage && (
+                    <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs bg-gray-900/50">
                       Chưa có hình ảnh
                     </div>
                   )}

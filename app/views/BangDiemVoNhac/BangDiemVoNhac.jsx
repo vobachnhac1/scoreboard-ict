@@ -54,25 +54,25 @@ export default function BangDiemVoNhac() {
 
   // Background style từ config
   const getBackgroundStyle = () => {
-    const bgType = configSystem.bg_vonhac_type || "color";
-    const bgColor = configSystem.bg_vonhac_color || "#1a1a2e";
-    const bgOpacity = configSystem.bg_vonhac_opacity || 100;
-    const bgImage = configSystem.bg_vonhac_image || "";
+    if (!configSystem) return {};
+    const type = configSystem.bg_vonhac_type || 'color';
+    const color = configSystem.bg_vonhac_color || '#1e3a8a';
+    const image = configSystem.bg_vonhac_image || '';
+    const opacity = configSystem.bg_vonhac_opacity ?? 100;
 
-    if (bgType === "image" && bgImage) {
+    if (type === 'image' && image) {
+      const imageUrl = image.startsWith('http') ? image : `http://localhost:6789${image}`;
       return {
-        backgroundImage: `url(${bgImage.startsWith("http") ? bgImage : `http://localhost:6789${bgImage}`})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        opacity: bgOpacity / 100,
-      };
-    } else {
-      return {
-        backgroundColor: bgColor,
-        opacity: bgOpacity / 100,
+        backgroundImage: `linear-gradient(rgba(0,0,0,${1 - opacity / 100}), rgba(0,0,0,${1 - opacity / 100})), url("${imageUrl}")`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#000000'
       };
     }
+    return {
+      backgroundColor: color,
+    };
   };
 
   // Cập nhật matchData khi location.state thay đổi
@@ -139,7 +139,7 @@ export default function BangDiemVoNhac() {
   // Room management state
   const [currentRoom, setCurrentRoom] = useState(null);
 
-  // Secondary display popup state (F9 hotkey)
+  // Secondary display popup state (F2 hotkey)
   const [showSecondaryDisplay, setShowSecondaryDisplay] = useState(false);
 
   // Hàm khởi tạo socket connection (sử dụng socketUtils)
@@ -243,10 +243,10 @@ export default function BangDiemVoNhac() {
     fetchLogos();
   }, []); // Chỉ chạy 1 lần khi mount
 
-  // F9 hotkey listener - Toggle secondary display window (Electron)
+  // F2 hotkey listener - Toggle secondary display window (Electron)
   useEffect(() => {
     const handleKeyPress = async (event) => {
-      if (event.key === "F9") {
+      if (event.key === "F2") {
         event.preventDefault();
 
         // Toggle secondary display window
@@ -671,7 +671,7 @@ export default function BangDiemVoNhac() {
       console.error(" Lỗi khi chuyển trận:", error);
       await showError(
         "Lỗi khi chuyển sang trận tiếp theo: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -727,7 +727,7 @@ export default function BangDiemVoNhac() {
       console.error(" Lỗi khi chuyển trận:", error);
       await showError(
         "Lỗi khi chuyển sang trận trước: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -762,7 +762,7 @@ export default function BangDiemVoNhac() {
       console.error(" Lỗi khi lưu kết quả:", error);
       await showError(
         "Lỗi khi lưu kết quả: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -1032,12 +1032,11 @@ export default function BangDiemVoNhac() {
   };
 
   return (
-    <div className="min-h-screen p-3 pb-20 text-white flex flex-col items-center relative">
-      {/* Background layer with opacity */}
-      <div
-        className="absolute inset-0 -z-10"
-        style={getBackgroundStyle()}
-      ></div>
+    <div
+      className="min-h-screen p-3 pb-20 text-white flex flex-col items-center relative transition-all duration-500"
+      style={getBackgroundStyle()}
+    >
+      {/* Background layer */}
 
       {/* Waiting Overlay */}
       {/* Connection Manager Modal */}
@@ -1059,6 +1058,10 @@ export default function BangDiemVoNhac() {
         title={matchDataRef.current.ten_giai_dau || "GIẢI VÔ ĐỊCH"}
         desc={matchDataRef.current.ten_mon_thi || "VÕ HIỆN ĐẠI"}
         logos={lsLogo}
+        config={{
+          titleColor: configSystem.header_title_color_vonhac,
+          descColor: configSystem.header_desc_color_vonhac,
+        }}
       />
 
       {/* Match Name & Team Name */}
@@ -1233,7 +1236,7 @@ export default function BangDiemVoNhac() {
             <div className="flex items-center gap-4">
               {/* Ready Indicator */}
               {referrerDevices.filter((s) => s.ready).length ===
-              (so_giam_dinh || 7) ? (
+                (so_giam_dinh || 7) ? (
                 <div className="flex items-center gap-2 bg-green-500/20 border border-green-500 rounded px-4 py-2">
                   <span className="text-green-400 font-bold text-sm">
                     Tất cả sẵn sàng
@@ -1254,17 +1257,15 @@ export default function BangDiemVoNhac() {
                 </span>
                 <button
                   onClick={() => setShowActionButtons(!showActionButtons)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 ${
-                    showActionButtons ? "bg-blue-600" : "bg-gray-600"
-                  }`}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 ${showActionButtons ? "bg-blue-600" : "bg-gray-600"
+                    }`}
                   title={
                     showActionButtons ? "Ẩn Control Bar" : "Hiện Control Bar"
                   }
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      showActionButtons ? "translate-x-6" : "translate-x-1"
-                    }`}
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${showActionButtons ? "translate-x-6" : "translate-x-1"
+                      }`}
                   />
                 </button>
               </div>
@@ -1277,6 +1278,7 @@ export default function BangDiemVoNhac() {
         isOpen={openModal}
         onClose={() => setOpenModal(false)}
         title={"NHẬP ĐIỂM TAY"}
+        size="xl"
       >
         <RenderContentModal
           matchData={matchDataRef.current}

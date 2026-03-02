@@ -1134,7 +1134,7 @@ export default function CompetitionDataDetail() {
   const sortedData = [...filteredData].sort((a, b) => {
     switch (sortBy) {
       case "match_no":
-        return Number(a.data[0]) - Number(b.data[0]);
+        return Number(a.data[0] || 0) - Number(b.data[0] || 0);
       case "status":
         const statusOrder = { IN: 0, WAI: 1, FIN: 2, CAN: 3 };
         return (
@@ -1466,7 +1466,7 @@ export default function CompetitionDataDetail() {
   const updateWinnerToNextMatches = async (currentRow, winner) => {
     try {
       // Lấy số trận hiện tại (ví dụ: "1", "2", "3"...)
-      const currentMatchNumber = currentRow.data[0]; // Cột đầu tiên là "Trận số"
+      const currentMatchNumber = parseFloat(currentRow.data[0]) || currentRow.data[0]; // Cột đầu tiên là "Trận số"
       console.log(
         "🔍 Tìm kiếm pattern win." + currentMatchNumber + " trong danh sách...",
       );
@@ -1727,7 +1727,7 @@ export default function CompetitionDataDetail() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
           <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900 dark:to-yellow-800 border-2 border-yellow-200 dark:border-yellow-700 rounded p-3 shadow-sm">
             <div className="flex items-center gap-2 mb-1">
               <svg
@@ -1794,7 +1794,7 @@ export default function CompetitionDataDetail() {
               {tableData.filter((r) => r.match_status === "FIN").length}
             </div>
           </div>
-          <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 border-2 border-red-200 dark:border-red-700 rounded p-3 shadow-sm">
+          {/* <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 border-2 border-red-200 dark:border-red-700 rounded p-3 shadow-sm">
             <div className="flex items-center gap-2 mb-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1815,7 +1815,7 @@ export default function CompetitionDataDetail() {
             <div className="text-2xl font-bold text-red-900 dark:text-red-200">
               {tableData.filter((r) => r.match_status === "CAN").length}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 

@@ -30,8 +30,15 @@ export default function DoiKhangDisplay({
   medicalRed = 0,
   medicalBlue = 0,
   buttonPermissions = {},
-  announcedWinner = null,
+  configSystem,
 }) {
+  // Use config from prop or from matchInfo
+  const currentConfig = configSystem || matchInfo?.config_system || {};
+
+  // Color values
+  const titleColor = currentConfig.header_title_color_doikhang || '#FBBF24';
+  const descColor = currentConfig.header_desc_color_doikhang || '#D1D5DB';
+
   // Format time helper
   const formatTime = (time) => {
     const totalSeconds = Math.floor(time / 10);
@@ -240,9 +247,13 @@ export default function DoiKhangDisplay({
         <div className="w-full max-w-7xl mx-auto mb-6 mt-6" />
       )}
 
-      {/* Header */}
       <div className="text-center mb-8 max-w-7xl mx-auto">
-        <h1 className="text-4xl font-black text-yellow-400 leading-tight uppercase">
+        <h1
+          className="text-4xl font-black leading-tight uppercase"
+          style={{
+            color: titleColor
+          }}
+        >
           {matchInfo?.ten_giai_dau?.split("\n").map((word, index) => (
             <React.Fragment key={index}>
               {word}
@@ -251,8 +262,18 @@ export default function DoiKhangDisplay({
             </React.Fragment>
           ))}
         </h1>
-        <div className="h-1 w-48 bg-yellow-400 mx-auto my-4"></div>
-        <p className="text-3xl mt-3 font-bold text-gray-300 uppercase tracking-wider">
+        <div
+          className="h-1 w-48 mx-auto my-4"
+          style={{
+            backgroundColor: titleColor
+          }}
+        ></div>
+        <p
+          className="text-3xl mt-3 font-bold uppercase tracking-wider"
+          style={{
+            color: descColor
+          }}
+        >
           {matchInfo?.ten_mon_thi}
         </p>
       </div>
@@ -262,9 +283,8 @@ export default function DoiKhangDisplay({
         {/* Đỏ */}
         <div className="flex-1">
           <div
-            className={`text-white p-6 rounded flex flex-col items-center shadow-2xl transition-all duration-500 overflow-hidden relative ${
-              announcedWinner?.team === "red" ? "victory-animation" : ""
-            }`}
+            className={`text-white p-6 rounded flex flex-col items-center shadow-2xl transition-all duration-500 overflow-hidden relative ${announcedWinner?.team === "red" ? "victory-animation" : ""
+              }`}
             style={{
               background: "linear-gradient(135deg, #FF0000 0%, #CC0000 100%)",
               boxShadow:
@@ -352,11 +372,10 @@ export default function DoiKhangDisplay({
               : `HIỆP ${currentRound}`}
           </div>
           <div
-            className={`font-bold px-10 py-4 rounded shadow-lg min-w-[300px] text-center ${
-              !isRunning && !isBreakTime
-                ? "bg-green-500 text-white"
-                : "bg-white text-black"
-            }`}
+            className={`font-bold px-10 py-4 rounded shadow-lg min-w-[300px] text-center ${!isRunning && !isBreakTime
+              ? "bg-green-500 text-white"
+              : "bg-white text-black"
+              }`}
           >
             {(() => {
               const time = formatTime(timeLeft);
@@ -436,9 +455,8 @@ export default function DoiKhangDisplay({
         {/* Xanh */}
         <div className="flex-1">
           <div
-            className={`text-white p-6 rounded flex flex-col items-center shadow-2xl transition-all duration-500 overflow-hidden relative ${
-              announcedWinner?.team === "blue" ? "victory-animation" : ""
-            }`}
+            className={`text-white p-6 rounded flex flex-col items-center shadow-2xl transition-all duration-500 overflow-hidden relative ${announcedWinner?.team === "blue" ? "victory-animation" : ""
+              }`}
             style={{
               background: "linear-gradient(135deg, #0000FF 0%, #0000CC 100%)",
               boxShadow:

@@ -5,9 +5,9 @@ import TotalScore from "./TotalScore";
 
 /**
  * ReadOnlyScoreDisplay - Component hiển thị điểm ở chế độ read-only (không có action buttons)
- * Dùng cho popup window khi nhấn F9
+ * Dùng cho popup window khi nhấn F2
  */
-export default function  ReadOnlyScoreDisplay ({ scores, configSystem, matchData }) {
+export default function ReadOnlyScoreDisplay({ scores, configSystem, matchData }) {
   const soGiamDinh = 7;
 
   return (
@@ -51,7 +51,7 @@ export default function  ReadOnlyScoreDisplay ({ scores, configSystem, matchData
             />
           </svg>
           <span className="text-yellow-300 font-semibold">
-            Màn hình phụ - Chỉ hiển thị (Nhấn F9 để đóng)
+            Màn hình phụ - Chỉ hiển thị (Nhấn F2 để đóng)
           </span>
         </div>
       </div>

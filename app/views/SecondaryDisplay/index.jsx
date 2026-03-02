@@ -165,8 +165,34 @@ export default function SecondaryDisplay() {
   // Không cần tính toán - nhận điểm đã tính từ màn hình chính
   // scores.total và scores.hidden (maxIndex, minIndex) đã được tính sẵn
 
+  // Helper to get background style based on config
+  const getBackgroundStyle = () => {
+    if (!configSystem) return {};
+
+    const type = configSystem[`bg_${screenType}_type`] || 'color';
+    const color = configSystem[`bg_${screenType}_color`] || '#1e3a8a';
+    const image = configSystem[`bg_${screenType}_image`] || '';
+    const opacity = configSystem[`bg_${screenType}_opacity`] ?? 100;
+
+    if (type === 'image' && image) {
+      const imageUrl = image.startsWith('http') ? image : `http://localhost:6789${image}`;
+      return {
+        backgroundImage: `linear-gradient(rgba(0,0,0,${1 - opacity / 100}), rgba(0,0,0,${1 - opacity / 100})), url(${imageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      };
+    }
+    return {
+      backgroundColor: color,
+    };
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-900 to-blue-900 text-white flex flex-col items-center p-2">
+    <div
+      className="min-h-screen text-white flex flex-col items-center p-2 transition-all duration-500"
+      style={getBackgroundStyle()}
+    >
       {screenType === "doikhang" ? (
         // Đối kháng layout - no header, just scoreboard
         <>
@@ -196,6 +222,7 @@ export default function SecondaryDisplay() {
             medicalBlue={medicalBlue}
             buttonPermissions={buttonPermissions}
             announcedWinner={announcedWinner}
+            configSystem={configSystem}
           />
         </>
       ) : (
@@ -205,6 +232,10 @@ export default function SecondaryDisplay() {
             title={matchData?.ten_giai_dau || "GIẢI VÔ ĐỊCH"}
             desc={matchData?.ten_mon_thi || "VÕ HIỆN ĐẠI"}
             logos={lsLogo}
+            config={{
+              titleColor: (screenType === 'vonhac' ? configSystem.header_title_color_vonhac : configSystem.header_title_color_quyen) || '#FFFFFF',
+              descColor: (screenType === 'vonhac' ? configSystem.header_desc_color_vonhac : configSystem.header_desc_color_quyen) || '#FDE68A',
+            }}
           />
 
           {/* Match Name & Team Name */}

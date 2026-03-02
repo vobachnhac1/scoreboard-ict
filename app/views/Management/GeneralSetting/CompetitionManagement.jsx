@@ -171,7 +171,7 @@ export default function CompetitionManagement() {
       console.error("Error saving to database:", error);
       await showError(
         "Lỗi khi lưu dữ liệu: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -224,7 +224,7 @@ export default function CompetitionManagement() {
       console.error("Error saving DOL to database:", error);
       await showError(
         "Lỗi khi lưu dữ liệu DOL: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -294,7 +294,7 @@ export default function CompetitionManagement() {
       console.error("Error saving to database:", error);
       await showError(
         "Lỗi khi lưu dữ liệu: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -359,7 +359,7 @@ export default function CompetitionManagement() {
       console.error("Error saving TUV to database:", error);
       await showError(
         "Lỗi khi lưu dữ liệu TUV: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -433,7 +433,7 @@ export default function CompetitionManagement() {
       console.error("Error saving DAL to database:", error);
       await showError(
         "Lỗi khi lưu dữ liệu DAL: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -500,7 +500,7 @@ export default function CompetitionManagement() {
         await showSuccess(` Lưu ${teamsToCreate.length} teams DAL thành công!`);
         fetchSavedData();
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   // Lấy danh sách dữ liệu đã lưu
@@ -544,7 +544,7 @@ export default function CompetitionManagement() {
       console.error("Error deleting data:", error);
       await showError(
         "Lỗi khi xóa dữ liệu: " +
-          (error.response?.data?.message || error.message),
+        (error.response?.data?.message || error.message),
       );
     }
   };
@@ -568,36 +568,40 @@ export default function CompetitionManagement() {
   const memoizedSavedData = useMemo(() => savedData, [savedData]);
 
   return (
-    <div className="p-6 bg-white dark:bg-gray-900 rounded shadow">
+    <div className="p-6 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
       <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
         Quản lý Thi đấu
       </h2>
 
       <TabGroup>
-        <TabList className="flex space-x-1 rounded bg-blue-900/20 dark:bg-blue-800/30 p-1 mb-6">
+        <TabList className="flex rounded bg-gray-100 dark:bg-gray-800/60 p-1 mb-6 gap-1 border border-gray-200 dark:border-gray-700">
           <Tab
             className={({ selected }) =>
-              `w-full rounded py-2.5 text-sm font-medium leading-5
-              ${
-                selected
-                  ? "bg-white dark:bg-gray-700 text-blue-700 dark:text-blue-300 shadow"
-                  : "text-blue-700 dark:text-blue-200 hover:bg-white/[0.12] dark:hover:bg-gray-700/50 hover:text-blue-800 dark:hover:text-blue-300"
+              `flex-1 flex items-center justify-center gap-2 rounded py-2.5 text-sm font-semibold leading-5 transition-all duration-200
+              ${selected
+                ? "bg-white dark:bg-gray-700 text-blue-700 dark:text-blue-300 shadow-sm"
+                : "text-gray-600 dark:text-gray-400 hover:bg-white/60 dark:hover:bg-gray-700/50 hover:text-blue-700 dark:hover:text-blue-300"
               }`
             }
           >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+            </svg>
             Quản lý dữ liệu
           </Tab>
           <Tab
             className={({ selected }) =>
-              `w-full rounded py-2.5 text-sm font-medium leading-5
-              ${
-                selected
-                  ? "bg-white dark:bg-gray-700 text-blue-700 dark:text-blue-300 shadow"
-                  : "text-blue-700 dark:text-blue-200 hover:bg-white/[0.12] dark:hover:bg-gray-700/50 hover:text-blue-800 dark:hover:text-blue-300"
+              `flex-1 flex items-center justify-center gap-2 rounded py-2.5 text-sm font-semibold leading-5 transition-all duration-200
+              ${selected
+                ? "bg-white dark:bg-gray-700 text-blue-700 dark:text-blue-300 shadow-sm"
+                : "text-gray-600 dark:text-gray-400 hover:bg-white/60 dark:hover:bg-gray-700/50 hover:text-blue-700 dark:hover:text-blue-300"
               }`
             }
           >
-            Upload & Import
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            Upload &amp; Import
           </Tab>
         </TabList>
 
@@ -646,50 +650,30 @@ export default function CompetitionManagement() {
 
               <div className="flex items-center gap-3">
                 {/* View Mode Toggle */}
-                <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded p-1">
+                <div className="flex items-center bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded p-1">
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`flex items-center gap-2 px-4 py-2 rounded font-medium transition-all duration-300 ${
-                      viewMode === "grid"
-                        ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md"
-                        : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-                    }`}
+                    title="Grid view"
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-all duration-200 ${viewMode === "grid"
+                      ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                      }`}
                   >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-                      />
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                     </svg>
                     <span>Grid</span>
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`flex items-center gap-2 px-4 py-2 rounded font-medium transition-all duration-300 ${
-                      viewMode === "list"
-                        ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md"
-                        : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-                    }`}
+                    title="List view"
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-all duration-200 ${viewMode === "list"
+                      ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                      }`}
                   >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 6h16M4 12h16M4 18h16"
-                      />
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                     <span>List</span>
                   </button>
@@ -698,27 +682,17 @@ export default function CompetitionManagement() {
                 <button
                   onClick={fetchSavedData}
                   disabled={loadingData}
-                  className="group relative overflow-hidden flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 hover:from-green-600 hover:to-emerald-700 dark:hover:from-green-700 dark:hover:to-emerald-800 text-white font-bold rounded shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white text-sm font-medium rounded shadow-sm hover:shadow transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {/* Button shine effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 transform -skew-x-12 group-hover:translate-x-full transition-all duration-700"></div>
-
                   <svg
-                    className={`w-5 h-5 ${loadingData ? "animate-spin" : "group-hover:rotate-180"} transition-transform duration-500`}
+                    className={`w-4 h-4 ${loadingData ? "animate-spin" : ""}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
-                  <span className="relative z-10">
-                    {loadingData ? "Đang tải..." : "Làm mới"}
-                  </span>
+                  <span>{loadingData ? "Đang tải..." : "Làm mới"}</span>
                 </button>
               </div>
             </div>
@@ -955,7 +929,7 @@ export default function CompetitionManagement() {
                   {memoizedSavedData.map((item, index) => (
                     <div
                       key={item.id}
-                      className="group relative bg-white dark:bg-gray-800 rounded shadow-md hover:shadow-xl transition-all duration-200 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 overflow-hidden"
+                      className="group bg-white dark:bg-gray-800/80 rounded border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
                     >
                       <div className="flex items-center gap-6 p-6">
                         {/* Left: Icon & ID */}
@@ -1027,46 +1001,21 @@ export default function CompetitionManagement() {
                         <div className="flex-shrink-0 flex gap-2">
                           <button
                             onClick={() => handleViewDetail(item)}
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white text-sm font-medium rounded transition-all duration-300 shadow-md hover:shadow-lg"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white text-sm font-medium rounded shadow-sm transition-all duration-200"
                           >
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                              />
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                              />
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             </svg>
                             <span>Xem</span>
                           </button>
 
                           <button
                             onClick={() => handleDelete(item.id)}
-                            className="flex items-center gap-2 px-4 py-2 bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white text-sm font-medium rounded transition-all duration-300 shadow-md hover:shadow-lg"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white text-sm font-medium rounded shadow-sm transition-all duration-200"
                           >
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                              />
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                             <span>Xóa</span>
                           </button>
@@ -1100,7 +1049,7 @@ export default function CompetitionManagement() {
                 {selectedFile && (
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600">
-                       {selectedFile.name}
+                      {selectedFile.name}
                     </span>
                     <Button
                       type="button"
@@ -1492,19 +1441,18 @@ export default function CompetitionManagement() {
                               {/* Match Type Badge */}
                               <td className="px-4 py-4 whitespace-nowrap text-sm border-r border-gray-300">
                                 <span
-                                  className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-md ${
-                                    matchType === "SOL"
-                                      ? "bg-blue-500 text-white"
-                                      : matchType === "TUV"
-                                        ? "bg-green-500 text-white"
-                                        : matchType === "DAL"
-                                          ? "bg-blue-500 text-white"
-                                          : matchType === "DOL"
-                                            ? "bg-orange-500 text-white"
-                                            : matchType === "VON"
-                                              ? "bg-yellow-500 text-white"
-                                              : "bg-gray-500 text-white"
-                                  }`}
+                                  className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-md ${matchType === "SOL"
+                                    ? "bg-blue-500 text-white"
+                                    : matchType === "TUV"
+                                      ? "bg-green-500 text-white"
+                                      : matchType === "DAL"
+                                        ? "bg-blue-500 text-white"
+                                        : matchType === "DOL"
+                                          ? "bg-orange-500 text-white"
+                                          : matchType === "VON"
+                                            ? "bg-yellow-500 text-white"
+                                            : "bg-gray-500 text-white"
+                                    }`}
                                 >
                                   {matchType}
                                 </span>

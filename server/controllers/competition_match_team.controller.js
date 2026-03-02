@@ -1,7 +1,7 @@
 const dbCompetitionMatchTeamService = require('../services/common/db_competition_match_team');
 
 class CompetitionMatchTeamController {
-    
+
     // POST /api/competition-match-team - Tạo team mới
     async createTeam(req, res) {
         try {
@@ -291,6 +291,32 @@ class CompetitionMatchTeamController {
             });
         } catch (error) {
             console.error('Error saveResultTeam:', error);
+            res.status(500).json({
+                success: false,
+                message: "Hệ thống xử lý lỗi.",
+                error: error.message
+            });
+        }
+    }
+
+    async updateScores(req, res) {
+        try {
+            const { id } = req.params;
+            const { scores } = req.body;
+            if (!scores) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Thiếu thông tin điểm số."
+                });
+            }
+            const result = await dbCompetitionMatchTeamService.updateScores(id, scores);
+            res.json({
+                success: true,
+                message: "Cập nhật điểm thành công.",
+                data: result
+            });
+        } catch (error) {
+            console.error('Error updateScores:', error);
             res.status(500).json({
                 success: false,
                 message: "Hệ thống xử lý lỗi.",

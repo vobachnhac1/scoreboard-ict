@@ -1,7 +1,6 @@
-import React, { Fragment, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import CustomTable from "../../../components/CustomTable";
 import Button from "../../../components/Button";
-import NotePopover from "./components/NotePopover";
 import Modal from "../../../components/Modal";
 import DisconnectForm from "./Forms/DisconnectForm";
 import NotificationForm from "./Forms/NotificationForm";
@@ -135,8 +134,8 @@ export default function ManagementConnectionSocket() {
           device_name: conn.device_name ?? "",
           judge_permission: conn.referrer
             ? LIST_JUDGE_PRORMISSION.find(
-                (item) => item.key === Number(conn.referrer),
-              ).label
+              (item) => item.key === Number(conn.referrer),
+            ).label
             : "Chưa gán",
           device_code: conn.device_id || conn.socket_id,
           device_ip: conn.client_ip || "N/A",
@@ -175,8 +174,8 @@ export default function ManagementConnectionSocket() {
           device_name: conn.device_name ?? "",
           judge_permission: conn.referrer
             ? LIST_JUDGE_PRORMISSION.find(
-                (item) => item.key === Number(conn.referrer),
-              ).label
+              (item) => item.key === Number(conn.referrer),
+            ).label
             : "Chưa gán",
           device_code: conn.device_id || conn.socket_id,
           device_ip: conn.client_ip || "N/A",
@@ -881,7 +880,7 @@ export default function ManagementConnectionSocket() {
             {/* Scan QR Button */}
             <button
               onClick={handleOpenCreateRoom}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200"
             >
               <svg
                 className="w-5 h-5"
@@ -903,7 +902,7 @@ export default function ManagementConnectionSocket() {
             <button
               onClick={handleRecreateConnection}
               disabled={isReconnecting || loading || !currentRoom}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
             >
               <svg
                 className={`w-5 h-5 ${isReconnecting ? "animate-spin" : ""}`}
@@ -931,9 +930,9 @@ export default function ManagementConnectionSocket() {
         loading={loading}
         page={page}
         onPageChange={setPage}
-        // onRowDoubleClick={(row) => {
-        //   setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
-        // }}
+      // onRowDoubleClick={(row) => {
+      //   setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: row });
+      // }}
       />
       {/* Action Modals */}
       <Modal

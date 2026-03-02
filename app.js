@@ -12,8 +12,8 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 // Import Library
-const {InitSocket} = require('./server/config/socket');
-const {FetchInitApp} = require('./server/config/init-app');
+const { InitSocket } = require('./server/config/socket');
+const { FetchInitApp } = require('./server/config/init-app');
 const configRoutes = require('./server/routes/config.routes');
 
 // Sub-Routes
@@ -24,6 +24,7 @@ const competitionMatchRoutes = require('./server/routes/competition_match.routes
 const competitionMatchTeamRoutes = require('./server/routes/competition_match_team.routes');
 const licenseRoutes = require('./server/routes/license.routes');
 const syncRoutes = require('./server/routes/sync.routes');
+const refereeRoutes = require('./server/routes/referee.routes');
 
 
 app.use(bodyParser.json());
@@ -80,6 +81,7 @@ app.use('/api/sync', syncRoutes);
 app.use('/api', competitionRoutes);
 app.use('/api', competitionMatchRoutes);
 app.use('/api', competitionMatchTeamRoutes);
+app.use('/api', refereeRoutes);
 
 // Attach io instance to app for use in controllers
 app.set('io', io);
@@ -99,17 +101,17 @@ if (isDevelopment) {
   // console.log('process.env.USER_DATA_PATH: ', process.env.USER_DATA_PATH);
 
   if (process.env.USER_DATA_PATH) {
-      // FetchInitApp();
+    // FetchInitApp();
   } else {
-      // console.log('Chờ userDataPath...');
-      let interval = setInterval(() => {
-          if (process.env.USER_DATA_PATH) {
-              clearInterval(interval);
-              // FetchInitApp();
-          }
-      }, 1000);
+    // console.log('Chờ userDataPath...');
+    let interval = setInterval(() => {
+      if (process.env.USER_DATA_PATH) {
+        clearInterval(interval);
+        // FetchInitApp();
+      }
+    }, 1000);
   }
 }
-server.listen(6789,() => {
-    console.log(`Server đang chạy tại http://localhost:${6789}`);
+server.listen(6789, () => {
+  console.log(`Server đang chạy tại http://localhost:${6789}`);
 });

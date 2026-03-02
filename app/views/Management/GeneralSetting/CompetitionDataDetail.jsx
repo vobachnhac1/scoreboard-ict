@@ -881,13 +881,79 @@ export default function CompetitionDataDetail() {
         });
       },
     },
+    {
+      key: Constants.ACTION_MATCH_REPORT,
+      btnText: "Biên bản",
+      color:
+        "bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700",
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+      ),
+      description: "Xem biên bản thi đấu chuyên nghiệp",
+      callback: (row) => {
+        setOpenActions({
+          isOpen: true,
+          key: Constants.ACTION_MATCH_REPORT,
+          row: row,
+        });
+      },
+    },
+    {
+      key: Constants.ACTION_MATCH_LOGS,
+      btnText: "Nhật ký",
+      color:
+        "bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700",
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+        </svg>
+      ),
+      description: "Xem chi tiết diễn biến trận đấu",
+      callback: (row) => {
+        setOpenActions({
+          isOpen: true,
+          key: Constants.ACTION_MATCH_LOGS,
+          row: row,
+        });
+      },
+    },
   ];
 
   // Lấy actions theo status - Tương tự MatchAthlete
   const getActionsByStatus = (status) => {
     switch (status) {
       case "FIN": // Kết thúc
-        return [Constants.ACTION_UPDATE, Constants.ACTION_MATCH_HISTORY];
+        return [
+          Constants.ACTION_UPDATE,
+          Constants.ACTION_MATCH_HISTORY,
+          Constants.ACTION_MATCH_REPORT,
+          Constants.ACTION_MATCH_LOGS,
+        ];
       case "IN": // Đang diễn ra
         return [
           Constants.ACTION_MATCH_START,
@@ -1628,6 +1694,8 @@ export default function CompetitionDataDetail() {
             exportToExcelRef={exportToExcelRef}
             showError={showError}
             modalProps={modalProps}
+            setOpenActions={setOpenActions}
+            openActions={openActions}
           />
         );
       case Constants.ACTION_UPDATE:
@@ -2234,11 +2302,153 @@ export default function CompetitionDataDetail() {
         </div>
       )}
 
+      {/* Modal Biên bản Kết quả - Premium style */}
+      {openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_REPORT && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all duration-300 animate-in fade-in zoom-in-95">
+          <div className="bg-[#f0f2f5] dark:bg-[#0f1115] rounded-xl shadow-2xl w-full max-w-6xl h-[95vh] flex flex-col overflow-hidden border border-white/20 dark:border-white/5 ring-1 ring-black/20">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-orange-600 via-orange-500 to-amber-600 dark:from-orange-800 dark:via-orange-700 dark:to-amber-800 px-8 py-5 flex justify-between items-center relative flex-shrink-0 shadow-lg z-10 border-b border-black/10">
+              <div className="flex items-center gap-4">
+                <div className="bg-white/20 p-2 rounded-lg backdrop-blur-md border border-white/20 shadow-inner">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-white m-0 tracking-tight drop-shadow-sm uppercase">BIÊN BẢN THI ĐẤU CHUYÊN NGHIỆP</h2>
+                  <p className="text-orange-100/80 text-xs font-bold uppercase tracking-widest mt-0.5">Official Competition Result Certificate</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => window.print()}
+                  className="bg-white/15 hover:bg-white/25 text-white px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 flex items-center gap-2 border border-white/20 backdrop-blur-md group"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2v4" />
+                  </svg>
+                  IN BIÊN BẢN
+                </button>
+                <div className="h-6 w-px bg-white/20 mx-1"></div>
+                <button
+                  onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                  className="text-white hover:bg-black/20 p-2 rounded-full transition-all duration-200"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Content Container */}
+            <div className="flex-1 overflow-y-auto bg-gray-100 dark:bg-[#0f1115] p-2 md:p-8 scrollbar-thin scrollbar-thumb-orange-500/20">
+              <div className="max-w-none mx-auto">
+                <div className="bg-white dark:bg-[#1a1c23] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.3)] dark:shadow-none rounded-lg p-0 print:shadow-none">
+                  <MatchReportView
+                    row={openActions.row}
+                    onClose={() => setOpenActions({ ...openActions, isOpen: false })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Buttons */}
+            <div className="bg-white dark:bg-[#15171e] px-8 py-4 flex justify-between items-center border-t border-gray-200 dark:border-white/5 flex-shrink-0 z-10 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)]">
+              <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 uppercase tracking-widest font-bold">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                Official Record Verified
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                  className="bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300 px-8 py-2.5 rounded-lg font-black text-sm transition-all duration-200 border border-gray-200 dark:border-white/10 shadow-sm uppercase tracking-wider"
+                >
+                  Đóng
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Nhật ký Diễn biến - Premium style */}
+      {openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_LOGS && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all duration-300 animate-in fade-in zoom-in-95">
+          <div className="bg-[#f0f2f5] dark:bg-[#0f1115] rounded-xl shadow-2xl w-full max-w-6xl h-[95vh] flex flex-col overflow-hidden border border-white/20 dark:border-white/5 ring-1 ring-black/20">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-purple-600 via-purple-500 to-indigo-600 dark:from-purple-800 dark:via-purple-700 dark:to-indigo-800 px-8 py-5 flex justify-between items-center relative flex-shrink-0 shadow-lg z-10 border-b border-black/10">
+              <div className="flex items-center gap-4">
+                <div className="bg-white/20 p-2 rounded-lg backdrop-blur-md border border-white/20 shadow-inner">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-white m-0 tracking-tight drop-shadow-sm uppercase">CHI TIẾT DIỄN BIẾN TRẬN ĐẤU</h2>
+                  <p className="text-purple-100/80 text-xs font-bold uppercase tracking-widest mt-0.5">Official Chronological Match Logs</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => window.print()}
+                  className="bg-white/15 hover:bg-white/25 text-white px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 flex items-center gap-2 border border-white/20 backdrop-blur-md group"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2v4" />
+                  </svg>
+                  IN NHẬT KÝ
+                </button>
+                <div className="h-6 w-px bg-white/20 mx-1"></div>
+                <button
+                  onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                  className="text-white hover:bg-black/20 p-2 rounded-full transition-all duration-200"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Content Container */}
+            <div className="flex-1 overflow-y-auto bg-gray-100 dark:bg-[#0f1115] p-2 md:p-8 scrollbar-thin scrollbar-thumb-purple-500/20">
+              <div className="max-w-none mx-auto">
+                <div className="bg-white dark:bg-[#1a1c23] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.3)] dark:shadow-none rounded-lg p-0 print:shadow-none">
+                  <MatchLogsReportView
+                    row={openActions.row}
+                    onClose={() => setOpenActions({ ...openActions, isOpen: false })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Buttons */}
+            <div className="bg-white dark:bg-[#15171e] px-8 py-4 flex justify-between items-center border-t border-gray-200 dark:border-white/5 flex-shrink-0 z-10 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)]">
+              <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 uppercase tracking-widest font-bold">
+                <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+                Official Log Record Verified
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                  className="bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300 px-8 py-2.5 rounded-lg font-black text-sm transition-all duration-200 border border-gray-200 dark:border-white/10 shadow-sm uppercase tracking-wider"
+                >
+                  Đóng
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal khác - Sử dụng Modal component cũ */}
       {openActions?.isOpen &&
         openActions?.key !== Constants.ACTION_MATCH_CONFIG &&
         openActions?.key !== Constants.ACTION_MATCH_RESULT &&
         openActions?.key !== Constants.ACTION_MATCH_HISTORY &&
+        openActions?.key !== Constants.ACTION_MATCH_REPORT &&
+        openActions?.key !== Constants.ACTION_MATCH_LOGS &&
         openActions?.key !== Constants.ACTION_UPDATE && (
           <Modal
             isOpen={true}
@@ -3215,6 +3425,384 @@ function ConfigForm({ row, onSubmit, onCancel }) {
 }
 
 // Component xem lịch sử - Hiển thị giống màn hình Vovinam
+// Component hiển thị Biên bản thi đấu chuyên nghiệp (A4 style)
+function MatchReportView({ row, onClose }) {
+  const [loading, setLoading] = React.useState(true);
+  const [matchData, setMatchData] = React.useState(null);
+  const [matchHistory, setMatchHistory] = React.useState(null);
+  const configSystem = useAppSelector((state) => state.configSystem);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        if (row.match_id) {
+          // Lấy thông tin trận đấu
+          const matchRes = await axios.get(`http://localhost:6789/api/competition-match/${row.match_id}`);
+          if (matchRes?.data?.success) {
+            setMatchData(matchRes.data.data);
+          }
+
+          // Lấy lịch sử trận đấu (chốt kết quả)
+          const historyRes = await axios.get(`http://localhost:6789/api/competition-match/${row.match_id}/history`);
+          if (historyRes?.data?.success) {
+            const history = historyRes.data.data;
+            // Lấy event history cuối cùng (là kết quả chốt)
+            setMatchHistory(history.length > 0 ? history[history.length - 1] : null);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching report data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [row.match_id]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-gray-800">
+        <div className="relative w-16 h-16">
+          <div className="absolute inset-0 border-4 border-orange-500/20 rounded-full"></div>
+          <div className="absolute inset-0 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <p className="mt-6 text-gray-500 font-bold uppercase tracking-widest text-xs animate-pulse">Đang chuẩn bị biên bản...</p>
+      </div>
+    );
+  }
+
+  const redAthlete = {
+    name: row.data[3] || "—",
+    unit: row.data[4] || "—",
+    country: row.data[5] || ""
+  };
+  const blueAthlete = {
+    name: row.data[6] || "—",
+    unit: row.data[7] || "—",
+    country: row.data[8] || ""
+  };
+
+  const winner = matchHistory?.winner || matchData?.winner;
+  const isRedWinner = winner?.toUpperCase() === "RED";
+  const isBlueWinner = winner?.toUpperCase() === "BLUE";
+
+  return (
+    <div className="bg-white text-black p-0 sm:p-2 min-h-screen print:p-0 print:bg-white print:text-black font-serif">
+      {/* Container A4 Style - 210mm x 297mm approx */}
+      <div className="max-w-[210mm] min-h-[297mm] mx-auto bg-white border border-gray-100 shadow-xl p-[20mm] print:border-0 print:shadow-none print:max-w-none print:p-[15mm] print:min-h-0">
+
+        {/* Official Header */}
+        <div className="flex justify-between items-start mb-12">
+          <div className="text-center w-5/12">
+            <h4 className="font-bold text-[11pt] uppercase tracking-wider">{configSystem.data?.don_vi_to_chuc || "BAN TỔ CHỨC GIẢI"}</h4>
+            <p className="text-[8pt] italic font-medium -mt-1">Organizing Committee</p>
+            <div className="h-[1.5px] bg-black w-20 mx-auto mt-2"></div>
+          </div>
+          <div className="text-center w-8/12">
+            <h4 className="font-bold text-[11pt] uppercase tracking-wide">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h4>
+            <p className="text-[8pt] -mt-1">Socialist Republic of Viet Nam</p>
+            <h5 className="font-bold text-[10pt] mt-1">Độc lập - Tự do - Hạnh phúc</h5>
+            <p className="text-[8pt] italic -mt-1">Independence - Freedom - Happiness</p>
+            <div className="h-[1.5px] bg-black w-28 mx-auto mt-2"></div>
+          </div>
+        </div>
+
+        {/* Title Section */}
+        <div className="text-center mb-10">
+          <h1 className="text-[20pt] font-black uppercase tracking-[0.1em] leading-tight">BIÊN BẢN KẾT QUẢ THI ĐẤU</h1>
+          <h2 className="text-[12pt] font-bold text-gray-500 uppercase tracking-widest -mt-1 italic">OFFICIAL COMPETITION RECORD</h2>
+
+          <div className="mt-6 flex flex-col items-center gap-2">
+            <p className="text-[14pt] font-black text-gray-900 border-b-2 border-gray-100 pb-1 px-8">
+              {configSystem.data?.ten_giai_dau || "—"}
+            </p>
+            <div className="flex gap-6 text-[10pt] font-bold text-gray-600">
+              <div className="flex flex-col items-center">
+                <span>Địa điểm / Venue: {configSystem.data?.dia_diem || "—"}</span>
+              </div>
+              <span className="text-gray-300">|</span>
+              <div className="flex flex-col items-center">
+                <span>Ngày / Date: {new Date().toLocaleDateString('vi-VN')}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Info Grid - Minimalist */}
+        <div className="grid grid-cols-3 border-2 border-black divide-x-2 divide-black mb-8 bg-gray-50/50 uppercase font-black text-[9pt]">
+          <div className="p-3 text-center">
+            <span className="text-gray-400 block text-[7pt] mb-1">Mã Trận / Match No.</span>
+            <span className="text-lg">{row.data[0]}</span>
+          </div>
+          <div className="p-3 text-center flex flex-col justify-center">
+            <span className="text-gray-400 block text-[7pt] mb-1">Nội dung / Category</span>
+            <span className="truncate">{row.data[2]}</span>
+          </div>
+          <div className="p-3 text-center flex flex-col justify-center">
+            <span className="text-gray-400 block text-[7pt] mb-1">Hạng cân / Weight</span>
+            <span className="truncate">{row.data[1]}</span>
+          </div>
+        </div>
+
+        {/* Athlete Contrast - Black & White Professionalism */}
+        <div className="grid grid-cols-2 gap-0 border-2 border-black divide-x-2 divide-black rounded overflow-hidden mb-8">
+          {/* Red athlete (now as neutral) */}
+          <div className={`p-6 flex flex-col items-center justify-center relative ${isRedWinner ? 'bg-gray-100' : 'bg-white'}`}>
+            {isRedWinner && <div className="absolute top-2 right-2 text-[7pt] font-black bg-black text-white px-2 py-0.5 rounded shadow-sm">WINNER</div>}
+            <span className="text-[7pt] font-black text-black uppercase mb-2 tracking-widest border-b border-black pb-0.5">GIÁP ĐỎ / RED CORNER</span>
+            <h3 className="text-[16pt] font-black text-center text-black uppercase leading-none mt-2">{redAthlete.name}</h3>
+            <p className="text-[9pt] font-bold text-gray-500 mt-2 uppercase">{redAthlete.unit}</p>
+          </div>
+          {/* Blue athlete (now as neutral) */}
+          <div className={`p-6 flex flex-col items-center justify-center relative ${isBlueWinner ? 'bg-gray-200' : 'bg-white'}`}>
+            {isBlueWinner && <div className="absolute top-2 left-2 text-[7pt] font-black bg-black text-white px-2 py-0.5 rounded shadow-sm">WINNER</div>}
+            <span className="text-[7pt] font-black text-black uppercase mb-2 tracking-widest border-b border-black pb-0.5">GIÁP XANH / BLUE CORNER</span>
+            <h3 className="text-[16pt] font-black text-center text-black uppercase leading-none mt-2">{blueAthlete.name}</h3>
+            <p className="text-[9pt] font-bold text-gray-500 mt-2 uppercase">{blueAthlete.unit}</p>
+          </div>
+        </div>
+
+        {/* Results Table - Concise & Black/White */}
+        <table className="w-full border-collapse border-t-2 border-black mb-8 text-[9pt]">
+          <thead>
+            <tr className="bg-gray-100 border-b-2 border-black">
+              <th className="p-3 text-left w-20 border-r border-black">
+                <p className="font-black uppercase">Hiệp</p>
+                <p className="text-[7pt] text-gray-400 uppercase font-black -mt-1 italic">Round</p>
+              </th>
+              <th className="p-3 text-left border-r border-black">
+                <p className="font-black uppercase">Phân tích kỹ thuật</p>
+                <p className="text-[7pt] text-gray-400 uppercase font-black -mt-1 italic">Technical Analysis</p>
+              </th>
+              <th className="p-3 text-center w-24 border-r border-black bg-gray-50">
+                <p className="font-black text-black uppercase">Đỏ (Red)</p>
+              </th>
+              <th className="p-3 text-center w-24 border-r border-black bg-gray-100">
+                <p className="font-black text-black uppercase">Xanh (Blue)</p>
+              </th>
+              <th className="p-3 text-center w-32">
+                <p className="font-black uppercase">Kết quả</p>
+                <p className="text-[7pt] text-gray-400 uppercase font-black -mt-1 italic">Result</p>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-black border-b-2 border-black">
+            {matchHistory?.round_history?.map((round, idx) => (
+              <tr key={idx} className="h-16 group hover:bg-gray-50 transition-colors">
+                <td className="p-3 text-center font-black text-lg italic border-r border-black">{round.round}</td>
+                <td className="p-3 border-r border-black">
+                  <div className="flex flex-col gap-1.5 text-[8pt] font-bold uppercase tracking-tight text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 border border-black bg-black rounded-sm"></span>
+                      <span>Đỏ / Red: <b className="text-black">Ngã: {round.red?.match?.fall || 0} | Lỗi: {round.red?.match?.penalty || 0}</b></span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 border border-black bg-gray-300 rounded-sm"></span>
+                      <span>Xanh / Blue: <b className="text-black">Ngã: {round.blue?.match?.fall || 0} | Lỗi: {round.blue?.match?.penalty || 0}</b></span>
+                    </div>
+                  </div>
+                </td>
+                <td className="p-3 text-center font-black text-2xl text-black border-r border-black bg-gray-50">{round.red?.match?.score || 0}</td>
+                <td className="p-3 text-center font-black text-2xl text-black border-r border-black bg-gray-100">{round.blue?.match?.score || 0}</td>
+                <td className="p-3 text-center font-black uppercase italic text-[9pt]">
+                  {round.red?.match?.win > round.blue?.match?.win ? "Giáp Đỏ Thắng" : round.blue?.match?.win > round.red?.match?.win ? "Giáp Xanh Thắng" : "Hòa / Draw"}
+                </td>
+              </tr>
+            ))}
+            <tr className="bg-black text-white h-12">
+              <td colSpan={2} className="p-3 text-right font-black uppercase text-[10pt] tracking-widest italic pr-6 border-r border-white/20">
+                TỔNG ĐIỂM CHUNG CUỘC / FINAL TOTAL SCORE
+              </td>
+              <td className="p-3 text-center font-black text-2xl text-white border-r border-white/20">{matchHistory?.red_score || 0}</td>
+              <td className="p-3 text-center font-black text-2xl text-white border-r border-white/20">{matchHistory?.blue_score || 0}</td>
+              <td className="bg-gray-800 border-none"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        {/* Official Declaration - Monochromatic */}
+        <div className="p-4 border-2 border-black bg-gray-50 flex items-center justify-center gap-8 mb-12 shadow-sm">
+          <div className="flex flex-col items-center">
+            <p className="text-[8pt] font-black uppercase text-gray-500 tracking-widest mb-1 italic">Declaration of Victory</p>
+            <h4 className="text-[11pt] font-black uppercase">NGƯỜI CHIẾN THẮNG / WINNER</h4>
+          </div>
+          <div className={`px-12 py-3 border-4 border-black text-[18pt] font-black uppercase tracking-tighter transform -rotate-1 shadow-sm ${isRedWinner || isBlueWinner ? 'bg-black text-white' : 'bg-white text-gray-400'}`}>
+            {isRedWinner ? redAthlete.name : isBlueWinner ? blueAthlete.name : "CHƯA XÁC ĐỊNH"}
+          </div>
+        </div>
+
+        {/* Signature Box */}
+        <div className="grid grid-cols-3 gap-10 mt-16 text-center">
+          <div className="flex flex-col items-center">
+            <span className="text-[9pt] font-black uppercase">Thư ký trận đấu</span>
+            <span className="text-[7pt] italic font-bold text-gray-400 -mt-1 uppercase">Match Secretary</span>
+            <div className="h-28"></div>
+            <div className="w-40 border-t border-black/10"></div>
+          </div>
+          <div className="flex flex-col items-center border-x border-gray-100">
+            <span className="text-[9pt] font-black uppercase">Trọng tài chính</span>
+            <span className="text-[7pt] italic font-bold text-gray-400 -mt-1 uppercase">Referee</span>
+            <div className="h-28"></div>
+            <div className="w-40 border-t border-black/10"></div>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-[9pt] font-black uppercase">Giám sát / Tổng trọng tài</span>
+            <span className="text-[7pt] italic font-bold text-gray-400 -mt-1 uppercase">Chief Referee</span>
+            <div className="h-28"></div>
+            <div className="w-40 border-t border-black/10"></div>
+          </div>
+        </div>
+
+        {/* Footer Technical Stamp */}
+        {/* <div className="mt-16 pt-6 border-t border-gray-100 flex justify-between items-center opacity-30 grayscale hover:opacity-100 transition-opacity duration-500">
+          <div className="font-mono text-[7pt] leading-tight font-bold">
+            <p>AUTH: {row.match_id ? String(row.match_id).slice(-8) : "N/A"}-{new Date().getTime().toString().slice(-4)}</p>
+            <p>SYSTEM GEN: SCOREBOARD_DIGITAL_V2.0.4</p>
+          </div>
+          <div className="flex flex-col items-end">
+            <div className="w-16 h-16 border-2 border-black rounded-full flex flex-col items-center justify-center font-black text-[8pt] leading-none transform rotate-12 bg-white">
+              <span>OFFICIAL</span>
+              <span className="mt-1">STAMP</span>
+            </div>
+          </div>
+        </div> */}
+
+      </div>
+
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        @media print {
+          body { -webkit-print-color-adjust: exact; margin: 0; }
+          .print\\:bg-white { background-color: white !important; }
+          .print\\:text-black { color: black !important; }
+          @page { size: A4; margin: 0; }
+        }
+      `}} />
+    </div>
+  );
+}
+
+function MatchLogsReportView({ row }) {
+  const [loading, setLoading] = React.useState(true);
+  const [logs, setLogs] = React.useState([]);
+  const configSystem = useAppSelector(state => state.configSystem);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        if (row.match_id) {
+          const res = await axios.get(`http://localhost:6789/api/competition-match/${row.match_id}/history`);
+          if (res?.data?.success) {
+            const history = res.data.data;
+            const latestHistory = history[history.length - 1];
+            setLogs(latestHistory?.logs || []);
+          }
+        }
+      } catch (error) {
+        console.error("Fetch logs error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [row.match_id]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 bg-white">
+        <div className="w-10 h-10 border-4 border-gray-100 border-t-black rounded-full animate-spin"></div>
+        <p className="mt-4 text-gray-500 font-bold uppercase text-[7pt] tracking-widest">Đang tải chi tiết diễn biến...</p>
+      </div>
+    );
+  }
+
+  const redAthlete = { name: row.data[3] || "—", unit: row.data[4] || "—" };
+  const blueAthlete = { name: row.data[6] || "—", unit: row.data[7] || "—" };
+
+  return (
+    <div className="bg-white text-black min-h-screen font-serif p-0 print:p-0">
+      <div className="max-w-[210mm] mx-auto bg-white p-[20mm] print:p-[15mm]">
+        {/* Header */}
+        <div className="flex justify-between items-start mb-10 border-b border-black pb-8">
+          <div className="text-center w-5/12">
+            <h4 className="font-bold text-[9pt] uppercase">{configSystem.data?.don_vi_to_chuc || "BAN TỔ CHỨC GIẢI"}</h4>
+            <p className="text-[7pt] italic font-medium -mt-1">Organizing Committee</p>
+          </div>
+          <div className="text-center w-6/12">
+            <h4 className="font-bold text-[9pt] uppercase leading-tight">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h4>
+            <h5 className="font-bold text-[8pt]">Độc lập - Tự do - Hạnh phúc</h5>
+          </div>
+        </div>
+
+        <div className="text-center mb-8">
+          <h1 className="text-[18pt] font-black uppercase leading-none">CHI TIẾT DIỄN BIẾN TRẬN ĐẤU</h1>
+          <h2 className="text-[10pt] font-bold text-gray-400 uppercase italic mt-1 tracking-widest">Chronological Match Logs</h2>
+          <p className="mt-4 text-[11pt] font-black uppercase underline decoration-1 underline-offset-4">{configSystem.data?.ten_giai_dau || "—"}</p>
+        </div>
+
+        <div className="grid grid-cols-3 border-2 border-black divide-x-2 divide-black mb-8 bg-gray-50 uppercase font-black text-[8pt]">
+          <div className="p-3 text-center flex flex-col items-center">
+            <span className="text-[12pt] font-black">{redAthlete.name}</span>
+            <span className="text-gray-400">ĐỎ (RED)</span>
+          </div>
+          <div className="p-3 text-center flex flex-col items-center justify-center">
+            <span className="text-lg">#{row.data[0]}</span>
+            <span className="text-gray-400">TRẬN (MATCH)</span>
+          </div>
+          <div className="p-3 text-center flex flex-col items-center">
+            <span className="text-[12pt] font-black">{blueAthlete.name}</span>
+            <span className="text-gray-400">XANH (BLUE)</span>
+          </div>
+        </div>
+
+        <table className="w-full border-collapse border-b-2 border-black text-[8.5pt]">
+          <thead>
+            <tr className="bg-black text-white text-center font-black uppercase">
+              <th className="p-2 w-12 border-r border-white/20">Hiệp</th>
+              <th className="p-2 w-20 border-r border-white/20">Thời gian</th>
+              <th className="p-2 w-24 border-r border-white/20">Phía</th>
+              <th className="p-2 border-r border-white/20 text-left pl-4">Nội dung (Description)</th>
+              <th className="p-2 w-24">Tỷ số</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-300">
+            {logs.map((log, idx) => (
+              <tr key={idx} className="h-10 text-center font-medium">
+                <td className="p-2 border-r border-gray-200 font-black italic">H{log.round}</td>
+                <td className="p-2 border-r border-gray-200 font-mono text-[8pt]">
+                  {Math.floor((log.current_time || 0) / 60)}:{((log.current_time || 0) % 60).toString().padStart(2, '0')}
+                </td>
+                <td className="p-2 border-r border-gray-200">
+                  <span className={`inline-block border border-black px-2 py-0.5 rounded-sm font-black text-[6pt] uppercase ${log.side?.toUpperCase() === 'RED' ? 'bg-black text-white' : log.side?.toUpperCase() === 'BLUE' ? 'bg-gray-200 text-black' : 'bg-white text-gray-400'}`}>
+                    {log.side || 'SYS'}
+                  </span>
+                </td>
+                <td className="p-2 text-left pl-4 border-r border-gray-200 italic text-[8pt]">
+                  {log.description || '—'}
+                </td>
+                <td className="p-2 font-black tabular-nums border-r border-black">
+                  {log.redScore || 0} - {log.blueScore || 0}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <div className="mt-12 flex justify-between items-end opacity-40 italic font-bold text-[7pt]">
+          <div>
+            Printed on: {new Date().toLocaleString('vi-VN')}<br />
+            Record ID: {row.match_id ? String(row.match_id).slice(-8) : 'N/A'}
+          </div>
+          <div className="text-[14pt] transform -rotate-2 border-2 border-black px-4 font-black not-italic opacity-100 uppercase">LOGS RECORD</div>
+        </div>
+      </div>
+      <style dangerouslySetInnerHTML={{ __html: `@media print { @page { size: A4; margin: 0; } body { -webkit-print-color-adjust: exact; } }` }} />
+    </div>
+  );
+}
+
 function HistoryView({
   row,
   onClose,
@@ -3710,19 +4298,11 @@ function HistoryView({
       <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700 mt-8">
         <button
           onClick={() => {
-            const previewData = {
-              redName,
-              redUnit,
-              blueName,
-              blueUnit,
-              redScore,
-              blueScore,
-              winner,
-              roundHistory,
-              allLogs,
-              matchDate: new Date().toLocaleDateString("vi-VN"),
-            };
-            window.openDoiKhangPreview?.(previewData);
+            setOpenActions({
+              isOpen: true,
+              key: Constants.ACTION_MATCH_LOGS,
+              row: row
+            });
           }}
           className="px-5 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm font-semibold rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
         >
@@ -3730,7 +4310,7 @@ function HistoryView({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
           </svg>
-          Preview Template
+          Preview Template Logs
         </button>
 
         <button

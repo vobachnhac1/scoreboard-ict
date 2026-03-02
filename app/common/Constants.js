@@ -19,7 +19,9 @@ export const Constants = {
   ACTION_MATCH_CONFIG: "CONFIG",
   ACTION_MATCH_HISTORY: "HISTORY",
   ACTION_MATCH_START: "START",
-}
+  ACTION_MATCH_REPORT: "REPORT",
+  ACTION_MATCH_LOGS: "LOGS",
+};
 
 export const LIST_STATUS_ATHLETE = [
   { key: "WAI", label: "Chờ" },

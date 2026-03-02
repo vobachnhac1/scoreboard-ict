@@ -78,8 +78,30 @@ const COMMON = `
     );
 `;
 
+//-- 2. Bảng referees (quản lý trọng tài)
+const REFEREE = `
+    CREATE TABLE IF NOT EXISTS referees (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        full_name TEXT(255) NOT NULL,
+        unit TEXT(255),
+        country TEXT(255),
+        r1 INTEGER DEFAULT 0,
+        r2 INTEGER DEFAULT 0,
+        r3 INTEGER DEFAULT 0,
+        r4 INTEGER DEFAULT 0,
+        r5 INTEGER DEFAULT 0,
+        r6 INTEGER DEFAULT 0,
+        r7 INTEGER DEFAULT 0,
+        is_ref_machine INTEGER DEFAULT 0,
+        is_ref_court INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+`;
+
 const DB_NO_RELATION = {
     CRE_COM: COMMON,
+    CRE_REF: REFEREE,
 }
 
 /**

@@ -7,6 +7,7 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { useNavigate } from "react-router-dom";
 import useConfirmModal from "../../../hooks/useConfirmModal";
 import ConfirmModal from "../../../components/ConfirmModal";
+import Modal from "../../../components/Modal";
 
 export default function CompetitionManagement() {
   const navigate = useNavigate();
@@ -22,6 +23,22 @@ export default function CompetitionManagement() {
   const [savedData, setSavedData] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
   const [viewMode, setViewMode] = useState("list"); // 'grid' hoặc 'list'
+
+  // State for Referee Management
+  const [referees, setReferees] = useState([]);
+  const [loadingReferees, setLoadingReferees] = useState(false);
+  const [refSearch, setRefSearch] = useState("");
+
+  // Referee Modal State
+  const [isRefModalOpen, setIsRefModalOpen] = useState(false);
+  const [refModalMode, setRefModalMode] = useState("add"); // "add" or "edit"
+  const [currentRef, setCurrentRef] = useState({
+    full_name: "",
+    unit: "",
+    country: "",
+    r1: false, r2: false, r3: false, r4: false, r5: false, r6: false, r7: false,
+    is_ref_machine: false, is_ref_court: false
+  });
 
   // Modal hook
   const { modalProps, showConfirm, showAlert, showError, showSuccess } =
@@ -89,6 +106,9 @@ export default function CompetitionManagement() {
           } else if (formatType == "VON") {
             console.log("📋 Format: Võ Nhạc/Đồng đội - 6-16 VĐV/team");
             handleSaveVONToDatabase(sheetName, rows);
+          } else if (formatType === "REF") {
+            console.log("📋 Format: Tổ trọng tài (REF)");
+            handleSaveREFToDatabase(sheetName, rows);
           } else {
             console.warn(" Format không xác định:", formatType);
             showWarning(
@@ -503,6 +523,39 @@ export default function CompetitionManagement() {
     } catch (error) { }
   };
 
+  // Lưu dữ liệu REF (Trọng tài) vào database
+  const handleSaveREFToDatabase = async (sheetName, rows) => {
+    try {
+      const dataRows = rows.slice(1); // Bỏ header
+      const refereesToCreate = dataRows.map((row) => {
+        return {
+          full_name: row[1] || "",
+          unit: row[2] || "",
+          country: row[3] || "",
+          r1: !!row[4], r2: !!row[5], r3: !!row[6], r4: !!row[7], r5: !!row[8], r6: !!row[9], r7: !!row[10],
+          is_ref_machine: !!row[11],
+          is_ref_court: !!row[12]
+        };
+      });
+
+      if (refereesToCreate.length > 0) {
+        await axios.post("http://localhost:6789/api/referees/bulk", {
+          referees: refereesToCreate,
+        });
+      }
+
+      await showSuccess(`Lưu ${refereesToCreate.length} trọng tài thành công!`);
+      fetchReferees();
+      // Chúng ta có thể chuyển sang tab trọng tài sau khi import
+    } catch (error) {
+      console.error("Error saving REF to database:", error);
+      await showError(
+        "Lỗi khi lưu dữ liệu trọng tài: " +
+        (error.response?.data?.message || error.message),
+      );
+    }
+  };
+
   // Lấy danh sách dữ liệu đã lưu
   const fetchSavedData = async () => {
     setLoadingData(true);
@@ -552,7 +605,143 @@ export default function CompetitionManagement() {
   // Load dữ liệu khi component mount
   useEffect(() => {
     fetchSavedData();
+    fetchReferees();
   }, []);
+
+  // Fetch referees
+  const fetchReferees = async (keyword = "") => {
+    setLoadingReferees(true);
+    try {
+      const response = await axios.get(`http://localhost:6789/api/referees${keyword ? `?keyword=${keyword}` : ''}`);
+      if (response.data.success) {
+        setReferees(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching referees:", error);
+    } finally {
+      setLoadingReferees(false);
+    }
+  };
+
+  const handleDeleteReferee = async (id) => {
+    const confirmDelete = await showConfirm("Bạn có chắc chắn muốn xóa trọng tài này?", {
+      title: "Xác nhận xóa",
+      confirmText: "Xóa",
+      cancelText: "Hủy",
+    });
+    if (!confirmDelete) return;
+
+    try {
+      const response = await axios.delete(`http://localhost:6789/api/referees/${id}`);
+      if (response.data.success) {
+        showSuccess("Xóa trọng tài thành công!");
+        fetchReferees(refSearch);
+      }
+    } catch (error) {
+      console.error("Error deleting referee:", error);
+      showError("Lỗi khi xóa trọng tài");
+    }
+  };
+
+  const handleUpdateReferee = async (ref, updatedFields) => {
+    try {
+      const payload = { ...ref, ...updatedFields };
+      delete payload.id;
+      delete payload.created_at;
+      delete payload.updated_at;
+
+      // Robust bits casting
+      const toB = (v) => (v === true || v === 1 || v === "true" || v === "1" || v === "X") ? 1 : 0;
+      for (let i = 1; i <= 7; i++) payload[`r${i}`] = toB(payload[`r${i}`]);
+      payload.is_ref_machine = toB(payload.is_ref_machine);
+      payload.is_ref_court = toB(payload.is_ref_court);
+
+      const response = await axios.put(`http://localhost:6789/api/referees/${ref.id}`, payload);
+      if (response.data.success) {
+        setReferees(prev => prev.map(r => r.id === ref.id ? { ...r, ...updatedFields } : r));
+      }
+    } catch (error) {
+      console.error("Error updating referee:", error);
+      showError("Lỗi khi cập nhật trọng tài");
+    }
+  };
+
+  const handleToggleField = (ref, field) => {
+    handleUpdateReferee(ref, { [field]: !ref[field] });
+  };
+
+  const handleEditField = (ref, field, label) => {
+    const newValue = prompt(`Nhập ${label}:`, ref[field] || "");
+    if (newValue !== null) {
+      handleUpdateReferee(ref, { [field]: newValue });
+    }
+  };
+
+  const handleOpenRefModal = (mode = "add", ref = null) => {
+    setRefModalMode(mode);
+    if (mode === "edit" && ref) {
+      setCurrentRef(ref);
+    } else {
+      setCurrentRef({
+        full_name: "", unit: "", country: "",
+        r1: false, r2: false, r3: false, r4: false, r5: false, r6: false, r7: false,
+        is_ref_machine: false, is_ref_court: false
+      });
+    }
+    setIsRefModalOpen(true);
+  };
+
+  const handleSaveRefModal = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = { ...currentRef };
+
+      // Robust bits casting
+      const toB = (v) => (v === true || v === 1 || v === "true" || v === "1" || v === "X") ? 1 : 0;
+      for (let i = 1; i <= 7; i++) payload[`r${i}`] = toB(payload[`r${i}`]);
+      payload.is_ref_machine = toB(payload.is_ref_machine);
+      payload.is_ref_court = toB(payload.is_ref_court);
+
+      if (refModalMode === "add") {
+        const response = await axios.post("http://localhost:6789/api/referees", payload);
+        if (response.data.success) {
+          showSuccess("Thêm trọng tài thành công!");
+          fetchReferees(refSearch);
+          setIsRefModalOpen(false);
+        }
+      } else {
+        const response = await axios.put(`http://localhost:6789/api/referees/${currentRef.id}`, payload);
+        if (response.data.success) {
+          showSuccess("Cập nhật trọng tài thành công!");
+          fetchReferees(refSearch);
+          setIsRefModalOpen(false);
+        }
+      }
+    } catch (error) {
+      console.error("Error saving referee:", error);
+      showError("Lỗi khi lưu thông tin trọng tài");
+    }
+  };
+
+  const handleDeleteAllReferees = async () => {
+    const confirmDelete = await showConfirm("CẢNH BÁO: Bạn có chắc chắn muốn XÓA TẤT CẢ trọng tài?", {
+      title: "Xác nhận xóa toàn bộ",
+      confirmText: "Xóa hết",
+      cancelText: "Hủy",
+    });
+    if (!confirmDelete) return;
+
+    try {
+      const response = await axios.delete(`http://localhost:6789/api/referees-all`);
+      if (response.data.success) {
+        showSuccess("Xóa toàn bộ bộ dữ liệu thành công!");
+        fetchReferees();
+      }
+    } catch (error) {
+      console.error("Error deleting all referees:", error);
+      showError("Lỗi khi xóa toàn bộ trọng tài");
+    }
+  };
 
   // Chuyển đến trang chi tiết
   const handleViewDetail = (item) => {
@@ -588,6 +777,20 @@ export default function CompetitionManagement() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
             </svg>
             Quản lý dữ liệu
+          </Tab>
+          <Tab
+            className={({ selected }) =>
+              `flex-1 flex items-center justify-center gap-2 rounded py-2.5 text-sm font-semibold leading-5 transition-all duration-200
+              ${selected
+                ? "bg-white dark:bg-gray-700 text-blue-700 dark:text-blue-300 shadow-sm"
+                : "text-gray-600 dark:text-gray-400 hover:bg-white/60 dark:hover:bg-gray-700/50 hover:text-blue-700 dark:hover:text-blue-300"
+              }`
+            }
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Quản lý trọng tài
           </Tab>
           <Tab
             className={({ selected }) =>
@@ -1023,6 +1226,183 @@ export default function CompetitionManagement() {
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+          </TabPanel>
+
+
+          {/* Tab 3: Quản lý trọng tài */}
+          <TabPanel>
+            <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-600 dark:from-blue-400 dark:to-blue-400 bg-clip-text text-transparent">
+                  Danh sách Trọng tài
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  Quản lý tổ trọng tài và phân công thiết bị
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Tìm trọng tài..."
+                    className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-blue-500 outline-none w-64"
+                    value={refSearch}
+                    onChange={(e) => {
+                      setRefSearch(e.target.value);
+                      fetchReferees(e.target.value);
+                    }}
+                  />
+                  <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+
+                <button
+                  onClick={() => fetchReferees(refSearch)}
+                  className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded shadow-sm"
+                >
+                  <svg className={`w-5 h-5 ${loadingReferees ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </button>
+
+                <button
+                  onClick={() => handleOpenRefModal("add")}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white border border-blue-700 text-sm font-bold rounded hover:bg-blue-700 transition-colors shadow-sm"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  Thêm trọng tài
+                </button>
+
+                {referees.length > 0 && (
+                  <button
+                    onClick={handleDeleteAllReferees}
+                    className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 text-sm font-bold rounded hover:bg-red-100 dark:hover:bg-red-900/60 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Xóa tất cả
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800/80 rounded border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
+              {loadingReferees ? (
+                <div className="text-center py-20">
+                  <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
+                  <p className="mt-4 text-gray-500 font-medium">Đang tải danh sách trọng tài...</p>
+                </div>
+              ) : referees.length === 0 ? (
+                <div className="text-center py-20">
+                  <div className="w-20 h-20 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-100 dark:border-blue-800">
+                    <svg className="w-10 h-10 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Chưa có trọng tài nào</h3>
+                  <p className="text-gray-500 text-sm">Hãy upload file Excel với format REF để import tổ trọng tài</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                      <tr>
+                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">#</th>
+                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Họ tên</th>
+                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Đơn vị</th>
+                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Assignments (R1-R7)</th>
+                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Thiết bị/Sân</th>
+                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                      {referees.map((ref, idx) => (
+                        <tr key={ref.id} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors">
+                          <td className="px-6 py-4 text-sm text-gray-500 font-mono">{idx + 1}</td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              {/* <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                                {ref.full_name?.charAt(0)}
+                              </div> */}
+                              <div>
+                                <p className="text-sm font-bold text-gray-900 dark:text-white uppercase">{ref.full_name}</p>
+                                <p className="text-[10px] text-gray-400 font-medium uppercase tracking-tighter">{ref.country || 'N/A'}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">{ref.unit}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex gap-1">
+                              {[ref.r1, ref.r2, ref.r3, ref.r4, ref.r5, ref.r6, ref.r7].map((r, rIdx) => (
+                                <button
+                                  key={rIdx}
+                                  onClick={() => handleToggleField(ref, `r${rIdx + 1}`)}
+                                  className={`w-6 h-6 flex items-center justify-center text-[10px] font-bold rounded shadow-sm border transition-all duration-200 hover:scale-110 ${r
+                                    ? 'bg-blue-600 text-white border-blue-700'
+                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 hover:border-blue-300'}`}
+                                  title={`Round ${rIdx + 1} - Click để thay đổi`}
+                                >
+                                  {rIdx + 1}
+                                </button>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleToggleField(ref, "is_ref_machine")}
+                                className={`px-2 py-1 text-[10px] font-bold rounded border transition-colors flex items-center gap-1 ${ref.is_ref_machine
+                                  ? 'bg-indigo-600 text-white border-indigo-700'
+                                  : 'bg-gray-50 dark:bg-gray-800/50 text-gray-400 border-dashed border-gray-300 dark:border-gray-700 hover:bg-gray-100'}`}
+                                title="Click để gán/hủy Trọng tài máy"
+                              >
+                                MÁY
+                              </button>
+                              <button
+                                onClick={() => handleToggleField(ref, "is_ref_court")}
+                                className={`px-2 py-1 text-[10px] font-bold rounded border transition-colors flex items-center gap-1 ${ref.is_ref_court
+                                  ? 'bg-amber-600 text-white border-amber-700'
+                                  : 'bg-gray-50 dark:bg-gray-800/50 text-gray-400 border-dashed border-gray-300 dark:border-gray-700 hover:bg-gray-100'}`}
+                                title="Click để gán/hủy Trọng tài sân"
+                              >
+                                SÂN
+                              </button>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => handleOpenRefModal("edit", ref)}
+                                className="p-2 text-gray-400 hover:text-blue-600 transition-colors bg-white dark:bg-gray-800 border border-transparent hover:border-blue-200 dark:hover:border-blue-800 rounded shadow-sm"
+                              >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteReferee(ref.id)}
+                                className="p-2 text-gray-400 hover:text-red-500 transition-colors bg-white dark:bg-gray-800 border border-transparent hover:border-red-200 dark:hover:border-red-800 rounded shadow-sm"
+                              >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>
@@ -1565,10 +1945,10 @@ export default function CompetitionManagement() {
                   </div>
                   <div className="mt-3 pt-3 border-t border-gray-200 space-y-1">
                     <p className="text-xs text-gray-500">
-                      💡 <strong>DK (Đối kháng):</strong> Hiển thị Đỏ vs Xanh
+                      <strong>DK (Đối kháng):</strong> Hiển thị Đỏ vs Xanh
                     </p>
                     <p className="text-xs text-gray-500">
-                      💡 <strong>SOL/TUV/DAL/DOL/VON:</strong> Hiển thị danh
+                      <strong>SOL/TUV/DAL/DOL/VON:</strong> Hiển thị danh
                       sách VĐV trong team
                     </p>
                   </div>
@@ -1627,6 +2007,113 @@ export default function CompetitionManagement() {
 
       {/* Confirm Modal */}
       <ConfirmModal {...modalProps} />
+
+      {/* Referee Add/Edit Modal */}
+      <Modal
+        isOpen={isRefModalOpen}
+        onClose={() => setIsRefModalOpen(false)}
+        title={refModalMode === "add" ? "Thêm Trọng tài" : "Chỉnh sửa thông tin Trọng tài"}
+        size="large"
+      >
+        <form onSubmit={handleSaveRefModal} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Họ và tên</label>
+              <input
+                type="text"
+                required
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                value={currentRef.full_name}
+                onChange={(e) => setCurrentRef({ ...currentRef, full_name: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Đơn vị</label>
+              <input
+                type="text"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                value={currentRef.unit}
+                onChange={(e) => setCurrentRef({ ...currentRef, unit: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Quốc gia (Country)</label>
+              <input
+                type="text"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-blue-500 outline-none uppercase"
+                value={currentRef.country}
+                onChange={(e) => setCurrentRef({ ...currentRef, country: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+            <div className="space-y-3">
+              <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Nhóm Giám định (R1-R7)</label>
+              <div className="flex flex-wrap gap-2">
+                {[1, 2, 3, 4, 5, 6, 7].map((num) => (
+                  <label key={num} className={`flex items-center gap-2 cursor-pointer p-2 rounded transition-all border ${currentRef[`r${num}`] ? "bg-blue-50 border-blue-200 dark:bg-blue-900/20" : "bg-gray-50 border-gray-200 dark:bg-gray-800/40"}`}>
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-gray-300"
+                      checked={!!currentRef[`r${num}`]}
+                      onChange={(e) => setCurrentRef({ ...currentRef, [`r${num}`]: e.target.checked })}
+                    />
+                    <span className="text-[10px] font-bold font-mono">GIÁM ĐỊNH {num}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Quyền Trọng tài đặc thù</label>
+              <div className="flex flex-wrap gap-4">
+                <label className={`flex items-center gap-2 cursor-pointer p-3 rounded transition-all border ${currentRef.is_ref_machine ? "bg-indigo-50 border-indigo-200 dark:bg-indigo-900/20" : "bg-gray-50 border-gray-200 dark:bg-gray-800/40"}`}>
+                  <input
+                    type="checkbox"
+                    className="w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                    checked={!!currentRef.is_ref_machine}
+                    onChange={(e) => setCurrentRef({ ...currentRef, is_ref_machine: e.target.checked })}
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-xs font-bold">TRỌNG TÀI MÁY</span>
+                    <span className="text-[10px] text-gray-500 italic">Quản lý hệ thống điểm</span>
+                  </div>
+                </label>
+
+                <label className={`flex items-center gap-2 cursor-pointer p-3 rounded transition-all border ${currentRef.is_ref_court ? "bg-amber-50 border-amber-200 dark:bg-amber-900/20" : "bg-gray-50 border-gray-200 dark:bg-gray-800/40"}`}>
+                  <input
+                    type="checkbox"
+                    className="w-5 h-5 rounded text-amber-600 focus:ring-amber-500 border-gray-300"
+                    checked={!!currentRef.is_ref_court}
+                    onChange={(e) => setCurrentRef({ ...currentRef, is_ref_court: e.target.checked })}
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-xs font-bold">TRỌNG TÀI SÂN</span>
+                    <span className="text-[10px] text-gray-500 italic">Điều hành trận đấu</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-6">
+            <button
+              type="button"
+              onClick={() => setIsRefModalOpen(false)}
+              className="px-6 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors border border-gray-300 dark:border-gray-700"
+            >
+              Hủy bỏ
+            </button>
+            <button
+              type="submit"
+              className="px-8 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded transition-all shadow-md active:scale-95"
+            >
+              {refModalMode === "add" ? "Thêm mới" : "Lưu thay đổi"}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

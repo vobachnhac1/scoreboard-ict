@@ -230,7 +230,7 @@ export default function SecondaryDisplay() {
         <>
           <Header
             title={matchData?.ten_giai_dau || "GIẢI VÔ ĐỊCH"}
-            desc={matchData?.ten_mon_thi || "VÕ HIỆN ĐẠI"}
+            desc={matchData?.ten_mon_thi || "VOVINAM"}
             logos={lsLogo}
             config={{
               titleColor: (screenType === 'vonhac' ? configSystem.header_title_color_vonhac : configSystem.header_title_color_quyen) || '#FFFFFF',

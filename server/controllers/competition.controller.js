@@ -1,7 +1,7 @@
 const dbCompetitionDKService = require('../services/common/db_competition_dk');
 
 class CompetitionController {
-    
+
     // GET /api/competition-dk - Lấy tất cả
     async getAllCompetitionDK(req, res) {
         try {
@@ -26,7 +26,7 @@ class CompetitionController {
         try {
             const { id } = req.params;
             const data = await dbCompetitionDKService.getCompetitionDKById(id);
-            
+
             if (!data) {
                 return res.status(404).json({
                     success: false,
@@ -52,7 +52,7 @@ class CompetitionController {
     // POST /api/competition-dk - Thêm mới
     async insertCompetitionDK(req, res) {
         try {
-            const { sheet_name, file_name, data } = req.body;
+            const { sheet_name, file_name, data, referrers } = req.body;
 
             if (!sheet_name || !data) {
                 return res.status(400).json({
@@ -78,7 +78,8 @@ class CompetitionController {
             const result = await dbCompetitionDKService.insertCompetitionDK({
                 sheet_name,
                 file_name,
-                data
+                data,
+                referrers
             });
 
             res.json({
@@ -100,7 +101,7 @@ class CompetitionController {
     async updateCompetitionDK(req, res) {
         try {
             const { id } = req.params;
-            const { sheet_name, file_name, data } = req.body;
+            const { sheet_name, file_name, data, referrers } = req.body;
 
             if (!sheet_name || !data) {
                 return res.status(400).json({
@@ -112,7 +113,8 @@ class CompetitionController {
             const result = await dbCompetitionDKService.updateCompetitionDK(id, {
                 sheet_name,
                 file_name,
-                data
+                data,
+                referrers
             });
 
             res.json({
@@ -176,7 +178,8 @@ class CompetitionController {
             const result = await dbCompetitionDKService.updateCompetitionDK(id, {
                 sheet_name: competition.sheet_name,
                 file_name: competition.file_name,
-                data: currentData
+                data: currentData,
+                referrers: competition.referrers
             });
 
             res.json({

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { getFlagImage } from "../../utils/flagManager";
 
 /**
@@ -20,6 +21,7 @@ const MatchListModal = ({
   currentMatchId = null,
   isTeamMatch = false,
 }) => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("ALL"); // ALL, PENDING, ONGOING, FINISHED
   const [selectedMatch, setSelectedMatch] = useState(null);
@@ -53,37 +55,37 @@ const MatchListModal = ({
         bg: "bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20",
         text: "text-amber-600 dark:text-amber-400",
         dot: "bg-amber-500",
-        label: "Chờ thi đấu",
+        label: t("match_list.status_pending"),
       },
       WAI: {
         bg: "bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20",
         text: "text-amber-600 dark:text-amber-400",
         dot: "bg-amber-500",
-        label: "Chờ thi đấu",
+        label: t("match_list.status_pending"),
       },
       ONGOING: {
         bg: "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20",
         text: "text-emerald-600 dark:text-emerald-400",
         dot: "bg-emerald-500",
-        label: "Đang thi đấu",
+        label: t("match_list.status_ongoing"),
       },
       IN: {
         bg: "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20",
         text: "text-emerald-600 dark:text-emerald-400",
         dot: "bg-emerald-500",
-        label: "Đang thi đấu",
+        label: t("match_list.status_ongoing"),
       },
       FINISHED: {
         bg: "bg-gray-50 dark:bg-gray-500/10 border-gray-200 dark:border-gray-500/20",
         text: "text-gray-600 dark:text-gray-400",
         dot: "bg-gray-500",
-        label: "Đã kết thúc",
+        label: t("match_list.status_finished"),
       },
       FIN: {
         bg: "bg-gray-50 dark:bg-gray-500/10 border-gray-200 dark:border-gray-500/20",
         text: "text-gray-600 dark:text-gray-400",
         dot: "bg-gray-500",
-        label: "Đã kết thúc",
+        label: t("match_list.status_finished"),
       },
     };
 
@@ -135,10 +137,10 @@ const MatchListModal = ({
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                Danh sách trận đấu
+                {t("match_list.title")}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                Tổng số: {filteredMatches.length} trận
+                {t("match_list.total_matches", { count: filteredMatches.length })}
               </p>
             </div>
           </div>
@@ -167,7 +169,7 @@ const MatchListModal = ({
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Tìm kiếm theo số trận, tên VĐV, đội..."
+                  placeholder={t("match_list.search_placeholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500/50 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 outline-none transition-shadow placeholder-gray-400 dark:placeholder-gray-500"
@@ -188,10 +190,10 @@ const MatchListModal = ({
             {/* Status Filter */}
             <div className="flex items-center bg-gray-200/50 dark:bg-gray-800 p-1 rounded-lg">
               {[
-                { key: "ALL", label: "Tất cả" },
-                { key: "PENDING", label: "Chờ đấu" },
-                { key: "ONGOING", label: "Đang thi đấu" },
-                { key: "FINISHED", label: "Đã xong" },
+                { key: "ALL", label: t("match_list.filter_all") },
+                { key: "PENDING", label: t("match_list.filter_pending") },
+                { key: "ONGOING", label: t("match_list.filter_ongoing") },
+                { key: "FINISHED", label: t("match_list.filter_finished") },
               ].map((filter) => (
                 <button
                   key={filter.key}
@@ -226,8 +228,8 @@ const MatchListModal = ({
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </svg>
-              <p className="text-lg font-semibold">Không tìm thấy trận đấu</p>
-              <p className="text-sm">Thử thay đổi bộ lọc hoặc tìm kiếm</p>
+              <p className="text-lg font-semibold">{t("match_list.no_matches")}</p>
+              <p className="text-sm">{t("match_list.try_filter")}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -252,11 +254,11 @@ const MatchListModal = ({
           <div className="text-sm">
             {selectedMatch ? (
               <span className="font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg border border-blue-100 dark:border-blue-800">
-                Lựa chọn xử lý: Trận số {selectedMatch.match_no}
+                {t("match_list.selected_match", { number: selectedMatch.match_no })}
               </span>
             ) : (
               <span className="text-gray-500 dark:text-gray-400">
-                Nhấp vào một trận đấu để xem chi tiết
+                {t("match_list.click_to_view")}
               </span>
             )}
           </div>
@@ -264,7 +266,7 @@ const MatchListModal = ({
             onClick={onClose}
             className="px-5 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 outline-none"
           >
-            Thoát
+            {t("match_list.close")}
           </button>
         </div>
       </div>
@@ -299,6 +301,7 @@ const MatchCard = ({
   getStatusBadge,
   isTeamMatch = false,
 }) => {
+  const { t } = useTranslation();
   const redFlag = getFlagImage(match.red_country || "vietnam");
   const blueFlag = getFlagImage(match.blue_country || "vietnam");
 
@@ -319,12 +322,12 @@ const MatchCard = ({
             {/* Match Number & Status */}
             <div className="flex items-center flex-wrap gap-2">
               <div className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md px-2.5 py-1 font-bold text-sm border border-gray-200 dark:border-gray-600">
-                Trận {match.match_no}
+                {t("match_list.match_number", { number: match.match_no })}
               </div>
               {getStatusBadge(match.status)}
               {isCurrent && (
                 <span className="px-2 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-widest rounded-md border border-emerald-200 dark:border-emerald-800/50">
-                  Đang đấu
+                  {t("match_list.status_ongoing")}
                 </span>
               )}
             </div>
@@ -351,7 +354,7 @@ const MatchCard = ({
                       clipRule="evenodd"
                     />
                   </svg>
-                  Bắt đầu
+                  {t("match_list.start")}
                 </button>
               )}
               {(match.status === "ONGOING" || match.status === "IN") && (
@@ -375,7 +378,7 @@ const MatchCard = ({
                       clipRule="evenodd"
                     />
                   </svg>
-                  Xem
+                  {t("match_list.view")}
                 </button>
               )}
             </div>
@@ -384,7 +387,7 @@ const MatchCard = ({
           {/* Team Info */}
           <div className="mb-3">
             <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-              {match.team_name || "Đội"}
+              {match.team_name || t("match_list.team")}
             </div>
             {match.match_name && (
               <div className="text-xs text-gray-600 dark:text-gray-400">
@@ -393,7 +396,7 @@ const MatchCard = ({
             )}
             {match.match_type && (
               <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                Loại: {match.match_type}
+                {t("match_list.type")}: {match.match_type}
               </div>
             )}
           </div>
@@ -402,7 +405,7 @@ const MatchCard = ({
           {match.athletes && match.athletes.length > 0 && (
             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
               <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                Danh sách VĐV ({match.athletes.length})
+                {t("match_list.athletes_list", { count: match.athletes.length })}
               </div>
               <div className="space-y-1 max-h-32 overflow-y-auto">
                 {match.athletes.map((athlete, index) => (
@@ -480,7 +483,7 @@ const MatchCard = ({
                     clipRule="evenodd"
                   />
                 </svg>
-                Bắt đầu
+                {t("match_list.start")}
               </button>
             )}
             {match.status === "ONGOING" && (
@@ -504,7 +507,7 @@ const MatchCard = ({
                     clipRule="evenodd"
                   />
                 </svg>
-                Xem
+                {t("match_list.view")}
               </button>
             )}
           </div>
@@ -516,12 +519,12 @@ const MatchCard = ({
           <div className="flex items-center gap-3 p-3 bg-red-50/50 dark:bg-red-900/10 rounded-lg border border-red-100 dark:border-red-900/30">
             <img
               src={redFlag}
-              alt="Red flag"
+              alt={t("match_list.red_flag_alt")}
               className="w-7 h-5 object-cover rounded shadow-sm border border-black/5"
             />
             <div className="flex-1 min-w-0">
               <div className="text-[10px] font-bold text-red-600/80 dark:text-red-400/80 uppercase mb-0.5 tracking-wider">
-                Góc Đỏ
+                {t("match_list.red_corner")}
               </div>
               <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
                 {match.red_name || "-"}
@@ -546,12 +549,12 @@ const MatchCard = ({
           <div className="flex items-center gap-3 p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
             <img
               src={blueFlag}
-              alt="Blue flag"
+              alt={t("match_list.blue_flag_alt")}
               className="w-7 h-5 object-cover rounded shadow-sm border border-black/5"
             />
             <div className="flex-1 min-w-0">
               <div className="text-[10px] font-bold text-blue-600/80 dark:text-blue-400/80 uppercase mb-0.5 tracking-wider">
-                Góc Xanh
+                {t("match_list.blue_corner")}
               </div>
               <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
                 {match.blue_name || "-"}

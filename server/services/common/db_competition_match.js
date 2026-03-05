@@ -28,11 +28,19 @@ class DBCompetitionMatchService {
                     winner TEXT,
                     match_status TEXT DEFAULT 'WAI',
                     config_system TEXT,
+                    referrers TEXT,
                     created_at TEXT DEFAULT (datetime('now')),
                     updated_at TEXT DEFAULT (datetime('now')),
                     FOREIGN KEY (competition_dk_id) REFERENCES competition_dk(id) ON DELETE CASCADE
                 )
             `);
+
+            // Migration: Add referrers column if missing
+            const columns = this.db.all("PRAGMA table_info(competition_match)");
+            const colNames = columns.map(c => c.name);
+            if (!colNames.includes('referrers')) {
+                try { this.db.run("ALTER TABLE competition_match ADD COLUMN referrers TEXT"); } catch (e) { }
+            }
 
             // Migration: Thêm cột match_name nếu chưa có (better-sqlite3 style)
             // try {
@@ -95,7 +103,8 @@ class DBCompetitionMatchService {
                 match_name,
                 team_name,
                 match_type,
-                config_system
+                config_system,
+                referrers
             } = body;
 
             const query = `
@@ -108,9 +117,10 @@ class DBCompetitionMatchService {
                     match_name,
                     team_name,
                     match_type,
-                    config_system
+                    config_system,
+                    referrers
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
             this.db.run(query, [
@@ -122,7 +132,8 @@ class DBCompetitionMatchService {
                 match_name || null,
                 team_name || null,
                 match_type || 'DK',
-                JSON.stringify(config_system || {})
+                JSON.stringify(config_system || {}),
+                JSON.stringify(referrers || [])
             ], function (err) {
                 if (err) return reject(err);
                 resolve(this.lastID);
@@ -133,7 +144,7 @@ class DBCompetitionMatchService {
     // Bulk create matches
     bulkCreateMatches(matches) {
         return new Promise((resolve, reject) => {
-            const placeholders = matches.map(() => '(?, ?, ?, ?, ?, ?, ?, ?, ?)').join(', ');
+            const placeholders = matches.map(() => '(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').join(', ');
             const query = `
                 INSERT INTO competition_match (
                     competition_dk_id,
@@ -144,7 +155,8 @@ class DBCompetitionMatchService {
                     match_name,
                     team_name,
                     match_type,
-                    config_system
+                    config_system,
+                    referrers
                 )
                 VALUES ${placeholders}
             `;
@@ -160,7 +172,8 @@ class DBCompetitionMatchService {
                     match.match_name || null,
                     match.team_name || null,
                     match.match_type || 'DK',
-                    JSON.stringify(match.config_system || {})
+                    JSON.stringify(match.config_system || {}),
+                    JSON.stringify(match.referrers || [])
                 );
             });
 
@@ -182,7 +195,8 @@ class DBCompetitionMatchService {
                 if (err) return reject(err);
                 const parsedRows = rows.map(row => ({
                     ...row,
-                    config_system: row.config_system ? JSON.parse(row.config_system) : {}
+                    config_system: row.config_system ? JSON.parse(row.config_system) : {},
+                    referrers: row.referrers ? JSON.parse(row.referrers) : []
                 }));
                 resolve(parsedRows);
             });
@@ -195,10 +209,26 @@ class DBCompetitionMatchService {
             const query = `SELECT * FROM competition_match WHERE id = ?`;
             this.db.get(query, [id], (err, row) => {
                 if (err) return reject(err);
-                if (row && row.config_system) {
-                    row.config_system = JSON.parse(row.config_system);
+                if (row) {
+                    if (row.config_system) row.config_system = JSON.parse(row.config_system);
+                    if (row.referrers) row.referrers = JSON.parse(row.referrers);
                 }
                 resolve(row);
+            });
+        });
+    }
+
+    // Cập nhật referrers
+    updateReferrers(id, referrers) {
+        return new Promise((resolve, reject) => {
+            const query = `
+                UPDATE competition_match
+                SET referrers = ?, updated_at = datetime('now')
+                WHERE id = ?
+            `;
+            this.db.run(query, [JSON.stringify(referrers), id], function (err) {
+                if (err) return reject(err);
+                resolve(this.changes);
             });
         });
     }
@@ -212,7 +242,7 @@ class DBCompetitionMatchService {
                 WHERE id = ?
             `;
 
-            if(winner ==  'none' ){
+            if (winner == 'none') {
                 query = `
                     UPDATE competition_match 
                     SET match_status = ?, updated_at = datetime('now'), winner = null
@@ -220,7 +250,7 @@ class DBCompetitionMatchService {
                 `;
 
             }
-            
+
             this.db.run(query, [status, id], function (err) {
                 if (err) return reject(err);
                 resolve(this.changes);

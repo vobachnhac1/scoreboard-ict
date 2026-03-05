@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { getFlagImage, getDefaultFlag } from "../../utils/flagManager";
 
 /**
@@ -31,7 +32,9 @@ export default function DoiKhangDisplay({
   medicalBlue = 0,
   buttonPermissions = {},
   configSystem,
+  announcedWinner = null,
 }) {
+  const { t } = useTranslation();
   // Use config from prop or from matchInfo
   const currentConfig = configSystem || matchInfo?.config_system || {};
 
@@ -59,7 +62,7 @@ export default function DoiKhangDisplay({
     for (let i = 0; i < heDiem; i++) {
       const row = [];
       for (let j = 0; j < soGiamDinh; j++) {
-        row.push(`GĐ${j + 1}`);
+        row.push(`${t('scoreboard.doikhang.referrer_name')}${j + 1}`);
       }
       gdData.push(row);
     }
@@ -334,7 +337,7 @@ export default function DoiKhangDisplay({
                     fontWeight: "900",
                   }}
                 >
-                  {matchInfo?.red?.name || "VĐV ĐỎ"}
+                  {matchInfo?.red?.name || t("doikhang_display.red_athlete")}
                 </p>
                 <p
                   className="text-lg font-semibold opacity-95"
@@ -358,7 +361,7 @@ export default function DoiKhangDisplay({
           style={{ minWidth: "300px" }}
         >
           <p className="font-bold text-2xl">
-            TRẬN SỐ {matchInfo?.match_no || "---"}
+            {t("doikhang_display.match_no")} {matchInfo?.match_no || "---"}
           </p>
           <p className="text-xl font-bold">{matchInfo?.match_type || "---"}</p>
           <p className="text-xl font-bold">
@@ -368,8 +371,8 @@ export default function DoiKhangDisplay({
           {/* Timer display */}
           <div className="bg-yellow-300 text-black font-bold text-2xl px-6 py-3 rounded shadow-lg min-w-[250px] text-center">
             {currentRound > (matchInfo?.so_hiep || 3)
-              ? `HIỆP PHỤ ${currentRound - (matchInfo?.so_hiep || 3)}`
-              : `HIỆP ${currentRound}`}
+              ? `${t("doikhang_display.extra_round")} ${currentRound - (matchInfo?.so_hiep || 3)}`
+              : `${t("doikhang_display.round")} ${currentRound}`}
           </div>
           <div
             className={`font-bold px-10 py-4 rounded shadow-lg min-w-[300px] text-center ${!isRunning && !isBreakTime
@@ -397,7 +400,7 @@ export default function DoiKhangDisplay({
                   {remindRed}
                 </div>
                 <div className="text-yellow-400 font-bold text-base uppercase flex-1 text-center">
-                  Nhắc nhở
+                  {t("doikhang_display.reminder")}
                 </div>
                 <div className="bg-blue-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
                   {remindBlue}
@@ -412,7 +415,7 @@ export default function DoiKhangDisplay({
                   {warnRed}
                 </div>
                 <div className="text-orange-400 font-bold text-base uppercase flex-1 text-center">
-                  Cảnh cáo
+                  {t("doikhang_display.warning")}
                 </div>
                 <div className="bg-blue-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
                   {warnBlue}
@@ -427,7 +430,7 @@ export default function DoiKhangDisplay({
                   {kickRed}
                 </div>
                 <div className="text-cyan-400 font-bold text-base uppercase flex-1 text-center">
-                  Đòn chân
+                  {t("doikhang_display.kick")}
                 </div>
                 <div className="bg-blue-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
                   {kickBlue}
@@ -442,7 +445,7 @@ export default function DoiKhangDisplay({
                   {medicalRed}
                 </div>
                 <div className="text-red-400 font-bold text-base uppercase flex-1 text-center">
-                  Y tế
+                  {t("doikhang_display.medical")}
                 </div>
                 <div className="bg-blue-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
                   {medicalBlue}
@@ -489,7 +492,7 @@ export default function DoiKhangDisplay({
                     fontWeight: "900",
                   }}
                 >
-                  {matchInfo?.blue?.name || "VĐV XANH"}
+                  {matchInfo?.blue?.name || t("doikhang_display.blue_athlete")}
                 </p>
                 <p
                   className="text-lg font-semibold opacity-95"
@@ -533,15 +536,15 @@ export default function DoiKhangDisplay({
               <div className="inline-block bg-white/20 backdrop-blur-sm px-6 py-1 rounded-full">
                 <p className="text-2xl font-bold">
                   {currentRound > (matchInfo?.so_hiep || 3)
-                    ? `HIỆP PHỤ ${currentRound - (matchInfo?.so_hiep || 3)}`
-                    : `HIỆP ${currentRound}`}
+                    ? `${t("doikhang_display.extra_round")} ${currentRound - (matchInfo?.so_hiep || 3)}`
+                    : `${t("doikhang_display.round")} ${currentRound}`}
                 </p>
               </div>
             </div>
             <div className="mb-4">
               <div className="inline-block bg-white/20 backdrop-blur-sm px-8 py-2 rounded-full">
                 <p className="text-3xl font-bold tracking-wider">
-                  THỜI GIAN Y TẾ
+                  {t("doikhang_display.medical_time")}
                 </p>
               </div>
             </div>
@@ -551,8 +554,8 @@ export default function DoiKhangDisplay({
               >
                 <p className="text-4xl font-black">
                   {medicalTeam === "red"
-                    ? matchInfo?.red?.name || "VĐV ĐỎ"
-                    : matchInfo?.blue?.name || "VĐV XANH"}
+                    ? matchInfo?.red?.name || t("doikhang_display.red_athlete")
+                    : matchInfo?.blue?.name || t("doikhang_display.blue_athlete")}
                 </p>
               </div>
             </div>
@@ -576,15 +579,15 @@ export default function DoiKhangDisplay({
               <div className="inline-block bg-white/20 backdrop-blur-sm px-6 py-1 rounded-full">
                 <p className="text-2xl font-bold">
                   {currentRound > (matchInfo?.so_hiep || 3)
-                    ? `HIỆP PHỤ ${currentRound - (matchInfo?.so_hiep || 3)}`
-                    : `HIỆP ${currentRound}`}
+                    ? `${t("doikhang_display.extra_round")} ${currentRound - (matchInfo?.so_hiep || 3)}`
+                    : `${t("doikhang_display.round")} ${currentRound}`}
                 </p>
               </div>
             </div>
             <div className="mb-4">
               <div className="inline-block bg-white/20 backdrop-blur-sm px-8 py-2 rounded-full">
                 <p className="text-3xl font-bold tracking-wider">
-                  NGHỈ GIỮA HIỆP
+                  {t("doikhang_display.break_time")}
                 </p>
               </div>
             </div>
@@ -613,8 +616,8 @@ export default function DoiKhangDisplay({
                   <div className="inline-block bg-white/20 backdrop-blur-sm px-6 py-1 rounded-full">
                     <p className="text-2xl font-bold">
                       {currentRound > (matchInfo?.so_hiep || 3)
-                        ? `HIỆP PHỤ ${currentRound - (matchInfo?.so_hiep || 3)}`
-                        : `HIỆP ${currentRound}`}
+                        ? `${t("doikhang_display.extra_round")} ${currentRound - (matchInfo?.so_hiep || 3)}`
+                        : `${t("doikhang_display.round")} ${currentRound}`}
                     </p>
                   </div>
                 </div>

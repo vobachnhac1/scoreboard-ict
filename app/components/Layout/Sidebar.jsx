@@ -5,11 +5,14 @@ import {
   DisclosurePanel,
 } from "@headlessui/react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import logoVoHienDai from "../../assets/logo_nhacvb_light.png";
 import ThemeToggle from "../ThemeToggle";
+import LanguageSwitcher from "../LanguageSwitcher";
 
 const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
+  const { t } = useTranslation();
   const location = useLocation();
 
   const isActive = (href) =>
@@ -128,7 +131,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
                   DIGISPORTS
                 </h1>
                 <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold whitespace-nowrap">
-                  Quản lý thi đấu
+                  {t("dashboard.competition_management")}
                 </p>
               </div>
             )}
@@ -276,11 +279,12 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
         )}
       </ul>
 
-      {/* Theme Toggle & Collapse Button - At Bottom */}
+      {/* Theme Toggle, Language Switcher & Collapse Button - At Bottom */}
       <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 pt-3 pb-3 px-0 space-y-2">
-        {/* Theme Toggle */}
-        <div className="flex justify-center">
+        {/* Theme Toggle & Language Switcher */}
+        <div className="flex justify-center items-center gap-2">
           <ThemeToggle />
+          <LanguageSwitcher />
         </div>
 
         {/* Toggle Button */}
@@ -292,7 +296,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
               onToggle();
             }}
             className="group w-full flex items-center justify-center gap-2 py-3 px-3 rounded  bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden cursor-pointer"
-            title={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
+            title={collapsed ? t("common.expand") : t("common.collapse")}
             type="button"
           >
             {/* Animated background */}

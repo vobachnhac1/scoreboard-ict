@@ -1,10 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Section: Cấu hình thời gian
  * Cho phép điều chỉnh thời gian thi đấu, nghỉ, hiệp phụ, y tế
  */
 const TimeConfigSection = ({ matchInfo, setMatchInfo }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="bg-gray-50 dark:bg-gray-800/80 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
@@ -23,7 +26,7 @@ const TimeConfigSection = ({ matchInfo, setMatchInfo }) => {
               />
             </svg>
           </div>
-          <span>Cấu hình thời gian</span>
+          <span>{t("scoreboard.doikhang.time_config_title")}</span>
         </h3>
       </div>
 
@@ -43,7 +46,7 @@ const TimeConfigSection = ({ matchInfo, setMatchInfo }) => {
                 clipRule="evenodd"
               />
             </svg> */}
-            Thời gian thi đấu (giây)
+            {t("scoreboard.doikhang.time_config_match_time")}
           </label>
           <input
             type="number"
@@ -73,7 +76,7 @@ const TimeConfigSection = ({ matchInfo, setMatchInfo }) => {
                 clipRule="evenodd"
               />
             </svg> */}
-            Thời gian nghỉ (giây)
+            {t("scoreboard.doikhang.time_config_break_time")}
           </label>
           <input
             type="number"
@@ -103,7 +106,7 @@ const TimeConfigSection = ({ matchInfo, setMatchInfo }) => {
                 clipRule="evenodd"
               />
             </svg> */}
-            Thời gian hiệp phụ (giây)
+            {t("scoreboard.doikhang.time_config_extra_time")}
           </label>
           <input
             type="number"
@@ -133,7 +136,7 @@ const TimeConfigSection = ({ matchInfo, setMatchInfo }) => {
                 clipRule="evenodd"
               />
             </svg> */}
-            Thời gian y tế (giây)
+            {t("scoreboard.doikhang.time_config_medical_time")}
           </label>
           <input
             type="number"

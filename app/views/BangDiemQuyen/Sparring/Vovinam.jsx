@@ -51,11 +51,11 @@ export default function Vovinam() {
   // Hàm quay lại
   const handleGoBack = async () => {
     const confirmExit = await showConfirm(
-      "Bạn có chắc muốn thoát khỏi trận đấu?",
+      t("quyen.confirm_exit_message"),
       {
-        title: "Xác nhận thoát",
-        confirmText: "Thoát",
-        cancelText: "Hủy",
+        title: t("quyen.confirm_exit_title"),
+        confirmText: t("quyen.confirm_exit_yes"),
+        cancelText: t("quyen.confirm_exit_no"),
       },
     );
     if (confirmExit) {

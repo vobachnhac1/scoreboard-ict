@@ -2,6 +2,7 @@ import React from "react";
 import JudgeGroupScore from "./JudgeGroupScore";
 import ChiefRefereeScore from "./ChiefRefereeScore";
 import TotalScore from "./TotalScore";
+import { useTranslation } from "react-i18next";
 
 /**
  * Component hiển thị điểm Võ Nhạc theo bố cục 7 giám định
@@ -18,6 +19,8 @@ import TotalScore from "./TotalScore";
  * @param {number} scores.judge7 - Điểm GĐ7 (Trọng tài trưởng)
  */
 export default function VoNhacScoreDisplay({ scores, main = false }) {
+  const { t } = useTranslation();
+  
   // Tính điểm trung bình cho từng nhóm
   const chuyenMonAvg =
     ((Number(scores.judge1) || 0) + (Number(scores.judge2) || 0)) / 2;
@@ -40,7 +43,7 @@ export default function VoNhacScoreDisplay({ scores, main = false }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
         {/* Chuyên môn: GĐ1 - GĐ2 */}
         <JudgeGroupScore
-          title="CHUYÊN MÔN"
+          title={t("scoreboard.score_form.specialty").toUpperCase()}
           judge1={1}
           judge2={2}
           score1={Number(scores.judge1) || 0}
@@ -50,7 +53,7 @@ export default function VoNhacScoreDisplay({ scores, main = false }) {
 
         {/* Nghệ thuật: GĐ3 - GĐ4 */}
         <JudgeGroupScore
-          title="NGHỆ THUẬT"
+          title={t("scoreboard.score_form.artistic").toUpperCase()}
           judge1={3}
           judge2={4}
           score1={Number(scores.judge3) || 0}
@@ -60,7 +63,7 @@ export default function VoNhacScoreDisplay({ scores, main = false }) {
 
         {/* Thực hiện: GĐ5 - GĐ6 */}
         <JudgeGroupScore
-          title="THỰC HIỆN"
+          title={t("scoreboard.score_form.execution").toUpperCase()}
           judge1={5}
           judge2={6}
           score1={Number(scores.judge5) || 0}

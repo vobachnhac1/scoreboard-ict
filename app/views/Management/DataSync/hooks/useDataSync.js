@@ -9,10 +9,12 @@ import socketClient from "../../../../config/socket/SocketClient";
 import IpMasker from "../../../../common/IpMasker";
 import { getColumnConfig, buildColumnConfig, filterColumns } from "../utils/columnConfig";
 import useConfirmModal from "../../../../hooks/useConfirmModal";
+import { useTranslation } from "react-i18next";
 
 const API = "http://localhost:6789/api/sync";
 
 export const useDataSync = () => {
+  const { t } = useTranslation();
   const { data: configSystem } = useSelector((state) => state.configSystem);
   const socketState = useSelector((state) => state.socket);
 
@@ -152,7 +154,7 @@ export const useDataSync = () => {
           const allColumns = Object.keys(records[0]);
           const displayColumns = filterColumns(allColumns, visibleColumns, hiddenColumns);
           setTableColumns(displayColumns);
-          setColumnConfig(buildColumnConfig(displayColumns, columnNameMap));
+          setColumnConfig(buildColumnConfig(displayColumns, columnNameMap, t));
         } else {
           setTableColumns([]);
           setColumnConfig({});
@@ -162,7 +164,7 @@ export const useDataSync = () => {
       }
     } catch (e) {
       console.error("Error loading table records:", e);
-      showError("Lỗi khi tải dữ liệu bảng");
+      showError(t("data_sync.error_loading_table_data"));
     } finally {
       setLoadingRecords(false);
     }
@@ -175,7 +177,7 @@ export const useDataSync = () => {
       if (res.data.success) setAllDatabaseTables(res.data.data);
     } catch (e) {
       console.error("Error loading all database tables:", e);
-      showError("Lỗi khi tải danh sách bảng");
+      showError(t("data_sync.error_loading_table_list"));
     } finally {
       setLoadingCleanup(false);
     }
@@ -232,7 +234,7 @@ export const useDataSync = () => {
   });
 
   useSocketEvent("SYNC_REJECTED", (response) => {
-    showWarning(`Máy đích đã từ chối: ${response.data.reason}`, { title: "Bị từ chối", showCancel: false });
+    showWarning(t("data_sync.target_rejected_reason", { reason: response.data.reason }), { title: t("data_sync.rejected"), showCancel: false });
     setSyncing(false);
   });
 
@@ -255,12 +257,12 @@ export const useDataSync = () => {
       console.error("Error reloading data after sync:", error);
     }
 
-    showSuccess(response.message || "Đồng bộ hoàn tất!");
+    showSuccess(response.message || t("data_sync.sync_completed"));
   });
 
   useSocketEvent("SYNC_ERROR", (response) => {
     setSyncing(false);
-    showError(`Lỗi đồng bộ: ${response.data.error}`);
+    showError(t("data_sync.sync_error", { error: response.data.error }));
   });
 
   // Lắng nghe khi có dữ liệu staging mới từ máy khác
@@ -274,8 +276,8 @@ export const useDataSync = () => {
       // Hiển thị notification cho user
       const { table, count, source_ip } = response.data;
       showSuccess(
-        `Đã nhận ${count} bản ghi từ ${source_ip}\\nBảng: ${table}\\n\\nVui lòng kiểm tra và áp dụng.`,
-        { title: "Có dữ liệu mới!" }
+        t("data_sync.received_records_from", { count: count, source: source_ip, table: table }),
+        { title: t("data_sync.new_data_available") }
       );
     } catch (error) {
       console.error("Error reloading staging after receive:", error);
@@ -372,14 +374,14 @@ export const useDataSync = () => {
 
   const handleManualConnect = async () => {
     if (!manualServerIP.trim()) {
-      showAlert("Vui lòng nhập địa chỉ IP hoặc mã hash của máy khác", { title: "Thiếu thông tin" });
+      showAlert(t("data_sync.enter_ip_or_hash_alert"), { title: t("data_sync.missing_info") });
       return;
     }
     try {
       setLoading(true);
       const { ip: resolvedIP, wasEncoded } = resolveIP(manualServerIP);
       if (!resolvedIP) {
-        showAlert("Địa chỉ không hợp lệ!\n\nNhập một trong hai:\n• IP thường: 192.168.1.100\n• Mã hash: dán trực tiếp vào đây", { title: "Địa chỉ không hợp lệ" });
+        showAlert(t("data_sync.invalid_address_alert"), { title: t("data_sync.invalid_address") });
         return;
       }
       const targetURL = `http://${resolvedIP}:6789`;
@@ -392,13 +394,13 @@ export const useDataSync = () => {
           encodedIP: IpMasker.encodeIP(resolvedIP),
           remoteIP: res.data.data.ip,
         });
-        const label = wasEncoded ? `mã hash: ${manualServerIP.trim().substring(0, 16)}...` : `IP: ${resolvedIP}`;
-        showSuccess(`Kết nối thành công!\n\nMáy đích (${label})\n\nBây giờ bạn có thể chọn bảng và gửi dữ liệu.`, { title: "Kết nối thành công" });
+        const label = wasEncoded ? t("data_sync.hash_code_label", { hash: manualServerIP.trim().substring(0, 16) }) : `IP: ${resolvedIP}`;
+        showSuccess(t("data_sync.connect_success_msg", { label }), { title: t("data_sync.connect_success") });
       }
     } catch (error) {
-      if (error.code === "ECONNABORTED") showError("Kết nối timeout!\n\nKiểm tra IP/hash và đảm bảo máy đích đang chạy.", { title: "Timeout" });
-      else if (error.code === "ERR_NETWORK") showError("Không thể kết nối!\n\nKiểm tra cùng WiFi và firewall.", { title: "Lỗi mạng" });
-      else showError(`Lỗi kết nối: ${error.message}`, { title: "Lỗi kết nối" });
+      if (error.code === "ECONNABORTED") showError(t("data_sync.connection_timeout_msg"), { title: t("data_sync.timeout") });
+      else if (error.code === "ERR_NETWORK") showError(t("data_sync.connection_error_msg"), { title: t("data_sync.network_error") });
+      else showError(t("data_sync.connect_error_fmt", { error: error.message }), { title: t("data_sync.connect_error") });
     } finally {
       setLoading(false);
     }
@@ -434,8 +436,8 @@ export const useDataSync = () => {
   // ========== SEND DATA ==========
 
   const handleSendToManualServer = async () => {
-    if (!isManualConnected || !manualServerInfo) { showAlert("Vui lòng kết nối đến máy khác trước", { title: "Chưa kết nối" }); return; }
-    if (selectedTables.length === 0) { showAlert("Vui lòng chọn ít nhất 1 bảng dữ liệu", { title: "Chưa chọn bảng" }); return; }
+    if (!isManualConnected || !manualServerInfo) { showAlert(t("data_sync.connect_before_send"), { title: t("data_sync.not_connected") }); return; }
+    if (selectedTables.length === 0) { showAlert(t("data_sync.select_at_least_one_table"), { title: t("data_sync.no_table_selected") }); return; }
     try {
       setSyncing(true);
       const res = await axios.get(`${API}/export?tables=${selectedTables.join(",")}`);
@@ -461,20 +463,20 @@ export const useDataSync = () => {
       setSyncing(false);
       setSyncProgress({});
       const totalRecords = Object.values(exportData).reduce((sum, d) => sum + (Array.isArray(d) ? d.length : 0), 0);
-      showSuccess(`Đã gửi ${selectedTables.length} bảng (${totalRecords} danh sách)!\nDữ liệu đang ở trạng thái "Chờ duyệt".`, { title: "Gửi thành công" });
+      showSuccess(t("data_sync.send_success_msg", { tables: selectedTables.length, records: totalRecords }), { title: t("data_sync.send_success") });
     } catch (error) {
       setSyncing(false);
       setSyncProgress({});
-      showError(`Lỗi khi gửi dữ liệu: ${error.message}`, { title: "Lỗi gửi dữ liệu" });
+      showError(t("data_sync.send_error_fmt", { error: error.message }), { title: t("data_sync.send_data_error") });
     }
   };
 
   const handleSyncSelectedDataRows = async () => {
     // THÊM TRƯỜNG HỢP QUYỀN/ VÕ NHẠC
 
-    if (!isManualConnected || !manualServerInfo) { showAlert("Vui lòng kết nối đến máy khác trước", { title: "Chưa kết nối" }); return; }
+    if (!isManualConnected || !manualServerInfo) { showAlert(t("data_sync.connect_before_send"), { title: t("data_sync.not_connected") }); return; }
     const hasSelectedRows = Object.keys(selectedDataRows).some((id) => selectedDataRows[id]?.length > 0);
-    if (!hasSelectedRows) { showAlert("Vui lòng chọn ít nhất 1 dòng dữ liệu", { title: "Chưa chọn dòng" }); return; }
+    if (!hasSelectedRows) { showAlert(t("data_sync.select_at_least_one_row"), { title: t("data_sync.no_row_selected") }); return; }
     try {
       setSyncing(true);
       for (const record of tableRecords) {
@@ -594,17 +596,17 @@ export const useDataSync = () => {
       setSyncing(false);
       const totalRows = Object.values(selectedDataRows).reduce((sum, arr) => sum + arr.length, 0);
       const totalRecs = Object.keys(selectedDataRows).filter((id) => selectedDataRows[id]?.length > 0).length;
-      showSuccess(`Đã gửi ${totalRows} dòng từ ${totalRecs} bản ghi!\nDữ liệu đang ở trạng thái "Chờ duyệt"!`, { title: "Gửi thành công" })
+      showSuccess(t("data_sync.send_rows_success_msg", { rows: totalRows, records: totalRecs }), { title: t("data_sync.send_success") })
       setSelectedDataRows({});
     } catch (error) {
       setSyncing(false);
-      showError(`Lỗi khi gửi dữ liệu: ${error.message}`, { title: "Lỗi gửi dữ liệu" });
+      showError(t("data_sync.send_error_fmt", { error: error.message }), { title: t("data_sync.send_data_error") });
     }
   };
 
   const handleSendRequest = () => {
-    if (selectedTables.length === 0) { showAlert("Vui lòng chọn ít nhất 1 bảng dữ liệu", { title: "Chưa chọn bảng" }); return; }
-    if (!selectedDevice) { showAlert("Vui lòng chọn máy đích", { title: "Chưa chọn máy đích" }); return; }
+    if (selectedTables.length === 0) { showAlert(t("data_sync.select_at_least_one_table"), { title: t("data_sync.no_table_selected") }); return; }
+    if (!selectedDevice) { showAlert(t("data_sync.select_target_machine"), { title: t("data_sync.no_target_machine_selected") }); return; }
     setSyncing(true);
     emitSocketEvent("SYNC_REQUEST", { room_id: configSystem.room_code, source_device: socketClient.getSocketId(), tables: selectedTables, metadata, target_socket_id: selectedDevice });
   };
@@ -632,7 +634,7 @@ export const useDataSync = () => {
       }
       emitSocketEvent("SYNC_COMPLETE", { target_socket_id: targetSocketId, success: true, imported_records: Object.values(exportData).reduce((sum, d) => sum + (d.length || 0), 0) });
       setSyncing(false);
-      showSuccess("Đồng bộ dữ liệu thành công!");
+      showSuccess(t("data_sync.sync_completed"));
     } catch (error) {
       emitSocketEvent("SYNC_ERROR", { target_socket_id: targetSocketId, error: error.message });
       setSyncing(false);
@@ -658,7 +660,7 @@ export const useDataSync = () => {
 
   const handleRejectRequest = () => {
     if (!incomingRequest) return;
-    emitSocketEvent("SYNC_REJECT", { source_socket_id: incomingRequest.source_socket_id, target_device: socketClient.getSocketId(), reason: "Người dùng từ chối" });
+    emitSocketEvent("SYNC_REJECT", { source_socket_id: incomingRequest.source_socket_id, target_device: socketClient.getSocketId(), reason: t("data_sync.user_rejected") });
     setIncomingRequest(null);
   };
 
@@ -757,7 +759,7 @@ export const useDataSync = () => {
         setActiveSession(null);
       }
     } catch (e) {
-      showError("Lỗi khi xóa: " + e.message, { title: "Lỗi xóa phiên" });
+      showError(t("data_sync.delete_error_fmt", { error: e.message }), { title: t("data_sync.delete_session_error") });
     }
   };
 
@@ -770,12 +772,12 @@ export const useDataSync = () => {
       }
       const res = await axios.post(`${API}/staging/${activeSession.session_id}/apply`);
       if (res.data.success) {
-        showSuccess(`Áp dụng thành công!\n${res.data.data?.applied || 0} records đã được cập nhật.`, { title: "Áp dụng thành công" });
+        showSuccess(t("data_sync.apply_success_msg", { count: res.data.data?.applied || 0 }), { title: t("data_sync.apply_success") });
         await loadStagingSessions();
         handleCloseReview();
       }
     } catch (e) {
-      showError("Lỗi khi áp dụng: " + e.message, { title: "Lỗi áp dụng" });
+      showError(t("data_sync.apply_error_fmt", { error: e.message }), { title: t("data_sync.apply_error") });
     } finally {
       setApplyingStaging(false);
     }
@@ -795,8 +797,8 @@ export const useDataSync = () => {
   };
 
   const handleDeleteTables = async () => {
-    if (selectedTablesToDelete.length === 0) { showAlert("Vui lòng chọn ít nhất 1 bảng để xóa", { title: "Chưa chọn bảng" }); return; }
-    const confirmed = await showConfirm(`Bạn có chắc chắn muốn xóa ${selectedTablesToDelete.length}bảng?\n\nKHÔNG THỂ HOÀN TÁC!`, { title: "Xác nhận xóa bảng", confirmText: "Xóa", cancelText: "Hủy" });
+    if (selectedTablesToDelete.length === 0) { showAlert(t("data_sync.select_at_least_one_table_to_delete"), { title: t("data_sync.no_table_selected") }); return; }
+    const confirmed = await showConfirm(t("data_sync.confirm_delete_tables_msg", { count: selectedTablesToDelete.length }), { title: t("data_sync.confirm_delete_tables_title"), confirmText: t("common.delete"), cancelText: t("common.cancel") });
     if (!confirmed) return;
     try {
       setLoadingCleanup(true);

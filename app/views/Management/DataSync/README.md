@@ -187,7 +187,7 @@ const DataSync = () => {
     <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
       {/* Header với Refresh button */}
       <div className="mb-6 flex justify-between">
-        <h1>Đồng bộ dữ liệu</h1>
+        <h2>Đồng bộ dữ liệu</h2>
         <button onClick={handleRefreshAll}>Làm mới</button>
       </div>
 

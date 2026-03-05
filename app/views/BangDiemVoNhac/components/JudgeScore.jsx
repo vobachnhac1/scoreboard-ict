@@ -1,6 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function JudgeScore({ judge, score, isHighest = false, isLowest = false }) {
+    const { t } = useTranslation();
+  
   // Xác định màu sắc dựa trên điểm cao nhất/thấp nhất
   const isGrayed = isHighest || isLowest;
 
@@ -37,7 +40,7 @@ export default function JudgeScore({ judge, score, isHighest = false, isLowest =
       <div className={`${cardBgColor} rounded w-[200px] h-[200px] flex flex-col items-center justify-center text-white shadow-2xl transform transition-all duration-300 hover:scale-105 ${hoverShadow}`}>
         {/* Judge label */}
         <div className={`absolute w-[150px] -top-3 left-1/2 transform -translate-x-1/2 ${labelBgColor} px-4 py-2 rounded`}>
-          <p className="text-[12px] font-bold tracking-wider text-center">GIÁM ĐỊNH {judge}</p>
+          <p className="text-[12px] font-bold tracking-wider text-center">${t('scoreboard.quyen.referrer_name')} {judge}</p>
         </div>
 
         {/* Score */}

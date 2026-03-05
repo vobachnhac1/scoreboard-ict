@@ -1,7 +1,7 @@
 const dbCompetitionMatchService = require('../services/common/db_competition_match');
 
 class CompetitionMatchController {
-    
+
     // POST /api/competition-match - Tạo match mới
     async createMatch(req, res) {
         try {
@@ -14,7 +14,8 @@ class CompetitionMatchController {
                 match_name,
                 team_name,
                 match_type,
-                config_system
+                config_system,
+                referrers
             } = req.body;
 
             if (!competition_dk_id || match_no === undefined || row_index === undefined) {
@@ -33,7 +34,8 @@ class CompetitionMatchController {
                 match_name,
                 team_name,
                 match_type,
-                config_system
+                config_system,
+                referrers
             });
 
             res.json({
@@ -221,6 +223,36 @@ class CompetitionMatchController {
             });
         } catch (error) {
             console.error('Error updateConfigSystem:', error);
+            res.status(500).json({
+                success: false,
+                message: "Hệ thống xử lý lỗi.",
+                error: error.message
+            });
+        }
+    }
+
+    // PUT /api/competition-match/:id/referrers - Cập nhật referrers
+    async updateReferrers(req, res) {
+        try {
+            const { id } = req.params;
+            const { referrers } = req.body;
+
+            if (!referrers) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Thiếu thông tin referrers."
+                });
+            }
+
+            const result = await dbCompetitionMatchService.updateReferrers(id, referrers);
+
+            res.json({
+                success: true,
+                message: "Cập nhật referrers thành công.",
+                data: result
+            });
+        } catch (error) {
+            console.error('Error updateReferrers:', error);
             res.status(500).json({
                 success: false,
                 message: "Hệ thống xử lý lỗi.",

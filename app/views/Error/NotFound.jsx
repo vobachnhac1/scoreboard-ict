@@ -1,8 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function NotFound() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
@@ -33,24 +35,23 @@ export default function NotFound() {
 
         {/* Title */}
         <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">
-          Không tìm thấy trang
+          {t("page_not_found")}
         </h2>
 
         {/* Description */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border-2 border-purple-200">
           <p className="text-gray-600 text-lg mb-4">
-            Rất tiếc, trang bạn đang tìm kiếm không tồn tại hoặc đã bị di
-            chuyển.
+            {t("page_not_found_desc")}
           </p>
           <p className="text-gray-500 text-sm">
-            Vui lòng kiểm tra lại đường dẫn hoặc quay về trang chủ.
+            {t("check_url")}
           </p>
         </div>
 
         {/* Quick Links */}
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border-2 border-blue-200">
           <h3 className="text-lg font-bold text-gray-900 mb-4">
-            Các trang phổ biến:
+            {t("popular_pages")}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
@@ -64,9 +65,9 @@ export default function NotFound() {
               </div>
               <div>
                 <p className="font-semibold text-gray-900 group-hover:text-purple-700">
-                  Quản lý giải đấu
+                  {t("competition_management")}
                 </p>
-                <p className="text-xs text-gray-500">Tạo và quản lý giải đấu</p>
+                <p className="text-xs text-gray-500">{t("create_manage_competition")}</p>
               </div>
             </button>
 
@@ -81,9 +82,9 @@ export default function NotFound() {
               </div>
               <div>
                 <p className="font-semibold text-gray-900 group-hover:text-green-700">
-                  Quản lý cài đặt
+                  {t("config_management")}
                 </p>
-                <p className="text-xs text-gray-500">Thiết lập hệ thống</p>
+                <p className="text-xs text-gray-500">{t("system_setup")}</p>
               </div>
             </button>
 
@@ -135,7 +136,7 @@ export default function NotFound() {
                   d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                 />
               </svg>
-              Về trang chủ
+              {t("go_home")}
             </div>
           </button>
 
@@ -157,7 +158,7 @@ export default function NotFound() {
                   d="M10 19l-7-7m0 0l7-7m-7 7h18"
                 />
               </svg>
-              Quay lại
+              {t("back")}
             </div>
           </button>
         </div>

@@ -1,6 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function TotalScore({ total, ...props }) {
+  const { t } = useTranslation();
+  
   return (
     <div className="relative group" {...props}>
       {/* Main card - Tăng chiều ngang */}
@@ -8,7 +11,7 @@ export default function TotalScore({ total, ...props }) {
         {/* Total label */}
         <div className="absolute rounded -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-500 px-2 py-2  shadow-[0_5px_20px_rgba(0,0,0,0.3)]">
           <p className="text-base font-black tracking-[0.3em] text-white drop-shadow-lg">
-            TỔNG ĐIỂM
+            {t('scoreboard.quyen.final_score')}
           </p>
         </div>
 

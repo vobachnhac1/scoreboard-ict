@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "../../../config/redux/store";
 
 export default function QuyenScoreForm({
@@ -12,6 +13,7 @@ export default function QuyenScoreForm({
   scores = {},
   scoresRef,
 }) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [loadingButton, setLoadingButton] = useState(false);
   const defaultValues = scores?.judge1 ? scores : scoresRef?.current;
@@ -84,21 +86,21 @@ export default function QuyenScoreForm({
         htmlFor={`judge${judgeNumber}`}
         className="block text-sm font-semibold text-gray-700 dark:text-gray-300"
       >
-        Điểm GĐ {judgeNumber} <span className="text-red-500">*</span>
+        {t("scoreboard.score_form.judge_score", { number: judgeNumber })} <span className="text-red-500">*</span>
       </label>
       <input
         readOnly={loadingButton}
         id={`judge${judgeNumber}`}
         {...register(`judge${judgeNumber}`, {
-          min: { value: 0, message: "Phải từ 0-100" },
-          max: { value: 100, message: "Phải từ 0-100" },
+          min: { value: 0, message: t("scoreboard.score_form.score_range_error") },
+          max: { value: 100, message: t("scoreboard.score_form.score_range_error") },
         })}
         type="number"
         step="0.01"
         min="0"
         max="100"
         className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow disabled:bg-gray-100 read-only:bg-gray-100 dark:read-only:bg-gray-900"
-        placeholder="Nhập điểm..."
+        placeholder={t("scoreboard.score_form.enter_score")}
       />
       {errors[`judge${judgeNumber}`] && (
         <p className="text-red-500 text-xs mt-1 font-medium">
@@ -156,13 +158,13 @@ export default function QuyenScoreForm({
           <div className="mt-6 pt-5 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
             <div className="text-sm text-gray-500 dark:text-gray-400">
               {soGiamDinh === 5 ? (
-                <span>* Hệ thống tự động <b>bỏ 1 điểm cao nhất</b> và <b>1 điểm thấp nhất</b>.</span>
+                <span dangerouslySetInnerHTML={{ __html: t("scoreboard.score_form.note_5_judges") }} />
               ) : (
-                <span>* Khóa cộng tổng điểm tất cả Khảo thí.</span>
+                <span dangerouslySetInnerHTML={{ __html: t("scoreboard.score_form.note_sum_all") }} />
               )}
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-base font-medium text-gray-700 dark:text-gray-300">Tổng điểm:</span>
+              <span className="text-base font-medium text-gray-700 dark:text-gray-300">{t("scoreboard.score_form.total_score")}:</span>
               <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-4 py-1.5 rounded-md border border-blue-200 dark:border-blue-800">
                 {totalScore}
               </span>
@@ -178,7 +180,7 @@ export default function QuyenScoreForm({
             onClick={onGoBack}
             className="px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-600 transition-all shadow-sm"
           >
-            Hủy
+            {t("scoreboard.score_form.cancel")}
           </button>
           <button
             disabled={loadingButton}
@@ -207,7 +209,7 @@ export default function QuyenScoreForm({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Đang lưu...
+                {t("scoreboard.score_form.saving")}
               </>
             ) : (
               <>
@@ -223,7 +225,7 @@ export default function QuyenScoreForm({
                     clipRule="evenodd"
                   />
                 </svg>
-                Xác nhận
+                {t("scoreboard.score_form.confirm")}
               </>
             )}
           </button>

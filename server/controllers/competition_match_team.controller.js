@@ -5,7 +5,7 @@ class CompetitionMatchTeamController {
     // POST /api/competition-match-team - Tạo team mới
     async createTeam(req, res) {
         try {
-            const { competition_dk_id, match_no, row_index, match_name, team_name, match_type, config_system, athletes } = req.body;
+            const { competition_dk_id, match_no, row_index, match_name, team_name, match_type, config_system, athletes, referrers } = req.body;
 
             if (!competition_dk_id || !match_type || row_index === undefined) {
                 return res.status(400).json({
@@ -22,7 +22,8 @@ class CompetitionMatchTeamController {
                 team_name,
                 match_type,
                 config_system,
-                athletes
+                athletes,
+                referrers
             });
 
             res.json({
@@ -276,14 +277,14 @@ class CompetitionMatchTeamController {
 
     async saveResultTeam(req, res) {
         try {
-            const { match_id, scores, config_system } = req.body;
+            const { match_id, scores, config_system, referrers } = req.body;
             if (!match_id || !scores || !config_system) {
                 return res.status(400).json({
                     success: false,
                     message: "Thiếu thông tin bắt buộc."
                 });
             }
-            const result = await dbCompetitionMatchTeamService.saveResultTeam(match_id, scores, config_system);
+            const result = await dbCompetitionMatchTeamService.saveResultTeam(match_id, scores, config_system, referrers);
             res.json({
                 success: true,
                 message: "Lưu kết quả thành công.",

@@ -1,7 +1,9 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Breadcrumb = ({ navigation }) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const pathSegments = location.pathname.split("/").filter(Boolean);
 
@@ -47,7 +49,7 @@ const Breadcrumb = ({ navigation }) => {
             to="/"
             className="text-primary dark:text-blue-400 hover:underline hover:text-primary/90 dark:hover:text-blue-300"
           >
-            Trang chủ
+            {t("dashboard.title")}
           </Link>
         </li>
         {breadcrumbs.map((crumb, index) => (

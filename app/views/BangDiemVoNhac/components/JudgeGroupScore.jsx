@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Component hiển thị điểm của một nhóm giám định (2 giám định)
@@ -17,6 +18,8 @@ export default function JudgeGroupScore({
   score2,
   average,
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col items-center">
       {/* Tiêu đề nhóm */}
@@ -32,7 +35,7 @@ export default function JudgeGroupScore({
         <div className="flex justify-center gap-2 mb-2">
           {/* Giám định 1 */}
           <div className="flex flex-col items-center w-full">
-            <p className="text-[16px] font-black text-sky-700">Số 1</p>
+            <p className="text-[16px] font-black text-sky-700">{t('scoreboard.quyen.referee_1')}</p>
             <div className="bg-gradient-to-br from-sky-500 to-sky-700 flex items-center justify-center text-white shadow-[0_4px_15px_rgba(0,0,0,0.3)] h-full w-full">
               <p className="text-4xl font-black drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]">
                 {score1}
@@ -47,7 +50,7 @@ export default function JudgeGroupScore({
 
           {/* Giám định 2 */}
           <div className="flex flex-col items-center w-full h-full ">
-            <p className="text-[16px] font-black text-sky-700">Số 2</p>
+            <p className="text-[16px] font-black text-sky-700">{t('scoreboard.quyen.referee_2')}</p>
             <div className="bg-gradient-to-br from-sky-500 to-sky-700 flex items-center justify-center text-white shadow-[0_4px_15px_rgba(0,0,0,0.3)] h-full w-full">
               <p className="text-4xl font-black drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]">
                 {score2}

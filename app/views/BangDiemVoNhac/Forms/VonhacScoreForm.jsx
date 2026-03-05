@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "../../../config/redux/store";
 
 export default function VonhacScoreForm({
@@ -12,6 +13,7 @@ export default function VonhacScoreForm({
   scores = {},
   scoresRef,
 }) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [loadingButton, setLoadingButton] = useState(false);
   const defaultValues = scores?.judge1 ? scores : scoresRef?.current;
@@ -78,12 +80,12 @@ export default function VonhacScoreForm({
 
   // Render Judge Input Grid Node
   const renderJudgeInput = (judgeNumber) => {
-    let judgeLabel = `Điểm GĐ ${judgeNumber}`;
+    let judgeLabel = `${t('scoreboard.quyen.referee_scores')} ${judgeNumber}`;
     if (soGiamDinh === 7) {
-      if (judgeNumber === 1 || judgeNumber === 2) judgeLabel = `GĐ ${judgeNumber} (Chuyên môn)`;
-      else if (judgeNumber === 3 || judgeNumber === 4) judgeLabel = `GĐ ${judgeNumber} (Nghệ thuật)`;
-      else if (judgeNumber === 5 || judgeNumber === 6) judgeLabel = `GĐ ${judgeNumber} (Thực hiện)`;
-      else if (judgeNumber === 7) judgeLabel = `GĐ ${judgeNumber} (TT Trưởng)`;
+      if (judgeNumber === 1 || judgeNumber === 2) judgeLabel = `${t('scoreboard.quyen.referee_scores')} ${judgeNumber} (${t("scoreboard.score_form.specialty")})`;
+      else if (judgeNumber === 3 || judgeNumber === 4) judgeLabel = `${t('scoreboard.quyen.referee_scores')} ${judgeNumber} (${t("scoreboard.score_form.artistic")})`;
+      else if (judgeNumber === 5 || judgeNumber === 6) judgeLabel = `${t('scoreboard.quyen.referee_scores')} ${judgeNumber} (${t("scoreboard.score_form.execution")})`;
+      else if (judgeNumber === 7) judgeLabel = `${t('scoreboard.quyen.referee_scores')} ${judgeNumber} (${t("scoreboard.score_form.chief_referee")})`;
     }
 
     return (
@@ -98,15 +100,15 @@ export default function VonhacScoreForm({
           readOnly={loadingButton}
           id={`judge${judgeNumber}`}
           {...register(`judge${judgeNumber}`, {
-            min: { value: 0, message: "Phải từ 0-100" },
-            max: { value: 100, message: "Phải từ 0-100" },
+            min: { value: 0, message: t("scoreboard.score_form.score_range_error") },
+            max: { value: 100, message: t("scoreboard.score_form.score_range_error") },
           })}
           type="number"
           step="0.01"
           min="0"
           max="100"
           className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow disabled:bg-gray-100 read-only:bg-gray-100 dark:read-only:bg-gray-900"
-          placeholder="Nhập điểm..."
+          placeholder={t("scoreboard.score_form.enter_score")}
         />
         {errors[`judge${judgeNumber}`] && (
           <p className="text-red-500 text-xs mt-1 font-medium">
@@ -156,13 +158,13 @@ export default function VonhacScoreForm({
                 {/* Chuyên môn */}
                 <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                   <h4 className="font-bold text-gray-700 dark:text-gray-300 uppercase mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
-                    1. Chuyên môn
+                    1. {t("scoreboard.score_form.specialty")}
                   </h4>
                   <div className="grid grid-cols-3 gap-4">
                     {renderJudgeInput(1)}
                     {renderJudgeInput(2)}
                     <div className="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
-                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">TRUNG BÌNH</span>
+                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">{t("scoreboard.score_form.average")}</span>
                       <span className="text-2xl font-black text-blue-700 dark:text-blue-300">
                         {(((Number(watchedJudges.judge1) || 0) + (Number(watchedJudges.judge2) || 0)) / 2).toFixed(2)}
                       </span>
@@ -173,13 +175,13 @@ export default function VonhacScoreForm({
                 {/* Nghệ thuật */}
                 <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                   <h4 className="font-bold text-gray-700 dark:text-gray-300 uppercase mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
-                    2. Nghệ thuật
+                    2. {t("scoreboard.score_form.artistic")}
                   </h4>
                   <div className="grid grid-cols-3 gap-4">
                     {renderJudgeInput(3)}
                     {renderJudgeInput(4)}
                     <div className="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
-                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">TRUNG BÌNH</span>
+                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">{t("scoreboard.score_form.average")}</span>
                       <span className="text-2xl font-black text-blue-700 dark:text-blue-300">
                         {(((Number(watchedJudges.judge3) || 0) + (Number(watchedJudges.judge4) || 0)) / 2).toFixed(2)}
                       </span>
@@ -190,13 +192,13 @@ export default function VonhacScoreForm({
                 {/* Thực hiện */}
                 <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                   <h4 className="font-bold text-gray-700 dark:text-gray-300 uppercase mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
-                    3. Thực hiện
+                    3. {t("scoreboard.score_form.execution")}
                   </h4>
                   <div className="grid grid-cols-3 gap-4">
                     {renderJudgeInput(5)}
                     {renderJudgeInput(6)}
                     <div className="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
-                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">TRUNG BÌNH</span>
+                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">{t("scoreboard.score_form.average")}</span>
                       <span className="text-2xl font-black text-blue-700 dark:text-blue-300">
                         {(((Number(watchedJudges.judge5) || 0) + (Number(watchedJudges.judge6) || 0)) / 2).toFixed(2)}
                       </span>
@@ -207,7 +209,7 @@ export default function VonhacScoreForm({
                 {/* Trọng tài trưởng */}
                 <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                   <h4 className="font-bold text-gray-700 dark:text-gray-300 uppercase mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
-                    4. Trọng tài trưởng
+                    4. {t("scoreboard.score_form.chief_referee")}
                   </h4>
                   <div className="grid grid-cols-3 gap-4">
                     {renderJudgeInput(7)}
@@ -228,13 +230,13 @@ export default function VonhacScoreForm({
           <div className="mt-6 pt-5 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
             <div className="text-sm text-gray-500 dark:text-gray-400">
               {soGiamDinh === 7 ? (
-                <span>* Hệ thống tự động tính theo tỷ lệ luật định (3 cột 30% - trưởng 10%).</span>
+                <span dangerouslySetInnerHTML={{ __html: t("scoreboard.score_form.note_vonhac_formula") }} />
               ) : (
-                <span>* Khóa cộng tổng điểm tất cả Khảo thí.</span>
+                <span dangerouslySetInnerHTML={{ __html: t("scoreboard.score_form.note_sum_all") }} />
               )}
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-base font-medium text-gray-700 dark:text-gray-300">Tổng điểm:</span>
+              <span className="text-base font-medium text-gray-700 dark:text-gray-300">{t("scoreboard.score_form.total_score")}:</span>
               <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-4 py-1.5 rounded-md border border-blue-200 dark:border-blue-800">
                 {totalScore}
               </span>
@@ -250,7 +252,7 @@ export default function VonhacScoreForm({
             onClick={onGoBack}
             className="px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-600 transition-all shadow-sm"
           >
-            Hủy
+            {t("scoreboard.score_form.cancel")}
           </button>
           <button
             disabled={loadingButton}
@@ -279,7 +281,7 @@ export default function VonhacScoreForm({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Đang lưu...
+                {t("scoreboard.score_form.saving")}
               </>
             ) : (
               <>
@@ -295,7 +297,7 @@ export default function VonhacScoreForm({
                     clipRule="evenodd"
                   />
                 </svg>
-                Xác nhận
+                {t("scoreboard.score_form.confirm")}
               </>
             )}
           </button>

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const WinnerSelectionModal = ({
   showWinnerModal,
@@ -9,6 +10,8 @@ const WinnerSelectionModal = ({
   handleWinner,
   setIsFinishingMatch,
 }) => {
+  const { t } = useTranslation();
+
   if (!showWinnerModal) return null;
 
   return (
@@ -31,16 +34,16 @@ const WinnerSelectionModal = ({
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
-            Điểm số bằng nhau!
+            {t("scoreboard.doikhang.winner_modal_title")}
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300">
-            Điểm số:{" "}
+            {t("scoreboard.doikhang.winner_modal_score")}:{" "}
             <span className="font-bold text-blue-600 dark:text-blue-400">
               {redScore} - {blueScore}
             </span>
           </p>
           <p className="text-base text-gray-500 dark:text-gray-400 mt-2">
-            Vui lòng chọn vận động viên thắng cuộc
+            {t("scoreboard.doikhang.winner_modal_select")}
           </p>
         </div>
 
@@ -74,7 +77,7 @@ const WinnerSelectionModal = ({
                   {matchInfo.red.name || "ĐỎ"}
                 </div>
                 <div className="text-xs text-red-200 dark:text-red-300 mt-1">
-                  Click để chọn
+                  {t("scoreboard.doikhang.winner_modal_click")}
                 </div>
               </div>
             </div>
@@ -108,7 +111,7 @@ const WinnerSelectionModal = ({
                   {matchInfo?.blue?.name ?? "XANH"}
                 </div>
                 <div className="text-xs text-blue-200 dark:text-blue-300 mt-1">
-                  Click để chọn
+                  {t("scoreboard.doikhang.winner_modal_click")}
                 </div>
               </div>
             </div>
@@ -123,7 +126,7 @@ const WinnerSelectionModal = ({
           }}
           className="w-full bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white py-3 rounded font-semibold transition-colors"
         >
-          Hủy
+          {t("scoreboard.doikhang.winner_modal_cancel")}
         </button>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import Button from "../../../components/Button";
 import { SwitchField } from "../../../components/SwitchField";
 import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
@@ -10,76 +11,77 @@ import {
 import axios from "axios";
 import { KEYBOARD_MODES, CONFIG_PRESETS } from "../../BangDiemDoiKhang/keyboardConfig";
 
-const inputFields = {
-  "Thông tin giải đấu": [
-    // { name: "ten_giai_dau", label: "Tên giải đấu", placeholder: "Nhập tên giải đấu" },
-    { name: "bo_mon", label: "Bộ môn", placeholder: "Nhập bộ môn" },
+// Moved to function to support i18n
+const getInputFields = (t) => ({
+  [t("config_system.competition_info")]: [
+    // { name: "ten_giai_dau", label: t("config_system.competition_name"), placeholder: t("config_system.enter") + " " + t("config_system.competition_name") },
+    { name: "bo_mon", label: t("config_system.sport_type"), placeholder: t("config_system.enter_sport_type") },
     {
       name: "thoi_gian_bat_dau",
-      label: "Thời gian bắt đầu",
+      label: t("config_system.start_time"),
       placeholder: "DD/MM/YYYY",
       type: "date",
     },
     {
       name: "thoi_gian_ket_thuc",
-      label: "Thời gian kết thúc",
+      label: t("config_system.end_time"),
       placeholder: "DD/MM/YYYY",
       type: "date",
     },
   ],
-  "Cài đặt chung": [
+  [t("config_system.general_settings")]: [
     {
       name: "thoi_gian_tinh_diem",
-      label: "Thời gian tính điểm",
-      placeholder: "giây",
+      label: t("config_system.scoring_time"),
+      placeholder: t("config_system.seconds"),
     },
     {
       name: "thoi_gian_thi_dau",
-      label: "Thời gian thi đấu",
-      placeholder: "giây",
+      label: t("config_system.match_duration"),
+      placeholder: t("config_system.seconds"),
     },
-    { name: "thoi_gian_nghi", label: "Thời gian nghỉ", placeholder: "giây" },
+    { name: "thoi_gian_nghi", label: t("config_system.rest_time"), placeholder: t("config_system.seconds") },
     {
       name: "thoi_gian_hiep_phu",
-      label: "Thời gian hiệp phụ",
-      placeholder: "giây",
+      label: t("config_system.extra_time"),
+      placeholder: t("config_system.seconds"),
     },
-    { name: "thoi_gian_y_te", label: "Thời gian y tế", placeholder: "giây" },
+    { name: "thoi_gian_y_te", label: t("config_system.medical_time"), placeholder: t("config_system.seconds") },
     {
       name: "khoang_diem_tuyet_toi",
-      label: "Khoảng điểm tuyệt đối",
-      placeholder: "điểm",
+      label: t("config_system.absolute_score_gap"),
+      placeholder: t("config_system.points"),
     },
   ],
-  "Cài đặt điểm số": [
+  [t("config_system.score_settings")]: [
     {
       name: "diem_don_chan",
-      label: "Điểm đòn chân",
-      placeholder: "điểm",
+      label: t("config_system.leg_kick_score"),
+      placeholder: t("config_system.points"),
     },
     {
       name: "diem_nga",
-      label: "Điểm ngã",
-      placeholder: "điểm",
+      label: t("config_system.fall_score"),
+      placeholder: t("config_system.points"),
     },
     {
       name: "diem_bien_tru",
-      label: "Điểm biên (trừ điểm)",
-      placeholder: "điểm",
+      label: t("config_system.boundary_minus_score"),
+      placeholder: t("config_system.points"),
     },
     {
       name: "diem_bien_cong",
-      label: "Điểm biên (cộng điểm)",
-      placeholder: "điểm",
+      label: t("config_system.boundary_plus_score"),
+      placeholder: t("config_system.points"),
     },
   ],
-};
+});
 
-const selectFields = {
-  "Cài đặt số lượng": [
+const getSelectFields = (t) => ({
+  [t("config_system.quantity_settings")]: [
     {
       name: "keyboard_mode",
-      label: "Chế độ",
+      label: t("config_system.keyboard_mode"),
       options: Object.entries(KEYBOARD_MODES).map(([key, mode]) => ({
         value: key,
         label: `${mode.description}`,
@@ -87,150 +89,136 @@ const selectFields = {
     },
     {
       name: "he_diem",
-      label: "Hệ điểm",
+      label: t("config_system.score_settings"),
       options: [
-        { value: "1", label: "Hệ điểm 1" },
-        { value: "2", label: "Hệ điểm 2" },
-        { value: "3", label: "Hệ điểm 3" },
+        { value: "1", label: t("config_system.score_settings") + " 1" },
+        { value: "2", label: t("config_system.score_settings") + " 2" },
+        { value: "3", label: t("config_system.score_settings") + " 3" },
       ],
     },
     {
       name: "so_giam_dinh",
-      label: "Số giám định",
+      label: t("config_system.referee_number"),
       options: [
-        { value: "3", label: "3 giám định" },
-        { value: "5", label: "5 giám định" },
-        { value: "10", label: "10 giám định" },
+        { value: "3", label: "3 " + t("config_system.referee_count") },
+        { value: "5", label: "5 " + t("config_system.referee_count") },
+        { value: "10", label: "10 " + t("config_system.referee_count") },
       ],
     },
     {
       name: "so_hiep",
-      label: "Số hiệp",
+      label: t("config_system.round_number"),
       options: [
-        { value: "1", label: "1 hiệp" },
-        { value: "2", label: "2 hiệp" },
-        { value: "3", label: "3 hiệp" },
+        { value: "1", label: t("config_system.round_1") },
+        { value: "2", label: t("config_system.round_2") },
+        { value: "3", label: t("config_system.round_3") },
       ],
     },
     {
       name: "so_hiep_phu",
-      label: "Số hiệp phụ",
+      label: t("config_system.extra_round_number"),
       options: [
-        { value: "0", label: "Không có" },
-        { value: "1", label: "1 hiệp phụ" },
-        { value: "2", label: "2 hiệp phụ" },
-        { value: "3", label: "3 hiệp phụ" },
+        { value: "0", label: t("config_system.extra_round_0") },
+        { value: "1", label: t("config_system.extra_round_1") },
+        { value: "2", label: t("config_system.extra_round_2") },
+        { value: "3", label: t("config_system.extra_round_3") },
       ],
     },
   ],
-  // "Cấu hình bàn phím": [
-  //   {
-  //     name: "keyboard_mode",
-  //     label: "Chế độ",
-  //     options: Object.entries(KEYBOARD_MODES).map(([key, mode]) => ({
-  //       value: key,
-  //       label: `${mode.description}`,
-  //     })),
-  //   },
-  // ],
-};
+});
 
-const textareaFields = {
-  "Mô tả giải đấu": [
+const getTextareaFields = (t) => ({
+  [t("config_system.competition_description")]: [
     {
       name: "ten_giai_dau",
-      label: "Tên giải đấu",
-      placeholder: "Nhập tên giải đấu",
+      label: t("config_system.competition_name_label"),
+      placeholder: t("config_system.competition_name_placeholder"),
     },
     {
       name: "mo_ta_giai_dau",
-      label: "Mô tả chi tiết",
-      placeholder: "Nhập mô tả chi tiết về giải đấu...",
+      label: t("config_system.detailed_description"),
+      placeholder: t("config_system.detailed_description_placeholder"),
       rows: 4,
     },
   ],
-};
+});
 
-const switchFields = {
-  "Chế độ áp dụng": [
-    { name: "cau_hinh_doi_khang_diem_thap", label: "Đối kháng tính điểm thấp" },
-    { name: "cau_hinh_quyen_tinh_tong", label: "Quyền tính điểm tổng" },
-    { name: "cau_hinh_y_te", label: "Tính thời gian y tế" },
+const getSwitchFields = (t) => ({
+  [t("config_system.application_mode")]: [
+    { name: "cau_hinh_doi_khang_diem_thap", label: t("config_system.combat_low_score") },
+    { name: "cau_hinh_quyen_tinh_tong", label: t("config_system.form_total_score") },
+    { name: "cau_hinh_y_te", label: t("config_system.medical_time_calculation") },
     {
       name: "cau_hinh_tinh_diem_tuyet_doi",
-      label: "Tính điểm thắng tuyệt đối",
+      label: t("config_system.absolute_win_score"),
     },
-    { name: "cau_hinh_xoa_nhac_nho", label: "Xoá nhắc nhở" },
-    { name: "cau_hinh_xoa_canh_cao", label: "Xoá cảnh cáo" },
-    { name: "cau_hinh_hinh_thuc_quyen", label: "Cấu hình hình thức quyền" },
+    { name: "cau_hinh_xoa_nhac_nho", label: t("config_system.delete_reminder") },
+    { name: "cau_hinh_xoa_canh_cao", label: t("config_system.delete_warning") },
+    { name: "cau_hinh_hinh_thuc_quyen", label: t("config_system.form_config") },
   ],
-  "Chế độ bảng điểm": [
-    { name: "ap_dung_doikhang", label: "Bật/tắt chế độ Đối kháng" },
-    { name: "ap_dung_quyen", label: "Bật/tắt chế độ Quyền" },
-    { name: "ap_dung_vonhac", label: "Bật/tắt chế độ Võ Nhạc" },
-    { name: "bat_am_thanh", label: "Bật âm thanh" },
-    { name: "ap_dung_diem_bien_tru", label: "Áp dụng điểm biên (trừ điểm)" },
-    { name: "ap_dung_diem_bien_cong", label: "Áp dụng điểm biên (cộng điểm)" },
+  [t("config_system.scoreboard_mode")]: [
+    { name: "ap_dung_doikhang", label: t("config_system.toggle_combat") },
+    { name: "ap_dung_quyen", label: t("config_system.toggle_form") },
+    { name: "ap_dung_vonhac", label: t("config_system.toggle_music") },
+    { name: "bat_am_thanh", label: t("config_system.enable_sound") },
+    { name: "ap_dung_diem_bien_tru", label: t("config_system.apply_boundary_minus") },
+    { name: "ap_dung_diem_bien_cong", label: t("config_system.apply_boundary_plus") },
   ],
-  // "Chế độ áp dụng điểm biên": [
-  //   { name: "ap_dung_diem_bien_tru", label: "Áp dụng điểm biên (trừ điểm)" },
-  //   { name: "ap_dung_diem_bien_cong", label: "Áp dụng điểm biên (cộng điểm)" },
-  // ],
-  // "Cài đặt âm thanh": [],
-  "Quyền hiển thị buttons - Điểm số": [
-    { name: "hien_thi_button_diem_1", label: "Hiển thị button +1/-1 điểm" },
-    { name: "hien_thi_button_diem_2", label: "Hiển thị button +2/-2 điểm" },
-    { name: "hien_thi_button_diem_3", label: "Hiển thị button +3/-3 điểm" },
-    { name: "hien_thi_button_diem_5", label: "Hiển thị button +5/-5 điểm" },
-    { name: "hien_thi_button_diem_10", label: "Hiển thị button +10/-10 điểm" },
+  [t("config_system.button_display_score")]: [
+    { name: "hien_thi_button_diem_1", label: t("config_system.show_button_1") },
+    { name: "hien_thi_button_diem_2", label: t("config_system.show_button_2") },
+    { name: "hien_thi_button_diem_3", label: t("config_system.show_button_3") },
+    { name: "hien_thi_button_diem_5", label: t("config_system.show_button_5") },
+    { name: "hien_thi_button_diem_10", label: t("config_system.show_button_10") },
   ],
-  "Quyền hiển thị buttons - Hành động": [
-    { name: "hien_thi_button_nhac_nho", label: "Hiển thị button Nhắc nhở" },
-    { name: "hien_thi_button_canh_cao", label: "Hiển thị button Cảnh cáo" },
-    { name: "hien_thi_button_don_chan", label: "Hiển thị button Đòn chân" },
-    { name: "hien_thi_button_bien", label: "Hiển thị button Biên" },
-    { name: "hien_thi_button_nga", label: "Hiển thị button Ngã" },
-    { name: "hien_thi_button_y_te", label: "Hiển thị button Y tế" },
-    { name: "hien_thi_button_thang", label: "Hiển thị button Thắng" },
+  [t("config_system.button_display_action")]: [
+    { name: "hien_thi_button_nhac_nho", label: t("config_system.show_button_reminder") },
+    { name: "hien_thi_button_canh_cao", label: t("config_system.show_button_warning") },
+    { name: "hien_thi_button_don_chan", label: t("config_system.show_button_leg_kick") },
+    { name: "hien_thi_button_bien", label: t("config_system.show_button_boundary") },
+    { name: "hien_thi_button_nga", label: t("config_system.show_button_fall") },
+    { name: "hien_thi_button_y_te", label: t("config_system.show_button_medical") },
+    { name: "hien_thi_button_thang", label: t("config_system.show_button_win") },
   ],
-  "Quyền hiển thị buttons - Điều khiển": [
-    { name: "hien_thi_button_quay_lai", label: "Hiển thị button Quay lại" },
-    { name: "hien_thi_button_reset", label: "Hiển thị button Reset" },
-    { name: "hien_thi_button_lich_su", label: "Hiển thị button Lịch sử" },
-    { name: "hien_thi_button_cau_hinh", label: "Hiển thị button Cấu hình" },
-    { name: "hien_thi_button_ket_thuc", label: "Hiển thị button Kết thúc" },
+  [t("config_system.button_display_control")]: [
+    { name: "hien_thi_button_quay_lai", label: t("config_system.show_button_back") },
+    { name: "hien_thi_button_reset", label: t("config_system.show_button_reset") },
+    { name: "hien_thi_button_lich_su", label: t("config_system.show_button_history") },
+    { name: "hien_thi_button_cau_hinh", label: t("config_system.show_button_config") },
+    { name: "hien_thi_button_ket_thuc", label: t("config_system.show_button_end") },
     {
       name: "hien_thi_button_tran_tiep_theo",
-      label: "Hiển thị button Trận tiếp theo",
+      label: t("config_system.show_button_next_match"),
     },
-    { name: "hien_thi_button_tran_truoc", label: "Hiển thị button Trận trước" },
-    { name: "hien_thi_button_hiep_phu", label: "Hiển thị button Hiệp phụ" },
+    { name: "hien_thi_button_tran_truoc", label: t("config_system.show_button_prev_match") },
+    { name: "hien_thi_button_hiep_phu", label: t("config_system.show_button_extra_round") },
   ],
-  "Quyền hiển thị thông tin trận đấu": [
+  [t("config_system.match_info_display")]: [
     {
       name: "hien_thi_thong_tin_nhac_nho",
-      label: "Hiển thị thông tin Nhắc nhở",
+      label: t("config_system.show_info_reminder"),
     },
     {
       name: "hien_thi_thong_tin_canh_cao",
-      label: "Hiển thị thông tin Cảnh cáo",
+      label: t("config_system.show_info_warning"),
     },
     {
       name: "hien_thi_thong_tin_don_chan",
-      label: "Hiển thị thông tin Đòn chân",
+      label: t("config_system.show_info_leg_kick"),
     },
-    { name: "hien_thi_thong_tin_y_te", label: "Hiển thị thông tin Y tế" },
+    { name: "hien_thi_thong_tin_y_te", label: t("config_system.show_info_medical") },
   ],
-};
+});
 
 // Background configuration for 3 screens
-const backgroundScreens = [
-  { key: "quyen", label: "Màn hình Quyền" },
-  { key: "doikhang", label: "Màn hình Đối kháng" },
-  { key: "vonhac", label: "Màn hình Võ Nhạc" },
+const getBackgroundScreens = (t) => [
+  { key: "quyen", label: t("config_system.screen_form") },
+  { key: "doikhang", label: t("config_system.screen_combat") },
+  { key: "vonhac", label: t("config_system.screen_music") },
 ];
 
 export default function ConfigSystem() {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   // @ts-ignore
   const { data, loading } = useAppSelector((state) => state.configSystem);
@@ -244,6 +232,13 @@ export default function ConfigSystem() {
   } = useForm({
     defaultValues: { keyboard_mode: "vovinam", ...data },
   });
+
+  // Get translated fields
+  const inputFields = getInputFields(t);
+  const selectFields = getSelectFields(t);
+  const textareaFields = getTextareaFields(t);
+  const switchFields = getSwitchFields(t);
+  const backgroundScreens = getBackgroundScreens(t);
 
   // State cho quản lý logos
   const [logos, setLogos] = useState([]);
@@ -357,13 +352,13 @@ export default function ConfigSystem() {
         "image/svg+xml",
       ];
       if (!allowedTypes.includes(file.type)) {
-        alert("Chỉ cho phép upload file ảnh (jpeg, jpg, png, gif, webp, svg)");
+        alert(t("config_system.error_image_type"));
         return;
       }
 
       // Kiểm tra kích thước file (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert("Kích thước file không được vượt quá 5MB");
+        alert(t("config_system.error_file_size"));
         return;
       }
 
@@ -377,7 +372,7 @@ export default function ConfigSystem() {
       if (uploadMode === "url") {
         // Upload bằng URL
         if (!logoInput.trim()) {
-          alert("Vui lòng nhập URL hình ảnh");
+          alert(t("config_system.error_enter_url"));
           return;
         }
 
@@ -396,7 +391,7 @@ export default function ConfigSystem() {
       } else {
         // Upload bằng file
         if (!selectedFile) {
-          alert("Vui lòng chọn file ảnh");
+          alert(t("config_system.error_select_file"));
           return;
         }
 
@@ -423,8 +418,8 @@ export default function ConfigSystem() {
         }
       }
     } catch (error) {
-      console.error("Lỗi khi thêm logo:", error);
-      alert(error.response?.data?.message || "Lỗi khi thêm logo");
+      console.error(t("config_system.error_add_logo"), error);
+      alert(error.response?.data?.message || t("config_system.error_add_logo"));
     }
   };
 
@@ -444,14 +439,14 @@ export default function ConfigSystem() {
         setLogoInput("");
       }
     } catch (error) {
-      console.error("Lỗi khi cập nhật logo:", error);
-      alert("Lỗi khi cập nhật logo");
+      console.error(t("config_system.error_update_logo"), error);
+      alert(t("config_system.error_update_logo"));
     }
   };
 
   // Xóa logo
   const handleDeleteLogo = async (id) => {
-    if (!confirm("Bạn có chắc muốn xóa logo này?")) return;
+    if (!confirm(t("config_system.confirm_delete_logo"))) return;
 
     try {
       const response = await axios.delete(
@@ -462,8 +457,8 @@ export default function ConfigSystem() {
         await fetchLogos();
       }
     } catch (error) {
-      console.error("Lỗi khi xóa logo:", error);
-      alert("Lỗi khi xóa logo");
+      console.error(t("config_system.error_delete_logo"), error);
+      alert(t("config_system.error_delete_logo"));
     }
   };
 
@@ -508,7 +503,7 @@ export default function ConfigSystem() {
       // Nếu lỗi, fetch lại để đồng bộ với server
       await fetchLogos();
       alert(
-        "Lỗi khi sắp xếp logos: " +
+        t("config_system.error_reorder_logo") + ": " +
         (error.response?.data?.message || error.message),
       );
     }
@@ -531,7 +526,7 @@ export default function ConfigSystem() {
       })
       .catch((error) => {
         //
-        console.error("Lỗi khi thêm mới:", error);
+        console.error(t("config_system.error_save"), error);
       });
   };
 
@@ -540,10 +535,10 @@ export default function ConfigSystem() {
     dispatch(fetchConfigSystem())
       .unwrap()
       .then(() => {
-        console.log("Reload config thành công");
+        console.log(t("config_system.reload_success"));
       })
       .catch((error) => {
-        console.error("Lỗi khi reload:", error);
+        console.error(t("config_system."), error);
       });
   };
 
@@ -603,13 +598,13 @@ export default function ConfigSystem() {
       "image/webp",
     ];
     if (!validTypes.includes(file.type)) {
-      alert("Chỉ chấp nhận file ảnh (JPG, PNG, GIF, WEBP)");
+      alert(t("config_system.error_image_format"));
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert("Kích thước file không được vượt quá 5MB");
+      alert(t("config_system.error_file_size"));
       return;
     }
 
@@ -665,7 +660,7 @@ export default function ConfigSystem() {
                 <input
                   id={name}
                   readOnly={loading || isDisabled}
-                  {...register(name, { required: `${label} là bắt buộc` })}
+                  {...register(name, { required: `${label} ${t("config_system.required")}` })}
                   type={type}
                   placeholder={placeholder}
                   className={`w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded text-sm transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${isDisabled ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''}`}
@@ -727,10 +722,10 @@ export default function ConfigSystem() {
                 <select
                   id={name}
                   disabled={loading || isDisabled}
-                  {...register(name, { required: `${label} là bắt buộc` })}
+                  {...register(name, { required: `${label} ${t("config_system.required")}` })}
                   className={`w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded text-sm transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${isDisabled ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''}`}
                 >
-                  <option value="">-- Chọn {label.toLowerCase()} --</option>
+                  <option value="">-- {t("config_system.select")} {label.toLowerCase()} --</option>
                   {options
                     .filter(option => {
                       if (allowedOptions[name]) {
@@ -968,7 +963,7 @@ export default function ConfigSystem() {
           />
         </svg>
         <span className="font-bold text-blue-700 dark:text-blue-300 text-lg">
-          Cài đặt Background Màn hình
+          {t("config_system.background_settings")}
         </span>
       </div>
 
@@ -991,7 +986,7 @@ export default function ConfigSystem() {
               {/* Background Type Selection */}
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Loại Background
+                  {t("config_system.background_type")}
                 </label>
                 <div className="flex gap-3">
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -1005,7 +1000,7 @@ export default function ConfigSystem() {
                       className="w-4 h-4 text-blue-600"
                     />
                     <span className="text-sm font-medium dark:text-gray-300">
-                      Màu sắc
+                      {t("config_system.color")}
                     </span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -1019,7 +1014,7 @@ export default function ConfigSystem() {
                       className="w-4 h-4 text-blue-600"
                     />
                     <span className="text-sm font-medium dark:text-gray-300">
-                      Hình ảnh
+                      {t("config_system.image")}
                     </span>
                   </label>
                 </div>
@@ -1029,7 +1024,7 @@ export default function ConfigSystem() {
               {bgType === "color" && (
                 <div className="mb-4">
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                    Chọn màu
+                    {t("config_system.choose_color")}
                   </label>
                   <div className="flex items-center gap-3">
                     <input
@@ -1057,7 +1052,7 @@ export default function ConfigSystem() {
               {bgType === "image" && (
                 <div className="mb-4">
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                    Upload hình ảnh
+                    {t("config_system.upload_image")}
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -1105,7 +1100,7 @@ export default function ConfigSystem() {
                               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                             />
                           </svg>
-                          <span>Đang upload...</span>
+                          <span>{t("config_system.uploading")}</span>
                         </>
                       ) : (
                         <>
@@ -1122,7 +1117,7 @@ export default function ConfigSystem() {
                               d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                             />
                           </svg>
-                          <span>Chọn hình ảnh</span>
+                          <span>{t("config_system.choose_image")}</span>
                         </>
                       )}
                     </button>
@@ -1131,7 +1126,7 @@ export default function ConfigSystem() {
                         type="button"
                         onClick={() => setValue(`bg_${key}_image`, "")}
                         className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200"
-                        title="Xóa hình ảnh"
+                        title={t("config_system.delete_image")}
                       >
                         <svg
                           className="w-5 h-5"
@@ -1160,7 +1155,7 @@ export default function ConfigSystem() {
               {/* Opacity Slider */}
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Độ trong suốt: {bgOpacity}%
+                  {t("config_system.opacity")}: {bgOpacity}%
                 </label>
                 <input
                   type="range"
@@ -1178,7 +1173,7 @@ export default function ConfigSystem() {
               <div className="mb-4 pt-3 border-t border-gray-200 dark:border-gray-600">
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-sm font-bold text-gray-700 dark:text-gray-200">
-                    Màu chữ Header
+                    {t("config_system.header_text_color")}
                   </label>
                   <button
                     type="button"
@@ -1198,19 +1193,19 @@ export default function ConfigSystem() {
                       }
                     }}
                     className="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white text-xs font-bold rounded shadow transition-all"
-                    title="Tự đề xuất màu tương phản cao nhất"
+                    title={t("config_system.auto_suggest_tooltip")}
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    Tự đề xuất
+                    {t("config_system.auto_suggest")}
                   </button>
                 </div>
 
                 {/* Title color */}
                 <div className="mb-4">
                   <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
-                    Màu Tín hiệu / Tiêu đề (h1)
+                    {t("config_system.title_color")}
                   </label>
                   <div className="flex items-center gap-2 mb-2">
                     <input
@@ -1244,7 +1239,7 @@ export default function ConfigSystem() {
                 {/* Desc color */}
                 <div className="mb-4">
                   <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
-                    Màu mô tả / Phụ đề (p)
+                    {t("config_system.desc_color")}
                   </label>
                   <div className="flex items-center gap-2 mb-2">
                     <input
@@ -1279,7 +1274,7 @@ export default function ConfigSystem() {
               {/* Preview */}
               <div className="mb-2">
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Xem trước
+                  {t("config_system.preview")}
                 </label>
                 <div
                   className="w-full h-32 rounded-lg border-2 border-gray-300 dark:border-gray-600 overflow-hidden relative flex flex-col items-center justify-center gap-1"
@@ -1340,7 +1335,7 @@ export default function ConfigSystem() {
           />
         </svg>
         <span className="font-bold text-blue-700 dark:text-blue-300 text-lg">
-          Quản lý Logo/Hình ảnh
+          {t("config_system.logo_management_title")}
         </span>
       </div>
 
@@ -1367,7 +1362,7 @@ export default function ConfigSystem() {
             className="w-4 h-4"
           />
           <span className="text-sm font-medium dark:text-gray-300">
-            Upload từ thiết bị
+            {t("config_system.upload_from_device")}
           </span>
         </label>
       </div>
@@ -1380,7 +1375,7 @@ export default function ConfigSystem() {
               type="text"
               value={logoInput}
               onChange={(e) => setLogoInput(e.target.value)}
-              placeholder="Nhập URL hình ảnh..."
+              placeholder={t("config_system.enter_url_placeholder")}
               className="flex-1 px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 focus:border-rose-500 dark:focus:border-rose-400 focus:ring-2 focus:ring-rose-200 dark:focus:ring-rose-800 rounded  text-sm transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
             <button
@@ -1401,7 +1396,7 @@ export default function ConfigSystem() {
                   d="M12 4v16m8-8H4"
                 />
               </svg>
-              <span>Thêm Logo</span>
+              <span>{t("config_system.add_logo")}</span>
             </button>
           </div>
         ) : (
@@ -1455,7 +1450,7 @@ export default function ConfigSystem() {
                   d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                 />
               </svg>
-              <span>Upload Logo</span>
+              <span>{t("config_system.add_logo")}</span>
             </button>
           </div>
         )}
@@ -1479,7 +1474,7 @@ export default function ConfigSystem() {
               />
             </svg>
             <span className="ml-3 text-gray-600 dark:text-gray-300 font-medium">
-              Đang tải...
+              {t("config_system.uploading")}
             </span>
           </div>
         ) : logos.length === 0 ? (
@@ -1498,10 +1493,10 @@ export default function ConfigSystem() {
               />
             </svg>
             <span className="text-gray-500 dark:text-gray-400 font-medium">
-              Chưa có logo nào
+              {t("config_system.no_logos")}
             </span>
             <span className="text-gray-400 dark:text-gray-500 text-sm mt-1">
-              Upload logo đầu tiên của bạn
+              {t("config_system.upload_image")}
             </span>
           </div>
         ) : (
@@ -1613,7 +1608,7 @@ export default function ConfigSystem() {
                       />
                     )}
                   </svg>
-                  <span>{editingIndex === index ? "Hủy" : "Sửa"}</span>
+                  <span>{editingIndex === index ? t("config_system.cancel") : t("config_system.edit")}</span>
                 </button>
                 <button
                   type="button"
@@ -1633,7 +1628,7 @@ export default function ConfigSystem() {
                       d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                     />
                   </svg>
-                  <span>Xóa</span>
+                  <span>{t("config_system.delete")}</span>
                 </button>
               </div>
             </div>
@@ -1665,7 +1660,7 @@ export default function ConfigSystem() {
               />
             </svg>
             <span className="font-bold text-gray-700 dark:text-gray-300 text-base">
-              Preview Logo
+              {t("config_system.preview")} Logo
             </span>
             <span className="ml-auto text-sm text-gray-500 dark:text-gray-400 font-medium">
               {logos.length} logo(s)
@@ -1737,10 +1732,10 @@ export default function ConfigSystem() {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-                  Quản lý cài đặt
+                  {t("config_system.settings_management")}
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Quản lý các thiết lập chung của hệ thống
+                  {t("config_system.settings_description")}
                 </p>
               </div>
             </div>
@@ -1766,7 +1761,7 @@ export default function ConfigSystem() {
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                   />
                 </svg>
-                <span>Tải lại</span>
+                <span>{t("config_system.reload")}</span>
               </button>
 
               {/* Reset Button */}
@@ -1810,7 +1805,7 @@ export default function ConfigSystem() {
                     d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
                   />
                 </svg>
-                <span>{loading ? "Đang lưu..." : "Lưu cấu hình"}</span>
+                <span>{loading ? t("config_system.saving") : t("config_system.save_config")}</span>
               </button>
             </div>
           </div>

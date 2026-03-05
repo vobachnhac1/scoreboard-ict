@@ -21,6 +21,7 @@ import SecondaryDisplay from '../views/SecondaryDisplay';
 // Import Dashboard and Error pages
 import Dashboard from '../views/Dashboard';
 import UserGuide from '../views/UserGuide';
+import AboutUs from '../views/AboutUs';
 import UpdateManager from '../views/UpdateManager';
 import NotFound from '../views/Error/NotFound';
 import TestError from '../views/TestError';
@@ -53,8 +54,9 @@ const Routers = () => {
 
     { path: '/', element: <AdminLayout><Dashboard /></AdminLayout> },
     { path: '/user-guide', element: <UserGuide /> },
+    { path: '/about-us', element: <AboutUs /> },
     { path: '/update-manager', element: <AdminLayout><UpdateManager /></AdminLayout> },
-    { path: '/test-error', element: <AdminLayout><TestError /></AdminLayout> },
+    // { path: '/test-error', element: <AdminLayout><TestError /></AdminLayout> },
     { path: '/management/connect', element: <AdminLayout><Connect /></AdminLayout> },
     { path: '/management/general-setting', element: <AdminLayout><div>QUẢN LÝ CÀI ĐẶT CHUNG</div></AdminLayout> },
     { path: '/management/general-setting/config-system', element: <AdminLayout><ConfigSystem /></AdminLayout> },
@@ -68,10 +70,10 @@ const Routers = () => {
     { path: '/bang-diem/quyen', element: <BangDiemQuyen /> },
     { path: '/bang-diem/vo-nhac', element: <BangDiemVoNhac /> },
     // Báo cáo
-    { path: '/reports', element: <AdminLayout><Reports /></AdminLayout> },
-    { path: '/reports/template-editor', element: <AdminLayout><TemplateManager /></AdminLayout> },
-    { path: '/reports/template-editor/doikhang', element: <AdminLayout><DoiKhangResultReport /></AdminLayout> },
-    { path: '/reports/template-editor/quyen', element: <AdminLayout><QuyenResultReport /></AdminLayout> },
+    // { path: '/reports', element: <AdminLayout><Reports /></AdminLayout> },
+    // { path: '/reports/template-editor', element: <AdminLayout><TemplateManager /></AdminLayout> },
+    // { path: '/reports/template-editor/doikhang', element: <AdminLayout><DoiKhangResultReport /></AdminLayout> },
+    // { path: '/reports/template-editor/quyen', element: <AdminLayout><QuyenResultReport /></AdminLayout> },
   ];
 
   const renderElement = (route) => {

@@ -1,25 +1,26 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import CompetitionDKMultiView from "./CompetitionDKMultiView";
 
 /**
  * Render giá trị cell với logic đặc biệt cho từng bảng/cột
  */
-export const renderCellValue = (record, col, tableName, selectedDataRows, setSelectedDataRows) => {
+export const renderCellValue = (record, col, tableName, selectedDataRows, setSelectedDataRows, t) => {
   const value = record[col];
 
   // Cột 'data' của competition_dk -> Render table preview
   if (tableName === "competition_dk" && col === "data") {
-    if (!value) return <span className="text-gray-400 italic">Không có dữ liệu</span>;
+    if (!value) return <span className="text-gray-400 italic">{t("data_sync.no_data")}</span>;
 
     let parsedData;
     try {
       parsedData = typeof value === "string" ? JSON.parse(value) : value;
     } catch (e) {
-      return <span className="text-red-500">Dữ liệu không hợp lệ</span>;
+      return <span className="text-red-500">{t("data_sync.invalid_data")}</span>;
     }
 
     if (!Array.isArray(parsedData) || parsedData.length === 0) {
-      return <span className="text-gray-400 italic">Dữ liệu rỗng</span>;
+      return <span className="text-gray-400 italic">{t("data_sync.empty_data")}</span>;
     }
 
     const headers = parsedData[0] || [];
@@ -48,17 +49,17 @@ export const renderCellValue = (record, col, tableName, selectedDataRows, setSel
     return (
       <div className="max-w-full">
         <div className="mb-2 flex items-center gap-2">
-          <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">{rows.length}dòng dữ liệu</span>
+          <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">{t("data_sync.data_rows_count", { count: rows.length })}</span>
           {selectedRows.length > 0 && (
             <span className="text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded">
-              {selectedRows.length}đã chọn
+              {t("data_sync.selected_count", { count: selectedRows.length })}
             </span>
           )}
           <button
             onClick={() => toggleAllDataRows(selectedRows.length === 0)}
             className="ml-auto text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded"
           >
-            {selectedRows.length === rows.length && rows.length > 0 ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+            {selectedRows.length === rows.length && rows.length > 0 ? t("data_sync.deselect_all") : t("data_sync.select_all")}
           </button>
         </div>
         <div className="overflow-x-auto border border-gray-200 dark:border-gray-600 rounded">
@@ -174,65 +175,114 @@ const RecordsView = ({
   handleDeleteRecord,
   handleSendToManualServer
 }) => {
+  const { t } = useTranslation();
   const totalSelectedRows = Object.values(selectedDataRows || {}).reduce((sum, arr) => sum + (arr?.length || 0), 0);
   return (
-    <div className="mb-4">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          {/* <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">{selectedTableForRecords}</h3> */}
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Tổng: {tableRecords.length}
-            {selectedRecords[selectedTableForRecords] && <span className="ml-2 text-blue-600 dark:text-blue-400">- Đã chọn: {selectedRecords[selectedTableForRecords].length}</span>}
-          </p>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* ===== VIEW HEADER ===== */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-white dark:bg-gray-800 rounded-[2.5rem] border border-blue-50 dark:border-blue-900/30 ">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white ">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-[11px] font-black text-blue-400 uppercase tracking-[0.2em] mb-1">{t("data_sync.system_data")}</h2>
+            <div className="flex items-center gap-3">
+              <span className="text-xl font-black text-blue-950 dark:text-blue-100 tracking-tight">{selectedTableForRecords}</span>
+              <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/30 rounded-full border border-blue-100 dark:border-blue-800">
+                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{t("common.total")}: {tableRecords.length}</span>
+                {selectedRecords[selectedTableForRecords]?.length > 0 && (
+                  <>
+                    <div className="w-1 h-1 bg-blue-300 rounded-full"></div>
+                    <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{t("common.selected")}: {selectedRecords[selectedTableForRecords].length}</span>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-        <button onClick={handleBackToTableView} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded">← Quay lại</button>
+
+        <button
+          onClick={handleBackToTableView}
+          className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all active:scale-95 border-2 border-blue-50 dark:border-blue-900/30 "
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          {t("data_sync.back_to_list")}
+        </button>
       </div>
 
       {loadingRecords ? (
-        <div className="text-center py-8 text-gray-500 dark:text-gray-400">Đang tải dữ liệu...</div>
+        <div className="flex flex-col items-center justify-center py-20 bg-white/30 dark:bg-gray-800/20 rounded-[3rem] border border-blue-50 dark:border-blue-900/30">
+          <div className="w-12 h-12 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+          <p className="text-[11px] font-black text-blue-400 uppercase tracking-widest">{t("data_sync.extracting_data")}</p>
+        </div>
       ) : (
-        <>
-          {/* Column config UI */}
-          {/* {Object.keys(columnConfig).length > 0 && (
-            <div className="mb-3 p-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Tùy chỉnh cột:</span>
-                <div className="flex gap-2">
-                  <button onClick={() => { const all = {}; Object.keys(columnConfig).forEach((c) => { all[c] = { ...columnConfig[c], visible: true }; }); setColumnConfig(all); setTableColumns(Object.keys(columnConfig)); }} className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/40 hover:bg-blue-200 dark:hover:bg-blue-800/60 text-blue-700 dark:text-blue-300 rounded">Hiện tất cả</button>
-                  <button onClick={() => { const all = {}; const first = Object.keys(columnConfig)[0]; Object.keys(columnConfig).forEach((c) => { all[c] = { ...columnConfig[c], visible: c === first }; }); setColumnConfig(all); setTableColumns(first ? [first] : []); }}className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-400 rounded">Ẩn tất cả</button>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {Object.keys(columnConfig).map((col) => (
-                  <div key={col}className={`inline-flex items-center gap-1 px-2 py-1 rounded border ${columnConfig[col]?.visible ? "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-500" : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-50"}`}>
-                    <input type="checkbox" checked={columnConfig[col]?.visible ?? true} onChange={(e) => { const n = { ...columnConfig }; n[col] = { ...n[col], visible: e.target.checked }; setColumnConfig(n); if (e.target.checked) setTableColumns((p) => [...p, col]); else setTableColumns((p) => p.filter((c) => c !== col)); }} className="w-3 h-3 cursor-pointer" />
-                    <input type="text" value={columnConfig[col]?.displayName || col} onChange={(e) => { const n = { ...columnConfig }; n[col] = { ...n[col], displayName: e.target.value }; setColumnConfig(n); }} className="text-xs w-28 border-0 bg-transparent text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-400 rounded px-0.5" title={`Tên gốc: ${col}`} />
-                    // <span className="text-[9px] font-mono text-gray-400 dark:text-gray-600">({col})</span>
-                  </div>
-                ))}
-              </div>
+        <div className="space-y-6">
+          {/* ===== ACTION TOOLBAR - Premium Pill Design ===== */}
+          <div className="flex flex-wrap items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-[2rem] border border-blue-50 dark:border-blue-900/30 ">
+            <div className="flex items-center gap-2 p-1.5 bg-blue-50 dark:bg-gray-900 rounded-2xl border border-blue-100 dark:border-blue-900/30">
+              <button
+                onClick={() => handleSelectAllRecords(selectedTableForRecords)}
+                className="px-4 py-2 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:border-blue-300 border-2 border-transparent transition-all  active:scale-95"
+              >
+                {t("data_sync.select_all")}
+              </button>
+              <button
+                onClick={() => handleDeselectAllRecords(selectedTableForRecords)}
+                className="px-4 py-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
+              >
+                {t("data_sync.deselect_all")}
+              </button>
             </div>
-          )} */}
 
-          {/* Action buttons */}
-          <div className="mb-3 flex flex-wrap gap-2 items-center">
-            <button onClick={() => handleSelectAllRecords(selectedTableForRecords)} className="px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded">Chọn tất cả</button>
-            <button onClick={() => handleDeselectAllRecords(selectedTableForRecords)} className="px-3 py-1 text-sm bg-gray-500 hover:bg-gray-600 text-white rounded">Bỏ chọn tất cả</button>
-            <button onClick={handleDeleteSelectedRecords} disabled={!selectedRecords[selectedTableForRecords] || selectedRecords[selectedTableForRecords].length === 0} className="px-3 py-1 text-sm bg-red-500 hover:bg-red-600 disabled:bg-gray-400 text-white rounded font-semibold">Xóa đã chọn ({selectedRecords[selectedTableForRecords]?.length || 0})</button>
-            <button onClick={handleSendToManualServer} disabled={!selectedRecords[selectedTableForRecords] || selectedRecords[selectedTableForRecords].length === 0} className="px-3 py-1 text-sm bg-green-500 hover:green-red-600 disabled:bg-gray-400 text-white rounded font-semibold">{'Gửi Danh sách đến máy khác'}</button>
+            <div className="h-8 w-px bg-blue-100 dark:bg-blue-900/30 mx-2" />
+
+            <div className="flex items-center gap-3 flex-1">
+              <button
+                onClick={handleDeleteSelectedRecords}
+                disabled={!selectedRecords[selectedTableForRecords] || selectedRecords[selectedTableForRecords].length === 0}
+                className="px-6 py-3 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 disabled:opacity-30 disabled:grayscale rounded-2xl text-[10px] font-black uppercase tracking-widest border border-rose-100 dark:border-rose-900/30 hover:bg-rose-600 hover:text-white transition-all active:scale-95"
+              >
+                {t("data_sync.delete_selected_count", { count: selectedRecords[selectedTableForRecords]?.length || 0 })}
+              </button>
+
+              <button
+                onClick={handleSendToManualServer}
+                disabled={!selectedRecords[selectedTableForRecords] || selectedRecords[selectedTableForRecords].length === 0}
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest  transition-all active:scale-95 flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
+                {t("data_sync.send_to_target")}
+              </button>
+            </div>
+
             {selectedTableForRecords === "competition_dk" && (
-              <>
-                <div className="h-5 w-px bg-gray-300 dark:bg-gray-600" />
-                {/* <button onClick={toggleCompDKMultiView} className={`px-3 py-1 text-sm rounded font-semibold flex items-center gap-1.5 ${showCompDKMultiView ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-blue-100 dark:bg-blue-900/40 hover:bg-blue-200 dark:hover:bg-blue-800/60 text-blue-700 dark:text-blue-300"}`}>
-                   {showCompDKMultiView ? "Đang xem nhiều danh sách" : "Xem nhiều danh sách"}
-                  {showCompDKMultiView && selectedCompDKRecords.length > 0 && <span className="bg-white/30 dark:bg-white/20 text-xs px-1.5 py-0.5 rounded-full">{selectedCompDKRecords.length}</span>}
-                </button> */}
-                {/* <div className="h-5 w-px bg-gray-300 dark:bg-gray-600" /> */}
-                <button onClick={handleSyncSelectedDataRows} disabled={!isManualConnected || totalSelectedRows === 0 || syncing} className={`px-3 py-1 text-sm rounded font-semibold flex items-center gap-1.5 ${isManualConnected && totalSelectedRows > 0 ? "bg-green-500 hover:bg-green-600 text-white" : "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"}`} title={!isManualConnected ? "Cần kết nối đến máy khác trước" : totalSelectedRows === 0 ? "Chọn ít nhất 1 dòng dữ liệu" : `Đồng bộ ${totalSelectedRows}dòng đến máy đích`}>
-                  {syncing ? <><span className="animate-spin">⏳</span>Đang gửi...</> : <> Đồng bộ dữ liệu đã chọn {totalSelectedRows > 0 && <span className="bg-white/30 dark:bg-white/20 text-xs px-1.5 py-0.5 rounded-full">{totalSelectedRows}</span>}</>}
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-px bg-blue-100 dark:bg-blue-900/30" />
+                <button
+                  onClick={handleSyncSelectedDataRows}
+                  disabled={!isManualConnected || totalSelectedRows === 0 || syncing}
+                  className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 active:scale-95 ${isManualConnected && totalSelectedRows > 0 ? "bg-emerald-600 text-white  hover:scale-105" : "bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border border-gray-200 dark:border-gray-800"}`}
+                >
+                  {syncing ? (
+                    <><div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> {t("data_sync.sending")}</>
+                  ) : (
+                    <>
+                      {t("data_sync.ready_to_sync")}
+                      {totalSelectedRows > 0 && <span className="bg-white/20 px-2 py-0.5 rounded-full text-[9px]">{totalSelectedRows}</span>}
+                    </>
+                  )}
                 </button>
-                {totalSelectedRows > 0 && <button onClick={() => setSelectedDataRows({})} className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-400 rounded">✕ Bỏ chọn</button>}
-              </>
+                {totalSelectedRows > 0 && (
+                  <button onClick={() => setSelectedDataRows({})} className="p-3 text-gray-400 hover:text-rose-500 transition-colors" title={t("data_sync.deselect_all_rows")}>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                )}
+              </div>
             )}
           </div>
 
@@ -251,7 +301,7 @@ const RecordsView = ({
                         {/* {columnConfig[col]? .displayName && columnConfig[col].displayName !== col && <div className="text-[10px] font-normal text-gray-400 dark:text-gray-500 font-mono mt-0.5">{col}</div>} */}
                       </th>
                     ))}
-                    <th className="p-2 text-center text-gray-700 dark:text-gray-300 font-semibold w-40 sticky right-0 bg-gray-100 dark:bg-gray-700">Thao tác</th>
+                    <th className="p-2 text-center text-gray-700 dark:text-gray-300 font-semibold w-40 sticky right-0 bg-gray-100 dark:bg-gray-700">{t("data_sync.actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -268,16 +318,16 @@ const RecordsView = ({
                             const isInMultiView = selectedCompDKRecords.includes(record.id);
                             return (
                               <button onClick={() => { if (!isInMultiView) setSelectedCompDKRecords((prev) => [...prev, record.id]); else toggleCompDKRecord(record.id); }} className={`flex w-36 items-center gap-1.5 px-2 py-1 rounded text-xs font-medium border transition-colors ${isInMultiView ? "bg-blue-500 text-white border-blue-500" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:border-blue-400"}`}>
-                                {isInMultiView ? "Đang xem" : "Xem"} <span className={`px-1.5 py-0.5 rounded text-[10px] ${isInMultiView ? "bg-white/25" : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}>{rowCount}  dòng</span>
+                                {isInMultiView ? t("data_sync.viewing") : t("data_sync.view")} <span className={`px-1.5 py-0.5 rounded text-[10px] ${isInMultiView ? "bg-white/25" : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}>{t("data_sync.rows_count", { count: rowCount })}</span>
                               </button>
                             );
-                          })() : renderCellValue(record, col, selectedTableForRecords, selectedDataRows, setSelectedDataRows)}
+                          })() : renderCellValue(record, col, selectedTableForRecords, selectedDataRows, setSelectedDataRows, t)}
                         </td>
                       ))}
                       <td className="p-2 text-center sticky right-0 bg-white dark:bg-gray-800">
                         <div className="flex gap-1 justify-center">
-                          <button onClick={() => handleShowRecordDetail(record)} className="px-2 py-1 w-20 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded">Chi tiết</button>
-                          <button onClick={() => handleDeleteRecord(selectedTableForRecords, record.id)} className="px-2 py-1 w-20 text-xs bg-red-500 hover:bg-red-600 text-white rounded">Xóa</button>
+                          <button onClick={() => handleShowRecordDetail(record)} className="px-2 py-1 w-20 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded">{t("data_sync.detail")}</button>
+                          <button onClick={() => handleDeleteRecord(selectedTableForRecords, record.id)} className="px-2 py-1 w-20 text-xs bg-red-500 hover:bg-red-600 text-white rounded">{t("data_sync.delete")}</button>
                           {/* <button onClick={() => {console.log('-----------> ',selectedTableForRecords, record.id)}} className="px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded">Xóa</button> */}
                         </div>
                       </td>
@@ -307,7 +357,7 @@ const RecordsView = ({
               toggleCompDKMultiView={toggleCompDKMultiView}
             />
           )}
-        </>
+        </div>
       )}
     </div>
   );

@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useHotkeys } from "react-hotkeys-hook";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import ConfirmModal from "../../components/ConfirmModal";
 import useConfirmModal from "../../hooks/useConfirmModal";
 import ConnectionManagerModal from "../BangDiemQuyen/components/ConnectionManagerModal";
-import RefereeStatusBar from "../BangDiemQuyen/components/RefereeStatusBar";
 
 import {
   useSocketEvent,
@@ -197,151 +196,107 @@ const initActionAudios = () => {
   }
 };
 
-// Hàm phát âm thanh chuông
-const playBell = () => {
-  if (!globalSoundEnabled) return; // Kiểm tra âm thanh có bật không
-
-  try {
-    // Dừng tất cả audio đang phát
-    stopAllAudios();
-
-    // Khởi tạo audio nếu chưa có
-    if (!bellAudio) {
-      initBellAudio();
-    }
-
-    // Reset về đầu và phát
-    bellAudio.currentTime = 0;
-    bellAudio.play().catch((error) => {
-      console.warn(
-        "Không thể phát âm thanh chuông (có thể do chính sách autoplay của trình duyệt):",
-        error.message,
-      );
-    });
-  } catch (error) {
-    console.error("Lỗi khi phát âm thanh chuông:", error);
-  }
-};
-
-// Hàm phát âm thanh chiến thắng
-const playVictory = () => {
-  if (!globalSoundEnabled) return; // Kiểm tra âm thanh có bật không
-
-  try {
-    // Dừng tất cả audio đang phát
-    stopAllAudios();
-
-    // Khởi tạo audio nếu chưa có
-    if (!victoryAudio) {
-      initVictoryAudio();
-    }
-
-    // Reset về đầu và phát
-    victoryAudio.currentTime = 0;
-    victoryAudio.play().catch((error) => {
-      console.warn(
-        "Không thể phát âm thanh chiến thắng (có thể do chính sách autoplay của trình duyệt):",
-        error.message,
-      );
-    });
-  } catch (error) {
-    console.error("Lỗi khi phát âm thanh chiến thắng:", error);
-  }
-};
-
-// Hàm phát âm thanh điểm số
-const playScoreSound = (team, point) => {
-  if (!globalSoundEnabled) return; // Kiểm tra âm thanh có bật không
-
-  try {
-    // Dừng tất cả audio đang phát
-    stopAllAudios();
-
-    // Khởi tạo audio nếu chưa có
-    if (!scoreAudios.red_1) {
-      initScoreAudios();
-    }
-
-    // Chọn audio phù hợp
-    let audio = null;
-    if (team === "red" && point === 1) {
-      audio = scoreAudios.red_1;
-    } else if (team === "red" && point === 2) {
-      audio = scoreAudios.red_2;
-    } else if (team === "red" && point === 3) {
-      audio = scoreAudios.red_3;
-    } else if (team === "blue" && point === 1) {
-      audio = scoreAudios.blue_1;
-    } else if (team === "blue" && point === 2) {
-      audio = scoreAudios.blue_2;
-    } else if (team === "blue" && point === 3) {
-      audio = scoreAudios.blue_3;
-    }
-
-    if (audio) {
-      // Reset về đầu và phát
-      audio.currentTime = 0;
-      audio.play().catch((error) => {
-        console.warn(
-          `Không thể phát âm thanh điểm ${team} +${point}:`,
-          error.message,
-        );
-      });
-    }
-  } catch (error) {
-    console.error("Lỗi khi phát âm thanh điểm số:", error);
-  }
-};
-
-// Hàm phát âm thanh hành động (Ngã, Biên, Nhắc nhở, Cảnh cáo)
-const playActionSound = (team, action) => {
-  if (!globalSoundEnabled) return; // Kiểm tra âm thanh có bật không
-
-  try {
-    // Dừng tất cả audio đang phát
-    stopAllAudios();
-
-    // Khởi tạo audio nếu chưa có
-    if (!actionAudios.red_down) {
-      initActionAudios();
-    }
-
-    // Chọn audio phù hợp
-    let audio = null;
-    if (team === "red" && action === "down") {
-      audio = actionAudios.red_down;
-    } else if (team === "red" && action === "outline") {
-      audio = actionAudios.red_outline;
-    } else if (team === "red" && action === "remind") {
-      audio = actionAudios.red_remind;
-    } else if (team === "red" && action === "warn") {
-      audio = actionAudios.red_warn;
-    } else if (team === "blue" && action === "down") {
-      audio = actionAudios.blue_down;
-    } else if (team === "blue" && action === "outline") {
-      audio = actionAudios.blue_outline;
-    } else if (team === "blue" && action === "remind") {
-      audio = actionAudios.blue_remind;
-    } else if (team === "blue" && action === "warn") {
-      audio = actionAudios.blue_warn;
-    }
-
-    if (audio) {
-      // Reset về đầu và phát
-      audio.currentTime = 0;
-      audio.play().catch((error) => {
-        console.warn(
-          `Không thể phát âm thanh ${action} ${team}:`,
-          error.message,
-        );
-      });
-    }
-  } catch (error) {
-    console.error("Lỗi khi phát âm thanh hành động:", error);
-  }
-};
-
 const BangDiemDoiKhang = () => {
+  const { t } = useTranslation();
+
+  // Các hàm phát âm thanh dời vào trong component để dùng t()
+  const playBell = useCallback(() => {
+    if (!globalSoundEnabled) return;
+
+    try {
+      stopAllAudios();
+      if (!bellAudio) initBellAudio();
+
+      bellAudio.currentTime = 0;
+      bellAudio.play().catch((error) => {
+        console.warn(
+          t("scoreboard.doikhang.audio_play_error", { name: "bell" }),
+          error.message,
+        );
+      });
+    } catch (error) {
+      console.error(t("scoreboard.doikhang.audio_error", { name: "bell" }), error);
+    }
+  }, [t]);
+
+  const playVictory = useCallback(() => {
+    if (!globalSoundEnabled) return;
+
+    try {
+      stopAllAudios();
+      if (!victoryAudio) initVictoryAudio();
+
+      victoryAudio.currentTime = 0;
+      victoryAudio.play().catch((error) => {
+        console.warn(
+          t("scoreboard.doikhang.audio_play_error", { name: "victory" }),
+          error.message,
+        );
+      });
+    } catch (error) {
+      console.error(t("scoreboard.doikhang.audio_error", { name: "victory" }), error);
+    }
+  }, [t]);
+
+  const playScoreSound = useCallback((team, point) => {
+    if (!globalSoundEnabled) return;
+
+    try {
+      stopAllAudios();
+      if (!scoreAudios.red_1) initScoreAudios();
+
+      let audio = null;
+      if (team === "red" && point === 1) audio = scoreAudios.red_1;
+      else if (team === "red" && point === 2) audio = scoreAudios.red_2;
+      else if (team === "red" && point === 3) audio = scoreAudios.red_3;
+      else if (team === "blue" && point === 1) audio = scoreAudios.blue_1;
+      else if (team === "blue" && point === 2) audio = scoreAudios.blue_2;
+      else if (team === "blue" && point === 3) audio = scoreAudios.blue_3;
+
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch((error) => {
+          console.warn(
+            t("scoreboard.doikhang.audio_play_error", { name: `score_${team}_${point}` }),
+            error.message,
+          );
+        });
+      }
+    } catch (error) {
+      console.error(t("scoreboard.doikhang.audio_error", { name: "score" }), error);
+    }
+  }, [t]);
+
+  const playActionSound = useCallback((team, action) => {
+    if (!globalSoundEnabled) return;
+
+    try {
+      stopAllAudios();
+      if (!actionAudios.red_down) initActionAudios();
+
+      let audio = null;
+      if (team === "red" && action === "down") audio = actionAudios.red_down;
+      else if (team === "red" && action === "outline") audio = actionAudios.red_outline;
+      else if (team === "red" && action === "remind") audio = actionAudios.red_remind;
+      else if (team === "red" && action === "warn") audio = actionAudios.red_warn;
+      else if (team === "blue" && action === "down") audio = actionAudios.blue_down;
+      else if (team === "blue" && action === "outline") audio = actionAudios.blue_outline;
+      else if (team === "blue" && action === "remind") audio = actionAudios.blue_remind;
+      else if (team === "blue" && action === "warn") audio = actionAudios.blue_warn;
+
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch((error) => {
+          console.warn(
+            t("scoreboard.doikhang.audio_play_error", { name: `action_${team}_${action}` }),
+            error.message,
+          );
+        });
+      }
+    } catch (error) {
+      console.error(t("scoreboard.doikhang.audio_error", { name: "action" }), error);
+    }
+  }, [t]);
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -822,7 +777,7 @@ const BangDiemDoiKhang = () => {
       },
       onError: (error) => {
         console.error(" Socket initialization failed:", error);
-        showError("Không thể kết nối socket. Vui lòng thử lại.");
+        showError(t("scoreboard.doikhang.socket_connection_error"));
       },
       forceReConnection: forceReConnection,
       disconnectSocket: disconnectSocket,
@@ -914,7 +869,7 @@ const BangDiemDoiKhang = () => {
     try {
       const savedRoom = localStorage.getItem("admin_room");
       if (!savedRoom) {
-        showError("Không tìm thấy thông tin phòng. Vui lòng kết nối lại.");
+        showError(t("scoreboard.doikhang.room_not_found"));
         return null;
       }
       let roomData;
@@ -923,7 +878,7 @@ const BangDiemDoiKhang = () => {
       } catch (e) {
         console.error("Failed to parse admin_room from localStorage in QR method:", e);
         localStorage.removeItem("admin_room");
-        showError("Dữ liệu kết nối bị lỗi. Vui lòng thử lại.");
+        showError(t("scoreboard.doikhang.connection_data_error"));
         return null;
       }
 
@@ -943,14 +898,18 @@ const BangDiemDoiKhang = () => {
       }
     } catch (error) {
       console.error("Error generating QR code:", error);
-      showError("Không thể tạo mã QR. Vui lòng thử lại.");
+      showError(t("scoreboard.doikhang.qr_generation_error"));
       return null;
     }
   };
 
   const handleReConnectionSocket = async () => {
-    const confirmReconnect = window.confirm(
-      "Bạn có chắc chắn muốn tạo lại kết nối socket?\n\nSocket hiện tại sẽ bị ngắt và tạo lại kết nối mới.",
+    const confirmReconnect = await showConfirm(
+      t("scoreboard.doikhang.confirm_reconnect_socket"),
+      {
+        confirmText: t('common.confirm'),
+        cancelText: t('common.cancel'),
+      }
     );
     if (confirmReconnect) {
       await initSocket(true);
@@ -1046,13 +1005,13 @@ const BangDiemDoiKhang = () => {
           "config",
           null,
           0,
-          "Cập nhật cấu hình hiển thị buttons",
+          t("scoreboard.doikhang.update_config"),
         );
         return true;
       }
     } catch (error) {
       console.error("Lỗi khi lưu button permissions:", error);
-      await showError("Lỗi khi lưu cấu hình. Vui lòng thử lại.");
+      await showError(t("scoreboard.doikhang.save_config_error"));
       return false;
     }
   };
@@ -1138,7 +1097,7 @@ const BangDiemDoiKhang = () => {
     // TODO: Gửi thông tin về server
     emitSocketEvent("DK_INFO", {
       match_id: matchData.match_id,
-      match_no: "Trận " + matchData.match_no,
+      match_no: t("scoreboard.doikhang.match_no") + " " + matchData.match_no,
       ten_giai_dau: matchData.ten_giai_dau,
       ten_mon_thi: matchData.ten_mon_thi,
       match_name: matchData.match_name,
@@ -1551,7 +1510,7 @@ const BangDiemDoiKhang = () => {
       const competition_dk_id =
         matchInfo.competition_dk_id || extractCompetitionIdFromUrl(returnUrl);
       if (!competition_dk_id) {
-        await showError("Không tìm thấy thông tin giải đấu.");
+        await showError(t("scoreboard.doikhang.competition_not_found"));
         return;
       }
 
@@ -1561,14 +1520,14 @@ const BangDiemDoiKhang = () => {
       );
       const competitionDkData = sheetResponse?.data?.data;
       if (!sheetResponse?.data?.success || !competitionDkData) {
-        await showError("Không thể tải dữ liệu trận đấu!");
+        await showError(t("scoreboard.doikhang.load_match_data_error"));
         return;
       }
 
       // Tìm row tương ứng với match_no
       const targetRow = competitionDkData?.data[match.match_no];
       if (!targetRow) {
-        await showError("Không tìm thấy dữ liệu trận đấu!");
+        await showError(t("scoreboard.doikhang.match_data_not_found"));
         return;
       }
 
@@ -1636,7 +1595,7 @@ const BangDiemDoiKhang = () => {
       window.location.reload();
     } catch (error) {
       console.error("Lỗi khi chuyển trận:", error);
-      await showError("Có lỗi xảy ra khi chuyển trận đấu!");
+      await showError(t("scoreboard.doikhang.switch_match_error"));
     }
   };
 
@@ -1670,7 +1629,7 @@ const BangDiemDoiKhang = () => {
     for (let i = 0; i < heDiem; i++) {
       const row = [];
       for (let j = 0; j < soGiamDinh; j++) {
-        row.push(`GĐ${j + 1}`);
+        row.push(`${t('scoreboard.doikhang.referrer_name')}${j + 1}`);
       }
       gdData.push(row);
     }
@@ -1815,7 +1774,7 @@ const BangDiemDoiKhang = () => {
       } else {
         // Đã có người thắng -> Kết thúc trận luôn
         console.log(
-          `Kết thúc hiệp ${currentRound}: ${currentRedScore > currentBlueScore ? "ĐỎ" : "XANH"} thắng ${currentRedScore}-${currentBlueScore} -> Kết thúc trận`,
+          `${t("scoreboard.doikhang.end_match")} ${currentRound}: ${currentRedScore > currentBlueScore ? t("scoreboard.doikhang.red_team") : t("scoreboard.doikhang.blue_team")} ${t("scoreboard.doikhang.winner")} ${currentRedScore}-${currentBlueScore}`,
         );
         setIsRunning(false);
         isHandlingRound.current = false;
@@ -1856,7 +1815,7 @@ const BangDiemDoiKhang = () => {
       // Không cho phép start/pause khi đang trong thời gian y tế
       if (isMedicalTime) {
         await showError(
-          "Vui lòng kết thúc thời gian y tế trước khi tiếp tục trận đấu",
+          t("scoreboard.doikhang.medical_error"),
         );
         return;
       }
@@ -1864,9 +1823,11 @@ const BangDiemDoiKhang = () => {
       // kiếm tra có vận động viên thắng không nếu có thì hiển thị thông báo
       if (announcedWinner) {
         const confirmed = await showConfirm(
-          "Trận đấu đã có kết quả, bạn muốn tiếp tục trận đấu?",
+          t("scoreboard.doikhang.continue_match_with_result"),
           {
-            title: "Thông báo",
+            title: t("scoreboard.doikhang.notification"),
+            confirmText: t('common.confirm'),
+            cancelText: t('common.cancel'),
           },
         );
         if (confirmed === false) return;
@@ -1997,12 +1958,12 @@ const BangDiemDoiKhang = () => {
     const totalRounds = totalMainRounds + extraRounds;
 
     if (currentRound === totalRounds && timeLeft === 0) {
-      return "Kết thúc trận đấu";
+      return t("scoreboard.doikhang.match_finished");
     }
     if (isBreakTime) {
-      return "Thời gian nghỉ";
+      return t("scoreboard.common.rest_period");
     }
-    return isRunning ? "Đang chạy" : "Tạm dừng";
+    return isRunning ? t("scoreboard.doikhang.match_in_progress") : t("scoreboard.doikhang.match_paused");
   };
 
   // Hàm tracking action
@@ -2135,7 +2096,7 @@ const BangDiemDoiKhang = () => {
 
   // Hàm xử lý điểm số
   const handleScoreChange = (team, value) => {
-    const teamName = team === "red" ? "Đỏ" : "Xanh";
+    const teamName = team === "red" ? t("scoreboard.doikhang.red_team") : t("scoreboard.doikhang.blue_team");
     const action = value > 0 ? `+${value}` : `${value}`;
 
     if (team === "red") {
@@ -2160,7 +2121,7 @@ const BangDiemDoiKhang = () => {
 
   // Hàm xử lý nhắc nhở
   const handleRemind = (team, value) => {
-    const teamName = team === "red" ? "Đỏ" : "Xanh";
+    const teamName = team === "red" ? t("scoreboard.doikhang.red_team") : t("scoreboard.doikhang.blue_team");
     const action = value > 0 ? "+" : "-";
 
     // Phát âm thanh Nhắc nhở (chỉ khi +1)
@@ -2184,7 +2145,7 @@ const BangDiemDoiKhang = () => {
 
   // Hàm xử lý cảnh cáo
   const handleWarn = (team, value) => {
-    const teamName = team === "red" ? "Đỏ" : "Xanh";
+    const teamName = team === "red" ? t("scoreboard.doikhang.red_team") : t("scoreboard.doikhang.blue_team");
     const action = value > 0 ? "+" : "-";
 
     // Phát âm thanh Cảnh cáo (chỉ khi +1)
@@ -2208,7 +2169,7 @@ const BangDiemDoiKhang = () => {
 
   // Hàm xử lý công nhận đòn chân
   const handleKick = (team, value) => {
-    const teamName = team === "red" ? "Đỏ" : "Xanh";
+    const teamName = team === "red" ? t("scoreboard.doikhang.red_team") : t("scoreboard.doikhang.blue_team");
     const action = value > 0 ? "+" : "-";
 
     if (team === "red") {
@@ -2227,9 +2188,9 @@ const BangDiemDoiKhang = () => {
 
   // Hàm xử lý Biên (áp dụng theo cấu hình)
   const handleBien = (team) => {
-    const teamName = team === "red" ? "Đỏ" : "Xanh";
+    const teamName = team === "red" ? t("scoreboard.doikhang.red_team") : t("scoreboard.doikhang.blue_team");
     const opponentTeam = team === "red" ? "blue" : "red";
-    const opponentTeamName = opponentTeam === "red" ? "Đỏ" : "Xanh";
+    const opponentTeamName = opponentTeam === "red" ? t("scoreboard.doikhang.red_team") : t("scoreboard.doikhang.blue_team");
 
     // Phát âm thanh Biên
     playActionSound(team, "outline");
@@ -2291,9 +2252,9 @@ const BangDiemDoiKhang = () => {
 
   // Hàm xử lý Ngã (team đối thủ được cộng điểm)
   const handleNga = (fallenTeam) => {
-    const fallenTeamName = fallenTeam === "red" ? "Đỏ" : "Xanh";
+    const fallenTeamName = fallenTeam === "red" ? t("scoreboard.doikhang.red_team") : t("scoreboard.doikhang.blue_team");
     const scoringTeam = fallenTeam === "red" ? "blue" : "red";
-    const scoringTeamName = scoringTeam === "red" ? "Đỏ" : "Xanh";
+    const scoringTeamName = scoringTeam === "red" ? t("scoreboard.doikhang.red_team") : t("scoreboard.doikhang.blue_team");
 
     // Phát âm thanh Ngã
     playActionSound(fallenTeam, "down");
@@ -2341,7 +2302,7 @@ const BangDiemDoiKhang = () => {
       return;
     }
 
-    const teamName = team === "red" ? "Đỏ" : "Xanh";
+    const teamName = team === "red" ? t("scoreboard.doikhang.red_team") : t("scoreboard.doikhang.blue_team");
     setPauseMatch(false);
     // Lưu trạng thái timer chính và tạm dừng
     wasRunningBeforeMedical.current = isRunning;
@@ -2364,7 +2325,7 @@ const BangDiemDoiKhang = () => {
       setMedicalBlue(medicalBlue + 1);
     }
 
-    addActionToHistory("medical", team, 0, `[BTN] ${teamName} Y tế`);
+    addActionToHistory("medical", team, 0, `[BTN] ${teamName} ${t("scoreboard.doikhang.medical")}`);
     console.log(`🏥 Medical for ${team} - ${matchInfo.thoi_gian_y_te}s`);
 
     // Bắt đầu đếm ngược thời gian y tế (dùng ref riêng)
@@ -2471,7 +2432,7 @@ const BangDiemDoiKhang = () => {
       );
 
       if (response.data.success) {
-        await showSuccess("Đã lưu kết quả trận đấu thành công!");
+        await showSuccess(t("scoreboard.doikhang.save_result_success"));
 
         // Tracking action
         addActionToHistory(
@@ -2484,17 +2445,17 @@ const BangDiemDoiKhang = () => {
         // Chuyển về màn hình quản lý
         navigate(returnUrl, {
           state: {
-            message: "Trận đấu đã kết thúc",
+            message: t("scoreboard.doikhang.match_ended"),
             matchResult: matchResult,
           },
         });
       } else {
-        throw new Error(response.data.message || "Lưu kết quả thất bại");
+        throw new Error(response.data.message || t("scoreboard.doikhang.save_result_failed"));
       }
     } catch (error) {
       console.error("Error finishing match:", error);
       await showError(
-        `Lỗi khi lưu kết quả: ${error.message}\n\nVui lòng thử lại hoặc liên hệ quản trị viên.`,
+        `${t("scoreboard.doikhang.save_result_error")}: ${error.message}\n\n${t("scoreboard.doikhang.error_detail")}`,
       );
     }
   };
@@ -2587,8 +2548,8 @@ const BangDiemDoiKhang = () => {
     setShowWinnerModal(false);
     const winnerText =
       winner === "red"
-        ? matchInfo.red.name || "ĐỎ"
-        : matchInfo.blue.name || "XANH";
+        ? matchInfo.red.name || t("scoreboard.doikhang.red_team").toUpperCase()
+        : matchInfo.blue.name || t("scoreboard.doikhang.blue_team").toUpperCase();
 
     // Kiểm tra xem có đang kết thúc trận đấu không
     if (isFinishingMatch) {
@@ -2628,8 +2589,8 @@ const BangDiemDoiKhang = () => {
     const teamName = team === "red" ? matchInfo.red.unit : matchInfo.blue.unit;
     const athleteName =
       team === "red"
-        ? matchInfo.red.name || "ĐỎ"
-        : matchInfo.blue.name || "XANH";
+        ? matchInfo.red.name || t("scoreboard.doikhang.red_team").toUpperCase()
+        : matchInfo.blue.name || t("scoreboard.doikhang.blue_team").toUpperCase();
 
     // Hiển thị modal công bố vận động viên thắng
     const winnerData = {
@@ -2804,8 +2765,8 @@ const BangDiemDoiKhang = () => {
 
       if (["IN"].includes(currentStatus)) {
         const confirmed = await showWarning(
-          "Trận đấu đang diễn ra. Bạn có chắc chắn muốn quay lại trận trước không?\n\n Dữ liệu trận hiện tại sẽ không được lưu!",
-          { title: "Cảnh báo", confirmText: "Đồng ý" },
+          t("scoreboard.doikhang.match_in_progress_warning") + "\n\n" + t("scoreboard.doikhang.data_will_not_be_saved"),
+          { title: t("scoreboard.doikhang.warning_title"), confirmText: t("common.yes") },
         );
         if (!confirmed) {
           return; // User hủy
@@ -2829,7 +2790,7 @@ const BangDiemDoiKhang = () => {
       );
       const competitionDkData = sheetResponse?.data?.data;
       if (!sheetResponse?.data?.success || !sheetResponse?.data?.data) {
-        await showError("Không thể tải dữ liệu trận trước!");
+        await showError(t("scoreboard.doikhang.load_previous_match_error"));
         navigate(returnUrl);
         return;
       }
@@ -2837,13 +2798,13 @@ const BangDiemDoiKhang = () => {
       // 4. Tìm trận trước
       const currentMatch = matchInfo.match_no;
       if (currentMatch <= 1) {
-        await showAlert("Đây là trận đầu tiên!");
+        await showAlert(t("scoreboard.doikhang.first_match"));
         return;
       }
 
       const previousRow = competitionDkData?.data[currentMatch - 1]; // -1 vì quay lại trận trước
       if (!previousRow) {
-        await showError("Không tìm thấy trận trước!");
+        await showError(t("scoreboard.doikhang.previous_match_not_found"));
         return;
       }
 
@@ -2962,8 +2923,8 @@ const BangDiemDoiKhang = () => {
 
         // Hỏi xác nhận
         const confirmed = await showWarning(
-          "Bạn có chắc chắn muốn kết thúc trận này và chuyển sang trận tiếp theo không?",
-          { title: "Xác nhận kết thúc trận", confirmText: "Kết thúc" },
+          t("scoreboard.doikhang.confirm_finish_match"),
+          { title: t("scoreboard.doikhang.confirm_end_match"), confirmText: t("scoreboard.doikhang.end_match") },
         );
         if (!confirmed) {
           return; // User hủy
@@ -3057,7 +3018,7 @@ const BangDiemDoiKhang = () => {
       );
       const competitionDkData = sheetResponse?.data?.data;
       if (!sheetResponse?.data?.success || !sheetResponse?.data?.data) {
-        await showError("Không thể tải dữ liệu trận tiếp theo!");
+        await showError(t("scoreboard.doikhang.load_next_match_error"));
         navigate(returnUrl);
         return;
       }
@@ -3065,7 +3026,7 @@ const BangDiemDoiKhang = () => {
       const currentMatch = matchInfo.match_no;
       const nextRow = competitionDkData?.data[currentMatch + 1]; // +1 vì row 0 là header
       if (!nextRow) {
-        await showAlert("Đã hết trận đấu! Quay về màn hình quản lý.");
+        await showAlert(t("scoreboard.doikhang.last_match"));
         navigate(returnUrl);
         return;
       }
@@ -3194,9 +3155,11 @@ const BangDiemDoiKhang = () => {
   // ---------- Thao tác nút "Thoát"    ----------- //
   const btnGoBack = async () => {
     const confirmed = await showConfirm(
-      "Bạn có chắc muốn thoát khỏi trận đấu?",
+      t("scoreboard.doikhang.confirm_exit"),
       {
-        title: "Xác nhận thoát",
+        title: t("scoreboard.doikhang.confirm_title"),
+        confirmText: t('common.confirm'),
+        cancelText: t('common.cancel'),
       },
     );
     if (confirmed) {
@@ -3527,7 +3490,7 @@ const BangDiemDoiKhang = () => {
             }}
           >
             {/* Glow effect background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded pointer-events-none"></div>
+            <div className="absolute inset-0 bg-white/10 rounded pointer-events-none"></div>
 
             <div
               className="text-[200px] font-black leading-none w-full text-center relative z-10"
@@ -3571,7 +3534,7 @@ const BangDiemDoiKhang = () => {
                     fontWeight: "900",
                   }}
                 >
-                  {matchInfo.red?.name || "VĐV ĐỎ"}
+                  {matchInfo.red?.name || t("scoreboard.doikhang.red_default")}
                 </p>
                 <p
                   className="text-lg font-semibold opacity-95"
@@ -3594,7 +3557,7 @@ const BangDiemDoiKhang = () => {
           style={{ minWidth: "300px" }}
         >
           <p className="font-bold text-2xl">
-            TRẬN SỐ {matchInfo.match_no || "---"}
+            {t('scoreboard.doikhang.match_no').toUpperCase()} {matchInfo.match_no || "---"}
           </p>
           <p className="text-xl font-bold">{matchInfo.match_type || "---"}</p>
           <p className="text-xl font-bold">{matchInfo.match_weight || "---"}</p>
@@ -3602,8 +3565,8 @@ const BangDiemDoiKhang = () => {
           {/* Timer display */}
           <div className="bg-yellow-300 text-black font-bold text-2xl px-6 py-3 rounded shadow-lg min-w-[250px] text-center">
             {currentRound > (matchInfo.so_hiep || 3)
-              ? `HIỆP PHỤ ${currentRound - (matchInfo.so_hiep || 3)}`
-              : `HIỆP ${currentRound}`}
+              ? `${t("scoreboard.doikhang.extra_round_label")} ${currentRound - (matchInfo.so_hiep || 3)}`
+              : `${t("scoreboard.doikhang.round")} ${currentRound}`}
           </div>
           <div
             className={`font-bold px-10 py-4 rounded shadow-lg min-w-[300px] text-center ${!isRunning && !isBreakTime
@@ -3636,7 +3599,7 @@ const BangDiemDoiKhang = () => {
                   {remindRed}
                 </div>
                 <div className="text-yellow-400 font-bold text-base uppercase flex-1 text-center">
-                  Nhắc nhở
+                  {t("scoreboard.doikhang.button_remind")}
                 </div>
                 <div className="bg-blue-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
                   {remindBlue}
@@ -3651,7 +3614,7 @@ const BangDiemDoiKhang = () => {
                   {warnRed}
                 </div>
                 <div className="text-orange-400 font-bold text-base uppercase flex-1 text-center">
-                  Cảnh cáo
+                  {t("scoreboard.doikhang.warning")}
                 </div>
                 <div className="bg-blue-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
                   {warnBlue}
@@ -3666,7 +3629,7 @@ const BangDiemDoiKhang = () => {
                   {kickRed}
                 </div>
                 <div className="text-cyan-400 font-bold text-base uppercase flex-1 text-center">
-                  Đòn chân
+                  {t("scoreboard.doikhang.kick")}
                 </div>
                 <div className="bg-blue-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
                   {kickBlue}
@@ -3681,7 +3644,7 @@ const BangDiemDoiKhang = () => {
                   {medicalRed}
                 </div>
                 <div className="text-red-400 font-bold text-base uppercase flex-1 text-center">
-                  Y tế
+                  {t("scoreboard.doikhang.medical")}
                 </div>
                 <div className="bg-blue-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
                   {medicalBlue}
@@ -3693,7 +3656,7 @@ const BangDiemDoiKhang = () => {
           {/* Banner nghỉ giải lao */}
           {!pauseMatch && isBreakTime && (
             <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 pointer-events-none">
-              <div className="relative bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 text-white px-16 py-10 rounded-3xl shadow-2xl border-4 border-yellow-300">
+              <div className="relative bg-yellow-500 text-white px-16 py-10 rounded-3xl border-4 border-yellow-300">
                 {/* Decorative corners */}
                 {/* <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-2xl"></div>
                 <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white rounded-tr-2xl"></div>
@@ -3704,7 +3667,7 @@ const BangDiemDoiKhang = () => {
                   <div className="mb-4">
                     <div className="inline-block bg-white/20 backdrop-blur-sm px-8 py-2 rounded-full">
                       <p className="text-3xl font-bold tracking-wider">
-                        NGHỈ GIẢI LAO
+                        {t("scoreboard.doikhang.break_time_banner")}
                       </p>
                     </div>
                   </div>
@@ -3724,7 +3687,7 @@ const BangDiemDoiKhang = () => {
           {/* Banner Y TẾ */}
           {!pauseMatch && isMedicalTime && (
             <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 pointer-events-none">
-              <div className="relative bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 text-white px-16 py-10 rounded-3xl shadow-2xl border-4 border-yellow-300">
+              <div className="relative bg-yellow-500 text-white px-16 py-10 rounded-3xl border-4 border-yellow-300">
                 {/* Decorative corners */}
                 {/* <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-2xl"></div>
                 <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white rounded-tr-2xl"></div>
@@ -3736,15 +3699,15 @@ const BangDiemDoiKhang = () => {
                     <div className="inline-block bg-white/20 backdrop-blur-sm px-6 py-1 rounded-full">
                       <p className="text-2xl font-bold">
                         {currentRound > (matchInfo.so_hiep || 3)
-                          ? `HIỆP PHỤ ${currentRound - (matchInfo.so_hiep || 3)}`
-                          : `HIỆP ${currentRound}`}
+                          ? `${t("scoreboard.doikhang.extra_round_label")} ${currentRound - (matchInfo.so_hiep || 3)}`
+                          : `${t("scoreboard.doikhang.round")} ${currentRound}`}
                       </p>
                     </div>
                   </div>
                   <div className="mb-4">
                     <div className="inline-block bg-white/20 backdrop-blur-sm px-8 py-2 rounded-full">
                       <p className="text-3xl font-bold tracking-wider">
-                        THỜI GIAN Y TẾ
+                        {t("scoreboard.doikhang.medical_time")}
                       </p>
                     </div>
                   </div>
@@ -3779,7 +3742,7 @@ const BangDiemDoiKhang = () => {
             !isMedicalTime &&
             !ready && (
               <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 pointer-events-none">
-                <div className="relative bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 text-white px-16 py-10 rounded-3xl shadow-2xl border-4 border-yellow-300">
+                <div className="relative bg-yellow-500 text-white px-16 py-10 rounded-3xl border-4 border-yellow-300">
                   {/* Decorative corners */}
                   {/* <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-2xl"></div>
                   <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white rounded-tr-2xl"></div>
@@ -3799,7 +3762,7 @@ const BangDiemDoiKhang = () => {
                     <div className="mb-4">
                       <div className="inline-block bg-white/20 backdrop-blur-sm px-8 py-2 rounded-full">
                         <p className="text-3xl font-bold tracking-wider">
-                          TẠM NGƯNG
+                          {t("scoreboard.doikhang.paused")}
                         </p>
                       </div>
                     </div>
@@ -3829,7 +3792,7 @@ const BangDiemDoiKhang = () => {
             }}
           >
             {/* Glow effect background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded pointer-events-none"></div>
+            <div className="absolute inset-0 bg-white/10 rounded pointer-events-none"></div>
 
             <div
               className="text-[200px] font-black leading-none w-full text-center relative z-10"
@@ -3854,7 +3817,7 @@ const BangDiemDoiKhang = () => {
                     fontWeight: "900",
                   }}
                 >
-                  {matchInfo.blue?.name || "VĐV XANH"}
+                  {matchInfo.blue?.name || t("scoreboard.doikhang.blue_default")}
                 </p>
                 <p
                   className="text-lg font-semibold opacity-95"
@@ -3902,7 +3865,7 @@ const BangDiemDoiKhang = () => {
                   onClick={handleStopMedical}
                   className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center font-bold text-sm gap-2 transition-colors animate-pulse"
                 >
-                  Y tế
+                  {t("scoreboard.doikhang.stop_medical")}
                 </button>
               )}
 
@@ -3923,7 +3886,7 @@ const BangDiemDoiKhang = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                Thoát
+                {t("scoreboard.doikhang.control_exit")}
               </button>
 
               {/* Nút Reset */}
@@ -3943,7 +3906,7 @@ const BangDiemDoiKhang = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                Reset
+                {t("scoreboard.doikhang.control_reset")}
               </button>
 
               {/* Nút Lịch sử */}
@@ -3963,7 +3926,7 @@ const BangDiemDoiKhang = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                Lịch sử
+                {t("scoreboard.doikhang.control_history")}
               </button>
 
               {/* Nút Cấu hình */}
@@ -3983,7 +3946,7 @@ const BangDiemDoiKhang = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                Cấu hình
+                {t("scoreboard.doikhang.control_config")}
               </button>
 
               {/* Nút Kết thúc */}
@@ -4004,7 +3967,7 @@ const BangDiemDoiKhang = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  Kết thúc
+                  {t("scoreboard.doikhang.control_finish")}
                 </button>
               )}
               {buttonPermissions.hien_thi_button_tran_truoc && (
@@ -4024,7 +3987,7 @@ const BangDiemDoiKhang = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  Trận trước
+                  {t("scoreboard.doikhang.control_prev_match")}
                 </button>
               )}
 
@@ -4046,7 +4009,7 @@ const BangDiemDoiKhang = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  Trận sau
+                  {t("scoreboard.doikhang.control_next_match")}
                 </button>
               )}
 
@@ -4068,7 +4031,7 @@ const BangDiemDoiKhang = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  Hiệp phụ
+                  {t("scoreboard.doikhang.control_extra_round")}
                 </button>
               )}
 
@@ -4110,7 +4073,7 @@ const BangDiemDoiKhang = () => {
                     />
                   </svg>
                 )}
-                {isSoundEnabled ? "Âm thanh" : "Tắt tiếng"}
+                {isSoundEnabled ? t("scoreboard.doikhang.sound_on") : t("scoreboard.doikhang.sound_off")}
               </button>
             </div>
           </div>
@@ -4271,7 +4234,7 @@ const BangDiemDoiKhang = () => {
                           "bg-red-600 hover:bg-red-700 text-white",
                         )}
                       >
-                        Nhắc nhở +
+                        {t("scoreboard.doikhang.remind_plus")}
                       </button>
                       <button
                         onClick={() => handleRemind("red", -1)}
@@ -4281,7 +4244,7 @@ const BangDiemDoiKhang = () => {
                           "bg-red-800 hover:bg-red-900 text-white",
                         )}
                       >
-                        Nhắc nhở -
+                        {t("scoreboard.doikhang.remind_minus")}
                       </button>
                     </div>
                   )}
@@ -4297,7 +4260,7 @@ const BangDiemDoiKhang = () => {
                           "bg-red-600 hover:bg-red-700 text-white",
                         )}
                       >
-                        Cảnh cáo +
+                        {t("scoreboard.doikhang.warn_plus")}
                       </button>
                       <button
                         onClick={() => handleWarn("red", -1)}
@@ -4307,7 +4270,7 @@ const BangDiemDoiKhang = () => {
                           "bg-red-800 hover:bg-red-900 text-white",
                         )}
                       >
-                        Cảnh cáo -
+                        {t("scoreboard.doikhang.warn_minus")}
                       </button>
                     </div>
                   )}
@@ -4323,7 +4286,7 @@ const BangDiemDoiKhang = () => {
                           "bg-red-600 hover:bg-red-700 text-white",
                         )}
                       >
-                        Đ.Chân +
+                        {t("scoreboard.doikhang.kick_plus")}
                       </button>
                       <button
                         onClick={() => handleKick("red", -1)}
@@ -4333,7 +4296,7 @@ const BangDiemDoiKhang = () => {
                           "bg-red-800 hover:bg-red-900 text-white",
                         )}
                       >
-                        Đ.Chân -
+                        {t("scoreboard.doikhang.kick_minus")}
                       </button>
                     </div>
                   )}
@@ -4349,7 +4312,7 @@ const BangDiemDoiKhang = () => {
                           "bg-red-600 hover:bg-red-700 text-white",
                         )}
                       >
-                        Biên
+                        {t("scoreboard.doikhang.edge")}
                       </button>
                     )}
                     {buttonPermissions.hien_thi_button_nga && (
@@ -4361,7 +4324,7 @@ const BangDiemDoiKhang = () => {
                           "bg-red-800 hover:bg-red-900 text-white",
                         )}
                       >
-                        Ngã
+                        {t("scoreboard.doikhang.fall")}
                       </button>
                     )}
                   </div>
@@ -4377,7 +4340,7 @@ const BangDiemDoiKhang = () => {
                           "bg-red-600 hover:bg-red-700 text-white",
                         )}
                       >
-                        Y TẾ
+                        {t("scoreboard.doikhang.medical").toUpperCase()}
                       </button>
                     )}
                     {buttonPermissions.hien_thi_button_thang && (
@@ -4397,7 +4360,7 @@ const BangDiemDoiKhang = () => {
                         >
                           <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 00-1.5 1.5v.5h-11v-.5A1.5 1.5 0 002.5 10H2a1 1 0 01-1-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5a1.5 1.5 0 013 0V4h2v-.5zM10 14a5 5 0 01-5-5v-1h10v1a5 5 0 01-5 5zm-7 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
                         </svg>
-                        THẮNG
+                        {t("scoreboard.doikhang.button_winner").toUpperCase()}
                       </button>
                     )}
                   </div>
@@ -4551,7 +4514,7 @@ const BangDiemDoiKhang = () => {
                           "bg-blue-600 hover:bg-blue-700 text-white",
                         )}
                       >
-                        + Nhắc nhở
+                        {t("scoreboard.doikhang.remind_plus")}
                       </button>
                       <button
                         onClick={() => handleRemind("blue", -1)}
@@ -4561,7 +4524,7 @@ const BangDiemDoiKhang = () => {
                           "bg-blue-800 hover:bg-blue-900 text-white",
                         )}
                       >
-                        - Nhắc nhở
+                        {t("scoreboard.doikhang.remind_minus")}
                       </button>
                     </div>
                   )}
@@ -4576,7 +4539,7 @@ const BangDiemDoiKhang = () => {
                           "bg-blue-600 hover:bg-blue-700 text-white",
                         )}
                       >
-                        + Cảnh cáo
+                        {t("scoreboard.doikhang.warn_plus")}
                       </button>
                       <button
                         onClick={() => handleWarn("blue", -1)}
@@ -4586,7 +4549,7 @@ const BangDiemDoiKhang = () => {
                           "bg-blue-800 hover:bg-blue-900 text-white",
                         )}
                       >
-                        - Cảnh cáo
+                        {t("scoreboard.doikhang.warn_minus")}
                       </button>
                     </div>
                   )}
@@ -4602,7 +4565,7 @@ const BangDiemDoiKhang = () => {
                           "bg-blue-600 hover:bg-blue-700 text-white",
                         )}
                       >
-                        + Đ.Chân
+                        {t("scoreboard.doikhang.kick_plus")}
                       </button>
                       <button
                         onClick={() => handleKick("blue", -1)}
@@ -4612,7 +4575,7 @@ const BangDiemDoiKhang = () => {
                           "bg-blue-800 hover:bg-blue-900 text-white",
                         )}
                       >
-                        - Đ.Chân
+                        {t("scoreboard.doikhang.kick_minus")}
                       </button>
                     </div>
                   )}
@@ -4628,7 +4591,7 @@ const BangDiemDoiKhang = () => {
                           "bg-blue-600 hover:bg-blue-700 text-white",
                         )}
                       >
-                        Biên
+                        {t("scoreboard.doikhang.edge")}
                       </button>
                     )}
                     {buttonPermissions.hien_thi_button_nga && (
@@ -4640,7 +4603,7 @@ const BangDiemDoiKhang = () => {
                           "bg-blue-800 hover:bg-blue-900 text-white",
                         )}
                       >
-                        Ngã
+                        {t("scoreboard.doikhang.fall")}
                       </button>
                     )}
                   </div>
@@ -4656,7 +4619,7 @@ const BangDiemDoiKhang = () => {
                           "bg-blue-600 hover:bg-blue-700 text-white",
                         )}
                       >
-                        Y TẾ
+                        {t("scoreboard.doikhang.medical").toUpperCase()}
                       </button>
                     )}
                     {buttonPermissions.hien_thi_button_thang && (
@@ -4676,7 +4639,7 @@ const BangDiemDoiKhang = () => {
                         >
                           <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 00-1.5 1.5v.5h-11v-.5A1.5 1.5 0 002.5 10H2a1 1 0 01-1-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5a1.5 1.5 0 013 0V4h2v-.5zM10 14a5 5 0 01-5-5v-1h10v1a5 5 0 01-5 5zm-7 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
                         </svg>
-                        THẮNG
+                        {t("scoreboard.doikhang.button_winner").toUpperCase()}
                       </button>
                     )}
                   </div>
@@ -4694,19 +4657,19 @@ const BangDiemDoiKhang = () => {
             {/* Left: Statistics */}
             <div className="flex items-center gap-6">
               <span className="text-gray-400">
-                Tổng số:{" "}
+                {t("scoreboard.doikhang.statistics_total")}:{" "}
                 <span className="text-white font-bold text-sm">
                   {matchInfo.config_system?.so_giam_dinh || 3}
                 </span>
               </span>
               <span className="text-gray-400">
-                Sẵn sàng:{" "}
+                {t("scoreboard.doikhang.statistics_ready")}:{" "}
                 <span className="text-green-400 font-bold text-sm">
                   {referrerDevices.filter((s) => s.ready).length}
                 </span>
               </span>
               <span className="text-gray-400">
-                Đã kết nối:{" "}
+                {t("scoreboard.doikhang.statistics_connected")}:{" "}
                 <span className="text-yellow-400 font-bold text-sm">
                   {
                     referrerDevices.filter((s) => s.connected && !s.ready)
@@ -4714,21 +4677,21 @@ const BangDiemDoiKhang = () => {
                   }
                 </span>
               </span>
-              <span className="text-gray-400">
-                Chưa kết nối:{" "}
+              {/* <span className="text-gray-400">
+                {t("scoreboard.doikhang.statistics_disconnected")}:{" "}
                 <span className="text-red-400 font-bold text-sm">
                   {referrerDevices.filter((s) => !s.connected).length}
                 </span>
-              </span>
+              </span> */}
 
               {/* Layout Switch */}
               <div className="flex items-center gap-2 ml-4 pl-4 border-l border-gray-600">
-                <span className="text-gray-400 text-xs">Chế độ</span>
+                <span className="text-gray-400 text-xs">{t("scoreboard.doikhang.mode")}</span>
                 <button
                   onClick={() => setShowControlBar(!showControlBar)}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${showControlBar ? "bg-blue-600" : "bg-gray-600"
                     }`}
-                  title={showControlBar ? "Quản lý" : "Thi đấu"}
+                  title={showControlBar ? t("scoreboard.doikhang.management_mode") : t("scoreboard.doikhang.competition_mode")}
                 >
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${showControlBar ? "translate-x-6" : "translate-x-1"
@@ -4736,7 +4699,7 @@ const BangDiemDoiKhang = () => {
                   />
                 </button>
                 <span className="text-white text-xs font-semibold">
-                  {showControlBar ? "Quản lý" : "Thi đấu"}
+                  {showControlBar ? t("scoreboard.doikhang.management_mode") : t("scoreboard.doikhang.competition_mode")}
                 </span>
               </div>
             </div>
@@ -4762,11 +4725,11 @@ const BangDiemDoiKhang = () => {
                       className={`${bgColor} ${textColor} font-bold px-3 py-1.5 rounded text-sm min-w-[50px] text-center shadow-lg`}
                       title={
                         isReady
-                          ? `GĐ${gdNumber}: Sẵn sàng`
-                          : `GĐ${gdNumber}: Chưa sẵn sàng`
+                          ? `${t('scoreboard.doikhang.referrer_name')}${gdNumber}: ${t("scoreboard.doikhang.referee_ready")}`
+                          : `${t('scoreboard.doikhang.referrer_name')}${gdNumber}: ${t("scoreboard.doikhang.referee_not_ready")}`
                       }
                     >
-                      GĐ{gdNumber}
+                      {t('scoreboard.doikhang.referrer_name')}{gdNumber}
                     </div>
                   );
                 },
@@ -4778,20 +4741,20 @@ const BangDiemDoiKhang = () => {
               (matchInfo.config_system?.so_giam_dinh || 3) ? (
               <div className="flex items-center gap-2 bg-green-500/20 border border-green-500 rounded px-4 py-2">
                 <span className="text-green-400 font-bold text-sm">
-                  Tất cả sẵn sàng
+                  {t("scoreboard.doikhang.all_ready")}
                 </span>
               </div>
             ) : (
               <div className="flex items-center gap-2 bg-yellow-500/20 border border-yellow-500 rounded px-4 py-2 animate-pulse">
                 <span className="text-yellow-400 font-bold text-sm">
-                  Chưa đủ giám định
+                  {t("scoreboard.doikhang.waiting_referees")}
                 </span>
               </div>
             )}
             {/* Right: Connection Button */}
             <button
               onClick={() => setShowConnectionModal(true)}
-              className="bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white px-4 py-2 rounded flex items-center gap-2 transition-all text-sm shadow-lg hover:shadow-xl font-bold"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2 transition-all text-sm font-bold"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -4801,7 +4764,7 @@ const BangDiemDoiKhang = () => {
               >
                 <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
               </svg>
-              Kết nối ({referrerDevices.filter((s) => s.ready).length}/
+              {t("scoreboard.doikhang.connection_status")} ({referrerDevices.filter((s) => s.ready).length}/
               {matchInfo.config_system?.so_giam_dinh || 3})
             </button>
           </div>

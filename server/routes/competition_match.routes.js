@@ -10,6 +10,7 @@ router.get('/competition-match/by-dk/:competition_dk_id', competitionMatchContro
 router.put('/competition-match/:id/status', competitionMatchController.updateMatchStatus);
 router.put('/competition-match/:id/winner', competitionMatchController.updateWinner);
 router.put('/competition-match/:id/config', competitionMatchController.updateConfigSystem);
+router.put('/competition-match/:id/referrers', competitionMatchController.updateReferrers);
 router.post('/competition-match/:id/history', competitionMatchController.addHistory);
 router.get('/competition-match/:id/history', competitionMatchController.getHistory);
 router.delete('/competition-match/:id', competitionMatchController.deleteMatch);

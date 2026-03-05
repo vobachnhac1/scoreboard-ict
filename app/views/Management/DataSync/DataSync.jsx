@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useDataSync } from "./hooks/useDataSync";
 import NetworkConnection from "./components/NetworkConnection";
 import RecordsView from "./components/RecordsView";
@@ -9,6 +10,7 @@ import ConfirmModal from "../../../components/ConfirmModal";
 import { META_FIELDS_NAME, HIDDEN_DETAIL_KEYS } from "./constants";
 
 const DataSync = () => {
+  const { t } = useTranslation();
   const {
     iplocalRef,
     availableTables, selectedTables, metadata, syncing, syncProgress,
@@ -50,76 +52,87 @@ const DataSync = () => {
 
 
   return (
-    <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div className="p-8 bg-blue-50/30 dark:bg-gray-900 min-h-screen">
 
-      {/* ===== HEADER ===== */}
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-            ĐỒNG BỘ DỮ LIỆU MÁY CHỦ
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 italic">
-            Đồng bộ dữ liệu giữa các máy tính trên cùng mạng WiFi
-          </p>
+      {/* ===== HEADER - Premium Design ===== */}
+      <div className="mb-12 flex flex-col md:flex-row items-center justify-between gap-8 py-4 pb-12 border-b border-blue-100 dark:border-blue-900/30 min-h-[120px]">
+        <div className="flex items-center gap-6">
+          <div className="w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center text-white shadow-2xl shadow-blue-500/20 rotate-3 transition-transform hover:rotate-0 flex-shrink-0">
+            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
+          <div className="flex flex-col">
+            <h1 className="text-2xl md:text-3xl font-black text-blue-700 dark:text-blue-400 tracking-tight leading-tight py-1 ">
+              {t("data_sync.title").toUpperCase()}
+            </h1>
+            <p className="text-[11px] font-black text-blue-400 uppercase tracking-widest opacity-80 flex items-center gap-2">
+              <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+              {t("data_sync.description")}
+            </p>
+          </div>
         </div>
-        <button
-          onClick={handleRefreshAll}
-          disabled={isRefreshing}
-          className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
-          title="Làm mới toàn bộ dữ liệu trang"
-        >
-          <svg
-            className={`w-5 h-5 ${isRefreshing ? "animate-spin" : ""}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleRefreshAll}
+            disabled={isRefreshing}
+            className="group flex items-center gap-3 px-8 py-4 bg-white dark:bg-gray-800 border-2 border-blue-50 dark:border-blue-900/30 rounded-2xl shadow-xl shadow-blue-500/10 hover:shadow-blue-500/20 hover:border-blue-200 transition-all active:scale-95 disabled:opacity-50"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
-          {isRefreshing ? "Đang tải..." : "Làm mới"}
-        </button>
+            <div className={`p-1.5 rounded-lg bg-blue-50 dark:bg-blue-900 group-hover:rotate-180 transition-transform duration-700 ${isRefreshing ? "animate-spin" : ""}`}>
+              <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 text-sm font-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </div>
+            <span className="text-[11px] font-black uppercase tracking-widest text-blue-900 dark:text-blue-100">
+              {isRefreshing ? t("data_sync.processing") : t("data_sync.refresh_data")}
+            </span>
+          </button>
+        </div>
       </div>
 
-      {/* TẠO TAB HIỂN THỊ DANH SÁCH GỬI / HIỂN THỊ DANH SÁCH NHẬN */}
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0 mb-2">
-        {/* TAB HEADER */}
-        <div className="flex items-center gap-0 px-4 pt-3 pb-0 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex-shrink-0">
+      {/* ===== TABS - Modern Pill Style ===== */}
+      <div className="flex flex-col flex-1 overflow-hidden min-w-0 mb-8">
+        <div className="flex flex-wrap items-center gap-3 p-2 bg-white/50 dark:bg-gray-800/50 rounded-[2.5rem] border-2 border-blue-50 dark:border-blue-900/30 w-fit mb-8 shadow-inner">
           <button
             onClick={() => setActiveTab("connect")}
-            className={`px-4 py-2.5 text-sm border-b-2 transition-colors mb-1 ${activeTab === "connect"
-              ? "border-indigo-500 text-indigo-600 dark:text-indigo-400 font-bold"
-              : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            className={`px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === "connect"
+              ? "bg-blue-600 text-white shadow-xl shadow-blue-500/30 scale-105"
+              : "text-blue-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/40"
               }`}
-          > KẾT NỐI MÁY CHỦ </button>
+          > {t("data_sync.connect_server")} </button>
+
+          <div className="w-px h-6 bg-blue-100 dark:bg-blue-900/50 mx-1"></div>
+
           <button
             onClick={() => setActiveTab("send")}
-            className={`px-4 py-2.5 text-sm border-b-2 transition-colors mb-1 ${activeTab === "send"
-              ? "border-indigo-500 text-indigo-600 dark:text-indigo-400 font-bold"
-              : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            className={`px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === "send"
+              ? "bg-indigo-600 text-white shadow-xl shadow-indigo-500/30 scale-105"
+              : "text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/40"
               }`}
-          > DỮ LIỆU GỬI </button>
+          > {t("data_sync.send_data")} </button>
+
           <button
             onClick={() => setActiveTab("receive")}
-            className={`px-4 py-2.5 text-sm border-b-2 mb-1 transition-colors ${activeTab === "receive"
-              ? "border-indigo-500 text-indigo-600 dark:text-indigo-400 font-bold"
-              : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            className={`px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === "receive"
+              ? "bg-emerald-600 text-white shadow-xl shadow-emerald-500/30 scale-105"
+              : "text-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/40"
               }`}
-          > DỮ LIỆU NHẬN </button>
+          > {t("data_sync.receive_data")} </button>
+
+          <div className="w-px h-6 bg-blue-100 dark:bg-blue-900/50 mx-1"></div>
+
           <button
             onClick={() => setActiveTab("clean")}
-            className={`px-4 py-2.5 text-sm border-b-2 mb-1 transition-colors ${activeTab === "clean"
-              ? "border-indigo-500 text-indigo-600 dark:text-indigo-400 font-bold"
-              : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            className={`px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === "clean"
+              ? "bg-rose-600 text-white shadow-xl shadow-rose-500/30 scale-105"
+              : "text-rose-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/40"
               }`}
-          > DỌN DẸP DỮ LIỆU</button>
+          > {t("data_sync.clean_data")} </button>
         </div>
-        {/* TAB CONTENT */}
-        <div className="mb-6 p-6 bg-white dark:bg-gray-800 rounded shadow">
+
+        {/* TAB CONTENT - Premium Card Layout */}
+        <div className="mb-0 bg-transparent">
           {/* ===== NETWORK CONNECTION SECTION ===== */}
           {activeTab === "connect" && (<NetworkConnection
             localIP={localIP}
@@ -138,70 +151,91 @@ const DataSync = () => {
             handleConnectScanned={handleConnectScanned}
             showAlert={showAlert}
           />)}
-          {/* ===== SEND DATA SECTION ===== */}
+          {/* ===== SEND DATA SECTION - Table Grid Design ===== */}
           {activeTab === "send" && viewMode === "table" && (
-            <div className="mb-4 ">
-              <div className='h-12 border-b border-gray-200 dark:border-gray-700 items-center flex mb-2'>
-                <h2 className="text-lg font-bold text-gray-800 dark:text-white ">
-                  Chọn dữ liệu cần gửi:
-                </h2>
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+              <div className="flex items-center gap-4 mb-2">
+                <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center text-indigo-600">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                </div>
+                <h2 className="text-[11px] font-black text-indigo-400 uppercase tracking-widest">{t("data_sync.system_database_category")}</h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                 {availableTables
                   .sort((a, b) => b.priority - a.priority)
                   .map((table) => (
                     <div
                       key={table.name}
-                      className="flex items-center gap-2 p-3 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700"
+                      onClick={() => handleTableToggle(table.name)}
+                      className={`group relative p-5 rounded-[2rem] border-2 transition-all duration-300 cursor-pointer overflow-hidden ${selectedTables.includes(table.name)
+                        ? "bg-indigo-600 border-indigo-600 shadow-xl shadow-indigo-500/20"
+                        : "bg-white dark:bg-gray-800 border-indigo-50 dark:border-indigo-900/30 hover:border-indigo-200 hover:shadow-lg shadow-indigo-500/5"}`}
                     >
-                      <input
-                        type="checkbox"
-                        checked={selectedTables.includes(table.name)}
-                        onChange={() => handleTableToggle(table.name)}
-                        disabled={syncing}
-                        className="w-4 h-4"
-                      />
-                      <div className="flex-1">
-                        <div className="font-medium text-gray-800 dark:text-white">
-                          {table.label}
-                        </div>
-                        {metadata[table.name] && (
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {metadata[table.name].count} records
-                            {selectedRecords[table.name]?.length > 0 && (
-                              <span className="ml-2 text-blue-600 dark:text-blue-400">
-                                ({selectedRecords[table.name].length} đã chọn)
-                              </span>
-                            )}
+                      {selectedTables.includes(table.name) && (
+                        <div className="absolute top-0 right-0 p-4">
+                          <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-white">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                           </div>
-                        )}
+                        </div>
+                      )}
+
+                      <div className="relative z-10 space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className={`p-2 rounded-xl border ${selectedTables.includes(table.name) ? "bg-white/10 border-white/20 text-white" : "bg-indigo-50 dark:bg-indigo-900/50 border-indigo-100 dark:border-indigo-800 text-indigo-600"}`}>
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" /></svg>
+                          </div>
+                          <span className={`text-sm font-black uppercase tracking-tight ${selectedTables.includes(table.name) ? "text-white" : "text-blue-950 dark:text-blue-100"}`}>
+                            {table.label}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-4 pt-2">
+                          {metadata[table.name] && (
+                            <div className={`text-[10px] font-black uppercase tracking-widest ${selectedTables.includes(table.name) ? "text-white/60" : "text-gray-400 dark:text-gray-500"}`}>
+                              {t("data_sync.records_count", { count: metadata[table.name].count })}
+                              {selectedRecords[table.name]?.length > 0 && (
+                                <span className="ml-2 px-1.5 py-0.5 bg-indigo-900/10 rounded dark:bg-indigo-100/10">
+                                  ✓ {t("data_sync.items_selected", { count: selectedRecords[table.name].length })}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          <button
+                            onClick={(e) => { e.stopPropagation(); loadTableRecords(table.name); }}
+                            disabled={syncing}
+                            className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${selectedTables.includes(table.name)
+                              ? "bg-white text-indigo-600 hover:bg-indigo-50"
+                              : "bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white shadow-inner"}`}
+                          >
+                            {t("data_sync.detail")}
+                          </button>
+                        </div>
                       </div>
-                      <button
-                        onClick={() => loadTableRecords(table.name)}
-                        disabled={syncing}
-                        className="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded"
-                      >
-                        Xem chi tiết
-                      </button>
                     </div>
                   ))}
               </div>
 
               {isManualConnected && selectedTables.length > 0 && (
-                <div className="mt-4 flex justify-end">
+                <div className="flex justify-end pt-4">
                   <button
                     onClick={handleSendToManualServer}
                     disabled={syncing}
-                    className="px-6 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded font-semibold"
+                    className="px-10 py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-indigo-500/30 active:scale-95 transition-all flex items-center gap-4"
                   >
-                    {syncing
-                      ? "Đang gửi..."
-                      : `Gửi toàn bộ dữ liệu: ${selectedTables.length} bảng`}
+                    {syncing ? (
+                      <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> {t("data_sync.processing").toUpperCase()}</>
+                    ) : (
+                      <>
+                        {t("data_sync.send_data_package", { count: selectedTables.length })}
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                      </>
+                    )}
                   </button>
                 </div>
               )}
             </div>)}
+
           {activeTab === "send" && viewMode !== "table" && (<RecordsView
             selectedTableForRecords={selectedTableForRecords}
             tableRecords={tableRecords}
@@ -234,6 +268,7 @@ const DataSync = () => {
             toggleCompDKRecord={toggleCompDKRecord}
             handleSendToManualServer={handleSendToManualServer}
           />)}
+
           {/* ===== RECEIVE DATA SECTION ===== */}
           {activeTab === "receive" && (<StagingSection
             stagingSessions={stagingSessions}
@@ -252,188 +287,222 @@ const DataSync = () => {
             setStagingDetailRecord={setStagingDetailRecord}
             loadStagingSessions={loadStagingSessions}
             handleOpenSession={handleOpenSession}
+            handleCloseReview={handleCloseReview}
             handleDeleteSession={handleDeleteSession}
             handleApplyStaging={handleApplyStaging}
             handleUpdateMapping={handleUpdateMapping}
-            handleCloseReview={handleCloseReview}
           />)}
-          {/* ===== CLEANUP SECTION ===== */}
+
+          {/* ===== CLEANUP SECTION - Modern Control Card ===== */}
           {activeTab === "clean" && (
-            <div className=" bg-white dark:bg-gray-800">
-              <div className='h-12 border-b border-gray-200 dark:border-gray-700 items-center flex mb-2'>
-                <h2 className="text-lg font-bold text-gray-800 dark:text-white ">
-                  Dọn dữ liệu
-                </h2>
+            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+              <div className="relative p-10 bg-white dark:bg-gray-800 rounded-[3rem] border border-blue-50 dark:border-blue-900/30 shadow-2xl shadow-blue-500/5 overflow-hidden">
+                <div className="absolute top-0 right-0 p-12 opacity-5">
+                  <svg className="w-40 h-40 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </div>
+
+                <div className="relative z-10 max-w-xl">
+                  <div className="w-16 h-16 bg-rose-50 dark:bg-rose-900/30 rounded-3xl flex items-center justify-center text-rose-500 mb-8 border border-rose-100 dark:border-rose-800">
+                    <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </div>
+
+                  <h2 className="text-[11px] font-black text-rose-400 dark:text-rose-500 uppercase tracking-[0.3em] mb-4">{t("data_sync.maintenance_process")}</h2>
+                  <h3 className="text-3xl font-black text-blue-950 dark:text-blue-100 tracking-tight mb-6">{t("data_sync.cleanup_free_database")}</h3>
+
+                  <p className="text-sm font-bold text-gray-500 dark:text-gray-400 leading-relaxed mb-10">
+                    {t("data_sync.maintenance_desc")}
+                    <span className="text-rose-500 block mt-2 animate-pulse">{t("data_sync.maintenance_warning")}</span>
+                  </p>
+
+                  <button
+                    onClick={handleOpenCleanupModal}
+                    className="px-10 py-5 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-rose-500/20 active:scale-95 transition-all flex items-center gap-4"
+                  >
+                    {t("data_sync.start_cleanup")}
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                  </button>
+                </div>
               </div>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Xóa các bảng không cần thiết trong database để giải phóng dung lượng
-              </p>
-              <button
-                onClick={handleOpenCleanupModal}
-                className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded font-semibold"
-              >
-                Quản lý bảng dữ liệu
-              </button>
             </div>)}
         </div>
       </div>
-      {/* ===== SYNC PROGRESS ===== */}
+
+      {/* ===== SYNC PROGRESS - Premium Overlay ===== */}
       {syncing && Object.keys(syncProgress).length > 0 && (
-        <div className="mb-6 p-6 bg-white dark:bg-gray-800 rounded shadow">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
-            Tiến trình đồng bộ
-          </h2>
-          <div className="space-y-4">
+        <div className="fixed bottom-10 right-10 z-[70] w-96 p-8 bg-white/90 dark:bg-gray-800/90 rounded-[2.5rem] border border-blue-50 dark:border-blue-900/30 shadow-2xl shadow-blue-500/20 animate-in slide-in-from-right-10 duration-500">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-1">{t("data_sync.processing_status")}</h2>
+              <div className="text-xl font-black text-blue-900 dark:text-blue-100 uppercase tracking-tighter">{t("data_sync.data_sync_pipeline")}</div>
+            </div>
+            <div className="w-10 h-10 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin"></div>
+          </div>
+
+          <div className="space-y-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
             {Object.entries(syncProgress).map(([table, progress]) => (
-              <div key={table}>
-                <div className="flex justify-between mb-1">
-                  <span className="text-gray-700 dark:text-gray-300">
+              <div key={table} className="space-y-2">
+                <div className="flex justify-between items-end">
+                  <span className="text-[10px] font-black text-blue-950 dark:text-blue-200 uppercase tracking-tight">
                     {availableTables.find((t) => t.name === table)?.label || table}
                   </span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {progress.current}/{progress.total} ({progress.percentage}%)
-                  </span>
+                  <div className="text-[11px] font-mono font-bold text-blue-600">
+                    {progress.current}/{progress.total} <span className="text-gray-400 text-[9px] font-light">[{progress.percentage}%]</span>
+                  </div>
                 </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div className="relative h-2 bg-blue-50 dark:bg-gray-900 rounded-full overflow-hidden shadow-inner">
                   <div
-                    className="bg-blue-500 h-2 rounded-full transition-all"
+                    className="absolute inset-0 bg-blue-600 transition-all duration-500 ease-out"
                     style={{ width: `${progress.percentage}%` }}
-                  />
+                  >
+                    <div className="absolute top-0 right-0 bottom-0 w-2 bg-white/30 animate-pulse"></div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
+
+          <div className="mt-8 pt-6 border-t border-blue-50 dark:border-blue-900/30 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+              <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">{t("data_sync.active_connection")}</span>
+            </div>
+            <span className="text-[9px] font-black text-blue-900 dark:text-blue-100 uppercase bg-blue-50 dark:bg-blue-900/40 px-3 py-1 rounded-full">{t("data_sync.encrypted_transfer")}</span>
+          </div>
         </div>
       )}
 
-      {/* ===== STAGING DETAIL RECORD MODAL ===== */}
+      {/* ===== STAGING DETAIL RECORD MODAL - Premium Layout ===== */}
       {stagingDetailRecord && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 transition-opacity duration-300">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-500">
+          <div className="absolute inset-0 bg-blue-950/40" onClick={() => setStagingDetailRecord(null)}></div>
 
-            {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
-              <div className="flex items-center gap-3">
-                <div className={`p-2.5 rounded-lg ${stagingDetailRecord.type === "incoming" ? "bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400" : "bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-400"}`}>
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+          <div className="relative bg-white dark:bg-gray-800 rounded-[3rem] shadow-2xl shadow-blue-500/10 max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-blue-50 dark:border-blue-900/30">
+            {/* Modal Header */}
+            <div className={`px-10 py-8 flex items-center justify-between border-b ${stagingDetailRecord.type === "incoming" ? "bg-blue-600 border-blue-500" : "bg-emerald-600 border-emerald-500"}`}>
+              <div className="flex items-center gap-6">
+                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-white shadow-xl border border-white/30">
+                  <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-800 dark:text-white leading-tight">
-                    {stagingDetailRecord.type === "incoming" ? "Chi tiết dữ liệu máy gửi" : "Chi tiết dữ liệu hiện tại"}
+                  <h2 className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em] mb-1">{t("data_sync.data_details_check")}</h2>
+                  <h3 className="text-3xl font-black text-white tracking-tight uppercase">
+                    {stagingDetailRecord.type === "incoming" ? t("data_sync.source_machine_data") : t("data_sync.target_machine_data")}
                   </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                    {stagingDetailRecord.type === "incoming" ? "Dữ liệu đang chờ duyệt để đồng bộ vào hệ thống" : "Dữ liệu đang có sẵn trong cơ sở dữ liệu"}
-                  </p>
                 </div>
               </div>
+
               <button
                 onClick={() => setStagingDetailRecord(null)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded-full transition-colors focus:outline-none"
-                title="Đóng (Esc)"
+                className="w-14 h-14 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition-all active:scale-90 border border-white/20"
               >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
 
             {/* Content */}
-            <div className="overflow-auto p-6 flex-1 bg-gray-50/30 dark:bg-gray-900/30">
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm">
-                <table className="w-full text-sm text-left">
-                  <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-                    <tr>
-                      <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300 w-1/3">Trường dữ liệu</th>
-                      <th className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Giá trị</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100 dark:divide-gray-700/50">
-                    {Object.entries(stagingDetailRecord.data || {}).map(([key, value]) => {
-                      let isObject = value !== null && typeof value === 'object';
-                      let parsedValue = value;
-                      let isArrayOfArrays = false;
+            <div className="overflow-auto p-10 flex-1 bg-gray-50/10 dark:bg-gray-900/40 custom-scrollbar">
+              <div className="rounded-[2.5rem] border-2 border-blue-50/50 dark:border-blue-900/20 bg-white dark:bg-gray-800 shadow-2xl shadow-blue-500/5 overflow-hidden">
+                <div className="overflow-x-auto w-full custom-scrollbar">
+                  <table className="w-full min-w-max text-left border-collapse">
+                    <thead>
+                      <tr className="bg-blue-50/50 dark:bg-blue-900/20 border-b border-blue-50 dark:border-blue-900/30">
+                        <th className="px-8 py-5 text-[11px] font-black uppercase tracking-[0.2em] text-blue-900/50 dark:text-blue-100/50 w-1/3 border-r border-blue-50 dark:border-blue-900/20">{t("data_sync.data_field")}</th>
+                        <th className="px-8 py-5 text-[11px] font-black uppercase tracking-[0.2em] text-blue-900/50 dark:text-blue-100/50">{t("data_sync.detail_value")}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-blue-50/50 dark:divide-blue-900/10">
+                      {Object.entries(stagingDetailRecord.data || {}).map(([key, value]) => {
+                        let isObject = value !== null && typeof value === 'object';
+                        let parsedValue = value;
+                        let isArrayOfArrays = false;
 
-                      if (typeof value === 'string') {
-                        try {
-                          const parsed = JSON.parse(value);
-                          if (parsed !== null && typeof parsed === 'object') {
-                            parsedValue = parsed;
-                            isObject = true;
-                          }
-                        } catch (e) { }
-                      }
+                        if (typeof value === 'string') {
+                          try {
+                            const parsed = JSON.parse(value);
+                            if (parsed !== null && typeof parsed === 'object') {
+                              parsedValue = parsed;
+                              isObject = true;
+                            }
+                          } catch (e) { }
+                        }
 
-                      if (Array.isArray(parsedValue) && parsedValue.length > 0 && Array.isArray(parsedValue[0])) {
-                        isArrayOfArrays = true;
-                      }
+                        if (Array.isArray(parsedValue) && parsedValue.length > 0 && Array.isArray(parsedValue[0])) {
+                          isArrayOfArrays = true;
+                        }
 
-                      const displayValue = isObject ? JSON.stringify(parsedValue, null, 2) : String(parsedValue ?? "—");
-                      // Bỏ qua các field dài/cấu trúc json phức tạp nội bộ
-                      if (HIDDEN_DETAIL_KEYS.includes(key)) return null;
+                        const displayValue = isObject ? JSON.stringify(parsedValue, null, 2) : String(parsedValue ?? "—");
+                        if (HIDDEN_DETAIL_KEYS.includes(key)) return null;
 
-                      return (
-                        <tr key={key} className="hover:bg-gray-50/80 dark:hover:bg-gray-700/30 transition-colors">
-                          <td className="px-4 py-3 align-top break-words w-[30%]">
-                            <div className="font-semibold text-gray-700 dark:text-gray-300 text-sm">
-                              {META_FIELDS_NAME[key] || key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}
-                            </div>
-                            <div className="font-mono text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
-                              {key}
-                            </div>
-                          </td>
-                          <td className="px-4 py-3 text-gray-800 dark:text-gray-200 align-top">
-                            {isArrayOfArrays ? (
-                              <div className="max-h-[300px] overflow-auto border border-gray-200 dark:border-gray-700 rounded-md mt-1 shadow-sm">
-                                <table className="w-full text-[11px] text-left">
-                                  <thead className="bg-gray-100 dark:bg-gray-700 sticky top-0 z-10 shadow-sm">
-                                    <tr>
-                                      <th className="px-2 py-1.5 border-r border-gray-200 dark:border-gray-600 text-center w-8 text-gray-500 dark:text-gray-400">#</th>
-                                      {parsedValue[0].map((h, i) => (
-                                        <th key={i} className="px-3 py-1.5 font-semibold text-gray-700 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600 whitespace-nowrap">{String(h ?? "")}</th>
-                                      ))}
-                                    </tr>
-                                  </thead>
-                                  <tbody className="divide-y divide-gray-100 dark:divide-gray-700/50">
-                                    {parsedValue.slice(1).map((row, rowIdx) => (
-                                      <tr key={rowIdx} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                        <td className="px-2 py-1 text-center text-gray-400 border-r border-gray-100 dark:border-gray-700">{rowIdx + 1}</td>
-                                        {row.map((cell, cellIdx) => (
-                                          <td key={cellIdx} className="px-3 py-1 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700 whitespace-nowrap">
-                                            <div className="max-w-[200px] truncate" title={String(cell ?? "")}>{String(cell ?? "-")}</div>
-                                          </td>
+                        return (
+                          <tr key={key} className="group hover:bg-blue-50/20 dark:hover:bg-blue-900/10 transition-colors">
+                            <td className="px-8 py-6 align-top border-r border-blue-50 dark:border-blue-900/10">
+                              <div className="text-[11px] font-black text-blue-900 dark:text-blue-100 uppercase tracking-tight mb-1">
+                                {t(`data_sync.meta_labels.${key}`, { defaultValue: key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ') })}
+                              </div>
+                              <div className="font-mono text-[9px] text-blue-400 dark:text-blue-500 uppercase tracking-widest font-black opacity-60">
+                                {key}
+                              </div>
+                            </td>
+                            <td className="px-8 py-6 align-top">
+                              {isArrayOfArrays ? (
+                                <div className="rounded-2xl border-2 border-blue-50 dark:border-blue-900/30 overflow-hidden shadow-lg shadow-blue-500/5">
+                                  <div className="max-h-[400px] overflow-auto custom-scrollbar">
+                                    <table className="w-full min-w-max text-left border-collapse">
+                                      <thead className="sticky top-0 z-10">
+                                        <tr className="bg-blue-50/80 dark:bg-blue-900/60">
+                                          <th className="px-3 py-2 border-r border-blue-100 dark:border-blue-800 text-center w-10 text-[9px] font-black text-blue-400 uppercase tracking-widest">#</th>
+                                          {parsedValue[0].map((h, i) => (
+                                            <th key={i} className="px-4 py-2 text-[9px] font-black uppercase tracking-widest text-blue-900/60 dark:text-blue-100/60 border-r border-blue-100 dark:border-blue-800 whitespace-nowrap">{String(h ?? "")}</th>
+                                          ))}
+                                        </tr>
+                                      </thead>
+                                      <tbody className="divide-y divide-blue-50/50 dark:divide-blue-900/20">
+                                        {parsedValue.slice(1).map((row, rowIdx) => (
+                                          <tr key={rowIdx} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/20 transition-colors">
+                                            <td className="px-3 py-1.5 text-center text-[10px] font-mono text-gray-400 border-r border-blue-50 dark:border-blue-900/10 font-bold">{rowIdx + 1}</td>
+                                            {row.map((cell, cellIdx) => (
+                                              <td key={cellIdx} className="px-4 py-1.5 text-xs font-bold text-gray-700 dark:text-gray-200 border-r border-blue-50 dark:border-blue-900/10">
+                                                <div className="max-w-[250px] truncate" title={String(cell ?? "")}>{String(cell ?? "-")}</div>
+                                              </td>
+                                            ))}
+                                          </tr>
                                         ))}
-                                      </tr>
-                                    ))}
-                                  </tbody>
-                                </table>
-                              </div>
-                            ) : isObject || displayValue.length > 50 ? (
-                              <div className="bg-gray-50 dark:bg-gray-900/50 p-2.5 rounded-md border border-gray-200 dark:border-gray-700 max-h-60 overflow-auto">
-                                <pre className="text-[11px] font-mono whitespace-pre-wrap text-gray-700 dark:text-gray-300">
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              ) : isObject || displayValue.length > 50 ? (
+                                <div className="bg-blue-50/30 dark:bg-black/30 p-5 rounded-[1.5rem] border-2 border-blue-50 dark:border-blue-900/30 shadow-inner">
+                                  <pre className="text-[11px] font-mono whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    {displayValue}
+                                  </pre>
+                                </div>
+                              ) : (
+                                <div className={`text-sm font-black tracking-tight ${value == null ? "text-gray-300 italic opacity-50" : "text-gray-800 dark:text-blue-100"}`}>
                                   {displayValue}
-                                </pre>
-                              </div>
-                            ) : (
-                              <span className={value == null ? "text-gray-400 italic" : "font-medium"}>
-                                {displayValue}
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 flex justify-end">
+            <div className="px-10 py-6 border-t border-blue-50 dark:border-blue-900/30 bg-gray-50/30 dark:bg-gray-900 flex justify-end">
               <button
                 onClick={() => setStagingDetailRecord(null)}
-                className="px-6 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700"
+                className="px-8 py-3 bg-white dark:bg-gray-800 border-2 border-blue-50 dark:border-blue-900/30 hover:bg-blue-50 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/5 active:scale-95 transition-all"
               >
-                Đóng
+                {t("data_sync.close_details")}
               </button>
             </div>
           </div>
@@ -442,39 +511,75 @@ const DataSync = () => {
 
       {/* ===== INCOMING REQUEST MODAL ===== */}
       {incomingRequest && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 transition-opacity">
-          <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl border border-blue-500 dark:border-blue-600">
-            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
-              Yêu cầu đồng bộ dữ liệu
-            </h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Máy {incomingRequest.source_device} muốn gử i dữ liệu:
-            </p>
-            <ul className="mb-4 space-y-2">
-              {incomingRequest.tables.map((table) => (
-                <li key={table} className="text-gray-600 dark:text-gray-400">
-                  ✓ {incomingRequest.metadata[table]?.label || table}:{" "}
-                  {incomingRequest.metadata[table]?.count || 0} records
-                </li>
-              ))}
-            </ul>
-            <div className="bg-yellow-50 dark:bg-yellow-900 p-3 rounded mb-4">
-              <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                Cảnh báo: Dữ liệu hiện tại sẽ bị ghi đè. Nên backup database trước khi nhọn.
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 animate-in fade-in duration-500">
+          <div className="absolute inset-0 bg-blue-950/60"></div>
+
+          <div className="relative bg-white dark:bg-gray-900 rounded-[3.5rem] p-12 max-w-xl w-full mx-4 shadow-[0_32px_128px_-16px_rgba(59,130,246,0.25)] border-4 border-blue-500 dark:border-blue-600 animate-in zoom-in-95 duration-500">
+            {/* Pulsing Indicator Icon */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <div className="relative">
+                <div className="absolute inset-0 bg-blue-500 rounded-full animate-ping opacity-25"></div>
+                <div className="w-24 h-24 bg-blue-600 rounded-full border-8 border-white dark:border-gray-900 shadow-2xl flex items-center justify-center text-white relative z-10">
+                  <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center mt-12 mb-10">
+              <h3 className="text-[10px] font-black text-blue-500 uppercase tracking-[0.4em] mb-3">{t("data_sync.system_notification")}</h3>
+              <h2 className="text-4xl font-black text-blue-950 dark:text-blue-100 tracking-tight leading-none mb-4 uppercase">
+                {t("data_sync.sync_request")}
+              </h2>
+              <div className="flex items-center justify-center gap-2 group">
+                <div className="w-10 h-0.5 bg-blue-100 dark:bg-blue-900 rounded-full transition-all group-hover:w-16"></div>
+                <div className="text-sm font-bold text-gray-500 dark:text-gray-400" dangerouslySetInnerHTML={{ __html: t("data_sync.device_sending_data", { device: incomingRequest.source_device }) }} />
+                <div className="w-10 h-0.5 bg-blue-100 dark:bg-blue-900 rounded-full transition-all group-hover:w-16"></div>
+              </div>
+            </div>
+
+            <div className="bg-blue-50/50 dark:bg-blue-900/20 rounded-[2rem] p-8 border-2 border-blue-100/50 dark:border-blue-800/30 mb-8 max-h-[250px] overflow-y-auto custom-scrollbar">
+              <div className="space-y-4">
+                {incomingRequest.tables.map((table) => (
+                  <div key={table} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-blue-50 dark:border-blue-900/20">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-blue-50 dark:bg-blue-950 rounded-xl flex items-center justify-center text-blue-600">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
+                      </div>
+                      <span className="text-xs font-black text-blue-900 dark:text-blue-100 uppercase tracking-tight">
+                        {incomingRequest.metadata[table]?.label || table}
+                      </span>
+                    </div>
+                    <span className="px-3 py-1 bg-blue-600 text-white rounded-full text-[10px] font-black uppercase">
+                      {t("data_sync.records_count", { count: incomingRequest.metadata[table]?.count || 0 })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 p-5 bg-amber-50 dark:bg-amber-900/30 rounded-2xl border-2 border-amber-200 dark:border-amber-800/50 mb-10">
+              <div className="w-10 h-10 bg-amber-200 dark:bg-amber-900 flex items-center justify-center rounded-xl text-amber-700 dark:text-amber-400 shrink-0">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+              </div>
+              <p className="text-[11px] font-bold text-amber-800 dark:text-amber-300 leading-relaxed pt-1">
+                {t("data_sync.overwrite_warning")}
               </p>
             </div>
-            <div className="flex gap-3">
+
+            <div className="flex gap-4">
               <button
                 onClick={handleAcceptRequest}
-                className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded font-semibold"
+                className="flex-[2] px-8 py-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-[1.5rem] text-[12px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/30 active:scale-95 transition-all flex items-center justify-center gap-3"
               >
-                Chấp nhọn
+                {t("data_sync.accept_sync")}
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
               </button>
               <button
                 onClick={handleRejectRequest}
-                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded font-semibold"
+                className="flex-1 px-8 py-5 bg-white dark:bg-gray-800 border-2 border-rose-50 dark:border-rose-900/30 hover:bg-rose-50 text-rose-600 dark:text-rose-400 rounded-[1.5rem] text-[12px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 flex items-center justify-center gap-3"
               >
-                Từ chối
+                {t("data_sync.reject")}
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
           </div>

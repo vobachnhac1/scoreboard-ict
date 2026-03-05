@@ -1,8 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Header from "../components/Header";
 import SquareBox from "../components/SquareBox";
 
 export default function Pencak() {
+  const { t } = useTranslation();
   const renderGDScores = (colors, isReverse) => (
     <div className={`flex ${isReverse ? "flex-row-reverse" : "flex-row"} text-black text-center text-sm font-bold gap-0.5 items-center mx-0.5`}>
       {colors.map((colorRow, rowIndex) => (
@@ -70,9 +72,9 @@ export default function Pencak() {
           </div>
 
           {/* Nhắc nhớ, cảnh cáo */}
-          <SquareBox left={10} center={"Nhắc nhở nhẹ"} right={10} />
-          <SquareBox left={10} center={"Nhắc nhở nhẹ"} right={10} />
-          <SquareBox left={10} center={"Nhắc nhở nhẹ"} right={10} />
+          <SquareBox left={10} center={t("quyen.light_reminder")} right={10} />
+          <SquareBox left={10} center={t("quyen.light_reminder")} right={10} />
+          <SquareBox left={10} center={t("quyen.light_reminder")} right={10} />
         </div>
 
         {/* Xanh */}

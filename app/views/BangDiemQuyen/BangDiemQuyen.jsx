@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import JudgeScore from "./components/JudgeScore";
 import Header from "./components/Header";
 import TotalScore from "./components/TotalScore";
@@ -23,7 +24,44 @@ import {
 import { initSocket as initSocketUtil } from "../../utils/socketUtils";
 import IpMasker from "../../common/IpMasker";
 
+// Audio variables
+let bellAudio = null;
+let victoryAudio = null;
+let globalSoundEnabled = true;
+
+const initBellAudio = () => {
+  if (!bellAudio) {
+    bellAudio = new Audio("/assets/rengreng.wav");
+    bellAudio.volume = 1.0;
+    bellAudio.load();
+  }
+};
+
+const initVictoryAudio = () => {
+  if (!victoryAudio) {
+    victoryAudio = new Audio("/assets/sounds/victory.mp3");
+    victoryAudio.volume = 0.8;
+    victoryAudio.load();
+  }
+};
+
+const stopAllAudios = () => {
+  try {
+    if (bellAudio && !bellAudio.paused) {
+      bellAudio.pause();
+      bellAudio.currentTime = 0;
+    }
+    if (victoryAudio && !victoryAudio.paused) {
+      victoryAudio.pause();
+      victoryAudio.currentTime = 0;
+    }
+  } catch (error) {
+    console.warn("Lỗi khi dừng audio:", error);
+  }
+};
+
 export default function BangDiemQuyen() {
+  const { t } = useTranslation();
   const {
     modalProps,
     showConfirm,
@@ -34,6 +72,35 @@ export default function BangDiemQuyen() {
   } = useConfirmModal();
   const socket = useSelector((state) => state.socket);
   const dispatch = useDispatch();
+
+  // Audio play functions inside component to use t()
+  const playBell = React.useCallback(() => {
+    if (!globalSoundEnabled) return;
+    try {
+      stopAllAudios();
+      if (!bellAudio) initBellAudio();
+      bellAudio.currentTime = 0;
+      bellAudio.play().catch((error) => {
+        console.warn(t("scoreboard.quyen.audio_play_error", { name: "bell" }), error.message);
+      });
+    } catch (error) {
+      console.error(t("scoreboard.quyen.audio_error", { name: "bell" }), error);
+    }
+  }, [t]);
+
+  const playVictory = React.useCallback(() => {
+    if (!globalSoundEnabled) return;
+    try {
+      stopAllAudios();
+      if (!victoryAudio) initVictoryAudio();
+      victoryAudio.currentTime = 0;
+      victoryAudio.play().catch((error) => {
+        console.warn(t("scoreboard.quyen.audio_play_error", { name: "victory" }), error.message);
+      });
+    } catch (error) {
+      console.error(t("scoreboard.quyen.audio_error", { name: "victory" }), error);
+    }
+  }, [t]);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -149,7 +216,7 @@ export default function BangDiemQuyen() {
       },
       onError: (error) => {
         console.error(" Socket initialization failed:", error);
-        showError("Không thể kết nối socket. Vui lòng thử lại.");
+        showError(t("scoreboard.quyen.socket_init_error"));
       },
       forceReConnection: forceReConnection,
       disconnectSocket: disconnectSocket,
@@ -475,14 +542,14 @@ export default function BangDiemQuyen() {
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       showSuccess(
-        `Đã gửi yêu cầu kết nối lại đến Giám định ${device.referrer}!`,
+        t("scoreboard.quyen.reconnect_judge_success", { number: device.referrer }),
       );
 
       // Refresh device list để cập nhật trạng thái
       handleRefreshDevices();
     } catch (error) {
       console.error("Reconnect error:", error);
-      showError(`Không thể kết nối lại với Giám định ${device.referrer}`);
+      showError(t("scoreboard.quyen.reconnect_judge_error", { number: device.referrer }));
     }
   };
 
@@ -497,7 +564,7 @@ export default function BangDiemQuyen() {
 
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      showSuccess(`Đã ngắt kết nối với Giám định ${device.referrer}!`);
+      showSuccess(t("scoreboard.quyen.disconnect_judge_success", { number: device.referrer }));
 
       // Update local state immediately
       setReferrerDevices((prev) =>
@@ -507,7 +574,7 @@ export default function BangDiemQuyen() {
       );
     } catch (error) {
       console.error("Disconnect error:", error);
-      showError(`Không thể ngắt kết nối với Giám định ${device.referrer}`);
+      showError(t("scoreboard.quyen.disconnect_judge_error", { number: device.referrer }));
     }
   };
 
@@ -520,27 +587,27 @@ export default function BangDiemQuyen() {
 
   const buttons = useRef([
     {
-      label: "QUAY LẠI",
+      label: t("common.back").toUpperCase(),
       onClick: () => handleBack(),
       iconName: "Exit",
       variant: "red",
       fontBold: true,
     },
     {
-      label: !isTimerRunning.current ? "BẮT ĐẦU" : "DỪNG",
+      label: !isTimerRunning.current ? t("common.start").toUpperCase() : t("common.stop").toUpperCase(),
       onClick: () => startTimer(),
       iconName: "Start",
       fontBold: true,
     },
     {
-      label: "TRƯỚC",
+      label: t("common.previous").toUpperCase(),
       onClick: () => previousMatch(),
       iconName: "ChevronLeft",
       variant: "yellow",
       fontBold: true,
     },
     {
-      label: "SAU",
+      label: t("common.next").toUpperCase(),
       onClick: () => nextMatch(),
       iconName: "ChevronRight",
       variant: "yellow",
@@ -548,31 +615,34 @@ export default function BangDiemQuyen() {
       iconBehind: true,
     },
     {
-      label: "TÍNH ĐIỂM",
+      label: t("scoreboard.quyen.calculate_score").toUpperCase(),
       onClick: () => handleCaculator(),
       iconName: "Calculator",
       fontBold: true,
     },
     {
-      label: "NHẬP ĐIỂM TAY",
+      label: t("scoreboard.quyen.manual_input").toUpperCase(),
       onClick: () => handleManualInput(),
       iconName: "Edit",
       fontBold: true,
     },
     {
-      label: "MỞ CHẤM ĐIỂM",
-      onClick: () => setShowWaiting((prev) => !prev),
+      label: t("scoreboard.quyen.open_scoring").toUpperCase(),
+      onClick: () => {
+        if (!showWaiting) playBell();
+        setShowWaiting((prev) => !prev);
+      },
       iconName: "Open",
       fontBold: true,
     },
     {
-      label: "LƯU KẾT QUẢ",
+      label: t("common.save").toUpperCase() + " " + t("scoreboard.quyen.result").toUpperCase(),
       onClick: () => onSaveResult(),
       iconName: "Save",
       fontBold: true,
     },
     {
-      label: "LÀM MỚI",
+      label: t("common.refresh").toUpperCase(),
       onClick: () => resetTimer(),
       iconName: "Reset",
       variant: "blue",
@@ -581,10 +651,21 @@ export default function BangDiemQuyen() {
   ]);
 
   // Thực hiện quay lại
-  const handleBack = () => {
+  const handleBack = async () => {
     // hỏi người dùng có muốn quay lại không
-    const isConfirmed = window.confirm("Bạn có chắc chắn muốn quay lại không?");
-    if (isConfirmed) {
+    // const isConfirmed = window.confirm("Bạn có chắc chắn muốn quay lại không?");
+    // if (isConfirmed) {
+    //   navigate(returnUrl);
+    // }
+    const confirmed = await showConfirm(
+      t("scoreboard.doikhang.confirm_exit"),
+      {
+        title: t("scoreboard.doikhang.confirm_title"),
+        confirmText: t('common.confirm'),
+        cancelText: t('common.cancel'),
+      },
+    );
+    if (confirmed) {
       navigate(returnUrl);
     }
   };
@@ -672,7 +753,7 @@ export default function BangDiemQuyen() {
         extractCompetitionIdFromUrl(returnUrl);
       if (!competitionId) {
         await showError(
-          "Không tìm thấy thông tin giải đấu. Quay về màn hình quản lý.",
+          t("scoreboard.quyen.competition_not_found"),
         );
         navigate(returnUrl);
         return;
@@ -690,7 +771,7 @@ export default function BangDiemQuyen() {
       );
       const nextMatch = matches[index + 1];
       if (!nextMatch) {
-        await showAlert("Đã hết trận đấu! Quay về màn hình quản lý.");
+        await showAlert(t("scoreboard.quyen.no_more_matches"));
         return;
       }
       const nextMatchData = {
@@ -705,6 +786,7 @@ export default function BangDiemQuyen() {
         config_system: configSystem,
         row_index: nextMatch.row_index,
         scores: nextMatch.scores || {},
+        referrers: nextMatch.referrers || [],
       };
       navigate("/bang-diem/quyen", {
         state: {
@@ -716,7 +798,7 @@ export default function BangDiemQuyen() {
     } catch (error) {
       console.error(" Lỗi khi chuyển trận:", error);
       await showError(
-        "Lỗi khi chuyển sang trận tiếp theo: " +
+        `${t("scoreboard.quyen.switch_next_match_error")}: ` +
         (error.response?.data?.message || error.message),
       );
     }
@@ -730,7 +812,7 @@ export default function BangDiemQuyen() {
         extractCompetitionIdFromUrl(returnUrl);
       if (!competitionId) {
         await showError(
-          "Không tìm thấy thông tin giải đấu. Quay về màn hình quản lý.",
+          t("scoreboard.quyen.competition_not_found"),
         );
         navigate(returnUrl);
         return;
@@ -747,7 +829,7 @@ export default function BangDiemQuyen() {
       );
       const previousMatch = matches[index - 1];
       if (!previousMatch) {
-        await showAlert("Đây là trận đầu tiên!");
+        await showAlert(t("scoreboard.quyen.first_match_warning"));
         return;
       }
       const previousMatchData = {
@@ -761,6 +843,7 @@ export default function BangDiemQuyen() {
         match_status: previousMatch.match_status,
         row_index: previousMatch.row_index,
         scores: previousMatch.scores || {},
+        referrers: previousMatch.referrers || [],
       };
       navigate("/bang-diem/quyen", {
         state: {
@@ -772,7 +855,7 @@ export default function BangDiemQuyen() {
     } catch (error) {
       console.error(" Lỗi khi chuyển trận:", error);
       await showError(
-        "Lỗi khi chuyển sang trận trước: " +
+        `${t("scoreboard.quyen.switch_prev_match_error")}: ` +
         (error.response?.data?.message || error.message),
       );
     }
@@ -787,27 +870,29 @@ export default function BangDiemQuyen() {
   const onSaveResult = async () => {
     try {
       if (!matchDataRef.current.match_id) {
-        await showAlert("Không tìm thấy thông tin trận đấu!");
+        await showAlert(t("scoreboard.quyen.match_not_found"));
         return;
       }
       const params = {
         match_id: matchDataRef.current.match_id,
         scores: scoresRef.current,
         config_system: configSystem,
+        referrers: matchDataRef.current.referrers || [],
       };
       const result = await axios.post(
         "http://localhost:6789/api/competition-match-team/save-score",
         params,
       );
       if (result.status == 200 && result.data.success) {
-        await showSuccess("Lưu kết quả thành công!");
+        playVictory();
+        await showSuccess(t("scoreboard.quyen.save_result_success"));
       } else {
-        await showError("Lưu kết quả thất bại!");
+        await showError(t("scoreboard.quyen.save_result_error"));
       }
     } catch (error) {
       console.error(" Lỗi khi lưu kết quả:", error);
       await showError(
-        "Lỗi khi lưu kết quả: " +
+        `${t("scoreboard.quyen.save_result_error")}: ` +
         (error.response?.data?.message || error.message),
       );
     }
@@ -838,6 +923,7 @@ export default function BangDiemQuyen() {
           status: match.match_status || "PENDING",
           athletes: match.athletes || [],
           scores: match.scores || {},
+          referrers: match.referrers || [],
         }));
         setMatchesList(matches);
       }
@@ -874,7 +960,7 @@ export default function BangDiemQuyen() {
         matchDataRef.current.competition_dk_id ||
         extractCompetitionIdFromUrl(returnUrl);
       if (!competition_dk_id) {
-        await showError("Không tìm thấy thông tin giải đấu.");
+        await showError(t("scoreboard.quyen.competition_not_found"));
         return;
       }
 
@@ -919,6 +1005,7 @@ export default function BangDiemQuyen() {
         match_status: "IN", // Đã cập nhật status
         row_index: matchFromDB?.row_index,
         scores: matchFromDB?.scores || {},
+        referrers: matchFromDB?.referrers || match.referrers || [],
       };
 
       console.log("🚀 Navigating to match with data:", newMatchData);
@@ -936,7 +1023,7 @@ export default function BangDiemQuyen() {
       window.location.reload();
     } catch (error) {
       console.error("Lỗi khi chuyển trận:", error);
-      await showError("Có lỗi xảy ra khi chuyển trận đấu!");
+      await showError(t("scoreboard.quyen.switch_match_error"));
     }
   };
 
@@ -1022,7 +1109,7 @@ export default function BangDiemQuyen() {
     try {
       const savedRoom = localStorage.getItem("admin_room");
       if (!savedRoom) {
-        showError("Không tìm thấy thông tin phòng. Vui lòng kết nối lại.");
+        showError(t("scoreboard.quyen.room_info_not_found"));
         return null;
       }
       const roomData = JSON.parse(savedRoom);
@@ -1044,7 +1131,7 @@ export default function BangDiemQuyen() {
       }
     } catch (error) {
       console.error("Error generating QR code:", error);
-      showError("Không thể tạo mã QR. Vui lòng thử lại.");
+      showError(t("scoreboard.quyen.qr_generation_error"));
       return null;
     }
   };
@@ -1052,11 +1139,11 @@ export default function BangDiemQuyen() {
   // tạo lại connect
   const handleReConnectionSocket = async () => {
     const confirmReconnect = await showConfirm(
-      "Bạn có chắc chắn muốn tạo lại kết nối socket?\n\nSocket hiện tại sẽ bị ngắt và tạo lại kết nối mới.",
+      t("scoreboard.quyen.reconnect_socket_message"),
       {
-        title: "Xác nhận tạo lại kết nối",
-        confirmText: "Tạo lại",
-        cancelText: "Hủy",
+        title: t("scoreboard.quyen.reconnect_socket_title"),
+        confirmText: t("scoreboard.quyen.action_reconnect"),
+        cancelText: t("common.cancel"),
       },
     );
     if (confirmReconnect) {
@@ -1122,7 +1209,7 @@ export default function BangDiemQuyen() {
       <div className="w-full flex flex-row justify-center">
         <div className="px-4 py-2 shadow-2xl">
           <p className="text-start text-2xl font-bold tracking-wide">
-            NỘI DUNG:{" "}
+            {t("scoreboard.quyen.content").toUpperCase()}:{" "}
             {matchDataRef.current?.match_name?.toUpperCase() ||
               matchDataRef.current?.match_type?.toUpperCase() ||
               ""}
@@ -1130,7 +1217,7 @@ export default function BangDiemQuyen() {
         </div>
         <div className="px-4 py-2 shadow-2xl ">
           <p className="text-start text-2xl font-bold tracking-wide">
-            ĐƠN VỊ: {matchDataRef.current?.team_name?.toUpperCase() || ""}
+            {t("scoreboard.quyen.unit").toUpperCase()}: {matchDataRef.current?.team_name?.toUpperCase() || ""}
           </p>
         </div>
       </div>
@@ -1180,6 +1267,7 @@ export default function BangDiemQuyen() {
                         isHighest={isHighest}
                         isLowest={isLowest}
                         main={true}
+                        t={t}
                       />
                     );
                   });
@@ -1231,7 +1319,7 @@ export default function BangDiemQuyen() {
             <div className="flex items-center gap-6">
               {/* Trạng thái tính điểm */}
               <div className="flex items-center gap-2">
-                <span className="text-gray-400">Tính điểm:</span>
+                <span className="text-gray-400">{t("scoreboard.quyen.scoring_status")}:</span>
                 {showWaiting ? (
                   <div className="flex items-center gap-1.5 bg-green-500/20 border border-green-500 rounded px-2.5 py-1 animate-pulse">
                     <svg
@@ -1247,7 +1335,7 @@ export default function BangDiemQuyen() {
                       />
                     </svg>
                     <span className="text-green-400 font-bold text-sm">
-                      Đang mở
+                      {t("scoreboard.quyen.scoring_open")}
                     </span>
                   </div>
                 ) : (
@@ -1265,7 +1353,7 @@ export default function BangDiemQuyen() {
                       />
                     </svg>
                     <span className="text-gray-400 font-bold text-sm">
-                      Đã đóng
+                      {t("scoreboard.quyen.scoring_closed")}
                     </span>
                   </div>
                 )}
@@ -1275,19 +1363,19 @@ export default function BangDiemQuyen() {
               <div className="h-6 w-px bg-gray-600"></div>
 
               <span className="text-gray-400">
-                Tổng số:{" "}
+                {t("scoreboard.quyen.statistics_total")}:{" "}
                 <span className="text-white font-bold text-sm">
                   {configSystem.so_giam_dinh || 3}
                 </span>
               </span>
               <span className="text-gray-400">
-                Sẵn sàng:{" "}
+                {t("scoreboard.quyen.statistics_ready")}:{" "}
                 <span className="text-green-400 font-bold text-sm">
                   {referrerDevices.filter((s) => s.ready).length}
                 </span>
               </span>
               <span className="text-gray-400">
-                Đã kết nối:{" "}
+                {t("scoreboard.quyen.statistics_connected")}:{" "}
                 <span className="text-yellow-400 font-bold text-sm">
                   {
                     referrerDevices.filter((s) => s.connected && !s.ready)
@@ -1295,12 +1383,12 @@ export default function BangDiemQuyen() {
                   }
                 </span>
               </span>
-              <span className="text-gray-400">
-                Chưa kết nối:{" "}
+              {/* <span className="text-gray-400">
+                {t("scoreboard.quyen.statistics_disconnected")}:{" "}
                 <span className="text-red-400 font-bold text-sm">
                   {referrerDevices.filter((s) => !s.connected).length}
                 </span>
-              </span>
+              </span> */}
             </div>
 
             {/* Center: Individual GĐ Indicators */}
@@ -1322,11 +1410,11 @@ export default function BangDiemQuyen() {
                       className={`${bgColor} ${textColor} font-bold px-3 py-1.5 rounded text-sm min-w-[50px] text-center shadow-lg`}
                       title={
                         isReady
-                          ? `GĐ${gdNumber}: Sẵn sàng`
-                          : `GĐ${gdNumber}: Chưa sẵn sàng`
+                          ? `${t('scoreboard.doikhang.referrer_name')}${gdNumber}: ${t("scoreboard.quyen.referee_ready")}`
+                          : `${t('scoreboard.doikhang.referrer_name')}Đ${gdNumber}: ${t("scoreboard.quyen.referee_not_ready")}`
                       }
                     >
-                      GĐ{gdNumber}
+                      {t('scoreboard.doikhang.referrer_name')}{gdNumber}
                     </div>
                   );
                 },
@@ -1340,13 +1428,13 @@ export default function BangDiemQuyen() {
                 (configSystem.so_giam_dinh || 3) ? (
                 <div className="flex items-center gap-2 bg-green-500/20 border border-green-500 rounded px-4 py-2">
                   <span className="text-green-400 font-bold text-sm">
-                    Tất cả sẵn sàng
+                    {t("scoreboard.quyen.all_ready")}
                   </span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2 bg-yellow-500/20 border border-yellow-500 rounded px-4 py-2 animate-pulse">
                   <span className="text-yellow-400 font-bold text-sm">
-                    Chưa đủ giám định
+                    {t("scoreboard.quyen.waiting_referees")}
                   </span>
                 </div>
               )}
@@ -1354,14 +1442,14 @@ export default function BangDiemQuyen() {
               {/* Control Bar Toggle Switch */}
               <div className="flex items-center gap-2 bg-gray-800/50  px-3 py-2">
                 <span className="text-gray-300 text-sm font-medium">
-                  Ẩn/Hiện
+                  {showActionButtons ? t("scoreboard.quyen.hide_control_bar") : t("scoreboard.quyen.show_control_bar")}
                 </span>
                 <button
                   onClick={() => setShowActionButtons(!showActionButtons)}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 ${showActionButtons ? "bg-blue-600" : "bg-gray-600"
                     }`}
                   title={
-                    showActionButtons ? "Ẩn Control Bar" : "Hiện Control Bar"
+                    showActionButtons ? t("scoreboard.quyen.hide_control_bar") : t("scoreboard.quyen.show_control_bar")
                   }
                 >
                   <span
@@ -1384,7 +1472,7 @@ export default function BangDiemQuyen() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
-                NHẬP ĐIỂM TAY
+                {t("scoreboard.quyen.modal_manual_input_title")}
               </h2>
               <button
                 onClick={() => setOpenModal(false)}

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import MatchInfoSection from "./MatchConfigModal/MatchInfoSection";
 import MatchControlSection from "./MatchConfigModal/MatchControlSection";
 import TimeConfigSection from "./MatchConfigModal/TimeConfigSection";
@@ -28,6 +29,7 @@ const MatchConfigModal = ({
   roundDuration,
   keyboardMode,
 }) => {
+  const { t } = useTranslation();
   if (!showConfigModal) return null;
 
   return (
@@ -55,10 +57,10 @@ const MatchConfigModal = ({
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                Cấu hình trận đấu
+                {t("scoreboard.doikhang.match_config")}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                Thiết lập thông số và điều khiển
+                {t("scoreboard.doikhang.setup_parameters")}
               </p>
             </div>
           </div>
@@ -121,7 +123,7 @@ const MatchConfigModal = ({
             onClick={() => setShowConfigModal(false)}
             className="px-5 py-2 rounded text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 outline-none"
           >
-            Hủy
+            {t("scoreboard.doikhang.modal_cancel")}
           </button>
           <button
             onClick={async () => {
@@ -133,7 +135,7 @@ const MatchConfigModal = ({
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
-            Lưu thay đổi
+            {t("scoreboard.doikhang.modal_save_changes")}
           </button>
         </div>
       </div>

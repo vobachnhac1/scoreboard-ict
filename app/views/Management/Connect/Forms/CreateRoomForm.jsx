@@ -100,118 +100,115 @@ export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
   };
 
   return (
-    <div className="p-6">
-      <form onSubmit={handleSubmit}>
+    <div className="p-2 pt-4">
+      <form onSubmit={handleSubmit} className="space-y-8">
         {/* Grid 2 Columns Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Left Column - Form Inputs */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-              Thông tin kết nối
-            </h3>
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 mb-2 px-1">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-sm font-black text-blue-900 dark:text-blue-100 uppercase tracking-widest">
+                Thông tin kết nối
+              </h3>
+            </div>
 
             {/* Room ID */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Mã kết nối{" "}
-                <span className="text-red-500 dark:text-red-400">*</span>
+            <div className="space-y-2 group">
+              <label className="text-[10px] font-black text-blue-900 dark:text-blue-300 uppercase tracking-widest block px-1 opacity-60">
+                Mã kết nối (Room ID) <span className="text-rose-500 font-bold">*</span>
               </label>
-              <div className="flex gap-2">
+              <div className="relative">
                 <input
                   disabled
                   type="text"
                   value={roomId}
-                  onChange={(e) => setRoomId(e.target.value.toUpperCase())}
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-400"
+                  className="w-full px-5 py-4 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-blue-100 dark:border-blue-800 rounded-2xl text-lg font-black tracking-[0.2em] text-blue-900 dark:text-blue-100 shadow-inner disabled:bg-blue-100/30 dark:disabled:bg-blue-950/20"
                   placeholder="Mã kết nối"
-                  maxLength={10}
-                  required
                 />
-                {/* <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={handleCopyRoomId}
-                  className="min-w-20"
-                >
-                  📋
-                </Button> */}
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  <div className="px-2 py-1 bg-blue-100 dark:bg-blue-900 rounded text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">Auto</div>
+                </div>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Mã kết nối duy nhất (10 ký tự)
+              <p className="text-[10px] text-blue-500/60 dark:text-blue-400/60 font-bold italic px-1">
+                * Mã này dùng để xác định phòng thi đấu trên hệ thống
               </p>
             </div>
 
             {/* UUID Desktop */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Mã thiết bị{" "}
-                <span className="text-red-500 dark:text-red-400">*</span>
+            <div className="space-y-2 group">
+              <label className="text-[10px] font-black text-blue-900 dark:text-blue-300 uppercase tracking-widest block px-1 opacity-60">
+                Mã thiết bị Admin <span className="text-rose-500 font-bold">*</span>
               </label>
-              <div className="flex gap-2">
+              <div className="relative">
                 <input
                   disabled
                   type="text"
                   value={uuidDesktop}
-                  onChange={(e) => setUuidDesktop(e.target.value.toUpperCase())}
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-400"
+                  className="w-full px-5 py-4 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-blue-100 dark:border-blue-800 rounded-2xl text-lg font-black tracking-[0.2em] text-blue-900 dark:text-blue-100 shadow-inner disabled:bg-blue-100/30 dark:disabled:bg-blue-950/20"
                   placeholder="Mã thiết bị"
-                  maxLength={12}
-                  required
                 />
-                {/* <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={handleCopyUuid}
-                  className="min-w-20"
-                >
-                  📋
-                </Button> */}
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  <div className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900 rounded text-[9px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">Admin</div>
+                </div>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Mã định danh thiết bị admin (12 ký tự)
+              <p className="text-[10px] text-blue-500/60 dark:text-blue-400/60 font-bold italic px-1">
+                * Định danh duy nhất cho máy trạm điều khiển
               </p>
             </div>
 
-            {/* Server URL: không hiển thị */}
-            {/* <div>
-              <label className="block text-sm font-medium mb-2">
-                Server URL <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={serverUrl}
-                onChange={(e) => setServerUrl(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="http://localhost:6789"
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                URL của Socket.IO server
-              </p>
-            </div> */}
-          </div>
-
-          {/* Right Column - QR Code */}
-          <div className="flex flex-col">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-              QR Code
-            </h3>
-
-            <div className="flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-lg border-2 border-blue-200 dark:border-blue-700">
-              {qrCodeUrl ? (
-                <div className="flex flex-col items-center">
-                  <div className="bg-white dark:bg-gray-700 p-4 rounded-xl shadow-lg mb-4 border border-gray-200 dark:border-gray-600">
-                    <img src={qrCodeUrl} alt="QR Code" className="w-64 h-64" />
-                  </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-300 mt-3 text-center max-w-xs">
-                    Scan mã QR này để kết nối từ thiết bị di động
+            <div className="mt-4 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-3xl border border-blue-100 dark:border-blue-900/30 border-dashed">
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm border border-blue-50 dark:border-blue-900/50">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-[11px] font-black text-blue-900 dark:text-blue-100 uppercase tracking-widest mb-1">Kết nối nhanh</h4>
+                  <p className="text-[10px] font-bold text-blue-500 dark:text-blue-400 opacity-80 leading-relaxed italic">
+                    Sử dụng các mã này để cấu hình thủ công nếu chức năng quét QR không hoạt động trên thiết bị di động.
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - QR Code Section */}
+          <div className="flex flex-col h-full">
+            <div className="flex items-center gap-3 mb-2 px-1">
+              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                </svg>
+              </div>
+              <h3 className="text-sm font-black text-blue-900 dark:text-blue-100 uppercase tracking-widest">
+                QR Code Connection
+              </h3>
+            </div>
+
+            <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white dark:bg-gray-800 rounded-3xl border-2 border-blue-50 dark:border-blue-900/30 shadow-xl shadow-blue-500/5 relative overflow-hidden group">
+              {/* Decoration */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+
+              {qrCodeUrl ? (
+                <div className="relative z-10 flex flex-col items-center">
+                  <div className="bg-white p-6 rounded-[2.5rem] shadow-2xl shadow-blue-500/20 mb-6 border-4 border-blue-50 transition-transform duration-500 hover:scale-105">
+                    <img src={qrCodeUrl} alt="QR Code" className="w-[18rem] h-[18rem] rounded-lg" />
+                  </div>
+                  <div className="px-6 py-2.5 bg-blue-900 dark:bg-blue-600 rounded-full shadow-lg">
+                    <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Scan to connect system</span>
+                  </div>
+                </div>
               ) : (
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 dark:border-blue-400 mx-auto mb-4"></div>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-                    Đang tải mã QR...
+                <div className="relative z-10 text-center">
+                  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-l-4 border-blue-600 dark:border-blue-400 mx-auto mb-6 shadow-xl"></div>
+                  <p className="text-[10px] font-black text-blue-900 dark:text-blue-100 uppercase tracking-widest opacity-60">
+                    Đang tạo mã định danh...
                   </p>
                 </div>
               )}
@@ -219,34 +216,42 @@ export default function CreateRoomForm({ onSubmit, onClose, existingRoom }) {
           </div>
         </div>
 
-        {/* Action Buttons - Full Width Below */}
-        <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700 justify-end">
-          <Button
-            type="button"
-            variant="warning"
-            onClick={handleGenerateNew}
-            className="min-w-[150px]"
-          >
-            Tạo mã tự động
-          </Button>
-          <Button
-            type="button"
-            variant="warning"
-            onClick={handleDownloadQR}
-            className="min-w-[150px]"
-          >
-            Tải mã QR
-          </Button>
-          <Button type="submit" variant="primary" className="min-w-[150px]">
-            {existingRoom ? "Sử dụng" : "Tạo mới & Kết nối"}
-          </Button>
+        {/* Action Buttons - Redesigned Toolbar */}
+        <div className="flex flex-wrap items-center justify-end gap-3 pt-8 border-t border-blue-50 dark:border-blue-900/30">
+          <div className="flex items-center gap-3 mr-auto">
+            <button
+              type="button"
+              onClick={handleGenerateNew}
+              className="px-6 py-3.5 bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/10 dark:hover:bg-amber-900/20 text-amber-600 border border-amber-200 dark:border-amber-800 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-sm transition-all active:scale-95"
+            >
+              Làm mới mã
+            </button>
+            <button
+              type="button"
+              onClick={handleDownloadQR}
+              className="px-6 py-3.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/10 dark:hover:bg-blue-900/20 text-blue-600 border border-blue-100 dark:border-blue-800 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-sm transition-all active:scale-95"
+            >
+              Tải QR Code
+            </button>
+          </div>
+
           <Button
             type="button"
             variant="secondary"
             onClick={onClose}
-            className="min-w-[150px]"
+            className="min-w-32 py-3.5 !rounded-2xl"
           >
-            Quay lại
+            <span className="text-[10px] font-black uppercase tracking-widest">Đóng</span>
+          </Button>
+
+          <Button
+            type="submit"
+            variant="primary"
+            className="min-w-64 py-3.5 !rounded-2xl shadow-2xl shadow-blue-500/30"
+          >
+            <span className="text-[10px] font-black uppercase tracking-widest">
+              {existingRoom ? "Xác nhận sử dụng" : "Kích hoạt hệ thống"}
+            </span>
           </Button>
         </div>
       </form>

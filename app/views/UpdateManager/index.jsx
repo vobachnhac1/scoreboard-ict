@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function UpdateManager() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [currentVersion, setCurrentVersion] = useState("1.0.0");
   const [latestVersion, setLatestVersion] = useState(null);
   const [updateStatus, setUpdateStatus] = useState("idle"); // idle, checking, downloading, installing, success, error
@@ -23,11 +25,11 @@ export default function UpdateManager() {
         }
         // Update info will come via event listener
       } else {
-        throw new Error("Electron API không khả dụng");
+        throw new Error(t("update_manager.electron_api_unavailable"));
       }
     } catch (error) {
       console.error("Check for updates error:", error);
-      setErrorMessage("Không thể kiểm tra cập nhật. Vui lòng thử lại.");
+      setErrorMessage(t("update_manager.cannot_check_update"));
       setUpdateStatus("error");
     }
   };
@@ -46,11 +48,11 @@ export default function UpdateManager() {
         }
         // Progress will come via event listener
       } else {
-        throw new Error("Electron API không khả dụng");
+        throw new Error(t("update_manager.electron_api_unavailable"));
       }
     } catch (error) {
       console.error("Download update error:", error);
-      setErrorMessage("Lỗi khi tải xuống hoặc cài đặt. Vui lòng thử lại.");
+      setErrorMessage(t("update_manager.download_install_error"));
       setUpdateStatus("error");
     }
   };
@@ -122,7 +124,7 @@ export default function UpdateManager() {
       if (window.electron.onUpdateError) {
         window.electron.onUpdateError((error) => {
           console.error("Update error:", error);
-          setErrorMessage(error.message || "Có lỗi xảy ra khi cập nhật");
+          setErrorMessage(error.message || t("update_manager.update_error_occurred"));
           setUpdateStatus("error");
         });
       }
@@ -184,11 +186,11 @@ export default function UpdateManager() {
                     />
                   </svg>
                   <h1 className="text-3xl font-black text-gray-900 dark:text-white">
-                    Cập nhật phần mềm
+                    {t("update_manager.title")}
                   </h1>
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Quản lý và cài đặt bản cập nhật mới từ xa
+                  {t("update_manager.description")}
                 </p>
               </div>
             </div>
@@ -203,7 +205,7 @@ export default function UpdateManager() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                  Phiên bản hiện tại
+                  {t("update_manager.current_version")}
                 </h2>
                 <p className="text-3xl font-black text-blue-600">
                   v{currentVersion}
@@ -231,7 +233,7 @@ export default function UpdateManager() {
           <div className="bg-white dark:bg-gray-800 rounded   shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                Kiểm tra cập nhật
+                {t("update_manager.check_for_updates")}
               </h2>
               <button
                 onClick={checkForUpdates}
@@ -256,8 +258,8 @@ export default function UpdateManager() {
                   />
                 </svg>
                 {updateStatus === "checking"
-                  ? "Đang kiểm tra..."
-                  : "Kiểm tra ngay"}
+                  ? t("update_manager.checking")
+                  : t("update_manager.check_now")}
               </button>
             </div>
 
@@ -278,7 +280,7 @@ export default function UpdateManager() {
                   />
                 </svg>
                 <p className="text-blue-700 dark:text-blue-300 font-medium">
-                  Đang kiểm tra phiên bản mới...
+                  {t("update_manager.checking_new_version")}
                 </p>
               </div>
             )}
@@ -299,7 +301,7 @@ export default function UpdateManager() {
                   />
                 </svg>
                 <p className="text-green-700 dark:text-green-300 font-medium">
-                  Bạn đang sử dụng phiên bản mới nhất!
+                  {t("update_manager.using_latest_version")}
                 </p>
               </div>
             )}
@@ -343,16 +345,16 @@ export default function UpdateManager() {
                   </svg>
                   <div className="flex-1">
                     <p className="text-green-700 dark:text-green-300 font-medium">
-                      Cập nhật đã tải xuống thành công!
+                      {t("update_manager.update_downloaded_success")}
                     </p>
                     <p className="text-sm text-green-600 dark:text-green-400 mt-1">
-                      Nhấn nút bên dưới để cài đặt và khởi động lại ứng dụng.
+                      {t("update_manager.click_to_install_restart")}
                     </p>
                     <button
                       onClick={installUpdate}
                       className="mt-3 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded   font-medium transition-colors"
                     >
-                      Cài đặt và khởi động lại
+                      {t("update_manager.install_and_restart")}
                     </button>
                   </div>
                 </div>
@@ -367,7 +369,7 @@ export default function UpdateManager() {
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                      Phiên bản mới có sẵn
+                      {t("update_manager.new_version_available")}
                     </h2>
                     <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold rounded">
                       NEW
@@ -379,13 +381,13 @@ export default function UpdateManager() {
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Ngày phát hành
+                    {t("update_manager.release_date")}
                   </p>
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">
                     {updateInfo.releaseDate}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Kích thước: {updateInfo.size}
+                    {t("update_manager.size")}: {updateInfo.size}
                   </p>
                 </div>
               </div>
@@ -393,7 +395,7 @@ export default function UpdateManager() {
               {/* Changelog */}
               <div className="mb-6">
                 <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3">
-                  Nội dung cập nhật:
+                  {t("update_manager.update_content")}:
                 </h3>
                 <ul className="space-y-2">
                   {updateInfo.changelog.map((item, index) => (
@@ -426,8 +428,8 @@ export default function UpdateManager() {
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                       {updateStatus === "downloading"
-                        ? "Đang tải xuống..."
-                        : "Đang cài đặt..."}
+                        ? t("update_manager.downloading")
+                        : t("update_manager.installing")}
                     </span>
                     <span className="text-sm font-bold text-blue-600">
                       {updateStatus === "downloading"
@@ -477,10 +479,10 @@ export default function UpdateManager() {
                     />
                   </svg>
                   {updateStatus === "downloading"
-                    ? "Đang tải..."
+                    ? t("update_manager.downloading_short")
                     : updateStatus === "installing"
-                      ? "Đang cài đặt..."
-                      : "Tải và cài đặt"}
+                      ? t("update_manager.installing_short")
+                      : t("update_manager.download_and_install")}
                 </button>
               </div>
             </div>
@@ -489,12 +491,12 @@ export default function UpdateManager() {
           {/* System Info */}
           <div className="bg-white dark:bg-gray-800 rounded   shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-              Thông tin hệ thống
+              {t("update_manager.system_info")}
             </h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Hệ điều hành
+                  {t("update_manager.operating_system")}
                 </p>
                 <p className="text-sm font-semibold text-gray-900 dark:text-white">
                   {navigator.platform}
@@ -502,7 +504,7 @@ export default function UpdateManager() {
               </div>
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Trình duyệt
+                  {t("update_manager.browser")}
                 </p>
                 <p className="text-sm font-semibold text-gray-900 dark:text-white">
                   {navigator.userAgent.split(" ").slice(-1)[0]}

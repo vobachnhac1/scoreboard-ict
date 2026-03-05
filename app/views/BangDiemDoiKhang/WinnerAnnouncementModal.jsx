@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const WinnerAnnouncementModal = ({
   showWinnerAnnouncementModal,
@@ -6,21 +7,22 @@ const WinnerAnnouncementModal = ({
   btnReturnWinner,
   btnConfirmWinner,
 }) => {
-  const [winReason, setWinReason] = useState("Thắng Điểm");
+  const { t } = useTranslation();
+  const [winReason, setWinReason] = useState(t("scoreboard.doikhang.win_by_points"));
 
   useEffect(() => {
     if (showWinnerAnnouncementModal) {
-      setWinReason("Thắng Điểm");
+      setWinReason(t("scoreboard.doikhang.win_by_points"));
     }
-  }, [showWinnerAnnouncementModal]);
+  }, [showWinnerAnnouncementModal, t]);
 
   if (!showWinnerAnnouncementModal || !announcedWinner) return null;
 
   const reasons = [
-    { id: "Thắng Điểm", label: "Thắng Điểm" },
-    { id: "Thắng Tuyệt Đối", label: "Thắng Tuyệt Đối" },
-    { id: "Thắng Bỏ Cuộc", label: "Thắng Bỏ Cuộc" },
-    { id: "Thắng Bốc Thăm", label: "Thắng Bốc Thăm" },
+    { id: "win_by_points", label: t("scoreboard.doikhang.win_by_points") },
+    { id: "win_absolute", label: t("scoreboard.doikhang.win_absolute") },
+    { id: "win_forfeit", label: t("scoreboard.doikhang.win_forfeit") },
+    { id: "win_draw", label: t("scoreboard.doikhang.win_draw") },
   ];
 
   return (
@@ -43,7 +45,7 @@ const WinnerAnnouncementModal = ({
               </svg>
             </div>
             <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 uppercase tracking-wider drop-shadow-md">
-              Vận Động Viên Thắng
+              {t("scoreboard.doikhang.winner_announcement_title")}
             </h2>
           </div>
 
@@ -58,7 +60,7 @@ const WinnerAnnouncementModal = ({
               {/* Tên vận động viên */}
               <div>
                 <div className="text-sm font-semibold text-white/70 uppercase tracking-widest mb-2">
-                  Tên Vận Động Viên
+                  {t("scoreboard.doikhang.winner_announcement_athlete_name")}
                 </div>
                 <div className="text-5xl font-black text-white drop-shadow-lg leading-tight uppercase">
                   {announcedWinner.name}
@@ -68,7 +70,7 @@ const WinnerAnnouncementModal = ({
               {/* Đội */}
               <div>
                 <div className="text-sm font-semibold text-white/70 uppercase tracking-widest mb-2">
-                  Đội
+                  {t("scoreboard.doikhang.winner_announcement_team")}
                 </div>
                 <div
                   className={`inline-block px-8 py-3 rounded-xl text-3xl font-bold text-white shadow-inner border border-white/20 uppercase ${announcedWinner.team === "red"
@@ -85,7 +87,7 @@ const WinnerAnnouncementModal = ({
           {/* Lý do Thắng */}
           <div className="mb-8">
             <div className="text-center text-sm font-semibold text-white/70 uppercase tracking-widest mb-4">
-              Lý Do Thắng
+              {t("scoreboard.doikhang.winner_announcement_reason")}
             </div>
             <div className="grid grid-cols-2 gap-3">
               {reasons.map((r) => (
@@ -117,7 +119,7 @@ const WinnerAnnouncementModal = ({
               className="group relative px-6 py-4 rounded-xl font-bold text-lg text-white bg-gray-700 hover:bg-gray-600 transition-all shadow-lg overflow-hidden border border-gray-500/50"
             >
               <div className="relative z-10 flex items-center justify-center gap-2">
-                <span>Quay lại</span>
+                <span>{t("scoreboard.doikhang.winner_announcement_back")}</span>
               </div>
             </button>
             <button
@@ -125,7 +127,7 @@ const WinnerAnnouncementModal = ({
               className="group relative px-6 py-4 rounded-xl font-bold text-lg text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 transition-all shadow-lg shadow-green-500/30 overflow-hidden border border-green-400/50"
             >
               <div className="relative z-10 flex items-center justify-center gap-2">
-                <span>Xác nhận & Kết thúc</span>
+                <span>{t("scoreboard.doikhang.winner_announcement_confirm")}</span>
               </div>
             </button>
           </div>

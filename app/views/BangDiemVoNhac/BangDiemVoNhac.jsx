@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import JudgeScore from "./components/JudgeScore";
 import Header from "./components/Header";
 import TotalScore from "./components/TotalScore";
@@ -28,7 +29,44 @@ import { socketClient } from "../../config/routes";
 import { initSocket as initSocketUtil } from "../../utils/socketUtils";
 import IpMasker from "../../common/IpMasker";
 
+// Audio variables
+let bellAudio = null;
+let victoryAudio = null;
+let globalSoundEnabled = true;
+
+const initBellAudio = () => {
+  if (!bellAudio) {
+    bellAudio = new Audio("/assets/rengreng.wav");
+    bellAudio.volume = 1.0;
+    bellAudio.load();
+  }
+};
+
+const initVictoryAudio = () => {
+  if (!victoryAudio) {
+    victoryAudio = new Audio("/assets/sounds/victory.mp3");
+    victoryAudio.volume = 0.8;
+    victoryAudio.load();
+  }
+};
+
+const stopAllAudios = () => {
+  try {
+    if (bellAudio && !bellAudio.paused) {
+      bellAudio.pause();
+      bellAudio.currentTime = 0;
+    }
+    if (victoryAudio && !victoryAudio.paused) {
+      victoryAudio.pause();
+      victoryAudio.currentTime = 0;
+    }
+  } catch (error) {
+    console.warn("Lỗi khi dừng audio:", error);
+  }
+};
+
 export default function BangDiemVoNhac() {
+  const { t } = useTranslation();
   const {
     modalProps,
     showConfirm,
@@ -39,6 +77,35 @@ export default function BangDiemVoNhac() {
   } = useConfirmModal();
   const socket = useSelector((state) => state.socket);
   const dispatch = useDispatch();
+
+  // Audio play functions inside component to use t()
+  const playBell = React.useCallback(() => {
+    if (!globalSoundEnabled) return;
+    try {
+      stopAllAudios();
+      if (!bellAudio) initBellAudio();
+      bellAudio.currentTime = 0;
+      bellAudio.play().catch((error) => {
+        console.warn(t("scoreboard.vonhac.audio_play_error", { name: "bell" }), error.message);
+      });
+    } catch (error) {
+      console.error(t("scoreboard.vonhac.audio_error", { name: "bell" }), error);
+    }
+  }, [t]);
+
+  const playVictory = React.useCallback(() => {
+    if (!globalSoundEnabled) return;
+    try {
+      stopAllAudios();
+      if (!victoryAudio) initVictoryAudio();
+      victoryAudio.currentTime = 0;
+      victoryAudio.play().catch((error) => {
+        console.warn(t("scoreboard.vonhac.audio_play_error", { name: "victory" }), error.message);
+      });
+    } catch (error) {
+      console.error(t("scoreboard.vonhac.audio_error", { name: "victory" }), error);
+    }
+  }, [t]);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -151,11 +218,11 @@ export default function BangDiemVoNhac() {
       socket,
       role: "admin",
       onSuccess: () => {
-        console.log(" Socket initialized successfully in BangDiemQuyen");
+        console.log(" Socket initialized successfully in BangDiemVoNhac");
       },
       onError: (error) => {
         console.error(" Socket initialization failed:", error);
-        showError("Không thể kết nối socket. Vui lòng thử lại.");
+        showError(t("scoreboard.vonhac.socket_init_error"));
       },
       forceReConnection: forceReConnection,
       disconnectSocket: disconnectSocket,
@@ -466,14 +533,14 @@ export default function BangDiemVoNhac() {
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       showSuccess(
-        `Đã gửi yêu cầu kết nối lại đến Giám định ${device.referrer}!`,
+        t("scoreboard.vonhac.reconnect_judge_success", { number: device.referrer }),
       );
 
       // Refresh device list để cập nhật trạng thái
       handleRefreshDevices();
     } catch (error) {
       console.error("Reconnect error:", error);
-      showError(`Không thể kết nối lại với Giám định ${device.referrer}`);
+      showError(t("scoreboard.vonhac.reconnect_judge_error", { number: device.referrer }));
     }
   };
 
@@ -488,7 +555,7 @@ export default function BangDiemVoNhac() {
 
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      showSuccess(`Đã ngắt kết nối với Giám định ${device.referrer}!`);
+      showSuccess(t("scoreboard.vonhac.disconnect_judge_success", { number: device.referrer }));
 
       // Update local state immediately
       setReferrerDevices((prev) =>
@@ -498,7 +565,7 @@ export default function BangDiemVoNhac() {
       );
     } catch (error) {
       console.error("Disconnect error:", error);
-      showError(`Không thể ngắt kết nối với Giám định ${device.referrer}`);
+      showError(t("scoreboard.vonhac.disconnect_judge_error", { number: device.referrer }));
     }
   };
 
@@ -511,27 +578,27 @@ export default function BangDiemVoNhac() {
 
   const buttons = useRef([
     {
-      label: "QUAY LẠI",
+      label: t("scoreboard.vonhac.back").toUpperCase(),
       onClick: () => handleBack(),
       iconName: "Exit",
       variant: "red",
       fontBold: true,
     },
     {
-      label: !isTimerRunning.current ? "BẮT ĐẦU" : "DỪNG",
+      label: !isTimerRunning.current ? t("common.start").toUpperCase() : t("common.stop").toUpperCase(),
       onClick: () => startTimer(),
       iconName: "Start",
       fontBold: true,
     },
     {
-      label: "TRƯỚC",
+      label: t("scoreboard.vonhac.previous").toUpperCase(),
       onClick: () => previousMatch(),
       iconName: "ChevronLeft",
       variant: "yellow",
       fontBold: true,
     },
     {
-      label: "SAU",
+      label: t("scoreboard.vonhac.next").toUpperCase(),
       onClick: () => nextMatch(),
       iconName: "ChevronRight",
       variant: "yellow",
@@ -539,31 +606,34 @@ export default function BangDiemVoNhac() {
       iconBehind: true,
     },
     {
-      label: "TÍNH ĐIỂM",
+      label: t("scoreboard.vonhac.calculate_score").toUpperCase(),
       onClick: () => handleCaculator(),
       iconName: "Calculator",
       fontBold: true,
     },
     {
-      label: "NHẬP ĐIỂM TAY",
+      label: t("scoreboard.vonhac.manual_input").toUpperCase(),
       onClick: () => handleManualInput(),
       iconName: "Edit",
       fontBold: true,
     },
     {
-      label: "MỞ CHẤM ĐIỂM",
-      onClick: () => setShowWaiting((prev) => !prev),
+      label: t("scoreboard.vonhac.open_scoring").toUpperCase(),
+      onClick: () => {
+        if (!showWaiting) playBell();
+        setShowWaiting((prev) => !prev);
+      },
       iconName: "Open",
       fontBold: true,
     },
     {
-      label: "LƯU KẾT QUẢ",
+      label: t("scoreboard.vonhac.save_result").toUpperCase(),
       onClick: () => onSaveResult(),
       iconName: "Save",
       fontBold: true,
     },
     {
-      label: "LÀM MỚI",
+      label: t("scoreboard.vonhac.refresh").toUpperCase(),
       onClick: () => resetTimer(),
       iconName: "Reset",
       variant: "blue",
@@ -625,9 +695,7 @@ export default function BangDiemVoNhac() {
         matchDataRef.current.competition_dk_id ||
         extractCompetitionIdFromUrl(returnUrl);
       if (!competitionId) {
-        await showError(
-          "Không tìm thấy thông tin giải đấu. Quay về màn hình quản lý.",
-        );
+        await showError(t("scoreboard.vonhac.competition_not_found"));
         navigate(returnUrl);
         return;
       }
@@ -644,7 +712,7 @@ export default function BangDiemVoNhac() {
       );
       const nextMatch = matches[index + 1];
       if (!nextMatch) {
-        await showAlert("Đã hết trận đấu! Quay về màn hình quản lý.");
+        await showAlert(t("scoreboard.vonhac.no_more_matches"));
         return;
       }
       const nextMatchData = {
@@ -670,7 +738,7 @@ export default function BangDiemVoNhac() {
     } catch (error) {
       console.error(" Lỗi khi chuyển trận:", error);
       await showError(
-        "Lỗi khi chuyển sang trận tiếp theo: " +
+        `${t("scoreboard.vonhac.switch_next_match_error")}: ` +
         (error.response?.data?.message || error.message),
       );
     }
@@ -683,9 +751,7 @@ export default function BangDiemVoNhac() {
         matchDataRef.current.competition_dk_id ||
         extractCompetitionIdFromUrl(returnUrl);
       if (!competitionId) {
-        await showError(
-          "Không tìm thấy thông tin giải đấu. Quay về màn hình quản lý.",
-        );
+        await showError(t("scoreboard.vonhac.competition_not_found"));
         navigate(returnUrl);
         return;
       }
@@ -701,7 +767,7 @@ export default function BangDiemVoNhac() {
       );
       const previousMatch = matches[index - 1];
       if (!previousMatch) {
-        await showAlert("Đây là trận đầu tiên!");
+        await showAlert(t("scoreboard.vonhac.first_match"));
         return;
       }
       const previousMatchData = {
@@ -726,7 +792,7 @@ export default function BangDiemVoNhac() {
     } catch (error) {
       console.error(" Lỗi khi chuyển trận:", error);
       await showError(
-        "Lỗi khi chuyển sang trận trước: " +
+        `${t("scoreboard.vonhac.switch_prev_match_error")}: ` +
         (error.response?.data?.message || error.message),
       );
     }
@@ -741,27 +807,29 @@ export default function BangDiemVoNhac() {
   const onSaveResult = async () => {
     try {
       if (!matchDataRef.current.match_id) {
-        await showAlert("Không tìm thấy thông tin trận đấu!");
+        await showAlert(t("scoreboard.vonhac.match_not_found"));
         return;
       }
       const params = {
         match_id: matchDataRef.current.match_id,
         scores: scoresRef.current,
         config_system: configSystem,
+        referrers: matchDataRef.current.referrers || [],
       };
       const result = await axios.post(
         "http://localhost:6789/api/competition-match-team/save-score",
         params,
       );
       if (result.status == 200 && result.data.success) {
-        await showSuccess("Lưu kết quả thành công!");
+        playVictory();
+        await showSuccess(t("scoreboard.vonhac.save_result_success"));
       } else {
-        await showError("Lưu kết quả thất bại!");
+        await showError(t("scoreboard.vonhac.save_result_error"));
       }
     } catch (error) {
       console.error(" Lỗi khi lưu kết quả:", error);
       await showError(
-        "Lỗi khi lưu kết quả: " +
+        `${t("scoreboard.vonhac.save_result_error")}: ` +
         (error.response?.data?.message || error.message),
       );
     }
@@ -774,7 +842,7 @@ export default function BangDiemVoNhac() {
         matchDataRef.current.competition_dk_id ||
         extractCompetitionIdFromUrl(returnUrl);
       if (!competition_dk_id) {
-        console.warn("Không tìm thấy competition_dk_id");
+        console.warn(t("scoreboard.vonhac.competition_not_found"));
         return;
       }
 
@@ -828,7 +896,7 @@ export default function BangDiemVoNhac() {
         matchDataRef.current.competition_dk_id ||
         extractCompetitionIdFromUrl(returnUrl);
       if (!competition_dk_id) {
-        await showError("Không tìm thấy thông tin giải đấu.");
+        await showError(t("scoreboard.vonhac.competition_not_found"));
         return;
       }
 
@@ -890,7 +958,7 @@ export default function BangDiemVoNhac() {
       window.location.reload();
     } catch (error) {
       console.error("Lỗi khi chuyển trận:", error);
-      await showError("Có lỗi xảy ra khi chuyển trận đấu!");
+      await showError(t("scoreboard.vonhac.switch_match_error"));
     }
   };
 
@@ -976,7 +1044,7 @@ export default function BangDiemVoNhac() {
     try {
       const savedRoom = localStorage.getItem("admin_room");
       if (!savedRoom) {
-        showError("Không tìm thấy thông tin phòng. Vui lòng kết nối lại.");
+        showError(t("scoreboard.vonhac.room_info_not_found"));
         return null;
       }
       const roomData = JSON.parse(savedRoom);
@@ -998,7 +1066,7 @@ export default function BangDiemVoNhac() {
       }
     } catch (error) {
       console.error("Error generating QR code:", error);
-      showError("Không thể tạo mã QR. Vui lòng thử lại.");
+      showError(t("scoreboard.vonhac.qr_generation_error"));
       return null;
     }
   };
@@ -1006,11 +1074,11 @@ export default function BangDiemVoNhac() {
   // tạo lại connect
   const handleReConnectionSocket = async () => {
     const confirmReconnect = await showConfirm(
-      "Bạn có chắc chắn muốn tạo lại kết nối socket?\n\nSocket hiện tại sẽ bị ngắt và tạo lại kết nối mới.",
+      t("scoreboard.vonhac.reconnect_socket_message"),
       {
-        title: "Xác nhận tạo lại kết nối",
-        confirmText: "Tạo lại",
-        cancelText: "Hủy",
+        title: t("scoreboard.vonhac.reconnect_socket_title"),
+        confirmText: t("scoreboard.vonhac.action_reconnect"),
+        cancelText: t("common.cancel"),
       },
     );
     if (confirmReconnect) {
@@ -1068,7 +1136,7 @@ export default function BangDiemVoNhac() {
       <div className="w-full m-4 flex flex-row justify-center">
         <div className="px-6 py-4 shadow-2xl">
           <p className="text-start text-2xl font-bold tracking-wide">
-            NỘI DUNG:{" "}
+            {t("scoreboard.vonhac.content").toUpperCase()}:{" "}
             {matchDataRef.current?.match_name?.toUpperCase() ||
               matchDataRef.current?.match_type?.toUpperCase() ||
               ""}
@@ -1076,7 +1144,7 @@ export default function BangDiemVoNhac() {
         </div>
         <div className="px-6 py-4 shadow-2xl ">
           <p className="text-start text-2xl font-bold tracking-wide">
-            ĐƠN VỊ: {matchDataRef.current?.team_name?.toUpperCase() || ""}
+            {t("scoreboard.vonhac.unit").toUpperCase()}: {matchDataRef.current?.team_name?.toUpperCase() || ""}
           </p>
         </div>
       </div>
@@ -1133,7 +1201,7 @@ export default function BangDiemVoNhac() {
             <div className="flex items-center gap-6">
               {/* Trạng thái tính điểm */}
               <div className="flex items-center gap-2">
-                <span className="text-gray-400">Tính điểm:</span>
+                <span className="text-gray-400">{t("scoreboard.vonhac.scoring_status")}:</span>
                 {showWaiting ? (
                   <div className="flex items-center gap-1.5 bg-green-500/20 border border-green-500 rounded px-2.5 py-1 animate-pulse">
                     <svg
@@ -1149,7 +1217,7 @@ export default function BangDiemVoNhac() {
                       />
                     </svg>
                     <span className="text-green-400 font-bold text-sm">
-                      Đang mở
+                      {t("scoreboard.vonhac.scoring_open")}
                     </span>
                   </div>
                 ) : (
@@ -1167,7 +1235,7 @@ export default function BangDiemVoNhac() {
                       />
                     </svg>
                     <span className="text-gray-400 font-bold text-sm">
-                      Đã đóng
+                      {t("scoreboard.vonhac.scoring_closed")}
                     </span>
                   </div>
                 )}
@@ -1177,19 +1245,19 @@ export default function BangDiemVoNhac() {
               <div className="h-6 w-px bg-gray-600"></div>
 
               <span className="text-gray-400">
-                Tổng số:{" "}
+                {t("scoreboard.vonhac.statistics_total")}:{" "}
                 <span className="text-white font-bold text-sm">
                   {so_giam_dinh || 7}
                 </span>
               </span>
               <span className="text-gray-400">
-                Sẵn sàng:{" "}
+                {t("scoreboard.vonhac.statistics_ready")}:{" "}
                 <span className="text-green-400 font-bold text-sm">
                   {referrerDevices.filter((s) => s.ready).length}
                 </span>
               </span>
               <span className="text-gray-400">
-                Đã kết nối:{" "}
+                {t("scoreboard.vonhac.statistics_connected")}:{" "}
                 <span className="text-yellow-400 font-bold text-sm">
                   {
                     referrerDevices.filter((s) => s.connected && !s.ready)
@@ -1197,12 +1265,12 @@ export default function BangDiemVoNhac() {
                   }
                 </span>
               </span>
-              <span className="text-gray-400">
-                Chưa kết nối:{" "}
+              {/* <span className="text-gray-400">
+                {t("scoreboard.quyen.statistics_disconnected")}:{" "}
                 <span className="text-red-400 font-bold text-sm">
                   {referrerDevices.filter((s) => !s.connected).length}
                 </span>
-              </span>
+              </span> */}
             </div>
 
             {/* Center: Individual GĐ Indicators */}
@@ -1222,11 +1290,11 @@ export default function BangDiemVoNhac() {
                     className={`${bgColor} ${textColor} font-bold px-3 py-1.5 rounded text-sm min-w-[50px] text-center shadow-lg`}
                     title={
                       isReady
-                        ? `GĐ${gdNumber}: Sẵn sàng`
-                        : `GĐ${gdNumber}: Chưa sẵn sàng`
+                        ? `${t('scoreboard.doikhang.referrer_name')}${gdNumber}: ${t("scoreboard.vonhac.referee_ready")}`
+                        : `${t('scoreboard.doikhang.referrer_name')}${gdNumber}: ${t("scoreboard.vonhac.referee_not_ready")}`
                     }
                   >
-                    GĐ{gdNumber}
+                    {t('scoreboard.doikhang.referrer_name')}{gdNumber}
                   </div>
                 );
               })}
@@ -1239,13 +1307,13 @@ export default function BangDiemVoNhac() {
                 (so_giam_dinh || 7) ? (
                 <div className="flex items-center gap-2 bg-green-500/20 border border-green-500 rounded px-4 py-2">
                   <span className="text-green-400 font-bold text-sm">
-                    Tất cả sẵn sàng
+                    {t("scoreboard.vonhac.all_ready")}
                   </span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2 bg-yellow-500/20 border border-yellow-500 rounded px-4 py-2 animate-pulse">
                   <span className="text-yellow-400 font-bold text-sm">
-                    Chưa đủ giám định
+                    {t("scoreboard.vonhac.waiting_referees")}
                   </span>
                 </div>
               )}
@@ -1253,14 +1321,14 @@ export default function BangDiemVoNhac() {
               {/* Control Bar Toggle Switch */}
               <div className="flex items-center gap-2 bg-gray-800/50  px-3 py-2">
                 <span className="text-gray-300 text-sm font-medium">
-                  Ẩn/Hiện
+                  {showActionButtons ? t("scoreboard.vonhac.hide_control_bar") : t("scoreboard.vonhac.show_control_bar")}
                 </span>
                 <button
                   onClick={() => setShowActionButtons(!showActionButtons)}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 ${showActionButtons ? "bg-blue-600" : "bg-gray-600"
                     }`}
                   title={
-                    showActionButtons ? "Ẩn Control Bar" : "Hiện Control Bar"
+                    showActionButtons ? t("scoreboard.quyen.hide_control_bar") : t("scoreboard.quyen.show_control_bar")
                   }
                 >
                   <span
@@ -1277,7 +1345,7 @@ export default function BangDiemVoNhac() {
       <Modal
         isOpen={openModal}
         onClose={() => setOpenModal(false)}
-        title={"NHẬP ĐIỂM TAY"}
+        title={t("scoreboard.quyen.modal_manual_input_title")}
         size="xl"
       >
         <RenderContentModal

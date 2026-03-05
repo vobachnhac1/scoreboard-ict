@@ -1,25 +1,27 @@
 import React, { useRef } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
+import { useTranslation } from "react-i18next";
 import DoiKhangResultReport from "./DoiKhangResultReport";
 import QuyenResultReport from "./QuyenResultReport";
 import { combineReducers } from "@reduxjs/toolkit";
 import JudgeScore from "../BangDiemQuyen/components/JudgeScore";
 function ReportsHome() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const reportCards = [
     {
-      title: "Quản lý Đối Kháng",
-      description: "Tạo và quản lý template báo cáo kết quả thi đấu đối kháng",
+      title: t("reports.doikhang_result"),
+      description: t("reports.template_manager") + " " + t("scoreboard.doikhang.title"),
       icon: "⚔️",
       href: "/reports/template-editor/doikhang",
       gradient: "from-red-500 to-red-600",
       stats: { label: "Template", value: "DK" },
     },
     {
-      title: "Quản lý Quyền",
-      description: "Tạo và quản lý template báo cáo kết quả thi đấu quyền",
+      title: t("reports.quyen_result"),
+      description: t("reports.template_manager") + " " + t("scoreboard.quyen.title"),
       icon: "🥋",
       href: "/reports/template-editor/quyen",
       gradient: "from-blue-500 to-blue-600",
@@ -33,10 +35,10 @@ function ReportsHome() {
         {/* Header */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Quản lý báo cáo
+            {t("reports.title")}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Tạo và xuất các loại báo cáo từ dữ liệu hệ thống
+            {t("reports.template_manager")}
           </p>
         </div>
 

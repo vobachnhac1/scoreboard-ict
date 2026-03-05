@@ -31,161 +31,115 @@ const ConfirmModal = ({
     switch (type) {
       case "warning":
         return (
-          <svg
-            className="w-16 h-16 text-yellow-500 mx-auto mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            />
-          </svg>
+          <div className="w-20 h-20 bg-amber-50 dark:bg-amber-900/30 rounded-3xl flex items-center justify-center text-amber-500 mx-auto mb-6 border-2 border-amber-100 dark:border-amber-800 shadow-lg shadow-amber-500/10">
+            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+          </div>
         );
       case "error":
         return (
-          <svg
-            className="w-16 h-16 text-red-500 mx-auto mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <div className="w-20 h-20 bg-rose-50 dark:bg-rose-900/30 rounded-3xl flex items-center justify-center text-rose-500 mx-auto mb-6 border-2 border-rose-100 dark:border-rose-800 shadow-lg shadow-rose-500/10">
+            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
         );
       case "success":
         return (
-          <svg
-            className="w-16 h-16 text-green-500 mx-auto mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/30 rounded-3xl flex items-center justify-center text-emerald-500 mx-auto mb-6 border-2 border-emerald-100 dark:border-emerald-800 shadow-lg shadow-emerald-500/10">
+            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
         );
       case "confirm":
         return (
-          <svg
-            className="w-16 h-16 text-blue-500 mx-auto mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <div className="w-20 h-20 bg-blue-50 dark:bg-blue-900/30 rounded-3xl flex items-center justify-center text-blue-500 mx-auto mb-6 border-2 border-blue-100 dark:border-blue-800 shadow-lg shadow-blue-500/10">
+            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
         );
       default:
         return (
-          <svg
-            className="w-16 h-16 text-gray-500 mx-auto mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <div className="w-20 h-20 bg-gray-50 dark:bg-gray-700/30 rounded-3xl flex items-center justify-center text-gray-500 mx-auto mb-6 border-2 border-gray-100 dark:border-gray-700 shadow-lg">
+            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
         );
     }
   };
 
-  // Button color theo type
+  // Button style theo type
   const getConfirmButtonClass = () => {
     switch (type) {
       case "warning":
-        return "bg-yellow-600 hover:bg-yellow-700";
+        return "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20";
       case "error":
-        return "bg-red-600 hover:bg-red-700";
+        return "bg-rose-600 hover:bg-rose-700 shadow-rose-600/20";
       case "success":
-        return "bg-green-600 hover:bg-green-700";
+        return "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20";
       default:
-        return "bg-blue-600 hover:bg-blue-700";
+        return "bg-blue-600 hover:bg-blue-700 shadow-blue-600/20";
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 backdrop-blur-sm"
+        className="absolute inset-0 bg-blue-950/40 dark:bg-black/60 backdrop-blur-md transition-opacity"
         onClick={onCancel}
       />
 
-      {/* Modal */}
-      <div className="relative bg-white dark:bg-gray-800 rounded shadow-2xl max-w-md w-full mx-4 p-6 animate-scale-in">
-        {/* Icon */}
+      {/* Modal Card */}
+      <div className="relative bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-[0_32px_128px_-16px_rgba(0,0,0,0.3)] max-w-md w-full mx-4 p-10 animate-scale-in border border-blue-50/50 dark:border-blue-900/30 overflow-hidden">
+        {/* Decorative background element */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent"></div>
+
+        {/* Icon Area */}
         {getIcon()}
 
-        {/* Title */}
-        {title && (
-          <h3 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-3">
-            {title}
-          </h3>
-        )}
-
-        {/* Message */}
-        <div className="text-gray-600 dark:text-gray-300 text-center mb-6 whitespace-pre-line">
-          {message}
+        {/* Text Content */}
+        <div className="text-center mb-10">
+          {title && (
+            <h3 className="text-2xl font-black text-blue-950 dark:text-blue-50 tracking-tight mb-3 uppercase">
+              {title}
+            </h3>
+          )}
+          <div className="text-sm font-bold text-gray-500 dark:text-gray-400 leading-relaxed whitespace-pre-line px-2">
+            {message}
+          </div>
         </div>
 
-        {/* Buttons */}
-        <div
-          className={`flex gap-3 ${showCancel ? "justify-between" : "justify-center"}`}
-        >
+        {/* Action Toolbar */}
+        <div className={`flex gap-4 ${showCancel ? "flex-row" : "flex-col items-center"}`}>
           {showCancel && (
             <button
               onClick={onCancel}
-              className="flex-1 px-6 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded font-semibold transition-colors"
+              className="flex-1 px-8 py-4 bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 border-2 border-gray-100 dark:border-gray-800"
             >
               {cancelText}
             </button>
           )}
           <button
             onClick={onConfirm}
-            className={`flex-1 px-6 py-3 text-white rounded font-semibold transition-colors ${getConfirmButtonClass()}`}
+            className={`flex-1 px-8 py-4 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 ${getConfirmButtonClass()}`}
           >
+            {confirmText === "OK" ? (
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+            ) : null}
             {confirmText}
           </button>
         </div>
       </div>
 
-      {/* Animation CSS */}
+      {/* Enhanced Animation CSS */}
       <style>{`
         @keyframes scale-in {
           from {
-            transform: scale(0.9);
+            transform: scale(0.95) translateY(10px);
             opacity: 0;
           }
           to {
-            transform: scale(1);
+            transform: scale(1) translateY(0);
             opacity: 1;
           }
         }
         .animate-scale-in {
-          animation: scale-in 0.2s ease-out;
+          animation: scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
       `}</style>
     </div>

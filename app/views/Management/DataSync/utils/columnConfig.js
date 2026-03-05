@@ -129,12 +129,12 @@ export const getColumnConfig = (tableName) => {
  * @param {Object}columnNameMap - Map tên cột
  * @returns {Object}Column config object
  */
-export const buildColumnConfig = (displayColumns, columnNameMap) => {
+export const buildColumnConfig = (displayColumns, columnNameMap, t) => {
   const colConfig = {};
   displayColumns.forEach((col) => {
     colConfig[col] = {
       visible: true,
-      displayName: columnNameMap[col] || col, // Tên tiếng Việt hoặc giữ nguyên
+      displayName: t ? t(`data_sync.meta_labels.${col}`, { defaultValue: columnNameMap[col] || col }) : (columnNameMap[col] || col),
     };
   });
   return colConfig;

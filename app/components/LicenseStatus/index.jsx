@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   checkLicenseStatus,
   setLicenseStatus,
@@ -22,6 +23,7 @@ import {
 export default function LicenseStatus({ compact = false }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const {
     valid,
@@ -77,11 +79,11 @@ export default function LicenseStatus({ compact = false }) {
             )}
             <div>
               <p className="text-xs font-semibold text-gray-900 dark:text-white">
-                {valid ? "Đã kích hoạt" : "Chưa kích hoạt"}
+                {valid ? t("license.activated") : t("license.not_activated")}
               </p>
               {valid && (
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Còn {daysRemaining} ngày
+                  {t("license.days_remaining", { days: daysRemaining })}
                 </p>
               )}
             </div>
@@ -91,7 +93,7 @@ export default function LicenseStatus({ compact = false }) {
               onClick={handleActivate}
               className="px-3 py-1 text-xs bg-blue-600 text-white rounded   hover:bg-blue-700 transition-colors"
             >
-              Kích hoạt
+              {t("license_status.activate")}
             </button>
           )}
         </div>
@@ -115,12 +117,12 @@ export default function LicenseStatus({ compact = false }) {
             )}
             <div>
               <h3 className="text-2xl font-bold text-white">
-                {valid ? "Bản quyền hợp lệ" : "Chưa kích hoạt bản quyền"}
+                {valid ? t("license_status.license_valid") : t("license_status.license_not_activated")}
               </h3>
               <p className="text-white/80 text-sm mt-1">
                 {valid
-                  ? `Phần mềm đã được kích hoạt và sẵn sàng sử dụng`
-                  : "Vui lòng kích hoạt bản quyền để sử dụng đầy đủ tính năng"}
+                  ? t("license_status.license_activated_ready")
+                  : t("license_status.please_activate_license")}
               </p>
             </div>
           </div>
@@ -131,14 +133,14 @@ export default function LicenseStatus({ compact = false }) {
               disabled={loading}
               className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded   transition-colors disabled:opacity-50"
             >
-              {loading ? "Đang kiểm tra..." : "Làm mới"}
+              {loading ? t("license_status.checking") : t("license_status.refresh")}
             </button>
             {!valid && (
               <button
                 onClick={handleActivate}
                 className="px-6 py-2 bg-white text-gray-900 font-semibold rounded   hover:bg-gray-100 transition-colors shadow-lg"
               >
-                Kích hoạt ngay
+                {t("license_status.activate_now")}
               </button>
             )}
           </div>
@@ -159,12 +161,12 @@ export default function LicenseStatus({ compact = false }) {
                 )}
                 <div>
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    Trạng thái kiểm tra
+                    {t("license_status.check_status")}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     {online
-                      ? "Đã kiểm tra online"
-                      : "Kiểm tra offline (từ cache)"}
+                      ? t("license_status.checked_online")
+                      : t("license_status.checked_offline")}
                   </p>
                 </div>
               </>
@@ -178,10 +180,10 @@ export default function LicenseStatus({ compact = false }) {
               <ClockIcon className="w-6 h-6 text-blue-500" />
               <div>
                 <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                  Thời gian còn lại
+                  {t("license_status.time_remaining")}
                 </p>
                 <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                  {daysRemaining} ngày
+                  {t("license_status.days_count", { count: daysRemaining })}
                 </p>
               </div>
             </div>
@@ -191,7 +193,7 @@ export default function LicenseStatus({ compact = false }) {
               <KeyIcon className="w-6 h-6 text-purple-500" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                  Mã bản quyền
+                  {t("license_status.license_key")}
                 </p>
                 <p className="text-xs font-mono text-gray-600 dark:text-gray-300 truncate">
                   {licenseKey || "N/A"}
@@ -206,7 +208,7 @@ export default function LicenseStatus({ compact = false }) {
             {activationDate && (
               <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded  ">
                 <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                  Ngày kích hoạt
+                  {t("license_status.activation_date")}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
                   {new Date(activationDate).toLocaleDateString("vi-VN", {
@@ -222,7 +224,7 @@ export default function LicenseStatus({ compact = false }) {
             {expirationDate && (
               <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded  ">
                 <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                  Ngày hết hạn
+                  {t("license_status.expiration_date")}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
                   {new Date(expirationDate).toLocaleDateString("vi-VN", {
@@ -239,7 +241,7 @@ export default function LicenseStatus({ compact = false }) {
           {packageName && (
             <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded   border border-blue-200 dark:border-blue-800">
               <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                Gói dịch vụ
+                {t("license_status.service_package")}
               </p>
               <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
                 {packageName}
@@ -251,10 +253,10 @@ export default function LicenseStatus({ compact = false }) {
           {daysRemaining <= 30 && daysRemaining > 0 && (
             <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded  ">
               <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">
-                Bản quyền sắp hết hạn
+                {t("license_status.license_expiring_soon")}
               </p>
               <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
-                Vui lòng gia hạn bản quyền để tiếp tục sử dụng dịch vụ
+                {t("license_status.please_renew_license")}
               </p>
             </div>
           )}
@@ -264,17 +266,16 @@ export default function LicenseStatus({ compact = false }) {
           <div className="text-center py-8">
             <ShieldExclamationIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Chưa có bản quyền
+              {t("license_status.no_license")}
             </h4>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-              Vui lòng kích hoạt bản quyền để sử dụng đầy đủ tính năng của phần
-              mềm
+              {t("license_status.please_activate_to_use_full_features")}
             </p>
             <button
               onClick={handleActivate}
               className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded  hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg transform hover:scale-105"
             >
-              Kích hoạt bản quyền ngay
+              {t("license_status.activate_license_now")}
             </button>
           </div>
         </div>

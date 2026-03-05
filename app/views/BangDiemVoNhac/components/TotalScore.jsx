@@ -1,15 +1,17 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function TotalScore({ total, main, ...props }) {
+  const { t } = useTranslation();
   if (main) {
     return (
       <div className="relative group" {...props}>
         {/* Main card - Tăng chiều ngang */}
-        <div className="bg-orange-500 rounded w-[350px] h-[160px] flex flex-col items-center justify-center text-white shadow-[0_10px_40px_rgba(0,0,0,0.4)] border-[2px] border-yellow-400 transform transition-all duration-300 hover:scale-105 hover:shadow-[0_15px_50px_rgba(234,88,12,0.6)] ring-4 ring-yellow-500/30">
+        <div className="bg-orange-500 rounded w-[400px] h-[160px] flex flex-col items-center justify-center text-white shadow-[0_10px_40px_rgba(0,0,0,0.4)] border-[2px] border-yellow-400 transform transition-all duration-300 hover:scale-105 hover:shadow-[0_15px_50px_rgba(234,88,12,0.6)] ring-4 ring-yellow-500/30">
           {/* Total label */}
-          <div className="absolute rounded -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-500 px-2 py-2  shadow-[0_5px_20px_rgba(0,0,0,0.3)]">
+          <div className="absolute rounded -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-500 px-2 py-2 shadow-[0_5px_20px_rgba(0,0,0,0.3)]">
             <p className="text-base font-black tracking-[0.3em] text-white drop-shadow-lg">
-              TỔNG ĐIỂM
+              {t('scoreboard.quyen.total_score').toUpperCase()}
             </p>
           </div>
 
@@ -32,7 +34,7 @@ export default function TotalScore({ total, main, ...props }) {
         {/* Total label */}
         <div className="absolute rounded -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-500 px-2 py-2  shadow-[0_5px_20px_rgba(0,0,0,0.3)]">
           <p className="text-base font-black tracking-[0.3em] text-white drop-shadow-lg">
-            TỔNG ĐIỂM
+            {t('scoreboard.quyen.total_score').toUpperCase()}
           </p>
         </div>
 

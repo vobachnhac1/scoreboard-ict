@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import IpMasker from "../../../../common/IpMasker";
 import useConfirmModal from "../../../../hooks/useConfirmModal";
 
@@ -19,149 +20,184 @@ const NetworkConnection = ({
   handleConnectScanned,
   showAlert
 }) => {
+  const { t } = useTranslation();
   return (
-    <div >
-      <div className ='h-12 border-b border-gray-200 dark:border-gray-700 items-center flex mb-2'> 
-        <h2 className="text-lg font-bold text-gray-800 dark:text-white">
-          Kết nối trực tiếp (Thủ công)
-        </h2>
-      </div>
-      {/* Server Code */}
-      <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded border-2 border-blue-200 dark:border-blue-700">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-500 rounded">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+    <div className="space-y-8 animate-in fade-in duration-500">
+      {/* ===== MY CONNECTION CODE - Gradient Card ===== */}
+      <div className="relative group">
+        <div className="absolute -inset-0.5 bg-blue-600 rounded-[2rem] opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+        <div className="relative bg-white dark:bg-gray-800 border border-blue-100 dark:border-blue-900/30 rounded-[2rem] p-8  overflow-hidden">
+          {/* Decorative shapes */}
+          <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-64 h-64 bg-blue-600/5 dark:bg-blue-600/10 rounded-full"></div>
+
+          <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-8">
+            <div className="flex items-center gap-6">
+              <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center text-white  rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mb-2 opacity-70">
+                  {t("data_sync.your_machine_id")}
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-4xl font-black text-blue-950 dark:text-blue-100 font-mono tracking-tighter">
+                    {IpMasker?.mask(localIP, "hash", null, "sync")?.display ?? "........"}
+                  </span>
+                  {localIP && (
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(iplocalRef.current);
+                        showAlert(t("data_sync.copied_connection_code"));
+                      }}
+                      className="p-2.5 bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all  active:scale-90"
+                      title={t("data_sync.copy_code")}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center lg:items-end gap-2 bg-blue-50/50 dark:bg-blue-950/20 px-6 py-4 rounded-3xl border border-blue-100 dark:border-blue-900/30">
+              <div className="text-[10px] font-black text-blue-400 uppercase tracking-widest opacity-60">{t("data_sync.real_ip_address")}</div>
+              <div className="text-lg font-black font-mono text-blue-900 dark:text-blue-100 tracking-tight">{localIP || "N/A"}</div>
+            </div>
+          </div>
+
+          <div className="mt-8 flex items-start gap-4 p-4 bg-amber-50/50 dark:bg-amber-900/10 border-2 border-dashed border-amber-200 dark:border-amber-800 rounded-[1.5rem]">
+            <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 flex-shrink-0">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <div>
-              <div className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Mã kết nối Máy chủ
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 font-mono">
-                  {IpMasker?.mask(localIP, "hash", null, "sync")?.display ?? "Đang tải..."}
-                </span>
-                {localIP && (
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(iplocalRef.current);
-                      showAlert("Đã copy vào clipboard!");
-                    }}
-                    className="p-1 hover:bg-blue-100 dark:hover:bg-blue-800 rounded"
-                    title="Copy IP"
-                  >
-                    <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                  </button>
-                )}
-              </div>
-            </div>
+            <p className="text-[11px] font-bold text-amber-800 dark:text-amber-400 italic leading-relaxed" dangerouslySetInnerHTML={{ __html: t("data_sync.connection_guide") }}>
+            </p>
           </div>
-          <div className="text-right">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">IP thực</div>
-            <div className="text-sm font-mono text-gray-700 dark:text-gray-300">{localIP || "N/A"}</div>
-          </div>
-        </div>
-        <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded text-xs text-yellow-800 dark:text-yellow-300">
-          <strong>Hướng dẫn:</strong> Copy mã này và gửi cho máy khác để họ kết nối vào máy bạn.
         </div>
       </div>
 
-      {/* Connection Status */}
+      {/* ===== CONNECTION STATUS - Pulse Indicator ===== */}
       {isManualConnected && manualServerInfo && (
-        <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border-2 border-green-300 dark:border-green-700 rounded">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="font-semibold text-green-700 dark:text-green-400">
-                  Đã kết nối
-                </span>
+        <div className="bg-white dark:bg-gray-800 border-2 border-emerald-100 dark:border-emerald-900/30 rounded-3xl p-6  group">
+          <div className="flex items-center justify-between gap-6">
+            <div className="flex items-center gap-5">
+              <div className="relative flex h-12 w-12">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-2xl bg-emerald-400 opacity-20"></span>
+                <div className="relative inline-flex rounded-2xl h-12 w-12 bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-emerald-600">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+                  </svg>
+                </div>
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                IP: <span className="font-mono">{manualServerInfo.ip}</span>
+              <div>
+                <div className="text-[11px] font-black text-emerald-600 uppercase tracking-widest mb-1">
+                  {t("data_sync.establishing_connection")}
+                </div>
+                <div className="text-xl font-black text-blue-950 dark:text-blue-100 font-mono tracking-tight">
+                  {t("data_sync.connected_to_host", { ip: manualServerInfo.ip })}
+                </div>
               </div>
             </div>
             <button
               onClick={handleManualDisconnect}
-              className="px-3 py-1 text-sm bg-red-500 hover:bg-red-600 text-white rounded"
+              className="px-8 py-3.5 bg-rose-50 hover:bg-rose-500 text-rose-600 hover:text-white border-2 border-rose-100 dark:border-rose-900/30 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all  active:scale-95"
             >
-              Ngắt kết nối
+              {t("data_sync.disconnect")}
             </button>
           </div>
         </div>
       )}
 
-      {/* Manual Connect Form */}
+      {/* ===== MANUAL CONNECT FORM - Premium Inputs ===== */}
       {!isManualConnected && (
-        <div className="space-y-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Nhập địa chỉ IP hoặc mã hash của máy khác:
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={manualServerIP}
-                onChange={(e) => setManualServerIP(e.target.value)}
-                placeholder="VD: IP máy chủ hoặc dán mã hash"
-                disabled={loading}
-                className="flex-1 px-2 py-2 text-sm  border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-              />
-              <button
-                onClick={handleManualConnect}
-                disabled={loading || !manualServerIP.trim()}
-                className="px-2 py-2 w-32  bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white text-sm rounded font-semibold"
-              >
-                {loading ? "Đang kết nối..." : "Kết nối"}
-              </button>
+        <div className="bg-white dark:bg-gray-800 border border-blue-50 dark:border-blue-900/30 rounded-3xl p-8  ">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 flex items-center justify-center rounded-xl text-blue-600 dark:text-blue-400">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
             </div>
+            <h3 className="text-sm font-black text-blue-900 dark:text-blue-100 uppercase tracking-widest">
+              {t("data_sync.setup_server_connection")}
+            </h3>
           </div>
- 
-          {/* Network Scan */}
-          <div className="border-t border-gray-200 dark:border-gray-700">
-            {/* <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Hoặc tìm kiếm máy chủ:
-              </span>
-              <button
-                onClick={handleScanNetwork}
-                disabled={isScanning}
-                className="px-2 py-2  w-32  bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded text-sm font-semibold"
-              >
-                {isScanning ? "Đang tìm kiếm..." : "Tìm kiếm"}
-              </button>
-            </div> */}
 
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] px-1">
+                {t("data_sync.enter_hash_or_ip")}
+              </label>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    value={manualServerIP}
+                    onChange={(e) => setManualServerIP(e.target.value)}
+                    placeholder={t("data_sync.paste_hash_or_ip_placeholder")}
+                    disabled={loading}
+                    className="w-full px-6 py-4 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-blue-100 dark:border-blue-800 focus:border-blue-500 outline-none rounded-2xl text-sm font-bold text-blue-950 dark:text-blue-100 transition-all font-mono"
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-blue-300 dark:text-blue-700 pointer-events-none">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                  </div>
+                </div>
+                <button
+                  onClick={handleManualConnect}
+                  disabled={loading || !manualServerIP.trim()}
+                  className="px-10 py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all  active:scale-95  whitespace-nowrap min-w-[200px]"
+                >
+                  {loading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>{t("data_sync.connecting")}</span>
+                    </div>
+                  ) : t("data_sync.join_connection")}
+                </button>
+              </div>
+            </div>
+
+            {/* Scanned Servers - List view UI refinement */}
             {scanDone && (
-              <div className="mt-3">
+              <div className="pt-6 border-t border-blue-50 dark:border-blue-900/30">
+                <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-4 px-1">{t("data_sync.servers_found_in_network")}</p>
                 {scannedServers.length === 0 ? (
-                  <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
-                    Không tìm thấy máy nào trên mạng.
+                  <div className="p-10 bg-blue-50/30 dark:bg-blue-950/10 rounded-3xl border-2 border-dashed border-blue-100 dark:border-blue-900/30 text-center">
+                    <p className="text-[11px] font-black text-blue-400/60 uppercase tracking-widest">{t("data_sync.no_online_machines")}</p>
                   </div>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {scannedServers.map((server, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
+                        className="p-5 bg-white dark:bg-gray-800 border-2 border-blue-50 dark:border-blue-900/30 rounded-2xl flex flex-col gap-4  hover: hover:border-blue-300 transition-all group"
                       >
-                        <div>
-                          <div className="font-mono text-sm text-gray-800 dark:text-white">
-                            {server.ip}
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900 rounded-xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
+                            </svg>
                           </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
-                            Port: {server.port} | Remote IP: {server.remoteIP}
+                          <div className="flex-1 min-w-0">
+                            <div className="font-mono text-sm font-black text-blue-950 dark:text-blue-100 truncate">
+                              {server.ip}
+                            </div>
+                            <div className="text-[10px] font-black text-blue-400 uppercase tracking-widest opacity-60">
+                              {t("data_sync.port", { port: server.port })}
+                            </div>
                           </div>
                         </div>
                         <button
                           onClick={() => handleConnectScanned(server)}
-                          className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded text-xs font-semibold"
+                          className="w-full py-2.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
                         >
-                          Kết nối
+                          {t("data_sync.connect_now")}
                         </button>
                       </div>
                     ))}

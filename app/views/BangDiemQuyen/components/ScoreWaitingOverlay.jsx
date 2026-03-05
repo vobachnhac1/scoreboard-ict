@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * ScoreWaitingOverlay Component
@@ -8,12 +9,14 @@ import React, { useState, useEffect } from "react";
  * @param {number} judgeCount - Số lượng giám định (3 hoặc 5)
  * @param {Array} receivedScores - Array of received judge scores [1, 2, 3, ...]
  */
-export default function ScoreWaitingOverlay({ 
-  show = false, 
-  message = "Đang chờ nhập điểm từ giám định",
+export default function ScoreWaitingOverlay({
+  show = false,
+  message,
   judgeCount = 5,
   receivedScores = []
 }) {
+  const { t } = useTranslation();
+  const defaultMessage = message || t("scoreboard.quyen.waiting_for_scores");
   const [dots, setDots] = useState("");
 
   // Animated dots
@@ -38,10 +41,10 @@ export default function ScoreWaitingOverlay({
           {/* Header */}
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-white mb-2">
-              {message}{dots}
+              {defaultMessage}{dots}
             </h2>
             <p className="text-yellow-300 text-lg">
-              Vui lòng chờ giám định nhập điểm
+              {t("scoreboard.quyen.please_wait_judges")}
             </p>
           </div>
 

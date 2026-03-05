@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const CompetitionDKMultiView = ({
   tableRecords,
@@ -17,351 +18,332 @@ const CompetitionDKMultiView = ({
   toggleCompDKMultiView,
 }) => {
   const totalSelectedRows = Object.values(selectedDataRows || {}).reduce((sum, arr) => sum + (arr?.length || 0), 0);
+  const { t } = useTranslation();
 
   return (
-    <div className="mt-4">
-      {/* Sticky toolbar */}
-      <div className="sticky top-0 z-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm mb-4 p-3">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">Chế độ xem nhiều</span>
-            {totalSelectedRows > 0 ? (
-              <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 rounded text-xs font-semibold">
-                ✓ {totalSelectedRows} danh sách được chọn
-              </span>
-            ) : (
-              <span className="text-xs text-gray-400 italic">Chưa chọn danh sách nào</span>
-            )}
+    <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* ===== STICKY TOOLBAR - Floating Design ===== */}
+      <div className="sticky top-4 z-40 bg-white dark:bg-gray-900 border border-blue-100 dark:border-blue-900/30 mb-8 p-5 rounded-[2.5rem]">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+            </div>
+            <div>
+              <h3 className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1">{t("data_sync.merged_view_mode")}</h3>
+              <div className="flex items-center gap-3">
+                <h4 className="text-xl font-black text-blue-950 dark:text-blue-100 uppercase tracking-tight">{t("data_sync.advanced_management")}</h4>
+                <div className="h-4 w-px bg-blue-100 dark:bg-blue-900/30 mx-1"></div>
+                {totalSelectedRows > 0 ? (
+                  <span className="flex items-center gap-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100 dark:border-emerald-800">
+                    <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                    {t("data_sync.selected_count", { count: totalSelectedRows })}
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic opacity-50">{t("data_sync.no_content_selected")}</span>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-3">
+            {totalSelectedRows > 0 && (
+              <button
+                onClick={() => setSelectedDataRows({})}
+                className="px-6 py-3 bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 rounded-2xl text-[10px] font-black uppercase tracking-widest border-2 border-rose-50 dark:border-rose-900/30 hover:bg-rose-50 transition-all active:scale-95 flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                {t("data_sync.deselect_all")}
+              </button>
+            )}
             <button
               onClick={handleSyncSelectedDataRows}
               disabled={!isManualConnected || totalSelectedRows === 0 || syncing}
-              className={`px-4 py-2 text-sm rounded font-semibold flex items-center gap-1.5 shadow-md transition-all ${isManualConnected && totalSelectedRows > 0 ? "bg-green-500 hover:bg-green-600 text-white scale-105" : "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"}`}
-              title={!isManualConnected ? "Cần kết nối đến máy khác trước" : totalSelectedRows === 0 ? "Chọn ít nhất 1 dòng dữ liệu từ các table bên dưới" : `Đồng bộ ${totalSelectedRows} dòng đến máy đích`}
+              className={`px-8 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center gap-3  transition-all active:scale-95 ${isManualConnected && totalSelectedRows > 0 ? "bg-emerald-600 text-white scale-105" : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed border border-gray-200 dark:border-gray-700"}`}
             >
-              {syncing ? <>Đang gửi...</> : <> Đồng bộ {totalSelectedRows > 0 && `(${totalSelectedRows})`}</>}
+              {syncing ? (
+                <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> {t("data_sync.sending")}</>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                  {t("data_sync.send_sync")} {totalSelectedRows > 0 && `(+${totalSelectedRows})`}
+                </>
+              )}
             </button>
-            {totalSelectedRows > 0 && (
-              <button onClick={() => setSelectedDataRows({})} className="px-3 py-2 text-sm bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-800/50 text-red-600 dark:text-red-400 rounded font-semibold">
-                ✕ Bỏ chọn tất cả
-              </button>
-            )}
-            {/* <button onClick={toggleCompDKMultiView}className="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded">
-              ← Tắt chế độ này
-            </button> */}
           </div>
         </div>
       </div>
 
-      {/* Record Selector - Expandable */}
-      {/* <div className="mb-4 border border-blue-200 dark:border-blue-700 rounded overflow-hidden">
-        <button
-          onClick={() => setIsRecordSelectorExpanded((v) => !v)}
-          className="w-full flex items-center justify-between px-3 py-2 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">Chọn danh sách để xem</span>
-            {!isRecordSelectorExpanded && (
-              <span className="flex flex-wrap gap-1">
-                {selectedCompDKRecords.length === 0 ? (
-                  <span className="text-xs text-gray-400 italic">Chưa chọn danh sách nào</span>
-                ) : (
-                  tableRecords
-                    .filter((r) => selectedCompDKRecords.includes(r.id))
-                    .map((r) => (
-                      <span key={r.id} className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500 text-white text-xs rounded-full">
-                        {r.file_name || r.sheet_name || `#${r.id}`}
-                      </span>
-                    ))
-                )}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-blue-500 dark:text-blue-400">{selectedCompDKRecords.length}/{tableRecords.length}</span>
-            <span className="text-blue-500 dark:text-blue-400 text-sm transition-transform duration-200" style={{ display: "inline-block", transform: isRecordSelectorExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
-          </div>
-        </button>
-        {isRecordSelectorExpanded && (
-          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border-t border-blue-200 dark:border-blue-700">
-            <div className="flex gap-2 mb-2">
-              <button onClick={() => setSelectedCompDKRecords(tableRecords.map((r) => r.id))} className="px-2 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded">✓ Chọn tất cả</button>
-              <button onClick={() => setSelectedCompDKRecords([])}className="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded">✕ Bỏ chọn</button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {tableRecords.map((record) => {
-                const isSelected = selectedCompDKRecords.includes(record.id);
-                const label = record.file_name || record.sheet_name || `Record #${record.id}`;
-                let count = 0;
-                try {
-                  const d = typeof record.data === "string" ? JSON.parse(record.data) : record.data;
-                  if (Array.isArray(d)) count = Math.max(0, d.length - 1);
-                } catch {}
+      {/* ===== DATA TABLE CARDS ===== */}
+      {
+        selectedCompDKRecords.length > 0 && (
+          <div className="grid grid-cols-1 gap-8 pb-10">
+            {tableRecords
+              .filter((r) => selectedCompDKRecords.includes(r.id))
+              .map((record) => {
+                let parsedData;
+                try { parsedData = typeof record.data === "string" ? JSON.parse(record.data) : record.data; } catch { parsedData = null; }
+                const headers = Array.isArray(parsedData) && parsedData.length > 0 ? parsedData[0] : [];
+                const rows = Array.isArray(parsedData) && parsedData.length > 1 ? parsedData.slice(1) : [];
+                const recordId = record.id;
+                const selectedRows = selectedDataRows[recordId] || [];
+                const isCardExpanded = expandedCards[recordId] ?? false;
+
+                const toggleRow = (rowIndex) => {
+                  setSelectedDataRows((prev) => {
+                    const current = (prev || {})[recordId] || [];
+                    const isSelected = current?.includes(rowIndex);
+                    if (!current) return prev || {};
+
+                    if (rowIndex % 2 === 0 && ['SOL', 'TUV']?.includes(rows[rowIndex]?.[1])) {
+                      return { ...prev, [recordId]: isSelected ? current.filter((i) => i !== rowIndex && i != rowIndex + 1) : [...current, rowIndex, rowIndex + 1] };
+                    }
+                    if (rowIndex % 4 === 0 && ['DAL']?.includes(rows[rowIndex]?.[1])) {
+                      return { ...prev, [recordId]: isSelected ? current.filter((i) => i !== rowIndex && i != rowIndex + 1 && i != rowIndex + 2 && i != rowIndex + 3) : [...current, rowIndex, rowIndex + 1, rowIndex + 2, rowIndex + 3] };
+                    }
+                    if (rows[rowIndex]?.[1] === 'VON') {
+                      const count = rows[rowIndex][5];
+                      const countArray = Array.from({ length: count }, (_, i) => i + rowIndex);
+                      return { ...prev, [recordId]: isSelected ? current.filter((i) => !countArray.includes(i)) : [...current, ...countArray] };
+                    }
+                    if (rows[rowIndex]?.[1] === 'DOL' || rows[rowIndex]?.[0] != null) {
+                      return { ...(prev || {}), [recordId]: isSelected ? current.filter((i) => i !== rowIndex) : [...current, rowIndex] };
+                    }
+                    return { ...prev };
+                  });
+                };
+
+                const toggleAll = (checked) => {
+                  setSelectedDataRows((prev) => ({ ...prev, [recordId]: checked ? rows.map((_, i) => i) : [] }));
+                };
+
+                const toggleCard = () => {
+                  setExpandedCards((prev) => ({ ...prev, [recordId]: !prev[recordId] }));
+                };
+
                 return (
-                  <button key={record.id} onClick={() => toggleCompDKRecord(record.id)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${isSelected ? "bg-blue-500 text-white border-blue-500 shadow-sm" : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500"}`}>
-                    <span className="text-xs">{isSelected ? "✓" : "○"}</span>
-                    <span className="max-w-[200px] truncate" title={label}>{label}</span>
-                    {count > 0 && <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${isSelected ? "bg-white/25 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}>{count}dòng</span>}
-                  </button>
-                );
-              })}
-            </div>
-            {selectedCompDKRecords.length === 0 && <p className="mt-2 text-xs text-gray-400 italic">Chọn ít nhất 1 record để xem dữ liệu bên dưới</p>}
-          </div>
-        )}
-      </div> */}
-
-      {/* Data Table Cards */}
-      {selectedCompDKRecords.length > 0 && (
-        <div className="space-y-4">
-          {tableRecords
-            .filter((r) => selectedCompDKRecords.includes(r.id))
-            .map((record) => {
-              let parsedData;
-              try { parsedData = typeof record.data === "string" ? JSON.parse(record.data) : record.data; } catch { parsedData = null; }
-              const headers = Array.isArray(parsedData) && parsedData.length > 0 ? parsedData[0] : [];
-              const rows = Array.isArray(parsedData) && parsedData.length > 1 ? parsedData.slice(1) : [];
-              const recordId = record.id;
-              const selectedRows = selectedDataRows[recordId] || [];
-              const isCardExpanded = expandedCards[recordId] ?? false;
-
-              const toggleRow = (rowIndex) => {
-                console.log('rowIndex', rowIndex);
-                setSelectedDataRows((prev) => {
-                  const current = (prev || {})[recordId] || [];
-                  console.log('current', current);
-                  const isSelected = current?.includes(rowIndex);
-                  if (!current) return prev || {};
-                  console.log('isSelected', isSelected);
-                  // Trường hợp SOL/TUV
-                  if (rowIndex % 2 === 0 && ['SOL', 'TUV']?.includes(rows[rowIndex][1])) {
-                    console.log('SOL/TUV', rowIndex, rows[rowIndex]);
-                    // return { ...prev, [recordId]: isSelected ? current.filter((i) => i !== rowIndex) : [...current, rowIndex] };
-                    return { ...prev, [recordId]: isSelected ? current.filter((i) => i !== rowIndex && i != rowIndex + 1) : [...current, rowIndex, rowIndex + 1] };
-                  }
-                  // Trường hợp DAL
-                  if (rowIndex % 4 === 0 && ['DAL']?.includes(rows[rowIndex][1])) {
-                    // return { ...prev, [recordId]: isSelected ? current.filter((i) => i !== rowIndex) : [...current, rowIndex] };
-                    return { ...prev, [recordId]: isSelected ? current.filter((i) => i !== rowIndex && i != rowIndex + 1 && i != rowIndex + 2 && i != rowIndex + 3) : [...current, rowIndex, rowIndex + 1, rowIndex + 2, rowIndex + 3] };
-                  }
-                  // VON
-                  if (rows[rowIndex][1] === 'VON') {
-                    // lấy số lượng ở cột số 5
-                    const count = rows[rowIndex][5];
-                    // tạo 1 mảng từ 0 đến count
-                    const countArray = Array.from({ length: count }, (_, i) => i);
-                    // cộng thêm rowIndex vào mỗi phần tử
-                    const countArrayWithIndex = countArray.map((i) => i + rowIndex);
-                    // return { ...prev, [recordId]: isSelected ? current.filter((i) => i !== rowIndex) : [...current, rowIndex] };
-                    return { ...prev, [recordId]: isSelected ? current.filter((i) => i !== rowIndex && !countArrayWithIndex.includes(i)) : [...current, rowIndex, ...countArrayWithIndex] };
-                  }
-                  if (rows[rowIndex][1] === 'DOL') {
-                    return { ...(prev || {}), [recordId]: isSelected ? current.filter((i) => i !== rowIndex) : [...current, rowIndex] };
-                  }
-                  if (rows[rowIndex][0] != null) {
-                    return { ...(prev || {}), [recordId]: isSelected ? current.filter((i) => i !== rowIndex) : [...current, rowIndex] };
-                  }
-                  return { ...prev };
-                });
-              };
-              const toggleAll = (checked) => {
-                setSelectedDataRows((prev) => ({ ...prev, [recordId]: checked ? rows.map((_, i) => i) : [] }));
-              };
-              const toggleCard = () => {
-                setExpandedCards((prev) => ({ ...prev, [recordId]: !prev[recordId] }));
-              };
-
-              return (
-                <div key={recordId} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                  <div className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
-                    <button onClick={toggleCard} className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors text-left">
-                      <div className="flex items-center gap-3">
-                        <span className="text-gray-500 dark:text-gray-400 text-sm transition-transform duration-200" style={{ display: "inline-block", transform: isCardExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
-                        <span className="font-semibold text-gray-800 dark:text-white text-sm">{record.file_name || `Record #${recordId}`}</span>
-                        {record.sheet_name && <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded text-xs"> {record.sheet_name}</span>}
-                        <span className="text-xs text-gray-500 dark:text-gray-400">{rows.length} dòng</span>
-                        {selectedRows.length > 0 && <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 rounded text-xs font-semibold">✓ {selectedRows.length} đã chọn</span>}
-                      </div>
-                      <span className="text-xs text-gray-400 italic">{isCardExpanded ? "Click để thu gọn" : "Click để mở rộng"}</span>
-                    </button>
-                    <div className="flex items-center justify-end gap-2 px-4 pb-2">
-                      <button onClick={(e) => { e.stopPropagation(); toggleAll(selectedRows.length < rows.length); }} className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300 rounded">
-                        {selectedRows.length === rows.length && rows.length > 0 ? "Bỏ chọn tất cả" : "Chọn tất cả"}
-                      </button>
-                      <button onClick={(e) => { e.stopPropagation(); toggleCompDKRecord(recordId); }} className="text-xs px-2 py-1 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-800/50 text-red-600 dark:text-red-400 rounded">✕ Ẩn</button>
-                    </div>
-                  </div>
-                  {isCardExpanded && (
-                    headers.length === 0 ? (
-                      <div className="p-4 text-center text-sm text-gray-400 italic">Không có dữ liệu</div>
-                    ) : (
-                      <div className="overflow-x-auto">
-                        <div className="max-h-[320px] overflow-y-auto">
-                          <table className="w-full text-xs">
-                            <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-10">
-                              <tr>
-                                <th className="px-2 py-1.5 text-center w-8 border-r border-gray-200 dark:border-gray-600">
-                                  <input type="checkbox" checked={selectedRows.length === rows.length && rows.length > 0} onChange={(e) => toggleAll(e.target.checked)} className="w-3 h-3" />
-                                </th>
-                                <th className="px-2 py-1.5 text-center text-gray-500 dark:text-gray-400 w-8 border-r border-gray-200 dark:border-gray-600">#</th>
-                                {headers.map((h, i) => <th key={i} className="px-3 py-1.5 text-left font-semibold text-gray-700 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600 whitespace-nowrap">{h}</th>)}
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {
-                                (() => {
-                                  const formatTableData = () => {
-                                    const type = headers[0];
-                                    const formatted = [];
-                                    if (type === "DK" || type === "DOL" || (!['TUV', 'SOL', 'DAL', 'VON'].includes(type) && !['TUV', 'SOL', 'DAL', 'VON'].includes(rows[0]?.[1]))) return rows;
-
-                                    const checkType = ['TUV', 'SOL', 'DAL', 'VON'].includes(type) ? type : rows[0]?.[1];
-                                    if (checkType === "TUV" || checkType === "SOL") {
-                                      for (let i = 0; i < rows.length; i += 2) {
-                                        formatted.push([rows[i], rows[i + 1]]);
-                                      }
-                                    } else if (checkType === "DAL") {
-                                      for (let i = 0; i < rows.length; i += 4) {
-                                        formatted.push([rows[i], rows[i + 1], rows[i + 2], rows[i + 3]]);
-                                      }
-                                    } else if (checkType === "VON") {
-                                      let count = 0;
-                                      for (let i = 0; i < rows.length; i += count) {
-                                        let arrRow = []
-                                        if (rows[i][1] == "VON" && rows[i][5] != null) {
-                                          count = Number(rows[i][5]) > 1 ? Number(rows[i][5]) : 1;
-                                        }
-                                        for (let j = 0; j < count; j++) {
-                                          arrRow.push(rows[i + j]);
-                                        }
-                                        formatted.push(arrRow);
-                                      }
-                                    } else {
-                                      return rows;
-                                    }
-                                    return formatted;
-                                  };
-
-                                  let cumulativeIdx = 0;
-                                  return formatTableData().map((item, groupIdx) => {
-                                    const isGrouped = Array.isArray(item) && item.length > 0 && Array.isArray(item[0]);
-                                    const displayRow = isGrouped ? item[0] : item;
-                                    const rowIdx = cumulativeIdx; // Real index mapped to `rows` original indices
-                                    cumulativeIdx += isGrouped ? item.length : 1;
-
-                                    const isRowSelected = selectedRows.includes(rowIdx);
-                                    let isHeader = false;
-
-                                    if (!isGrouped) {
-                                      if (rowIdx % 2 == 0 && ['SOL', 'TUV']?.includes(item[1])) isHeader = true;
-                                      else if (rowIdx % 4 == 0 && ['DAL']?.includes(item[1])) isHeader = true;
-                                      else if (['VON']?.includes(item[1]) && item[5] != null) isHeader = true;
-                                    } else {
-                                      isHeader = true; // For grouped rows, the first row checkbox can control the group
-                                    }
-
-                                    return (
-                                      <tr key={groupIdx} className={`border-t border-gray-100 dark:border-gray-700 cursor-pointer transition-colors ${isRowSelected ? "bg-blue-50 dark:bg-blue-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-800/60"}`} onClick={() => toggleRow(rowIdx)}>
-                                        <td className="px-2 py-1.5 text-center border-r border-gray-100 dark:border-gray-700" onClick={(e) => e.stopPropagation()}>
-                                          <input disabled={!isHeader} type="checkbox" checked={isRowSelected} onChange={() => toggleRow(rowIdx)} className="w-3 h-3" />
-                                        </td>
-                                        <td className="px-2 py-1.5 text-center text-gray-400 dark:text-gray-500 border-r border-gray-100 dark:border-gray-700 select-none">{groupIdx + 1}</td>
-                                        {headers.map((headerStr, cellIdx) => {
-                                          if (!isGrouped) {
-                                            const cell = displayRow[cellIdx];
-                                            return (
-                                              <td key={cellIdx} className="px-3 py-1.5 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700">
-                                                <div className="max-w-[180px] truncate" title={String(cell ?? "")}>{cell ?? "-"}</div>
-                                              </td>
-                                            );
-                                          }
-
-                                          const val1 = displayRow[cellIdx];
-                                          const headerLower = String(headerStr).toLowerCase();
-                                          let isNameCol = headerLower.includes('họ tên') || headerLower.includes('họ và tên') || headerLower === 'tên' || cellIdx === 2;
-                                          if (headers[0] == 'VON') {
-                                            isNameCol = headerLower.includes('họ tên') || headerLower.includes('họ và tên') || headerLower === 'tên' || cellIdx === 3;
-                                          }
-
-                                          if (isNameCol) {
-                                            return (
-                                              <td key={cellIdx} className="px-3 py-1.5 text-gray-800 dark:text-gray-200 border-r border-b border-gray-100 dark:border-gray-700 align-middle bg-blue-50/30 dark:bg-blue-900/10 z-10 w-[180px] max-w-[200px]">
-                                                <div className="flex flex-col gap-1.5 leading-none">
-                                                  {item.map((r, subIdx) => {
-                                                    if (!r) return null;
-                                                    const dotColors = ["bg-blue-500", "bg-indigo-500", "bg-green-500", "bg-orange-500"];
-                                                    const textColors = ["text-blue-700 dark:text-blue-400", "text-indigo-700 dark:text-indigo-400", "text-green-700 dark:text-green-400", "text-orange-700 dark:text-orange-400"];
-                                                    return (
-                                                      <React.Fragment key={subIdx}>
-                                                        {subIdx > 0 && <div className="w-full h-px bg-blue-200 dark:bg-blue-800"></div>}
-                                                        <div className={`truncate flex items-center gap-1.5`} title={String(r[cellIdx] ?? "")}>
-                                                          <span className="truncate">
-                                                            {r[cellIdx] !== null && r[cellIdx] !== undefined
-                                                              ? subIdx + 1 + ". " + String(r[cellIdx])
-                                                              : <span className="text-gray-300 dark:text-gray-600 italic">—</span>}
-                                                          </span>
-                                                        </div>
-                                                      </React.Fragment>
-                                                    )
-                                                  })}
-                                                </div>
-                                              </td>
-                                            );
-                                          }
-
-                                          let isStaticCol = cellIdx === 0 || cellIdx === 1 || cellIdx === 3 || cellIdx === 4;
-                                          if (headers[0] == "VON") {
-                                            isStaticCol = cellIdx === 0 || cellIdx === 1 || cellIdx === 2 || cellIdx === 4 || cellIdx === 5;
-                                          }
-
-                                          if (isStaticCol) {
-                                            return (
-                                              <td key={cellIdx} className="px-3 py-1.5 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700 align-middle">
-                                                <div className="max-w-[180px] truncate font-medium text-gray-900 dark:text-white" title={String(val1 ?? "")}>{val1 ?? "-"}</div>
-                                              </td>
-                                            );
-                                          }
-
-                                          const allSame = item.every((r) => r && String(r[cellIdx] || "") === String(val1 || ""));
-                                          if (allSame) {
-                                            return (
-                                              <td key={cellIdx} className="px-3 py-1.5 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700 align-middle">
-                                                <div className="max-w-[180px] truncate" title={String(val1 ?? "")}>{val1 ?? "-"}</div>
-                                              </td>
-                                            );
-                                          }
-
-                                          return (
-                                            <td key={cellIdx} className="px-3 py-1.5 text-gray-800 dark:text-gray-200 border-r border-gray-100 dark:border-gray-700 align-middle">
-                                              <div className="flex flex-col gap-1.5 leading-none">
-                                                {item.map((r, subIdx) => (
-                                                  <React.Fragment key={subIdx}>
-                                                    {subIdx > 0 && <div className="w-full h-px bg-gray-200 dark:bg-gray-700"></div>}
-                                                    <div className="truncate max-w-[180px]" title={String(r?.[cellIdx] ?? "")}>{r?.[cellIdx] ?? "-"}</div>
-                                                  </React.Fragment>
-                                                ))}
-                                              </div>
-                                            </td>
-                                          );
-                                        })}
-                                      </tr>
-                                    );
-                                  });
-                                })()
-                              }
-                            </tbody>
-                          </table>
+                  <div key={recordId} className={`bg-white dark:bg-gray-900 rounded-[2.5rem] border-2 transition-all duration-500 overflow-hidden ${isCardExpanded ? 'border-blue-100 dark:border-blue-900/50 ring-4 ring-blue-500/5' : 'border-blue-50 dark:border-blue-900/20'}`}>
+                    {/* Card Header */}
+                    <div className={`px-8 py-6 flex items-center justify-between transition-colors ${isCardExpanded ? 'bg-blue-50/50 dark:bg-blue-900/20 border-b border-blue-50 dark:border-blue-900/30' : 'bg-white dark:bg-gray-900'}`}>
+                      <div className="flex items-center gap-6 flex-1 cursor-pointer" onClick={toggleCard}>
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isCardExpanded ? 'bg-blue-600 text-white scale-110' : 'bg-blue-50 dark:bg-blue-900/30 text-blue-400'}`}>
+                          <svg className={`w-6 h-6 transition-transform duration-500 ${isCardExpanded ? 'rotate-180' : 'rotate-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-3 mb-1">
+                            <h5 className="text-sm font-black text-blue-950 dark:text-blue-100 uppercase tracking-tight">{record.file_name || t("data_sync.data_record_label", { id: recordId })}</h5>
+                            {record.sheet_name && <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full text-[9px] font-black uppercase tracking-widest border border-blue-200 dark:border-blue-800">{record.sheet_name}</span>}
+                          </div>
+                          <div className="flex items-center gap-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full"></span> {t("data_sync.rows_count", { count: rows.length })}</span>
+                            {selectedRows.length > 0 && (
+                              <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full border border-emerald-100 dark:border-emerald-800">
+                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                {t("data_sync.selected_count", { count: selectedRows.length })}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    )
-                  )}
-                </div>
-              );
-            })}
-        </div>
-      )}
-    </div>
+
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); toggleAll(selectedRows.length < rows.length); }}
+                          className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-all active:scale-95 ${selectedRows.length === rows.length && rows.length > 0 ? "bg-white dark:bg-gray-800 text-rose-600 border-rose-50 dark:border-rose-900/30" : "bg-white dark:bg-gray-800 text-blue-600 border-blue-50 dark:border-blue-900/30"}`}
+                        >
+                          {selectedRows.length === rows.length && rows.length > 0 ? t("data_sync.deselect_all") : t("data_sync.select_all")}
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); toggleCompDKRecord(recordId); }}
+                          className="w-10 h-10 flex items-center justify-center bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-xl hover:bg-rose-600 hover:text-white transition-all active:scale-90"
+                          title={t("data_sync.hide_this_record")}
+                        >
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Card Content - Table */}
+                    {isCardExpanded && (
+                      <div className="p-8 bg-gray-50/30 dark:bg-gray-900/40 animate-in slide-in-from-top-4 duration-500">
+                        {headers.length === 0 ? (
+                          <div className="py-20 text-center">
+                            <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/30 rounded-3xl mx-auto flex items-center justify-center text-blue-200 dark:text-blue-800 mb-4">
+                              <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </div>
+                            <p className="text-[11px] font-black text-blue-400 uppercase tracking-widest italic">{t("data_sync.invalid_record_data")}</p>
+                          </div>
+                        ) : (
+                          <div className="rounded-[2rem] border border-blue-50 dark:border-blue-900/30 bg-white dark:bg-gray-800 overflow-hidden">
+                            <div className="overflow-x-auto custom-scrollbar">
+                              <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+                                <table className="w-full text-left border-collapse">
+                                  <thead className="sticky top-0 z-20">
+                                    <tr className="bg-blue-50/80 dark:bg-blue-900/40 border-b border-blue-50 dark:border-blue-900/30">
+                                      <th className="px-4 py-4 w-12 text-center border-r border-blue-100 dark:border-blue-800">
+                                        <div className="flex items-center justify-center">
+                                          <input
+                                            type="checkbox"
+                                            checked={selectedRows.length === rows.length && rows.length > 0}
+                                            onChange={(e) => toggleAll(e.target.checked)}
+                                            className="w-4 h-4 rounded-lg border-2 border-blue-300 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                                          />
+                                        </div>
+                                      </th>
+                                      <th className="px-4 py-4 w-12 text-center text-[10px] font-black uppercase text-blue-400 tracking-widest border-r border-blue-100 dark:border-blue-800">#</th>
+                                      {headers.map((h, i) => (
+                                        <th key={i} className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-blue-900/60 dark:text-blue-100/60 border-r border-blue-100 dark:border-blue-800 whitespace-nowrap">
+                                          {h}
+                                        </th>
+                                      ))}
+                                    </tr>
+                                  </thead>
+                                  <tbody className="divide-y divide-blue-50/50 dark:divide-blue-900/10">
+                                    {
+                                      (() => {
+                                        const formatTableData = () => {
+                                          const type = headers[0];
+                                          const formatted = [];
+                                          if (type === "DK" || type === "DOL" || (!['TUV', 'SOL', 'DAL', 'VON'].includes(type) && !['TUV', 'SOL', 'DAL', 'VON'].includes(rows[0]?.[1]))) return rows;
+                                          const checkType = ['TUV', 'SOL', 'DAL', 'VON'].includes(type) ? type : rows[0]?.[1];
+                                          if (checkType === "TUV" || checkType === "SOL") {
+                                            for (let i = 0; i < rows.length; i += 2) formatted.push([rows[i], rows[i + 1]]);
+                                          } else if (checkType === "DAL") {
+                                            for (let i = 0; i < rows.length; i += 4) formatted.push([rows[i], rows[i + 1], rows[i + 2], rows[i + 3]]);
+                                          } else if (checkType === "VON") {
+                                            let offset = 0;
+                                            while (offset < rows.length) {
+                                              let count = 1;
+                                              if (rows[offset][1] == "VON" && rows[offset][5] != null) count = Math.max(1, Number(rows[offset][5]));
+                                              formatted.push(rows.slice(offset, offset + count));
+                                              offset += count;
+                                            }
+                                          } else return rows;
+                                          return formatted;
+                                        };
+
+                                        let cumulativeIdx = 0;
+                                        return formatTableData().map((item, groupIdx) => {
+                                          const isGrouped = Array.isArray(item) && item.length > 0 && Array.isArray(item[0]);
+                                          const displayRow = isGrouped ? item[0] : item;
+                                          const rowIdx = cumulativeIdx;
+                                          cumulativeIdx += isGrouped ? item.length : 1;
+
+                                          const isRowSelected = selectedRows.includes(rowIdx);
+                                          let isHeader = false;
+                                          if (!isGrouped) {
+                                            if (rowIdx % 2 == 0 && ['SOL', 'TUV']?.includes(item[1])) isHeader = true;
+                                            else if (rowIdx % 4 == 0 && ['DAL']?.includes(item[1])) isHeader = true;
+                                            else if (['VON']?.includes(item[1]) && item[5] != null) isHeader = true;
+                                            else if (item[0] != null) isHeader = true;
+                                          } else isHeader = true;
+
+                                          return (
+                                            <tr key={groupIdx} onClick={() => toggleRow(rowIdx)} className={`group cursor-pointer transition-all duration-300 ${isRowSelected ? "bg-blue-600/[0.03] dark:bg-blue-500/[0.05]" : "hover:bg-blue-50/30 dark:hover:bg-blue-900/10"}`}>
+                                              <td className="px-4 py-3 text-center border-r border-blue-50 dark:border-blue-900/10" onClick={(e) => e.stopPropagation()}>
+                                                <div className="flex items-center justify-center">
+                                                  <input
+                                                    disabled={!isHeader}
+                                                    type="checkbox"
+                                                    checked={isRowSelected}
+                                                    onChange={() => toggleRow(rowIdx)}
+                                                    className="w-4 h-4 rounded-lg border-2 border-gray-200 text-blue-600 focus:ring-blue-500 disabled:opacity-0"
+                                                  />
+                                                </div>
+                                              </td>
+                                              <td className="px-4 py-3 text-center text-[10px] font-bold text-gray-400 font-mono border-r border-blue-50 dark:border-blue-900/10 group-hover:text-blue-500 transition-colors">{groupIdx + 1}</td>
+                                              {headers.map((headerStr, cellIdx) => {
+                                                if (!isGrouped) {
+                                                  const cell = displayRow[cellIdx];
+                                                  return (
+                                                    <td key={cellIdx} className="px-6 py-3 border-r border-blue-50 dark:border-blue-900/10 group-hover:border-blue-100 dark:group-hover:border-blue-900/30">
+                                                      <div className="text-xs font-bold text-gray-700 dark:text-gray-200 max-w-[200px] truncate" title={String(cell ?? "")}>{cell ?? <span className="text-gray-200 dark:text-gray-800 italic">-</span>}</div>
+                                                    </td>
+                                                  );
+                                                }
+
+                                                const val1 = displayRow[cellIdx];
+                                                const headerLower = String(headerStr).toLowerCase();
+                                                const nameVariants = t("data_sync.name_column_variants").split(",").map(v => v.trim().toLowerCase());
+                                                let isNameCol = nameVariants.some(v => headerLower.includes(v)) || cellIdx === 2;
+                                                if (headers[0] == 'VON') isNameCol = nameVariants.some(v => headerLower.includes(v)) || cellIdx === 3;
+
+                                                if (isNameCol) {
+                                                  return (
+                                                    <td key={cellIdx} className="px-6 py-2 border-r border-blue-50 dark:border-blue-900/10 align-middle bg-blue-50/20 dark:bg-blue-900/10 w-[200px] max-w-[250px]">
+                                                      <div className="flex flex-col gap-1.5 py-1">
+                                                        {item.map((r, subIdx) => (
+                                                          <React.Fragment key={subIdx}>
+                                                            <div className="flex items-center gap-2 group/item">
+                                                              <span className="w-4 h-4 rounded bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-[8px] font-black text-blue-600 shrink-0">{subIdx + 1}</span>
+                                                              <div className="text-xs font-black text-blue-800 dark:text-blue-300 truncate" title={String(r[cellIdx] ?? "")}>
+                                                                {r[cellIdx] !== null && r[cellIdx] !== undefined ? String(r[cellIdx]) : <span className="opacity-20 italic">-</span>}
+                                                              </div>
+                                                            </div>
+                                                            {subIdx < item.length - 1 && <div className="h-px bg-blue-100/50 dark:bg-blue-900/20 w-full"></div>}
+                                                          </React.Fragment>
+                                                        ))}
+                                                      </div>
+                                                    </td>
+                                                  );
+                                                }
+
+                                                let isStaticCol = cellIdx === 0 || cellIdx === 1 || cellIdx === 3 || cellIdx === 4;
+                                                if (headers[0] == "VON") isStaticCol = cellIdx === 0 || cellIdx === 1 || cellIdx === 2 || cellIdx === 4 || cellIdx === 5;
+
+                                                if (isStaticCol) {
+                                                  return (
+                                                    <td key={cellIdx} className="px-6 py-3 border-r border-blue-50 dark:border-blue-900/10 align-middle">
+                                                      <div className="text-xs font-black text-gray-900 dark:text-white max-w-[180px] truncate" title={String(val1 ?? "")}>{val1 ?? "-"}</div>
+                                                    </td>
+                                                  );
+                                                }
+
+                                                const allSame = item.every((r) => r && String(r[cellIdx] || "") === String(val1 || ""));
+                                                if (allSame) {
+                                                  return (
+                                                    <td key={cellIdx} className="px-6 py-3 border-r border-blue-50 dark:border-blue-900/10 align-middle">
+                                                      <div className="text-xs font-bold text-gray-700 dark:text-gray-300 max-w-[180px] truncate opacity-60" title={String(val1 ?? "")}>{val1 ?? "-"}</div>
+                                                    </td>
+                                                  );
+                                                }
+
+                                                return (
+                                                  <td key={cellIdx} className="px-6 py-2 border-r border-blue-50 dark:border-blue-900/10 align-middle">
+                                                    <div className="flex flex-col gap-1.5 py-1">
+                                                      {item.map((r, subIdx) => (
+                                                        <React.Fragment key={subIdx}>
+                                                          <div className="text-xs font-bold text-gray-800 dark:text-gray-200 truncate max-w-[180px]" title={String(r?.[cellIdx] ?? "")}>
+                                                            {r?.[cellIdx] ?? <span className="opacity-20">-</span>}
+                                                          </div>
+                                                          {subIdx < item.length - 1 && <div className="h-px bg-gray-100 dark:bg-gray-800 w-full"></div>}
+                                                        </React.Fragment>
+                                                      ))}
+                                                    </div>
+                                                  </td>
+                                                );
+                                              })}
+                                            </tr>
+                                          );
+                                        });
+                                      })()
+                                    }
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+        )
+      }
+    </div >
   );
 };
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Section: Điều khiển trận đấu
@@ -12,6 +13,7 @@ const MatchControlSection = ({
   totalRounds,
   roundDuration,
 }) => {
+  const { t } = useTranslation();
   // Helper functions
   const jumpToStart = () => {
     console.log("jumpToStart", roundDuration);
@@ -49,7 +51,7 @@ const MatchControlSection = ({
               />
             </svg>
           </div>
-          <span>Điều khiển trận đấu</span>
+          <span>{t("scoreboard.doikhang.match_control_title")}</span>
         </h3>
       </div>
 
@@ -70,7 +72,7 @@ const MatchControlSection = ({
                   clipRule="evenodd"
                 />
               </svg> */}
-              Hiệp hiện tại
+              {t("scoreboard.doikhang.match_control_current_round")}
             </label>
             <input
               type="number"
@@ -97,7 +99,7 @@ const MatchControlSection = ({
                   clipRule="evenodd"
                 />
               </svg> */}
-              Thời gian còn lại (giây)
+              {t("scoreboard.doikhang.match_control_time_left")}
             </label>
             <input
               type="number"
@@ -116,32 +118,32 @@ const MatchControlSection = ({
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clipRule="evenodd" />
             </svg>
-            Điều chỉnh nhanh
+            {t("scoreboard.doikhang.match_control_quick_adjust")}
           </p>
           <div className="grid grid-cols-4 gap-2">
             <button
               onClick={jumpToStart}
               className="bg-white hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 px-2 py-1.5 rounded text-xs font-semibold transition-colors shadow-sm"
             >
-              Đầu hiệp
+              {t("scoreboard.doikhang.match_control_start_round")}
             </button>
             <button
               onClick={jumpToMiddle}
               className="bg-white hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 px-2 py-1.5 rounded text-xs font-semibold transition-colors shadow-sm"
             >
-              Giữa hiệp
+              {t("scoreboard.doikhang.match_control_mid_round")}
             </button>
             <button
               onClick={jumpToEnd}
               className="bg-white hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 px-2 py-1.5 rounded text-xs font-semibold transition-colors shadow-sm"
             >
-              Cuối hiệp
+              {t("scoreboard.doikhang.match_control_end_round")}
             </button>
             <button
               onClick={pauseTimer}
               className="bg-white hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 px-2 py-1.5 rounded text-xs font-semibold transition-colors shadow-sm"
             >
-              Tạm dừng
+              {t("scoreboard.doikhang.match_control_pause")}
             </button>
           </div>
         </div>

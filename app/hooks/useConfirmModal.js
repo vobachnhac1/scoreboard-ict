@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Custom hook để sử dụng ConfirmModal
  * @returns {Object} { modalProps, showConfirm, showAlert, showWarning, showError, showSuccess }
  */
 const useConfirmModal = () => {
+  const { t } = useTranslation();
+
   const [modalState, setModalState] = useState({
     isOpen: false,
     title: '',
@@ -13,8 +16,8 @@ const useConfirmModal = () => {
     confirmText: 'OK',
     cancelText: 'Hủy',
     showCancel: true,
-    onConfirm: () => {},
-    onCancel: () => {}
+    onConfirm: () => { },
+    onCancel: () => { }
   });
 
   /**
@@ -34,11 +37,11 @@ const useConfirmModal = () => {
     return new Promise((resolve) => {
       setModalState({
         isOpen: true,
-        title: options.title || 'Xác nhận',
+        title: options.title || t('common.confirm'),
         message,
         type: 'confirm',
-        confirmText: options.confirmText || 'OK',
-        cancelText: options.cancelText || 'Hủy',
+        confirmText: options.confirmText || t('common.ok'),
+        cancelText: options.cancelText || t('common.cancel'),
         showCancel: true,
         onConfirm: () => {
           closeModal();
@@ -62,10 +65,10 @@ const useConfirmModal = () => {
     return new Promise((resolve) => {
       setModalState({
         isOpen: true,
-        title: options.title || 'Thông báo',
+        title: options.title || t('common.notification'),
         message,
         type: 'alert',
-        confirmText: options.confirmText || 'OK',
+        confirmText: options.confirmText || t('common.ok'),
         cancelText: '',
         showCancel: false,
         onConfirm: () => {
@@ -90,11 +93,11 @@ const useConfirmModal = () => {
     return new Promise((resolve) => {
       setModalState({
         isOpen: true,
-        title: options.title || 'Cảnh báo',
+        title: options.title || t('common.warning'),
         message,
         type: 'warning',
-        confirmText: options.confirmText || 'Tiếp tục',
-        cancelText: options.cancelText || 'Hủy',
+        confirmText: options.confirmText || t('common.resume'),
+        cancelText: options.cancelText || t('common.cancel'),
         showCancel: options.showCancel !== false,
         onConfirm: () => {
           closeModal();
@@ -118,10 +121,10 @@ const useConfirmModal = () => {
     return new Promise((resolve) => {
       setModalState({
         isOpen: true,
-        title: options.title || 'Lỗi',
+        title: options.title || t('common.error'),
         message,
         type: 'error',
-        confirmText: options.confirmText || 'Đóng',
+        confirmText: options.confirmText || t('common.close'),
         cancelText: '',
         showCancel: false,
         onConfirm: () => {
@@ -146,10 +149,10 @@ const useConfirmModal = () => {
     return new Promise((resolve) => {
       setModalState({
         isOpen: true,
-        title: options.title || 'Thành công',
+        title: options.title || t('common.success'),
         message,
         type: 'success',
-        confirmText: options.confirmText || 'OK',
+        confirmText: options.confirmText || t('common.ok'),
         cancelText: '',
         showCancel: false,
         onConfirm: () => {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   activateLicense,
   checkLicenseStatus,
@@ -12,6 +13,7 @@ import LicenseStatus from "../../components/LicenseStatus";
 export default function LicenseActivation() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const {
     valid,
@@ -100,12 +102,12 @@ export default function LicenseActivation() {
             </svg>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Kích hoạt bản quyền
+            {t("license_activation.title")}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
             {valid && !revoked
-              ? "Quản lý bản quyền của bạn"
-              : "Vui lòng nhập mã bản quyền để sử dụng phần mềm"}
+              ? t("license_activation.manage_your_license")
+              : t("license_activation.enter_license_key")}
           </p>
         </div>
 
@@ -118,13 +120,13 @@ export default function LicenseActivation() {
                 onClick={() => navigate("/")}
                 className="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded  font-medium transition-colors"
               >
-                ← Quay lại Dashboard
+                ← {t("license_activation.back_to_dashboard")}
               </button>
               <button
                 onClick={handleChangeKey}
                 className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded  font-medium transition-colors"
               >
-                Thay đổi mã bản quyền
+                {t("license_activation.change_license_key")}
               </button>
             </div>
           </div>
@@ -152,10 +154,10 @@ export default function LicenseActivation() {
                   </svg>
                   <div>
                     <p className="text-green-700 dark:text-green-300 font-medium">
-                      Kích hoạt thành công!
+                      {t("license_activation.activation_success")}
                     </p>
                     <p className="text-sm text-green-600 dark:text-green-400 mt-1">
-                      Đang chuyển hướng...
+                      {t("license_activation.loading")}
                     </p>
                   </div>
                 </div>
@@ -182,12 +184,10 @@ export default function LicenseActivation() {
                     </svg>
                     <div>
                       <p className="text-red-700 dark:text-red-300 font-semibold mb-1">
-                        Bản quyền đã bị thu hồi
+                        {t("license_activation.license_revoked")}
                       </p>
                       <p className="text-sm text-red-600 dark:text-red-400">
-                        Bản quyền của bạn đã bị thu hồi bởi hệ thống. Vui lòng
-                        liên hệ với bộ phận hỗ trợ để biết thêm chi tiết hoặc
-                        kích hoạt bản quyền mới.
+                        {t("license_activation.license_revoked_message")}
                       </p>
                     </div>
                   </div>
@@ -222,14 +222,14 @@ export default function LicenseActivation() {
             {/* License Key Input */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Mã bản quyền
+                {t("license_activation.enter_license_code")}
               </label>
               <input
                 type="text"
                 value={licenseKey}
                 onChange={(e) => setLicenseKey(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Nhập mã bản quyền của bạn"
+                placeholder={t("license_activation.license_key_placeholder")}
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded  focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                 disabled={activating || showSuccess}
               />
@@ -262,24 +262,24 @@ export default function LicenseActivation() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Đang kích hoạt...
+                  {t("license_activation.activating")}
                 </>
               ) : (
-                "Kích hoạt"
+                t("license_activation.activate")
               )}
             </button>
 
             {/* Help Text */}
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Chưa có mã bản quyền?{" "}
+                {t("license_activation.no_license_key")}{" "}
                 <a
                   href="https://digisports.com.vn"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-700 font-medium"
                 >
-                  Liên hệ mua bản quyền
+                  {t("license_activation.contact_purchase_license")}
                 </a>
               </p>
             </div>

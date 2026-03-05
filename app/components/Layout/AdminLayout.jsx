@@ -1,29 +1,21 @@
 import React, { Fragment, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Sidebar from "./Sidebar";
-import Navbar from "./Navbar";
 import CheckActive from "./CheckActive";
 import {
-  ArrowTurnDownRightIcon,
   HomeIcon,
-  Cog6ToothIcon,
   TrophyIcon,
   ServerStackIcon,
   LinkIcon,
-  ChartBarIcon,
-  UserGroupIcon,
-  CalendarIcon,
-  DocumentTextIcon,
   BookOpenIcon,
   ArrowUpCircleIcon,
-  ClipboardDocumentListIcon,
-  ExclamationTriangleIcon,
-  DocumentChartBarIcon,
   ShieldCheckIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import Breadcrumb from "../Breadcrumb";
 
 const AdminLayout = ({ children }) => {
+  const { t } = useTranslation();
   const [isActive, setIsActive] = React.useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -36,47 +28,47 @@ const AdminLayout = ({ children }) => {
 
   const navigation = [
     {
-      name: "Trang chủ",
+      name: t("dashboard.title"),
       href: "/",
       icon: HomeIcon,
     },
     {
-      name: "Quản lý kết nối",
+      name: t("connection.title"),
       href: "/management/connect",
       icon: LinkIcon,
     },
     {
-      name: "Quản lý Thi đấu",
+      name: t("competition.title"),
       href: "/management/general-setting/competition-management",
       icon: TrophyIcon,
     },
     {
-      name: "Quản lý cài đặt",
+      name: t("config.title"),
       href: "/management/general-setting/config-system",
       icon: ServerStackIcon,
     },
     {
-      name: "Đồng bộ dữ liệu",
+      name: t("data_sync.title"),
       href: "/management/data-sync",
       icon: ArrowPathIcon,
     },
+    // {
+    //   name: t("reports.title"),
+    //   href: "/reports",
+    //   icon: DocumentTextIcon,
+    // },
     {
-      name: "Quản lý mẫu báo cáo",
-      href: "/reports",
-      icon: DocumentTextIcon,
-    },
-    {
-      name: "Hướng dẫn sử dụng",
+      name: t("user_guide.title"),
       href: "/user-guide",
       icon: BookOpenIcon,
     },
     {
-      name: "Cập nhật phần mềm",
+      name: t("dashboard.update_manager"),
       href: "/update-manager",
       icon: ArrowUpCircleIcon,
     },
     {
-      name: "Kích hoạt bản quyền",
+      name: t("license.activation"),
       href: "/license-activation",
       icon: ShieldCheckIcon,
     },

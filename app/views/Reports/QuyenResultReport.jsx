@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useReactToPrint } from "react-to-print";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Button from "../../components/Button";
 import Modal from "../../components/Modal";
 import * as XLSX from "xlsx";
@@ -648,6 +649,7 @@ const dataQuyen = {
   },
 };
 const QuyenResultReport = () => {
+  const { t } = useTranslation();
   // tạo template báo cáo theo data mẫu dataQuyen
   // THÔNG TIN GIẢN ĐẤU
   // THÔNG TIN NỘI DUNG THI

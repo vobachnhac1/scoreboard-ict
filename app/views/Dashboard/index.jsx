@@ -1,16 +1,18 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { LinkIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 import logoDigiSports from "../../assets/logo_nhacvb_light.png";
 import backgroundLogo from "../../assets/background_logo.png";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const features = [
     {
-      title: "Quản lý giải đấu",
-      description: "Tạo và quản lý các giải đấu, trận đấu, đội thi đấu",
+      title: t("dashboard.competition_management"),
+      description: t("dashboard.competition_management_desc"),
       icon: (
         <svg
           className="w-8 h-8"
@@ -31,11 +33,11 @@ export default function Dashboard() {
       bgGradient:
         "from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20",
       iconBg: "from-blue-500 to-blue-600",
-      stats: { label: "Giải đấu", value: "0" },
+      stats: { label: t("competition.title"), value: "0" },
     },
     {
-      title: "Quản lý cài đặt",
-      description: "Thiết lập thông tin giải đấu, logo, số giám định",
+      title: t("dashboard.config_management"),
+      description: t("dashboard.config_management_desc"),
       icon: (
         <svg
           className="w-8 h-8"
@@ -62,11 +64,11 @@ export default function Dashboard() {
       bgGradient:
         "from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20",
       iconBg: "from-blue-500 to-blue-600",
-      stats: { label: "Cấu hình", value: "0" },
+      stats: { label: t("common.config"), value: "0" },
     },
     {
-      title: "Quản lý kết nối",
-      description: "Quản lý cấp quyền những thiết bị đang kết nối",
+      title: t("dashboard.connection_management"),
+      description: t("dashboard.connection_management_desc"),
       icon: (
         <svg
           className="w-8 h-8"
@@ -87,11 +89,11 @@ export default function Dashboard() {
       bgGradient:
         "from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20",
       iconBg: "from-emerald-500 to-teal-600",
-      stats: { label: "Kết nối", value: "0" },
+      stats: { label: t("common.connection"), value: "0" },
     },
     {
-      title: "Hướng dẫn sử dụng",
-      description: "Tài liệu chi tiết về cách sử dụng phần mềm",
+      title: t("dashboard.user_guide"),
+      description: t("dashboard.user_guide_desc"),
       icon: (
         <svg
           className="w-8 h-8"
@@ -112,7 +114,32 @@ export default function Dashboard() {
       bgGradient:
         "from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20",
       iconBg: "from-orange-500 to-red-600",
-      stats: { label: "Tài liệu", value: "7" },
+      stats: { label: t("common.documents"), value: "7" },
+    },
+    {
+      title: t("dashboard.about_us"),
+      description: t("dashboard.about_us_desc"),
+      icon: (
+        <svg
+          className="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      ),
+      href: "/about-us",
+      gradient: "from-purple-500 to-pink-600",
+      bgGradient:
+        "from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20",
+      iconBg: "from-purple-500 to-pink-600",
+      stats: { label: t("common.contact"), value: "3" },
     },
   ];
 
@@ -161,7 +188,7 @@ export default function Dashboard() {
               <div className="relative bg-white dark:bg-gray-800 p-4 rounded-3xl shadow-2xl ring-4 ring-blue-500/20 dark:ring-blue-400/20">
                 <img
                   src={logoDigiSports}
-                  alt="Logo DigiSports"
+                  alt={t("dashboard.logo_alt")}
                   className="w-24 h-24 object-contain hover:scale-110 transition-transform duration-500"
                 />
               </div>
@@ -170,18 +197,16 @@ export default function Dashboard() {
             {/* Title with gradient */}
             <h1 className="text-6xl md:text-7xl font-black mb-6 tracking-tight">
               <span className="bg-gradient-to-r from-blue-600 via-blue-600 to-blue-600 dark:from-blue-400 dark:via-blue-400 dark:to-blue-400 bg-clip-text text-transparent">
-                DIGISPORTS
+                {t("dashboard.brand_name")}
               </span>
             </h1>
 
             <p className="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-4">
-              Phần mềm thi đấu chuyên nghiệp
+              {t("dashboard.professional_software")}
             </p>
 
             <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-10 leading-relaxed">
-              Giải pháp toàn diện cho việc tổ chức và quản lý các giải đấu thể
-              thao. Hệ thống chấm điểm thời gian thực, quản lý kết nối thiết bị
-              và báo cáo chi tiết.
+              {t("dashboard.software_description")}
             </p>
 
             {/* CTA Buttons */}
@@ -207,7 +232,7 @@ export default function Dashboard() {
                       d="M13 10V3L4 14h7v7l9-11h-7z"
                     />
                   </svg>
-                  Bắt đầu ngay
+                  {t("dashboard.get_started")}
                 </span>
               </button>
 
@@ -231,7 +256,7 @@ export default function Dashboard() {
                       d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
                     />
                   </svg>
-                  Cấu hình hệ thống
+                  {t("dashboard.system_config")}
                 </span>
               </button>
             </div>
@@ -243,10 +268,10 @@ export default function Dashboard() {
       <div className="relative max-w-7xl mx-auto px-4 py-10 z-10">
         <div className="text-center mb-8">
           <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
-            Tính năng nổi bật
+            {t("dashboard.featured_features")}
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-400">
-            Khám phá các tính năng mạnh mẽ của hệ thống quản lý thi đấu
+            {t("dashboard.explore_features")}
           </p>
         </div>
 
@@ -333,7 +358,7 @@ export default function Dashboard() {
           <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20 rounded-full border border-blue-200 dark:border-blue-800">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              Hệ thống đang hoạt động ổn định
+              {t("dashboard.system_running")}
             </p>
           </div>
         </div>

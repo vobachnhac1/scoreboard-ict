@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import VoNhacScoreDisplay from "../BangDiemVoNhac/components/VoNhacScoreDisplay";
 import JudgeScore from "../BangDiemVoNhac/components/JudgeScore";
 import TotalScore from "../BangDiemVoNhac/components/TotalScore";
@@ -10,6 +11,7 @@ import DoiKhangDisplay from "./DoiKhangDisplay";
  * Nhận dữ liệu từ main process qua IPC
  */
 export default function SecondaryDisplay() {
+  const { t } = useTranslation();
   // State để lưu trữ dữ liệu điểm
   const scoreDataRef = useRef({
     scores: {},
@@ -229,7 +231,7 @@ export default function SecondaryDisplay() {
         // Quyền and Võ Nhạc layout - with header
         <>
           <Header
-            title={matchData?.ten_giai_dau || "GIẢI VÔ ĐỊCH"}
+            title={matchData?.ten_giai_dau || t("secondary_display.default_tournament")}
             desc={matchData?.ten_mon_thi || "VOVINAM"}
             logos={lsLogo}
             config={{

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Component hiển thị điểm Trọng tài trưởng (1 giám định)
@@ -6,12 +7,15 @@ import React from "react";
  * @param {number} score - Điểm
  */
 export default function ChiefRefereeScore({ judge, score }) {
+  const { t } = useTranslation();
+  
   return (
     <div className="flex flex-col items-center">
       {/* Tiêu đề */}
       <div className="bg-blue-700 px-4 py-1.5 w-full shadow-lg">
         <p className="text-xs font-black tracking-[0.1em] text-center text-white drop-shadow-md">
-          TRỌNG TÀI TRƯỞNG
+          {/* TRỌNG TÀI TRƯỞNG */}
+          {t("scoreboard.score_form.chief_referee").toUpperCase()}
         </p>
       </div>
 

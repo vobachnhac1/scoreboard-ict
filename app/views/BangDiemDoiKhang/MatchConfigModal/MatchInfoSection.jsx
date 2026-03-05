@@ -1,10 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Section: Thông tin trận đấu
  * Hiển thị thông tin cơ bản về trận đấu (Hệ điểm, Số giám định, Tổng số hiệp)
  */
 const MatchInfoSection = ({ matchInfo }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="bg-gray-50 dark:bg-gray-800/80 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
@@ -23,7 +26,7 @@ const MatchInfoSection = ({ matchInfo }) => {
               />
             </svg>
           </div>
-          <span>Thông tin trận đấu</span>
+          <span>{t("scoreboard.doikhang.match_info_title")}</span>
         </h3>
       </div>
 
@@ -47,14 +50,14 @@ const MatchInfoSection = ({ matchInfo }) => {
               </svg>
             </div>
             <label className="text-gray-500 dark:text-gray-400 text-[11px] font-semibold uppercase tracking-wider">
-              Hệ điểm
+              {t("scoreboard.doikhang.match_info_score_system")}
             </label>
           </div>
           <div className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            Hệ điểm {matchInfo.he_diem || "2"}
+            {t("scoreboard.doikhang.match_info_score_system")} {matchInfo.he_diem || "2"}
           </div>
           <p className="text-gray-400 dark:text-gray-500 text-[10px] mt-0.5">
-            Theo Quản lý cài đặt
+            {t("scoreboard.doikhang.match_info_from_config")}
           </p>
         </div>
 
@@ -72,14 +75,14 @@ const MatchInfoSection = ({ matchInfo }) => {
               </svg>
             </div>
             <label className="text-gray-500 dark:text-gray-400 text-[11px] font-semibold uppercase tracking-wider">
-              Số giám định
+              {t("scoreboard.doikhang.match_info_referees")}
             </label>
           </div>
           <div className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {matchInfo.so_giam_dinh || "3"} GĐ
+            {matchInfo.so_giam_dinh || "3"} {t("scoreboard.doikhang.match_info_referees_short")}
           </div>
           <p className="text-gray-400 dark:text-gray-500 text-[10px] mt-0.5">
-            Theo Quản lý cài đặt
+            {t("scoreboard.doikhang.match_info_from_config")}
           </p>
         </div>
 
@@ -101,14 +104,14 @@ const MatchInfoSection = ({ matchInfo }) => {
               </svg>
             </div>
             <label className="text-gray-500 dark:text-gray-400 text-[11px] font-semibold uppercase tracking-wider">
-              Tổng số hiệp
+              {t("scoreboard.doikhang.match_info_total_rounds")}
             </label>
           </div>
           <div className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {(matchInfo.so_hiep || 3) + (matchInfo.so_hiep_phu || 0)} hiệp
+            {(matchInfo.so_hiep || 3) + (matchInfo.so_hiep_phu || 0)} {t("scoreboard.doikhang.match_info_rounds")}
           </div>
           <p className="text-gray-400 dark:text-gray-500 text-[10px] mt-0.5">
-            {matchInfo.so_hiep || 3} chính + {matchInfo.so_hiep_phu || 0} phụ
+            {matchInfo.so_hiep || 3} {t("scoreboard.doikhang.match_info_main_rounds")} + {matchInfo.so_hiep_phu || 0} {t("scoreboard.doikhang.match_info_extra_rounds")}
           </p>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   getActionTypeLabel,
   getActionTypeColorClass,
@@ -10,6 +11,8 @@ const HistoryModal = ({
   actionHistory,
   undoLastAction,
 }) => {
+  const { t } = useTranslation();
+
   if (!showHistoryModal) return null;
 
   return (
@@ -35,10 +38,10 @@ const HistoryModal = ({
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
-                  Lịch sử thao tác
+                  {t("scoreboard.doikhang.history_modal_title")}
                 </h2>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5 font-medium">
-                  Tổng số: <span className="text-gray-900 dark:text-gray-200 font-bold">{actionHistory.length}</span> thao tác
+                  {t("scoreboard.doikhang.history_total")}: <span className="text-gray-900 dark:text-gray-200 font-bold">{actionHistory.length}</span> {t("scoreboard.doikhang.history_actions")}
                 </p>
               </div>
             </div>
@@ -75,10 +78,10 @@ const HistoryModal = ({
                   </svg>
                 </div>
                 <p className="text-xl font-bold text-gray-800 dark:text-gray-200 text-center">
-                  Chưa có thao tác nào
+                  {t("scoreboard.doikhang.history_no_actions")}
                 </p>
                 <p className="text-gray-500 dark:text-gray-400 text-center mt-2 text-sm leading-relaxed">
-                  Các thao tác trong trận đấu sẽ được hiển thị tại đây
+                  {t("scoreboard.doikhang.history_actions_desc")}
                 </p>
               </div>
             </div>
@@ -89,37 +92,37 @@ const HistoryModal = ({
                   <thead className="bg-gray-50 dark:bg-gray-800/80 sticky top-0 backdrop-blur-sm z-10 border-b border-gray-200 dark:border-gray-700">
                     <tr>
                       <th className="px-5 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center w-16">
-                        STT
+                        {t("scoreboard.doikhang.history_stt")}
                       </th>
                       <th className="px-5 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center w-20">
-                        Hiệp
+                        {t("scoreboard.doikhang.history_round")}
                       </th>
                       <th className="px-5 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center w-24">
-                        Thời gian
+                        {t("scoreboard.doikhang.history_time")}
                       </th>
                       <th className="px-5 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center w-28">
-                        Loại
+                        {t("scoreboard.doikhang.history_type")}
                       </th>
-                      <th className="px-5 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">
-                        Mô tả
+                      <th className="px-5 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        {t("scoreboard.doikhang.history_description")}
                       </th>
                       <th className="px-5 py-4 text-xs font-semibold text-red-500 dark:text-red-400 uppercase tracking-wider text-center w-20">
-                        Đỏ
+                        {t("scoreboard.doikhang.history_red")}
                       </th>
                       <th className="px-5 py-4 text-xs font-semibold text-blue-500 dark:text-blue-400 uppercase tracking-wider text-center w-20">
-                        Xanh
+                        {t("scoreboard.doikhang.history_blue")}
                       </th>
                       <th className="px-5 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center w-24">
-                        Nhắc nhở
+                        {t("scoreboard.doikhang.history_remind")}
                       </th>
                       <th className="px-5 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center w-24">
-                        Cảnh cáo
+                        {t("scoreboard.doikhang.history_warn")}
                       </th>
                       <th className="px-5 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center w-24">
-                        Đòn chân
+                        {t("scoreboard.doikhang.history_kick")}
                       </th>
                       <th className="px-5 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center w-24">
-                        Thao tác
+                        {t("scoreboard.doikhang.history_action")}
                       </th>
                     </tr>
                   </thead>
@@ -228,7 +231,7 @@ const HistoryModal = ({
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
                               </svg>
-                              Hoàn tác
+                              {t("scoreboard.doikhang.history_undo")}
                             </button>
                           )}
                         </td>
@@ -247,7 +250,7 @@ const HistoryModal = ({
             onClick={() => setShowHistoryModal(false)}
             className="px-6 py-2.5 rounded-lg text-sm font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 transition-colors flex items-center gap-2 border border-transparent dark:border-gray-600"
           >
-            Đóng
+            {t("scoreboard.doikhang.history_close")}
           </button>
         </div>
       </div>

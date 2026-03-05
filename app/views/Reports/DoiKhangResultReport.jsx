@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useReactToPrint } from "react-to-print";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Button from "../../components/Button";
 import Modal from "../../components/Modal";
 import * as XLSX from "xlsx";
@@ -953,6 +954,7 @@ const dataDoiKhang = {
 
 // Màn hình xem trước trước khi in Đối Kháng
 const DoiKhangResultReport = () => {
+  const { t } = useTranslation();
   // tạo template báo cáo theo data mẫu dataDoiKhang
   const data = dataDoiKhang;
   const navigate = useNavigate();

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import {
   LinkIcon,
   PhoneIcon,
@@ -36,6 +37,7 @@ export default function ConnectionManagerModal({
   configSystem,
   serverIpHash,
 }) {
+  const { t } = useTranslation();
   const so_giam_dinh = configSystem.so_giam_dinh || 3;
   const [testingJudge, setTestingJudge] = useState(null);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
@@ -105,7 +107,7 @@ export default function ConnectionManagerModal({
       );
       if (check) {
         alert(
-          `Giám định ${refNum} đã có thiết bị kết nối. Vui lòng chọn giám định khác.`,
+          t("scoreboard.connection_manager.referee_exists", { number: refNum }),
         );
         return;
       }
@@ -129,10 +131,10 @@ export default function ConnectionManagerModal({
             <div className="flex items-center gap-3">
               <div>
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                  Quản lý kết nối giám định
+                  {t("scoreboard.connection_manager.title")}
                 </h2>
                 <p className="text-gray-500 dark:text-gray-400 text-sm">
-                  Kiểm tra và quản lý kết nối với thiết bị giám định
+                  {t("scoreboard.connection_manager.subtitle")}
                 </p>
               </div>
             </div>
@@ -152,10 +154,10 @@ export default function ConnectionManagerModal({
                 <div className="text-center mb-4">
                   <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 flex items-center justify-center gap-2">
                     <LinkIcon className="w-6 h-6 text-blue-600" />
-                    Kết nối thiết bị
+                    {t("scoreboard.connection_manager.connect_device")}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 text-sm">
-                    Quét mã QR để kết nối
+                    {t("scoreboard.connection_manager.scan_qr")}
                   </p>
                 </div>
 
@@ -166,7 +168,7 @@ export default function ConnectionManagerModal({
                       <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-3"></div>
                         <p className="text-gray-600 dark:text-gray-300 text-sm">
-                          Đang tạo QR...
+                          {t("scoreboard.connection_manager.generating_qr")}
                         </p>
                       </div>
                     </div>
@@ -181,7 +183,7 @@ export default function ConnectionManagerModal({
                   ) : (
                     <div className="w-64 h-64 bg-white dark:bg-gray-700 !rounded-lg border-4 border-gray-300 dark:border-gray-600 flex items-center justify-center">
                       <p className="text-gray-400 dark:text-gray-500 text-sm">
-                        Không có QR Code
+                        {t("scoreboard.connection_manager.no_qr")}
                       </p>
                     </div>
                   )}
@@ -191,13 +193,13 @@ export default function ConnectionManagerModal({
                 <div className="bg-white dark:bg-gray-700 border border-blue-200 dark:border-blue-700 !rounded-lg p-4 mb-4">
                   <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-3 flex items-center gap-2">
                     <PhoneIcon className="w-5 h-5" />
-                    Hướng dẫn:
+                    {t("scoreboard.connection_manager.instructions")}
                   </h4>
                   <ol className="text-sm text-gray-700 dark:text-gray-300 space-y-2 list-decimal list-inside">
-                    <li>Mở ứng dụng giám định</li>
-                    <li>Nhấn nút "Scan QR"</li>
-                    <li>Quét mã QR trên màn hình</li>
-                    <li>Chờ kết nối tự động</li>
+                    <li>{t("scoreboard.connection_manager.step_1")}</li>
+                    <li>{t("scoreboard.connection_manager.step_2")}</li>
+                    <li>{t("scoreboard.connection_manager.step_3")}</li>
+                    <li>{t("scoreboard.connection_manager.step_4")}</li>
                   </ol>
                 </div>
 
@@ -210,12 +212,12 @@ export default function ConnectionManagerModal({
                   {isLoadingQR ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      Đang tạo...
+                      {t("scoreboard.connection_manager.generating")}
                     </>
                   ) : (
                     <>
                       <RefreshIcon className="w-5 h-5" />
-                      Tạo lại QR Code
+                      {t("scoreboard.connection_manager.regenerate_qr")}
                     </>
                   )}
                 </button>
@@ -225,9 +227,9 @@ export default function ConnectionManagerModal({
                   <div className="mt-4 text-center">
                     <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1">
                       <ClockIcon className="w-4 h-4" />
-                      QR Code hết hạn sau{" "}
+                      {t("scoreboard.connection_manager.qr_expires")}{" "}
                       <span className="font-bold text-red-600 dark:text-red-400">
-                        5 phút
+                        5 {t("scoreboard.connection_manager.minutes")}
                       </span>
                     </p>
                   </div>
@@ -246,7 +248,7 @@ export default function ConnectionManagerModal({
                         {connectedCount}
                       </div>
                       <div className="text-xs text-green-700 dark:text-green-300 mt-1 font-medium">
-                        Đã kết nối
+                        {t("scoreboard.connection_manager.connected")}
                       </div>
                     </div>
                   </div>
@@ -256,7 +258,7 @@ export default function ConnectionManagerModal({
                         {setPermissionCount}
                       </div>
                       <div className="text-xs text-yellow-700 dark:text-yellow-300 mt-1 font-medium">
-                        Đã phân quyền
+                        {t("scoreboard.connection_manager.assigned")}
                       </div>
                     </div>
                   </div>
@@ -266,7 +268,7 @@ export default function ConnectionManagerModal({
                         {devices.length}
                       </div>
                       <div className="text-xs text-blue-700 dark:text-blue-300 mt-1 font-medium">
-                        Tổng số
+                        {t("scoreboard.connection_manager.total")}
                       </div>
                     </div>
                   </div>
@@ -275,7 +277,7 @@ export default function ConnectionManagerModal({
                 {/* Action Buttons */}
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex gap-2 px-3 py-2 bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white !rounded-lg font-medium text-sm transition-all items-center ">
-                    Máy chủ: {serverIpHash?.display}
+                    {t("scoreboard.connection_manager.server")}: {serverIpHash?.display}
                   </div>
                   <div className="flex gap-2">
                     <button
@@ -283,21 +285,21 @@ export default function ConnectionManagerModal({
                       className="px-3 py-2 bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white !rounded-lg font-medium text-sm transition-all flex items-center gap-2"
                     >
                       <PowerIcon className="w-4 h-4" />
-                      Reset
+                      {t("scoreboard.connection_manager.reset")}
                     </button>
                     <button
                       onClick={handleRefresh}
                       className="px-3 py-2 bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white !rounded-lg font-medium text-sm transition-all flex items-center gap-2"
                     >
                       <RefreshIcon className="w-4 h-4" />
-                      Làm mới
+                      {t("scoreboard.connection_manager.refresh")}
                     </button>
                     <button
                       onClick={onClose}
                       className="px-3 py-2 bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white !rounded-lg font-medium text-sm transition-all flex items-center gap-2"
                     >
                       <CloseIcon className="w-4 h-4" />
-                      Đóng (F1)
+                      {t("scoreboard.connection_manager.close_f1")}
                     </button>
                   </div>
                 </div>
@@ -309,25 +311,25 @@ export default function ConnectionManagerModal({
                       <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-b-2 border-gray-200 dark:border-gray-700">
                         <tr>
                           <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                            STT
+                            {t("scoreboard.connection_manager.stt")}
                           </th>
                           <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                            Tên thiết bị
+                            {t("scoreboard.connection_manager.device_name")}
                           </th>
                           <th className="px-3 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                            GĐ
+                            {t("scoreboard.connection_manager.referee_short")}
                           </th>
                           <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                            Mã TB
+                            {t("scoreboard.connection_manager.device_code")}
                           </th>
                           <th className="px-3 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                            Trạng thái
+                            {t("scoreboard.connection_manager.status")}
                           </th>
                           <th className="px-3 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                            Quyền GĐ
+                            {t("scoreboard.connection_manager.referee_permission")}
                           </th>
                           <th className="px-3 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                            Actions
+                            {t("scoreboard.connection_manager.actions")}
                           </th>
                         </tr>
                       </thead>
@@ -350,10 +352,10 @@ export default function ConnectionManagerModal({
                                   />
                                 </svg>
                                 <p className="text-lg font-medium">
-                                  Chưa có thiết bị nào kết nối
+                                  {t("scoreboard.connection_manager.no_devices")}
                                 </p>
                                 <p className="text-sm mt-1">
-                                  Quét QR Code bên trái để kết nối thiết bị
+                                  {t("scoreboard.connection_manager.scan_qr_left")}
                                 </p>
                               </div>
                             </td>
@@ -409,12 +411,12 @@ export default function ConnectionManagerModal({
                                   {device.connected ? (
                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-medium">
                                       <span className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full animate-pulse"></span>
-                                      Online
+                                      {t("scoreboard.connection_manager.online")}
                                     </span>
                                   ) : (
                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 text-xs font-medium">
                                       <span className="w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full"></span>
-                                      Offline
+                                      {t("scoreboard.connection_manager.offline")}
                                     </span>
                                   )}
                                 </td>
@@ -464,7 +466,7 @@ export default function ConnectionManagerModal({
                                         onClick={() => handleReconnect(device)}
                                         className="px-3 py-1.5 rounded-md text-xs font-medium bg-amber-100 dark:bg-amber-900 hover:bg-amber-200 dark:hover:bg-amber-800 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-600 transition-all"
                                       >
-                                        Cấp Quyền
+                                        {t("scoreboard.connection_manager.grant_permission")}
                                       </button>
                                     )}
 
@@ -477,7 +479,7 @@ export default function ConnectionManagerModal({
                                           }
                                           className="px-3 py-1.5 rounded-md text-xs font-medium bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600 transition-all"
                                         >
-                                          Xoá Quyền
+                                          {t("scoreboard.connection_manager.revoke_permission")}
                                         </button>
                                       )}
                                   </div>

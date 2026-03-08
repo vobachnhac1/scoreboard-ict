@@ -66,6 +66,11 @@ export default function LicenseActivation() {
       setShowSuccess(true);
       setShowActivationForm(false);
       setLicenseKey("");
+      
+      // Tự động chuyển về trang chủ sau 2 giây
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     }
   };
 

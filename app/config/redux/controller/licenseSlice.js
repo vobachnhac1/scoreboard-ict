@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 
 /**
  * License Redux Slice
@@ -18,10 +19,16 @@ export const checkLicenseStatus = createAsyncThunk(
           return rejectWithValue(response.error || 'Failed to check license');
         }
       } else {
-        return rejectWithValue('Electron API not available');
+        // Fallback cho môi trường dev (trình duyệt)
+        const res = await axios.get('http://localhost:6789/api/license/status');
+        if (res.data && res.data.success) {
+          return res.data.data;
+        } else {
+          return rejectWithValue(res.data?.error || 'Failed to check license');
+        }
       }
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.error || error.message);
     }
   }
 );
@@ -39,10 +46,16 @@ export const activateLicense = createAsyncThunk(
           return rejectWithValue(response.error || 'Activation failed');
         }
       } else {
-        return rejectWithValue('Electron API not available');
+        // Fallback cho môi trường dev (trình duyệt)
+        const res = await axios.post('http://localhost:6789/api/license/activate', { license_key: licenseKey });
+        if (res.data && res.data.success) {
+          return res.data.data;
+        } else {
+          return rejectWithValue(res.data?.error || 'Activation failed');
+        }
       }
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.error || error.message);
     }
   }
 );
@@ -130,6 +143,7 @@ const licenseSlice = createSlice({
         state.packageName = action.payload.packageName;
         state.licenseKey = action.payload.licenseKey;
         state.features = action.payload.features || {};
+        state.revoked = action.payload.revoked || false;
       })
       .addCase(checkLicenseStatus.rejected, (state, action) => {
         state.loading = false;
@@ -154,6 +168,7 @@ const licenseSlice = createSlice({
         state.packageName = action.payload.packageName;
         state.licenseKey = action.payload.licenseKey;
         state.features = action.payload.features || {};
+        state.revoked = false;
       })
       .addCase(activateLicense.rejected, (state, action) => {
         state.activating = false;

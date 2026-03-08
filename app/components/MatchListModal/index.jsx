@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { getFlagImage } from "../../utils/flagManager";
+import { formatMatchName } from "../../utils/nameFormatter";
 
 /**
  * Modal hiển thị danh sách trận đấu
@@ -527,7 +528,7 @@ const MatchCard = ({
                 {t("match_list.red_corner")}
               </div>
               <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
-                {match.red_name || "-"}
+                {formatMatchName(match.red_name, t) || "-"}
               </div>
               <div className="text-[11px] text-gray-500 dark:text-gray-400 truncate mt-0.5">
                 {match.red_unit || match.team_name || "-"}
@@ -557,7 +558,7 @@ const MatchCard = ({
                 {t("match_list.blue_corner")}
               </div>
               <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
-                {match.blue_name || "-"}
+                {formatMatchName(match.blue_name, t) || "-"}
               </div>
               <div className="text-[11px] text-gray-500 dark:text-gray-400 truncate mt-0.5">
                 {match.blue_unit || match.team_name || "-"}

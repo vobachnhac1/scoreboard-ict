@@ -108,7 +108,133 @@
     "update_manager": "Update Manager",
     "logo_alt": "DigiSports Logo",
     "background_logo_alt": "Background Logo",
-    "brand_name": "DIGISPORTS"
+    "brand_name": "DIGISPORTS",
+    "feature_introduction": "FEATURES INTRODUCTION",
+    "dashboard_description": "Discover the professional business functions and operational tasks completely integrated into the Digisports solution.",
+    "system_activated": "System Activated",
+    "package": "Package",
+    "expired_on": "Expired on",
+    "days_remaining_info": "({{days}} days remaining)",
+    "change_key": "Change key",
+    "change_activation_code": "CHANGE ACTIVATION CODE",
+    "activate_license": "ACTIVATE LICENSE",
+    "update_package_desc": "Enter a new key to update the service package.",
+    "unlock_features_desc": "Please enter the license key to unlock business features.",
+    "activation_success_msg": "Activation successful! System is updating...",
+    "enter_activation_code_placeholder": "Enter activation code (XXXX-XXXX-XXXX-XXXX)...",
+    "activate_button": "Activate",
+    "cancel_button": "Cancel",
+    "no_code_contact_support": "No code yet? Contact support: ",
+    "main_tasks": "Main tasks:",
+    "system_health": {
+      "system_time": "System Time",
+      "server_connection_status": "Server Connection Status",
+      "online_stable": "Online (Stable)",
+      "offline_stopped": "Offline (Stopped)"
+    },
+    "groups": {
+      "arena_operations": "Arena Operations",
+      "core_management": "Core Management",
+      "support_about_us": "Support & About Us"
+    },
+    "features": {
+      "doikhang_board": {
+        "title": "Combat Scoreboard",
+        "desc": "Professional combat match operation system.",
+        "task1": "Round & Time Management",
+        "task2": "Warnings & Point Deductions",
+        "task3": "Winner Confirmation",
+        "task4": "Video Review Support"
+      },
+      "quyen_board": {
+        "title": "Forms Scoreboard",
+        "desc": "Scoring system for performance & technical forms.",
+        "task1": "Technical & Execution Points",
+        "task2": "Auto Average Calculation",
+        "task3": "Athlete Ranking",
+        "task4": "Referee Score History"
+      },
+      "vonhac_board": {
+        "title": "Musical Forms Scoreboard",
+        "desc": "Scoring musical forms by rhythm & sound.",
+        "task1": "Creativity Scoring",
+        "task2": "Team & Individual Points",
+        "task3": "Quick Score Export"
+      },
+      "secondary_display": {
+        "title": "Secondary Display",
+        "desc": "Real-time result projection interface for audiences (OBS/LED).",
+        "task1": "Real-time Sync",
+        "task2": "Slow Motion Display",
+        "task3": "Live Standings",
+        "task4": "Multi-monitor Compatible"
+      },
+      "tournament_management": {
+        "title": "Tournament Management",
+        "desc": "Digitalize the organization and draw procedures.",
+        "task1": "Manage Combat/Forms/Musical",
+        "task2": "Manage Referees/Judges",
+        "task3": "Import Athlete Excel",
+        "task4": "Automatic Draw",
+        "task5": "Bracket System"
+      },
+      "system_config": {
+        "title": "System Configuration",
+        "desc": "Set up combat rules and brand identity.",
+        "task1": "Edit Scoring Rules",
+        "task2": "Time Configuration",
+        "task3": "Update Logo & Branding"
+      },
+      "connection_management": {
+        "title": "Connection Management",
+        "desc": "Approve and monitor wireless scoring devices.",
+        "task1": "Scoring Device Status",
+        "task2": "Check Connections",
+        "task3": "Assign Judges"
+      },
+      "lan_sync": {
+        "title": "LAN Data Sync",
+        "desc": "Direct data transfer between two computers in local network.",
+        "task1": "Find Devices in Network",
+        "task2": "Sync Match Results",
+        "task3": "Review Data before Receive"
+      },
+      "data_safety": {
+        "title": "Data Safety",
+        "desc": "Multi-layer tournament data protection. Secure data storage.",
+        "task1": "Data Backup",
+        "task2": "Data Synchronization",
+        "task3": "Data Recovery"
+      },
+      "dev_team": {
+        "title": "Development Team",
+        "desc": "Built and maintained by a professional technical team.",
+        "task1": "DIGISPORTS ICT TEAM",
+        "task2": "Version: 1.0.0 stable"
+      },
+      "support_channel": {
+        "title": "Support Channel",
+        "desc": "24/7 tournament operation and troubleshooting support.",
+        "task1": "Hotline: 0815 192 759",
+        "task2": "Zalo: DigiSports",
+        "task3": "Email: digisports.ict@gmail.com",
+        "task4": "24/7 TeamViewer Support"
+      },
+      "about_digisports": {
+        "title": "About DIGISPORTS",
+        "desc": "Vietnam's leading sports technology solution.",
+        "task1": "Over 10 years experience",
+        "task2": "Served 100+ tournaments",
+        "task3": "Scoring Ecosystem",
+        "task4": "digisports.com.vn/trang-chu"
+      },
+      "digital_cert": {
+        "title": "Digital Certificates",
+        "desc": "Digital certification system for athletes.",
+        "task1": "QR Check-in",
+        "task2": "Auto generate certificates"
+      }
+    }
   },
   "competition": {
     "title": "Competition Management",
@@ -811,144 +937,95 @@
         "sections": [
           {
             "title": "Introduction",
-            "content": "DIGISPORTS is professional sports competition management software supporting real-time scoring, device connection management, and detailed reporting for martial arts disciplines.",
+            "content": "DIGISPORTS is a professional software solution for managing, controlling, and scoring sports/martial arts tournaments.",
             "steps": [
-              "Automatic scoring system with 6 disciplines: Sparring (DOL), Pair Practice (SOL), Self-defense (TUV), Multi-practice (DAL), Martial Arts Music (VON), Combat (DK)",
-              "Multi-device connection via Socket.IO with QR Code",
-              "Professional A4 format competition report",
-              "Management of competitions, athletes, and judges",
-              "Fast Excel data data import",
-              "Modern flat design interface with dark mode support"
+              "Conduct refereeing & scoring using specialized Scoreboards (Combat, Forms, Musical Forms).",
+              "Tournament management: Enter athlete data, draw schedules, create brackets.",
+              "LAN synchronization to connect two internal computers during the tournament.",
+              "Data safety & protection throughout the event.",
+              "Output Real-time result display for the audience and livestreaming."
             ]
           },
           {
-            "title": "Supported Disciplines",
-            "content": "The system fully supports 6 martial arts disciplines:",
+            "title": "Supported Scoreboard Systems",
+            "content": "The system supports 3 major scoreboard modules:",
             "steps": [
-              "DOL (Individual practice): 1 athlete/match",
-              "SOL (Pair practice): 2 athletes/team",
-              "TUV (Self-defense): 2 athletes/team",
-              "DAL (Multi-practice): 4 athletes/team",
-              "VON (Martial Arts Music): 6-16 athletes/team",
-              "DK (Combat): 2 athletes (Red vs Blue)"
+              "Combat Scoreboard: Manage rounds, warnings, point deductions, video reviews.",
+              "Forms Scoreboard (DOL, SOL, TUV, DAL): Score technique, performance, calculate average points.",
+              "Musical Forms Scoreboard: Score multi-athlete routines based on rhythm and audio."
             ]
           },
           {
-            "title": "System Requirements",
-            "content": "To use the software effectively, the system must meet the following requirements:",
+            "title": "Hardware System Requirements",
+            "content": "To ensure stable software usage, the following infrastructure is required:",
             "steps": [
-              "Operating System: Windows 10+, macOS 10.15+, Linux",
-              "RAM: Minimum 4GB (8GB recommended)",
-              "Network: Stable WiFi or LAN for device connection",
-              "Judging device: Tablet/Smartphone with a modern web browser",
-              "Browser: Chrome, Firefox, Safari, Edge (latest versions)"
+              "Server (Control Center): Windows 10/11 or macOS, minimum 4GB RAM.",
+              "Network Connection: Dedicated local LAN/WiFi network with a strong and stable router.",
+              "Judging Devices (Clients): Tablets or smartphones scanning QR codes.",
+              "Browser: Latest version of Google Chrome is recommended on all devices."
             ]
           }
         ]
       },
       "setup": {
-        "title": "Initial Setup",
+        "title": "Installation & Infrastructure",
         "sections": [
           {
-            "title": "Step 1: Start the System",
-            "content": "Start the server and client to begin use:",
+            "title": "Local LAN Network Setup",
+            "content": "For the smoothest and safest scoring system, an independent router is needed:",
             "steps": [
-              "Open Terminal/Command Prompt",
-              "Run command: npm run dev (or yarn dev)",
-              "Server will run at: http://localhost:6789",
-              "Client will run at: http://localhost:3000",
-              "Access http://localhost:3000 on your browser"
+              "Equip a powerful WiFi Router (Supporting 5GHz or WiFi 6).",
+              "Only allow the main Server and Judging mobile devices to connect to this local network.",
+              "Disconnect external Internet access to avoid bandwidth congestion and interference."
             ]
           },
           {
-            "title": "Step 2: Create Connection Room",
-            "content": "Create a room for judging devices to join:",
+            "title": "Starting the Main Server",
+            "content": "Launch the software from the primary computer (Server):",
             "steps": [
-              "Go to 'Connection Management' from the home page",
-              "Click 'Create Room' to create a new room",
-              "System automatically generates Room ID (10 chars) and Desktop UUID (12 chars)",
-              "QR Code is generated automatically for sharing",
-              "Click 'Download QR' to save the QR code",
-              "Share the QR code for judging devices to scan"
+              "Plug in the USB containing the DIGISPORTS app or launch the Desktop Shortcut.",
+              "Carefully check the Port status, e.g., System running at IPv4: http://192.168.1.5:3000.",
+              "Click 'Start' on the Launcher interface."
             ]
           },
           {
-            "title": "Step 3: Import data from Excel",
-            "content": "Import match lists and athletes from Excel files:",
+            "title": "Obtain Connection QR Code",
+            "content": "Provide access permissions to scoring devices (Clients):",
             "steps": [
-              "Go to 'Competition Management' → 'Import Excel'",
-              "Select prepared Excel file (.xlsx)",
-              "Excel file needs separate sheets for each discipline (DOL, SOL, TUV, DAL, VON, DK)",
-              "System automatically recognizes formats and imports data",
-              "Check imported data in the match list"
-            ]
-          },
-          {
-            "title": "Step 4: Judge Configuration",
-            "content": "Set number of judges and roles for each discipline:",
-            "steps": [
-              "Open the match needing configuration",
-              "Click 'Configure' (gear icon)",
-              "Select number of judges: 3, 5, or 7",
-              "Assign roles: J1, J2, J3..., Field Ref, Scoring Machine",
-              "Configure score removal (if needed)",
-              "Click 'Save Configuration' to apply"
+              "Go to the Connection Management screen (on the left sidebar menu).",
+              "The Server provides a secure QR code or direct path (IP:Port).",
+              "Arrange Tablets/Phones for judges to scan this QR code."
             ]
           }
         ]
       },
       "competition": {
-        "title": "Competition Management",
+        "title": "Tournament Control",
         "sections": [
           {
-            "title": "Import data from Excel",
-            "content": "The fastest way to create a competition with many matches:",
+            "title": "Tournament Creation & Drawing",
+            "content": "Configure participant lists and match brackets:",
             "steps": [
-              "Go to 'Competition Management' → Click 'Import Excel'",
-              "Select Excel file (.xlsx) with correct formatting",
-              "Each sheet corresponds to one discipline",
-              "DOL Format: [DOL, ID, Name, Unit, Content]",
-              "SOL/TUV Format: 2 consecutive rows = 1 team",
-              "DAL Format: 4 consecutive rows = 1 team",
-              "VON Format: 6-16 consecutive rows = 1 team",
-              "DK Format: [Match #, Red, Unit, Blue, Unit]",
-              "System automatically creates and categorizes matches"
+              "Go to 'Tournament Management', create new or select an existing tournament.",
+              "Set up competition categories or weight classes.",
+              "Import lists from Excel templates or manually add athletes.",
+              "Use the random drawing tool to divide brackets."
             ]
           },
           {
-            "title": "Match Management",
-            "content": "View and manage match lists:",
+            "title": "Athlete Management",
+            "content": "Manage information, medical checks, and weigh-ins:",
             "steps": [
-              "Select competition from list",
-              "View matches in 3 modes: List, Grid, Ranking",
-              "Filter by status: Waiting (WAI), Ongoing (IN), Finished (FIN)",
-              "Search by match number, athlete name, unit",
-              "Click 'Update' to edit match info",
-              "Click 'Enter Match' to start scoring",
-              "Click 'Delete' to remove match (only if not started)"
+              "Update athlete weights and delegations from the grid menu.",
+              "Verify eligibility before allowing an athlete into the match."
             ]
           },
           {
-            "title": "Update Match Info",
-            "content": "Edit match info and view judge configuration:",
+            "title": "Schedule & Brackets",
+            "content": "Track the overall tournament progress:",
             "steps": [
-              "Click 'Update' on the match needing edit",
-              "Modal displays full info: Athlete, unit, content",
-              "'Judges' section shows configured judge list",
-              "Edit necessary information",
-              "Click 'Save' to update"
-            ]
-          },
-          {
-            "title": "View Detailed Scores",
-            "content": "View detailed scores of finished matches:",
-            "steps": [
-              "Click 'Scoreboard' on a finished match (FIN)",
-              "Modal displays scores for each judge",
-              "For Forms/Music: Shows scores per criteria (Movement, Technique, Power...)",
-              "For Combat: Shows scores by round and action",
-              "'Judges' section shows list of judges who scored",
-              "Can print or export PDF from here"
+              "Display matches in a professional Bracket layout for combat sports.",
+              "Drag and drop to reschedule matches, print schedules in A4."
             ]
           }
         ]
@@ -1016,281 +1093,79 @@
         ]
       },
       "connection": {
-        "title": "Device Connection Management",
+        "title": "Connection & Judging",
         "sections": [
           {
-            "title": "Create Connection Room",
-            "content": "Create a room for judging devices:",
+            "title": "Referee Role Assignment",
+            "content": "Assign specific roles to each external device connected to the system:",
             "steps": [
-              "Go to 'Connection Management' from home page",
-              "Click 'Create Room' (or 'Scan QR')",
-              "System automatically creates:",
-              "  • Room ID: 10 chars",
-              "  • Desktop UUID: 12 chars",
-              "  • QR Code: For scanning",
-              "Click 'Download QR' to save",
-              "Room saved to localStorage",
-              "Can edit or delete existing rooms"
+              "Open Connection Management, monitor IP addresses of successfully connected devices.",
+              "Select a specific device to assign permissions: Referee 1, 2, 3... or Control Screen.",
+              "Lock routing to prevent unexpected disconnections."
             ]
           },
           {
-            "title": "Connect Judging Device",
-            "content": "Connect mobile device to the system:",
+            "title": "Multi-Screen Synchronization",
+            "content": "Configure Screen for external connection display:",
             "steps": [
-              "Ensure mobile and desktop are on the same WiFi/LAN",
-              "Desktop: Go to 'Connection Management' → Show QR",
-              "Mobile Device:",
-              "  • Open camera and scan QR",
-              "  • Or visit URL and enter Room ID + Desktop UUID",
-              "Device connects automatically via Socket.IO",
-              "Wait for device in connection list",
-              "Status 'Waiting' means successful connection"
-            ]
-          },
-          {
-            "title": "Register Judge Permission",
-            "content": "Assign permissions to connected devices:",
-            "steps": [
-              "View device list in management table",
-              "Click 'Register' on device to assign",
-              "Select role:",
-              "  • Judge 1-7",
-              "  • Field Referee",
-              "  • Scoring Machine",
-              "Click 'Confirm' to assign",
-              "Device notified and can start scoring",
-              "Roles can be changed anytime"
-            ]
-          },
-          {
-            "title": "Manage Connected Devices",
-            "content": "Device management functions:",
-            "steps": [
-              "View list: Name, role, IP, status",
-              "Click 'Refresh' to update list",
-              "Click 'Disconnect All' to end all sessions",
-              "Click 'Disconnect' for individual device",
-              "IP addresses masked for security",
-              "Real-time status: Connected/Disconnected"
-            ]
-          },
-          {
-            "title": "Troubleshoot Connection",
-            "content": "Steps to fix connection issues:",
-            "steps": [
-              "Check WiFi/LAN on both devices",
-              "Ensure same network (don't use mobile data)",
-              "Check firewall doesn't block Socket.IO port (default: 6789)",
-              "Try toggling WiFi on mobile",
-              "Refresh mobile browser page",
-              "Verify Room ID and Desktop UUID",
-              "Try creating a new room",
-              "Restart server if still failing"
+              "Go to Secondary Display module.",
+              "Drag the secondary window to TV or LED screen via HDMI/DisplayPort.",
+              "The system will synchronize scoreboards and sponsor names to the LED screen instantly."
             ]
           }
         ]
       },
       "reports": {
-        "title": "Reporting and Printing",
+        "title": "Reports and Printing",
         "sections": [
           {
-            "title": "Forms Match Report (DOL/SOL/TUV/DAL)",
-            "content": "View and print reports for performance disciplines:",
+            "title": "Result Export (Minutes)",
+            "content": "Print A4 match minutes after each completed session:",
             "steps": [
-              "Select finished match (FIN)",
-              "Click 'Report' (blue button)",
-              "Modal shows professional A4 report:",
-              "  • Competition and match info",
-              "  • Athlete/team info",
-              "  • Judge score table",
-              "  • Average and total scores",
-              "  • List of scoring judges",
-              "Click 'Print Report' on modal header",
-              "Select 'Save as PDF' to save",
-              "Or select printer to print directly"
+              "The system pins the list of completed matches in the Reports module.",
+              "Select the report type corresponding to the discipline.",
+              "Fill in Chief Referee, Judge signature information.",
+              "Click 'Print Report' to save PDF or connect to laser printer."
             ]
           },
           {
-            "title": "Martial Arts Music (VON) Report",
-            "content": "View and print reports for music discipline:",
+            "title": "Delegation Ranking Summary",
+            "content": "Medal statistics and overall standings:",
             "steps": [
-              "Select finished VON match (FIN)",
-              "Click 'Report' (blue button)",
-              "Modal shows A4 report:",
-              "  • Competition and match info",
-              "  • Athlete list (6-16 people)",
-              "  • Judge score table",
-              "  • Average and total scores",
-              "  • List of scoring judges",
-              "  • Notes on excluded athletes (if any)",
-              "Click 'Print Report' on modal header",
-              "Save as PDF or print directly"
-            ]
-          },
-          {
-            "title": "View Detailed Scores",
-            "content": "View detailed scores of finished matches:",
-            "steps": [
-              "Click 'Scoreboard' on a finished match",
-              "Modal displays:",
-              "  • Scores per judge per criteria",
-              "  • Average after exclusions (if any)",
-              "  • Final total score",
-              "  • Judge list",
-              "Can print or export PDF from here"
-            ]
-          },
-          {
-            "title": "Ranking Table",
-            "content": "View aggregated rankings:",
-            "steps": [
-              "Switch to 'Ranking' view mode",
-              "System sorts by high score automatically",
-              "Displays: Rank, Name, Unit, Score",
-              "Filter by discipline if needed",
-              "Export to Excel or PDF"
-            ]
-          },
-          {
-            "title": "Printing and Exporting",
-            "content": "How to print and export reports:",
-            "steps": [
-              "Click 'Print' or Ctrl+P (Cmd+P on Mac)",
-              "Browser print dialog opens",
-              "Select 'Save as PDF' to save",
-              "Or select printer to print directly",
-              "Format: A4 (210mm x 297mm)",
-              "Supports color and B&W",
-              "Controls hidden automatically during print"
+              "Instantly summarize Gold - Silver - Bronze results for each unit.",
+              "Export to Excel quickly for press and organizers.",
+              "History is fully retained for post-checking."
             ]
           }
         ]
       },
       "troubleshooting": {
-        "title": "Common Troubleshooting",
+        "title": "System Administration & Troubleshooting",
         "sections": [
           {
-            "title": "Socket.IO Connection Issues",
-            "content": "Resolve device connection problems:",
+            "title": "Handling Disconnected Judging Devices",
+            "content": "Ways to fix when assessing devices lose connections:",
             "steps": [
-              "Device cannot connect:",
-              "  • Check WiFi/LAN on both devices",
-              "  • Ensure same network (not 4G/5G)",
-              "  • Verify Room ID and Desktop UUID",
-              "  • Try recreate room",
-              "Intermittent disconnection:",
-              "  • Check WiFi stability",
-              "  • Disable power saving on mobile",
-              "  • Keep mobile screen active",
-              "Cannot scan QR:",
-              "  • Enter Room ID + UUID manually",
-              "  • Check camera permissions",
-              "Device not appearing:",
-              "  • Click 'Refresh' to update list",
-              "  • Ensure Socket.IO server is running",
-              "Socket.IO Error:",
-              "  • Restart server: npm run dev",
-              "  • Clear browser cache and reload"
+              "Review the WiFi Router, avoid 2.4GHz interference from public networks.",
+              "Access Connection Management on the Server, remove old device entries, and rescan the QR Code.",
+              "Ensure all Tablets are fully charged and screen sleep mode is disabled during tournaments."
             ]
           },
           {
-            "title": "Scoring Issues",
-            "content": "Fix problems during scoring:",
+            "title": "LAN Sync Issues",
+            "content": "Resolving errors when LAN Sync cannot transmit points:",
             "steps": [
-              "Score not updating:",
-              "  • Check device connection",
-              "  • Check device permissions",
-              "  • Refresh mobile browser",
-              "Cannot start match:",
-              "  • Check all judges configured",
-              "  • Verify match status is WAI",
-              "  • Reload page and re-enter match",
-              "Time not running (Combat):",
-              "  • Check if 'Start' was clicked",
-              "  • Ensure not paused",
-              "  • Reload page and retry",
-              "Point calculation error:",
-              "  • Check number of judges",
-              "  • Verify removal config",
-              "  • Check console logs for debug",
-              "Result not saving:",
-              "  • Check server connection",
-              "  • Check database status",
-              "  • View server logs for errors"
+              "Disable Firewalls temporarily on the hosting computer (e.g., Windows Defender).",
+              "Ensure the application is run with Administrator rights on Windows, or Root privileges on macOS.",
+              "Double-check static IPs for sending and receiving machines."
             ]
           },
           {
-            "title": "Data Issues",
-            "content": "Fix data-related problems:",
+            "title": "Database Security Concerns",
+            "content": "The system auto-secures data, however, keep in mind:",
             "steps": [
-              "Excel import failure:",
-              "  • Check Excel format standard",
-              "  • Verify sheet names (DOL, SOL, TUV, DAL, VON, DK)",
-              "  • Ensure no empty cells",
-              "Cannot load match list:",
-              "  • Ensure server is running",
-              "  • Check database connection",
-              "  • View server logs for errors",
-              "Data loss:",
-              "  • Check database backup (if any)",
-              "  • Check SQLite database file",
-              "  • Contact administrator",
-              "Cannot delete match:",
-              "  • Only waiting (WAI) matches can be deleted",
-              "  • Started/Finished matches (IN, FIN) cannot",
-              "Database error:",
-              "  • Verify DB file is not corrupt",
-              "  • Restart server",
-              "  • Restore from backup"
-            ]
-          },
-          {
-            "title": "Interface Issues",
-            "content": "Fix display problems:",
-            "steps": [
-              "Broken UI:",
-              "  • Clear browser cache (Ctrl+Shift+Delete)",
-              "  • Hard reload (Ctrl+Shift+R)",
-              "  • Try another browser",
-              "Dark mode not working:",
-              "  • Check system settings",
-              "  • Try toggle in-app dark mode",
-              "Modal not showing:",
-              "  • Check popup blocker",
-              "  • Reload page",
-              "Print error:",
-              "  • Check browser print settings",
-              "  • Try 'Save as PDF' first",
-              "  • Check A4 paper size"
-            ]
-          },
-          {
-            "title": "Useful Shortcuts",
-            "content": "Shortcuts for faster use:",
-            "steps": [
-              "F1: Open connection manager (during scoring)",
-              "Ctrl+P: Open print dialog",
-              "Ctrl+Shift+R: Hard reload page",
-              "Ctrl+Shift+Delete: Clear browser cache",
-              "F5: Normal page reload",
-              "F12: Open Developer Tools"
-            ]
-          },
-          {
-            "title": "Contact Support",
-            "content": "When technical help is needed:",
-            "steps": [
-              "Record error details:",
-              "  • Exact error message",
-              "  • Time of error",
-              "  • Steps to reproduce",
-              "Take screenshots if possible",
-              "Check software version",
-              "View console logs (F12)",
-              "View server logs (terminal)",
-              "Contact email: support@digisports.vn",
-              "Call hotline: 1900-xxxx (business hours)",
-              "Provide full info for fastest support"
+              "Always use an external USB Token to copy Data Backups after each morning/afternoon session.",
+              "Provide limited account permissions for data entry participants."
             ]
           }
         ]
@@ -1379,6 +1254,17 @@
     "restore_backup": "Restore Backup",
     "backup_created": "Backup Created",
     "restore_completed": "Restore Completed",
+    "select_action": "SELECT ACTION",
+    "partial_sync_mode": "PARTIAL SYNC MODE",
+    "close": "Close",
+    "confirm": "Confirm",
+    "target": "Target",
+    "select_target_record": "SELECT TARGET RECORD",
+    "target_linked": "Linked to target data",
+    "click_to_browse_list": "Click to browse local records",
+    "search_records": "Search records...",
+    "no_matching_records": "No records found matching your search",
+    "total_records_available": "Total {{count}} records available",
     "your_machine_id": "Your Machine ID",
     "copied_connection_code": "Connection code copied!",
     "copy_code": "Copy Code",
@@ -1442,6 +1328,20 @@
     "host_identifier": "HOST IDENTIFIER",
     "not_found": "NOT FOUND",
     "select_target": "SELECT TARGET...",
+    "role_labels": {
+      "center": "Center Referee",
+      "r1": "Referee 1",
+      "r2": "Referee 2",
+      "r3": "Referee 3",
+      "r4": "Referee 4",
+      "r5": "Referee 5",
+      "r6": "Referee 6",
+      "r7": "Referee 7",
+      "technical": "Technical",
+      "operator": "Operator",
+      "machine": "Machine",
+      "court": "Court"
+    },
     "error_loading_table_data": "Error loading table data",
     "error_loading_table_list": "Error loading table list",
     "rejected": "Rejected",
@@ -1488,6 +1388,7 @@
     "items_selected": "ITEMS SELECTED",
     "source_machine_detail_arrow": "Source Machine Detail →",
     "data_mismatch": "DATA MISMATCH",
+    "type_mismatch_error": "DATA TYPE MISMATCH (PREFIX)",
     "merge_queue": "MERGE QUEUE",
     "extracting_data": "Extracting data...",
     "send_to_target": "Send to Target",
@@ -1499,8 +1400,8 @@
     "restore": "Restore",
     "ignore": "Ignore",
     "rows": "Rows",
-    "json": "📝 JSON",
-    "data": "📊 Data",
+    "json": "JSON",
+    "data": "Data",
     "partial_sync": "Partially Synced",
     "join_connection": "Join Connection",
     "servers_found_in_network": "Servers Found in Network",
@@ -1560,9 +1461,9 @@
     "no_matching_results": "No matching results found",
     "empty_record": "Empty record",
     "check_data_properties": "Check Data Properties",
-    "config": "⚙️ Config",
-    "scores": "🏆 Scores",
-    "referees": "👥 Referrers",
+    "config": "Config",
+    "scores": "Scores",
+    "referees": "Referrers",
     "json_data_structure": "JSON Data Structure",
     "connect_server": "CONNECT SERVER",
     "send_data": "SEND DATA",
@@ -1624,8 +1525,30 @@
       "status": "Status",
       "name": "Name",
       "type": "Type",
-      "title": "Title"
-    }
+      "title": "Title",
+      "full_name": "Full Name",
+      "role": "Roles"
+    },
+    "local_backup": "Local Backup",
+    "manual_storage": "Manual Storage",
+    "local_backup_desc": "Download file to machine or restore from existing file. Absolute safety for offline storage.",
+    "download_file": "Download File",
+    "restore_local": "Restore Local",
+    "confirm_reset_app": "WARNING: Overwrite data & Reset application?",
+    "server_backup": "Server Backup",
+    "sftp_infrastructure": "DigiSports Infrastructure (SFTP)",
+    "test_connection": "Test Connection",
+    "refresh_list": "Refresh List",
+    "server_backup_desc": "Store data on our secure cloud. Allows instant recovery from anywhere.",
+    "create_cloud_backup": "Create Cloud Backup",
+    "backup_history": "Backup History",
+    "total_records": "Total: {{count}} records",
+    "no_backups_found": "No backups recorded in the system",
+    "restore_action": "Restore",
+    "confirm_backup_ftp": "Do you want to backup current data to the FTP server?",
+    "confirm_restore_ftp": "WARNING: This action will OVERWRITE current data from FTP backup and RESTART software. Continue?",
+    "backup_success": "Backup successful!",
+    "restore_success": "Restore successful! Application will automatically restart."
   },
   "competition_detail": {
     "round_history": {
@@ -2111,7 +2034,11 @@
     "description": "System for managing athlete data, referees, and competition draws",
     "tab_data_management": "Data Management",
     "tab_referee_management": "Referee Management",
-    "tab_upload_import": "Upload & Import",
+    "tab_upload_import": "Import Data",
+    "create_auto_list": "Create auto list",
+    "filter_all": "All",
+    "filter_manual": "Manual",
+    "filter_auto": "Auto",
     "saved_data": "Saved Data",
     "saved_data_desc": "Manage and view details of entered competition content",
     "total_files": "Total Files",
@@ -2535,5 +2462,40 @@
     "warning": "Warning",
     "kick": "Kick",
     "medical": "Medical"
+  },
+  "bracket_merge": {
+    "step_1_title": "STEP 1: UPLOAD FILE DATA",
+    "step_1_desc": "Please select a sample file containing Sheets (starting with 'HC' prefix) for the system to extract athletes and generate brackets automatically.",
+    "select_excel_file": "Select Excel File",
+    "step_2_title": "STEP 2: SELECT WEIGHT CLASS (SHEET)",
+    "error_no_hc_sheet": "Error: Could not find any Sheet starting with 'HC'. Please try again.",
+    "back": "Back",
+    "confirm_preview": "Confirm & Preview Bracket",
+    "step_3_title": "STEP 3: REVIEW LIST PER SHEET",
+    "step_3_desc": "This is the internal bracket for each weight class before merging.",
+    "athletes_count": "Athletes Participating",
+    "matches_count": "Number of matches",
+    "match": "Match",
+    "continue_merge": "Continue: Drag & Drop Merge",
+    "step_4_title": "STEP 4: DRAG & DROP MERGE",
+    "step_4_desc": "Note: Drag and drop to order the weight classes. The new order will be the actual competition call order.",
+    "save_progress": "Proceed to Save",
+    "step_5_title": "STEP 5: SAVING...",
+    "step_5_desc": "The system is syncing and creating the main schedule...",
+    "save_success": "Merged tournament saved successfully to the system!",
+    "save_failed": "Save failed.",
+    "require_select_sheet": "Please select at least 1 weight class.",
+    "empty": "Empty",
+    "view_bracket": "View Bracket",
+    "bracket_title": "BRACKET TREE",
+    "close": "Close",
+    "export_excel": "Export Excel",
+    "bye_position_config": "Bye Position Configuration",
+    "bye_name": "BYE",
+    "bye_position_top": "Top Byes",
+    "bye_position_bottom": "Bottom Byes",
+    "custom_sheet_name": "Competition Name (HC_AUTO_...)",
+    "custom_sheet_name_placeholder": "Enter name suffix (leave blank for timestamp)",
+    "win_prefix": "win."
   }
 }

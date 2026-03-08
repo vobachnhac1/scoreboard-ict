@@ -1,7 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Sidebar from "./Sidebar";
-import CheckActive from "./CheckActive";
 import {
   HomeIcon,
   TrophyIcon,
@@ -16,15 +15,7 @@ import Breadcrumb from "../Breadcrumb";
 
 const AdminLayout = ({ children }) => {
   const { t } = useTranslation();
-  const [isActive, setIsActive] = React.useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
-  const checkActive = (key) => {
-    // Simulate an API call to check the license key
-    setTimeout(() => {
-      setIsActive(true);
-    }, 0);
-  };
 
   const navigation = [
     {
@@ -115,29 +106,26 @@ const AdminLayout = ({ children }) => {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-white dark:bg-gray-900">
-      {isActive ? (
-        <Fragment>
-          <div className="flex flex-1 overflow-hidden relative">
-            <Sidebar
-              navigation={navigation}
-              collapsed={sidebarCollapsed}
-              onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-            />
+      <Fragment>
+        <div className="flex flex-1 overflow-hidden relative">
+          <Sidebar
+            navigation={navigation}
+            collapsed={sidebarCollapsed}
+            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+          />
 
-            <div
-              className={`flex-1 bg-gray-100 dark:bg-gray-900 p-4 overflow-auto transition-all duration-300
-                ${sidebarCollapsed ? "ml-20" : "ml-72"}`}
-            >
-              <Breadcrumb navigation={navigation} />
-              {children}
-            </div>
+          <div
+            className={`flex-1 bg-gray-100 dark:bg-gray-900 p-4 overflow-auto transition-all duration-300
+              ${sidebarCollapsed ? "ml-20" : "ml-72"}`}
+          >
+            <Breadcrumb navigation={navigation} />
+            {children}
           </div>
-        </Fragment>
-      ) : (
-        <CheckActive checkActive={checkActive} />
-      )}
+        </div>
+      </Fragment>
     </div>
   );
 };
 
 export default AdminLayout;
+

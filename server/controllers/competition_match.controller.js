@@ -92,6 +92,32 @@ class CompetitionMatchController {
         }
     }
 
+    // POST /api/competition-match/bulk-update-reindex
+    async bulkUpdateReindex(req, res) {
+        try {
+            const { matches } = req.body;
+
+            if (!matches || !Array.isArray(matches) || matches.length === 0) {
+                return res.status(400).json({ success: false, message: "Thiếu thông tin matches hợp lệ." });
+            }
+
+            const result = await dbCompetitionMatchService.bulkUpdateReindex(matches);
+
+            res.json({
+                success: true,
+                message: `Cập nhật re-index thành công ${result.count} matches.`,
+                data: result
+            });
+        } catch (error) {
+            console.error('Error bulkUpdateReindex:', error);
+            res.status(500).json({
+                success: false,
+                message: "Hệ thống xử lý lỗi.",
+                error: error.message
+            });
+        }
+    }
+
     // GET /api/competition-match/:id - Lấy match theo id
     async getMatchById(req, res) {
         try {

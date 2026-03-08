@@ -15,7 +15,7 @@ export const META_FIELDS_NAME = {
     data: "Cấu trúc dữ liệu",
     config: "Cấu hình hệ thống",
     scores: "Điểm số",
-    referrers: "Giám định viên",
+    referrers: "Giám định",
     team_id: "ID Đội",
     order: "Thứ tự",
     level: "Cấp độ",

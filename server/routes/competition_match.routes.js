@@ -4,6 +4,7 @@ const competitionMatchController = require('../controllers/competition_match.con
 
 // API quản lý Competition Match
 router.post('/competition-match/bulk', competitionMatchController.bulkCreateMatches); // Phải đặt trước /competition-match/:id
+router.post('/competition-match/bulk-update-reindex', competitionMatchController.bulkUpdateReindex);
 router.post('/competition-match', competitionMatchController.createMatch);
 router.get('/competition-match/:id', competitionMatchController.getMatchById);
 router.get('/competition-match/by-dk/:competition_dk_id', competitionMatchController.getMatchesByCompetitionDKId);

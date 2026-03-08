@@ -108,7 +108,133 @@
     "update_manager": "Cập nhật phần mềm",
     "logo_alt": "Logo DigiSports",
     "background_logo_alt": "Logo nền",
-    "brand_name": "DIGISPORTS"
+    "brand_name": "DIGISPORTS",
+    "feature_introduction": "GIỚI THIỆU TÍNH NĂNG",
+    "dashboard_description": "Khám phá các chức năng nghiệp vụ và tác vụ điều hành chuyên nghiệp được tích hợp toàn diện trong giải pháp Digisports.",
+    "system_activated": "Hệ thống đã kích hoạt",
+    "package": "Gói",
+    "expired_on": "Hết hạn",
+    "days_remaining_info": "({{days}} ngày còn lại)",
+    "change_key": "Thay đổi key",
+    "change_activation_code": "THAY ĐỔI MÃ KÍCH HOẠT",
+    "activate_license": "KÍCH HOẠT BẢN QUYỀN",
+    "update_package_desc": "Nhập mã mới để cập nhật gói dịch vụ.",
+    "unlock_features_desc": "Vui lòng nhập mã bản quyền để mở khóa các tính năng nghiệp vụ.",
+    "activation_success_msg": "Kích hoạt thành công! Hệ thống đang cập nhật...",
+    "enter_activation_code_placeholder": "Nhập mã kích hoạt (XXXX-XXXX-XXXX-XXXX)...",
+    "activate_button": "Kích hoạt",
+    "cancel_button": "Hủy",
+    "no_code_contact_support": "Chưa có mã? Liên hệ hỗ trợ: ",
+    "main_tasks": "Tác vụ chính:",
+    "system_health": {
+      "system_time": "Thời gian hệ thống",
+      "server_connection_status": "Trạng thái kết nối Server",
+      "online_stable": "Online (Ổn định)",
+      "offline_stopped": "Offline (Đã dừng)"
+    },
+    "groups": {
+      "arena_operations": "Điều hành & Chấm điểm (Arena Operations)",
+      "core_management": "Quản lý & Cấu hình (Core Management)",
+      "support_about_us": "Hỗ trợ & Thông tin (Support & About Us)"
+    },
+    "features": {
+      "doikhang_board": {
+        "title": "Bảng điểm Đối kháng",
+        "desc": "Hệ thống điều hành trận đấu đối kháng chuyên nghiệp.",
+        "task1": "Quản lý Hiệp & Thời gian",
+        "task2": "Cảnh cáo & Trừ điểm",
+        "task3": "Xác nhận thắng cuộc",
+        "task4": "Hỗ trợ Video Review"
+      },
+      "quyen_board": {
+        "title": "Bảng điểm Quyền",
+        "desc": "Hệ thống chấm điểm các bài thi biểu diễn & kỹ thuật.",
+        "task1": "Điểm Kỹ thuật & Thực hiện",
+        "task2": "Tự động tính trung bình",
+        "task3": "Xếp hạng vận động viên",
+        "task4": "Lịch sử điểm GĐ"
+      },
+      "vonhac_board": {
+        "title": "Bảng điểm Võ nhạc",
+        "desc": "Chấm điểm bài thi võ nhạc theo nhịp điệu & âm thanh.",
+        "task1": "Chấm điểm Sáng tạo",
+        "task2": "Điểm Đội & Cá nhân",
+        "task3": "Kết xuất bảng điểm nhanh"
+      },
+      "secondary_display": {
+        "title": "Màn hình Hiển thị riêng",
+        "desc": "Giao diện trình chiếu kết quả cho khán giả (OBS/LED).",
+        "task1": "Real-time Sync",
+        "task2": "Hiển thị Slow Motion",
+        "task3": "Bảng xếp hạng trực tiếp",
+        "task4": "Tương thích đa màn hình"
+      },
+      "tournament_management": {
+        "title": "Quản lý Giải đấu",
+        "desc": "Số hóa quy trình tổ chức và bốc thăm thi đấu.",
+        "task1": "Quản lý thi đấu Đối kháng/ Quyền/ Võ nhạc",
+        "task2": "Quản lý GĐ/Trọng tài",
+        "task3": "Import VĐV Excel",
+        "task4": "Bốc thăm Tự động",
+        "task5": "Sơ đồ nhánh (Bracket)"
+      },
+      "system_config": {
+        "title": "Cấu hình Hệ thống",
+        "desc": "Thiết lập thông số luật thi đấu và nhận diện thương hiệu.",
+        "task1": "Chỉnh sửa Luật điểm",
+        "task2": "Cấu hình thời gian",
+        "task3": "Cập nhật Logo & Branding"
+      },
+      "connection_management": {
+        "title": "Quản lý Kết nối",
+        "desc": "Phê duyệt và giám sát các thiết bị chấm điểm không dây.",
+        "task1": "Trạng thái máy chấm điểm",
+        "task2": "Kiểm tra kết nối",
+        "task3": "Phân quyền Giám định"
+      },
+      "lan_sync": {
+        "title": "Đồng bộ Liên máy (LAN)",
+        "desc": "Kết nối và chuyển giao dữ liệu trực tiếp giữa 2 máy tính trong mạng nội bộ.",
+        "task1": "Tìm kiếm thiết bị cùng mạng",
+        "task2": "Đồng bộ Kết quả thi đấu",
+        "task3": "Review dữ liệu trước khi nhận"
+      },
+      "data_safety": {
+        "title": "An toàn Dữ liệu",
+        "desc": "Giải pháp bảo vệ dữ liệu giải đấu đa tầng. Với kho lưu trữ dữ liệu an toàn và bảo mật.",
+        "task1": "Sao lưu dữ liệu",
+        "task2": "Đồng bộ dữ liệu",
+        "task3": "Khôi phục dữ liệu"
+      },
+      "dev_team": {
+        "title": "Đội ngũ Phát triển",
+        "desc": "Được xây dựng và bảo trì bởi đội ngũ kỹ thuật chuyên nghiệp.",
+        "task1": "DIGISPORTS ICT TEAM",
+        "task2": "Phiên bản: 1.0.0 stable"
+      },
+      "support_channel": {
+        "title": "Kênh Hỗ trợ",
+        "desc": "Hỗ trợ vận hành và giải quyết sự cố giải đấu 24/7.",
+        "task1": "Hotline: 0815 192 759",
+        "task2": "Zalo: DigiSports",
+        "task3": "Email: digisports.ict@gmail.com",
+        "task4": "Hỗ trợ TeamViewer 24/7"
+      },
+      "about_digisports": {
+        "title": "Về DIGISPORTS",
+        "desc": "Giải pháp công nghệ thể thao hàng đầu Việt Nam.",
+        "task1": "Hơn 10 năm kinh nghiệm",
+        "task2": "Phục vụ 100+ giải đấu",
+        "task3": "Hệ sinh thái chấm điểm",
+        "task4": "digisports.com.vn/trang-chu"
+      },
+      "digital_cert": {
+        "title": "Chứng chỉ Số",
+        "desc": "Hệ thống chứng nhận Vận động viên.",
+        "task1": "QR Check-in",
+        "task2": "Tự động tạo giấy chứng nhận"
+      }
+    }
   },
   "competition": {
     "title": "Quản lý giải đấu",
@@ -760,144 +886,95 @@
         "sections": [
           {
             "title": "Giới thiệu",
-            "content": "DIGISPORTS là phần mềm quản lý thi đấu thể thao chuyên nghiệp, hỗ trợ chấm điểm thời gian thực, quản lý kết nối thiết bị và tạo báo cáo chi tiết cho các bộ môn võ thuật.",
+            "content": "DIGISPORTS là giải pháp phần mềm chuyên nghiệp phục vụ quản lý, điều hành và chấm điểm các giải đấu thể thao/võ thuật.",
             "steps": [
-              "Hệ thống chấm điểm tự động với 6 bộ môn: Đối luyện (DOL), Song luyện (SOL), Tự vệ (TUV), Đa luyện (DAL), Võ Nhạc (VON), Đối Kháng (DK)",
-              "Kết nối đa thiết bị qua Socket.IO với QR Code",
-              "Báo cáo biên bản thi đấu định dạng A4 chuyên nghiệp",
-              "Quản lý giải đấu, vận động viên, giám định viên",
-              "Import dữ liệu từ Excel nhanh chóng",
-              "Giao diện flat design hiện đại, hỗ trợ dark mode"
+              "Điều hành trọng tài & chấm điểm với các Bảng điểm chuyên biệt (Đối kháng, Quyền, Võ nhạc).",
+              "Quản lý giải đấu: Nhập liệu VĐV, bốc thăm xếp lịch, lập sơ đồ nhánh.",
+              "Đồng bộ liên máy LAN để kết nối 2 máy tính nội bộ trong giải đấu.",
+              "An toàn & bảo vệ dữ liệu xuyên suốt giải.",
+              "Xuất màn hình hiển thị kết quả Real-time cho khán giả và livestream."
             ]
           },
           {
-            "title": "Các bộ môn được hỗ trợ",
-            "content": "Hệ thống hỗ trợ đầy đủ 6 bộ môn thi đấu võ thuật:",
+            "title": "Hệ thống Bảng điểm được hỗ trợ",
+            "content": "Hệ thống hỗ trợ 3 module bảng điểm lớn:",
             "steps": [
-              "DOL (Đối luyện): 1 vận động viên/trận",
-              "SOL (Song luyện): 2 vận động viên/đội",
-              "TUV (Tự vệ): 2 vận động viên/đội",
-              "DAL (Đa luyện): 4 vận động viên/đội",
-              "VON (Võ Nhạc): 6-16 vận động viên/đội",
-              "DK (Đối Kháng): 2 vận động viên (Giáp Đỏ vs Giáp Xanh)"
+              "Bảng điểm Đối kháng: Quản lý hiệp, cảnh cáo, trừ điểm, video review.",
+              "Bảng điểm Quyền (DOL, SOL, TUV, DAL): Chấm điểm kỹ thuật, biểu diễn, tính điểm trung bình.",
+              "Bảng điểm Võ nhạc: Chấm điểm bài thi võ nhạc nhiều VĐV theo nhịp điệu và âm thanh."
             ]
           },
           {
-            "title": "Yêu cầu hệ thống",
-            "content": "Để sử dụng phần mềm hiệu quả, hệ thống cần đáp ứng các yêu cầu sau:",
+            "title": "Yêu cầu hệ thống thiết bị",
+            "content": "Để sử dụng phần mềm ổn định, cần đảm bảo các hạ tầng sau:",
             "steps": [
-              "Hệ điều hành: Windows 10+, macOS 10.15+, Linux",
-              "RAM: Tối thiểu 4GB (khuyến nghị 8GB)",
-              "Kết nối mạng: WiFi hoặc LAN ổn định cho kết nối thiết bị",
-              "Thiết bị giám định: Tablet/Smartphone có trình duyệt web hiện đại",
-              "Trình duyệt: Chrome, Firefox, Safari, Edge (phiên bản mới nhất)"
+              "Máy chủ (Server điều hành): Windows 10/11 hoặc macOS, RAM tối thiểu 4GB.",
+              "Kết nối mạng: Hệ thống mạng LAN/WiFi nội bộ riêng biệt, router phát sóng mạnh và ổn định.",
+              "Thiết bị giám định (Client): Máy tính bảng hoặc điện thoại thông minh quét mã QR.",
+              "Trình duyệt: Khuyến nghị sử dụng Google Chrome bản mới nhất trên mọi thiết bị."
             ]
           }
         ]
       },
       "setup": {
-        "title": "Cài đặt ban đầu",
+        "title": "Cài đặt & Hạ tầng",
         "sections": [
           {
-            "title": "Bước 1: Khởi động hệ thống",
-            "content": "Khởi động server và client để bắt đầu sử dụng:",
+            "title": "Cài đặt mạng LAN nội bộ",
+            "content": "Để hệ thống chấm điểm mượt mà và an toàn nhất, bạn cần một bộ định tuyến độc lập:",
             "steps": [
-              "Mở Terminal/Command Prompt",
-              "Chạy lệnh: npm run dev (hoặc yarn dev)",
-              "Server sẽ chạy tại: http://localhost:6789",
-              "Client sẽ chạy tại: http://localhost:3000",
-              "Truy cập http://localhost:3000 trên trình duyệt"
+              "Trang bị 1 thiết bị WiFi Router đủ mạnh (Hỗ trợ băng tần 5GHz hoặc WiFi 6).",
+              "Chỉ cho phép máy chủ (Server điều hành) và thiết bị di động (của Giám định) kết nối vào dải mạng nội bộ này.",
+              "Ngắt kết nối Internet từ bên ngoài để tránh nghẽn băng thông và nhiễu sóng."
             ]
           },
           {
-            "title": "Bước 2: Tạo Room kết nối",
-            "content": "Tạo phòng kết nối để các thiết bị giám định có thể tham gia:",
+            "title": "Khởi động Server Máy chủ",
+            "content": "Khởi động phần mềm từ máy tính chính (Server):",
             "steps": [
-              "Vào menu 'Quản lý kết nối' từ trang chủ",
-              "Nhấn nút 'Tạo Room' để tạo phòng mới",
-              "Hệ thống tự động tạo Room ID (10 ký tự) và UUID Desktop (12 ký tự)",
-              "Mã QR được tạo tự động để chia sẻ",
-              "Nhấn 'Download QR' để lưu mã QR",
-              "Chia sẻ mã QR cho các thiết bị giám định quét"
+              "Cắm USB chứa ứng dụng DIGISPORTS hoặc khởi chạy Shortcut trên màn hình.",
+              "Đọc kỹ trạng thái Port (Cổng kết nối), ví dụ: Hệ thống hoạt động tại IPv4: http://192.168.1.5:3000.",
+              "Nhấn 'Bắt đầu' trên giao diện phần mềm Launcher."
             ]
           },
           {
-            "title": "Bước 3: Import dữ liệu từ Excel",
-            "content": "Import danh sách trận đấu và vận động viên từ file Excel:",
+            "title": "Lấy mã QR kết nối",
+            "content": "Cung cấp quyền kết nối đến các thiết bị chấm điểm (Client):",
             "steps": [
-              "Vào menu 'Quản lý giải đấu' → 'Import Excel'",
-              "Chọn file Excel (.xlsx) đã chuẩn bị sẵn",
-              "File Excel cần có sheet riêng cho từng bộ môn (DOL, SOL, TUV, DAL, VON, DK)",
-              "Hệ thống tự động nhận diện format và import dữ liệu",
-              "Kiểm tra dữ liệu đã import trong danh sách trận đấu"
-            ]
-          },
-          {
-            "title": "Bước 4: Cấu hình giám định",
-            "content": "Thiết lập số lượng và vai trò giám định cho từng bộ môn:",
-            "steps": [
-              "Mở trận đấu cần cấu hình",
-              "Nhấn nút 'Cấu hình' (biểu tượng bánh răng)",
-              "Chọn số lượng giám định: 3, 5, hoặc 7 người",
-              "Gán vai trò cho từng giám định: GĐ1, GĐ2, GĐ3..., Trọng tài sân, Máy giám định",
-              "Cấu hình điểm loại bỏ (nếu cần)",
-              "Nhấn 'Lưu cấu hình' để áp dụng"
+              "Đứng tại màn hình Quản lý kết nối (ở thanh thực đơn bên trái).",
+              "Server cung cấp 1 mã QR bảo mật hoặc đường dẫn trực tiếp (IP:Port).",
+              "Sắp xếp Máy tính bảng/ Điện thoại cho giám định viên quét mã QR này."
             ]
           }
         ]
       },
       "competition": {
-        "title": "Quản lý giải đấu",
+        "title": "Quản lý Giải thi đấu",
         "sections": [
           {
-            "title": "Import dữ liệu từ Excel",
-            "content": "Cách nhanh nhất để tạo giải đấu với nhiều trận:",
+            "title": "Khởi tạo Giải đấu và Bốc thăm",
+            "content": "Thiết lập danh sách và nhánh đấu:",
             "steps": [
-              "Vào 'Quản lý giải đấu' → Nhấn 'Import Excel'",
-              "Chọn file Excel (.xlsx) có cấu trúc đúng format",
-              "Mỗi sheet trong Excel tương ứng with 1 bộ môn",
-              "Format DOL: [DOL, Mã số, Họ tên, Đơn vị, Nội dung thi]",
-              "Format SOL/TUV: 2 rows liên tiếp = 1 đội",
-              "Format DAL: 4 rows liên tiếp = 1 đội",
-              "Format VON: 6-16 rows liên tiếp = 1 đội",
-              "Format DK: [Số trận, Giáp Đỏ, Đơn vị, Giáp Xanh, Đơn vị]",
-              "Hệ thống tự động tạo trận đấu và phân loại"
+              "Vào 'Quản lý giải đấu', tạo mới hoặc chọn 1 giải hiện tại.",
+              "Khởi tạo hệ thống nội dung thi đấu hoặc hạng cân.",
+              "Import danh sách từ file mẫu Excel hoặc thêm tay từng VĐV.",
+              "Sử dụng công cụ bốc thăm ngẫu nhiên để chia nhánh."
             ]
           },
           {
-            "title": "Quản lý trận đấu",
-            "content": "Xem và quản lý danh sách trận đấu:",
+            "title": "Quản lý Vận động viên",
+            "content": "Quản trị thông tin và kiểm tra y tế, cân nặng:",
             "steps": [
-              "Chọn giải đấu từ danh sách",
-              "Xem trận đấu theo 3 chế độ: Danh sách, Lưới, Xếp hạng",
-              "Lọc trận theo trạng thái: Chờ (WAI), Đang thi (IN), Kết thúc (FIN)",
-              "Tìm kiếm trận theo số trận, tên VĐV, đơn vị",
-              "Nhấn 'Cập nhật' để sửa thông tin trận",
-              "Nhấn 'Vào trận' để bắt đầu chấm điểm",
-              "Nhấn 'Xóa' để xóa trận (chỉ khi chưa bắt đầu)"
+              "Cập nhật thông tin cân nặng, phân đoàn từ menu lưới.",
+              "Kiểm tra tính hợp lệ trước khi cho VĐV vào trận."
             ]
           },
           {
-            "title": "Cập nhật thông tin trận đấu",
-            "content": "Chỉnh sửa thông tin trận đấu và xem giám định:",
+            "title": "Lịch thi đấu & Sơ đồ",
+            "content": "Theo dõi tiến độ toàn giải đấu:",
             "steps": [
-              "Nhấn nút 'Cập nhật' trên trận cần sửa",
-              "Modal hiển thị đầy đủ thông tin: VĐV, đơn vị, nội dung thi",
-              "Phần 'Giám định viên' hiển thị danh sách giám định đã cấu hình",
-              "Chỉnh sửa thông tin cần thiết",
-              "Nhấn 'Lưu' để cập nhật"
-            ]
-          },
-          {
-            "title": "Xem bảng điểm chi tiết",
-            "content": "Xem điểm số chi tiết của trận đã kết thúc:",
-            "steps": [
-              "Nhấn nút 'Bảng điểm' trên trận đã kết thúc (FIN)",
-              "Modal hiển thị điểm từng giám định",
-              "Với Quyền/VON: Hiển thị điểm từng tiêu chí (Động tác, Kỹ thuật, Sức mạnh...)",
-              "Với Đối Kháng: Hiển thị điểm theo hiệp, hành động",
-              "Phần 'Giám định viên' hiển thị danh sách giám định đã chấm",
-              "Có thể in hoặc xuất PDF từ đây"
+              "Hiển thị dưới dạng sơ đồ hình cây (Bracket) chuyên nghiệp cho các môn Đối kháng.",
+              "Cho phép kéo thả để sắp xếp lại các trận, in lịch thi đấu ra giấy A4."
             ]
           }
         ]
@@ -906,135 +983,61 @@
         "title": "Hướng dẫn chấm điểm",
         "sections": [
           {
-            "title": "Chấm điểm DOL/SOL/TUV/DAL (Quyền)",
-            "content": "Quy trình chấm điểm cho các bộ môn biểu diễn quyền:",
+            "title": "Bảng điểm Đối Kháng",
+            "content": "Quy trình vận hành bảng điểm cho các trận đấu bộ môn Đối Kháng:",
             "steps": [
-              "Nhấn 'Vào trận' từ danh sách trận đấu",
-              "Nhấn F1 để mở quản lý kết nối thiết bị",
-              "Đăng ký quyền giám định cho từng thiết bị (GĐ1, GĐ2, GĐ3...)",
-              "Nhấn 'Bắt đầu' để bắt đầu trận đấu",
-              "Giám định nhập điểm trên thiết bị di động theo 5 tiêu chí:",
-              "  • Động tác (0-10 điểm)",
-              "  • Kỹ thuật (0-10 điểm)",
-              "  • Sức mạnh (0-10 điểm)",
-              "  • Tinh thần (0-10 điểm)",
-              "  • Tổng thể (0-10 điểm)",
-              "Hệ thống tự động tính điểm trung bình (loại bỏ điểm cao/thấp nếu cấu hình)",
-              "Nhấn 'Kết thúc' để lưu kết quả",
-              "Nhấn 'Biên bản' để xem/in biên bản thi đấu"
+              "Từ danh sách trận đấu Đối Kháng, vào chức năng chấm điểm.",
+              "Thiết lập các thông số hiệp đấu (thời gian hiệp, thời gian nghỉ).",
+              "Kiểm tra danh sách Giám định viên kết nối (Giáp xanh/đỏ).",
+              "Nhấn Bắt đầu để thời gian tự động rớt mạng.",
+              "Có thể tạm dừng, dùng thời gian y tế hoặc Video Review.",
+              "Giám định viên trên tablet sử dụng các nút (+1, +2, +3, Cảnh cáo) để gửi điểm về máy chủ.",
+              "Hệ thống có thể cho phép trọng tài chính thu hồi điểm nếu có phán quyết sai.",
+              "Kết thúc trận đấu và kết quả được tính tự động dựa trên trọng số giám định."
             ]
           },
           {
-            "title": "Chấm điểm VON (Võ Nhạc)",
-            "content": "Quy trình chấm điểm cho bộ môn võ nhạc:",
+            "title": "Bảng điểm Quyền biểu diễn",
+            "content": "Sử dụng bảng điểm để nhập liệu cho các vận động viên thi biểu diễn quyền:",
             "steps": [
-              "Nhấn 'Vào trận' từ danh sách trận đấu",
-              "Nhấn F1 để mở quản lý kết nối thiết bị",
-              "Đăng ký quyền giám định cho từng thiết bị",
-              "Nhấn 'Bắt đầu' để bắt đầu trận đấu",
-              "Giám định nhập điểm theo 4 tiêu chí:",
-              "  • Động tác (0-10 điểm)",
-              "  • Kỹ thuật (0-10 điểm)",
-              "  • Âm nhạc (0-10 điểm)",
-              "  • Tổng thể (0-10 điểm)",
-              "Hệ thống tự động tính điểm trung bình",
-              "Có thể loại bỏ VĐV khỏi tính điểm (nếu cần)",
-              "Nhấn 'Kết thúc' để lưu kết quả",
-              "Nhấn 'Biên bản' để xem/in biên bản thi đấu"
+              "Kiểm tra liên kết các giám định (3, 5, hoặc 7 giám định) tham gia chấm bài thi.",
+              "Theo dõi tiến trình bài thi và mở quyền nhập điểm trên thiết bị di động.",
+              "Trọng tài nhập điểm thành các tiêu chí Kỹ thuật / Biểu diễn (Mức điểm thường từ 0-10).",
+              "Nhận bảng điểm gửi về hệ thống, phần mềm tự động tính trung bình cộng (có thiết lập loại bỏ điểm cao nhất / thấp nhất tùy luật).",
+              "Xếp hạng VĐV trực tiếp theo thời gian thực trên màn hình thứ 2."
             ]
           },
           {
-            "title": "Chấm điểm DK (Đối Kháng)",
-            "content": "Quy trình chấm điểm cho bộ môn đối kháng:",
+            "title": "Bảng điểm Võ Nhạc",
+            "content": "Chấm điểm bộ môn Võ Nhạc tập thể (Có nền nhạc):",
             "steps": [
-              "Nhấn 'Vào trận' từ danh sách trận đấu",
-              "Thiết lập cấu hình: Số hiệp (1-3), thời gian mỗi hiệp (1-3 phút)",
-              "Kết nối thiết bị giám định và phân quyền",
-              "Nhấn 'Bắt đầu' để bắt đầu trận đấu",
-              "Sử dụng các nút chấm điểm:",
-              "  • +1, +2, +3 điểm cho Giáp Đỏ hoặc Giáp Xanh",
-              "  • Ngã: Ghi nhận khi VĐV bị ngã",
-              "  • Cảnh cáo: Phạt VĐV vi phạm",
-              "  • Nhắc nhở: Nhắc nhở VĐV",
-              "Hệ thống tự động đếm thời gian và tính điểm",
-              "Có thể tạm dừng, thời gian nghỉ, thời gian y tế",
-              "Nhấn 'Kết thúc' và chọn người chiến thắng",
-              "Kết quả được lưu tự động vào database"
+              "Mở bảng điểm võ nhạc cho nhóm thi đấu (Một đồng đội từ 6 - 16 VĐV).",
+              "Các trọng tài đặc biệt chấm theo các bộ tiêu chí quy định thêm (Sáng tạo, Âm nhạc, Đội hình, Lỗi).",
+              "Tổng hợp và thông báo sự trừ điểm nết rớt vũ khí hoặc đứng sai khu vực.",
+              "Xuất ra biên bản bài thi Võ nhạc."
             ]
           }
         ]
       },
       "connection": {
-        "title": "Quản lý kết nối thiết bị",
+        "title": "Kết nối & Giám định",
         "sections": [
           {
-            "title": "Tạo Room kết nối",
-            "content": "Tạo phòng kết nối cho thiết bị giám định:",
+            "title": "Phân quyền trọng tài",
+            "content": "Gán chức danh cụ thể cho từng thiết bị ngoại vi kết nối trong hệ thống:",
             "steps": [
-              "Vào menu 'Quản lý kết nối' từ trang chủ",
-              "Nhấn nút 'Tạo Room' (hoặc 'Scan QR')",
-              "Hệ thống tự động tạo:",
-              "  • Room ID: Mã phòng 10 ký tự",
-              "  • UUID Desktop: Mã máy chủ 12 ký tự",
-              "  • QR Code: Mã QR để quét",
-              "Nhấn 'Download QR' để lưu mã QR",
-              "Room được lưu tự động vào localStorage",
-              "Có thể chỉnh sửa hoặc xóa room đã tạo"
+              "Mở Quản lý kết nối, giám sát địa chỉ IP các thiết bị đã bắt tay thành công.",
+              "Lựa chọn thiết bị cụ thể để Gán phân quyền: Trọng tài 1, 2, 3... hoặc Màn hình điều khiển.",
+              "Khóa định tuyến để ngăn chặn mất kết nối bất ngờ."
             ]
           },
           {
-            "title": "Kết nối thiết bị giám định",
-            "content": "Hướng dẫn kết nối thiết bị di động vào hệ thống:",
+            "title": "Đồng bộ đa màn hình",
+            "content": "Cấu hình Màn hình phục vụ hiển thị kết nối bên ngoài:",
             "steps": [
-              "Đảm bảo thiết bị di động và máy chủ cùng mạng WiFi/LAN",
-              "Trên máy chủ: Vào 'Quản lý kết nối' → Hiển thị QR Code",
-              "Trên thiết bị di động:",
-              "  • Mở camera và quét mã QR",
-              "  • Hoặc truy cập URL và nhập Room ID + UUID Desktop",
-              "Thiết bị sẽ tự động kết nối qua Socket.IO",
-              "Chờ thiết bị hiển thị trong danh sách kết nối",
-              "Trạng thái 'Đang chờ' nghĩa là đã kết nối thành công"
-            ]
-          },
-          {
-            "title": "Đăng ký quyền giám định",
-            "content": "Phân quyền giám định cho các thiết bị đã kết nối:",
-            "steps": [
-              "Xem danh sách thiết bị trong bảng quản lý",
-              "Nhấn nút 'Đăng ký' trên thiết bị cần cấp quyền",
-              "Chọn vai trò giám định:",
-              "  • Giám định 1, 2, 3, 4, 5, 6, 7",
-              "  • Trọng tài sân",
-              "  • Máy giám định",
-              "Nhấn 'Xác nhận' để cấp quyền",
-              "Thiết bị sẽ nhận được thông báo và có thể chấm điểm",
-              "Có thể thay đổi quyền bất cứ lúc nào"
-            ]
-          },
-          {
-            "title": "Quản lý thiết bị kết nối",
-            "content": "Các chức năng quản lý thiết bị:",
-            "steps": [
-              "Xem danh sách thiết bị: Tên, quyền, IP, trạng thái",
-              "Nhấn 'Làm mới' để cập nhật danh sách thiết bị",
-              "Nhấn 'Tắt tất cả' để ngắt kết nối tất cả thiết bị cùng lúc",
-              "Nhấn 'Ngắt kết nối' để ngắt từng thiết bị riêng lẻ",
-              "IP thiết bị được mã hóa để bảo mật",
-              "Trạng thái real-time: Kết nối/Ngắt kết nối"
-            ]
-          },
-          {
-            "title": "Xử lý sự cố kết nối",
-            "content": "Các bước khắc phục khi gặp vấn đề kết nối:",
-            "steps": [
-              "Kiểm tra kết nối WiFi/LAN của cả 2 thiết bị",
-              "Đảm bảo cùng mạng (không dùng 4G/5G trên mobile)",
-              "Kiểm tra tường lửa không chặn cổng Socket.IO (mặc định: 6789)",
-              "Thử tắt và bật lại WiFi trên thiết bị di động",
-              "Làm mới trang web trên thiết bị di động (F5 hoặc pull to refresh)",
-              "Kiểm tra Room ID và UUID Desktop có đúng không",
-              "Thử xóa room và tạo lại room mới",
-              "Khởi động lại server nếu vẫn không kết nối được"
+              "Vào module Secondary Display.",
+              "Kéo cửa sổ phụ ra màn hình Tivi, LED thông qua cổng HDMI/DisplayPort.",
+              "Hệ thống sẽ đồng bộ hóa bảng điểm, tên nhà tài trợ lên màn hình LED ngay lập tức."
             ]
           }
         ]
@@ -1043,203 +1046,53 @@
         "title": "Báo cáo và in ấn",
         "sections": [
           {
-            "title": "Biên bản thi đấu Quyền (DOL/SOL/TUV/DAL)",
-            "content": "Xem và in biên bản thi đấu cho các bộ môn quyền:",
+            "title": "Kết xuất kết quả (Biên bản)",
+            "content": "In biên bản A4 sau mỗi phiên đấu hoàn tất:",
             "steps": [
-              "Chọn trận đã kết thúc (trạng thái FIN)",
-              "Nhấn nút 'Biên bản' (màu xanh dương)",
-              "Modal hiển thị biên bản định dạng A4 chuyên nghiệp:",
-              "  • Thông tin giải đấu, trận đấu",
-              "  • Thông tin vận động viên/đội",
-              "  • Bảng điểm chi tiết từng giám định",
-              "  • Điểm trung bình và tổng điểm",
-              "  • Danh sách giám định viên đã chấm",
-              "Nhấn 'In biên bản' trên header modal",
-              "Chọn 'Save as PDF' để lưu file PDF",
-              "Hoặc chọn máy in để in trực tiếp"
+              "Hệ thống ghim danh sách các trận đã hoàn tất trong module Báo cáo.",
+              "Chọn loại biên bản tương ứng bộ môn.",
+              "Điền thông tin Chữ ký Trưởng ban trọng tài, Giám định viên.",
+              "Bấm nút 'In Biên Bản' để lưu PDF hoặc kết nối máy in laser."
             ]
           },
           {
-            "title": "Biên bản thi đấu Võ Nhạc (VON)",
-            "content": "Xem và in biên bản thi đấu cho bộ môn võ nhạc:",
+            "title": "Bảng tổng hợp xếp hạng đoàn",
+            "content": "Thống kê huy chương và bảng tổng sắp:",
             "steps": [
-              "Chọn trận VON đã kết thúc (trạng thái FIN)",
-              "Nhấn nút 'Biên bản' (màu xanh dương)",
-              "Modal hiển thị biên bản định dạng A4:",
-              "  • Thông tin giải đấu, trận đấu",
-              "  • Danh sách vận động viên trong đội (6-16 người)",
-              "  • Bảng điểm chi tiết từng giám định",
-              "  • Điểm trung bình và tổng điểm",
-              "  • Danh sách giám định viên đã chấm",
-              "  • Ghi chú về VĐV bị loại (nếu có)",
-              "Nhấn 'In biên bản' trên header modal",
-              "Chọn 'Save as PDF' hoặc in trực tiếp"
-            ]
-          },
-          {
-            "title": "Xem bảng điểm chi tiết",
-            "content": "Xem điểm số chi tiết của trận đã kết thúc:",
-            "steps": [
-              "Nhấn nút 'Bảng điểm' trên trận đã kết thúc",
-              "Modal hiển thị:",
-              "  • Điểm từng tiêu chí của từng giám định",
-              "  • Điểm trung bình sau khi loại bỏ (nếu có)",
-              "  • Tổng điểm cuối cùng",
-              "  • Danh sách giám định viên",
-              "Có thể in hoặc xuất PDF từ đây"
-            ]
-          },
-          {
-            "title": "Bảng xếp hạng",
-            "content": "Xem bảng xếp hạng tổng hợp:",
-            "steps": [
-              "Chuyển sang chế độ xem 'Xếp hạng'",
-              "Hệ thống tự động sắp xếp theo điểm cao xuống thấp",
-              "Hiển thị: Hạng, Tên VĐV/Đội, Đơn vị, Điểm",
-              "Lọc theo bộ môn nếu cần",
-              "Có thể xuất ra Excel hoặc PDF"
-            ]
-          },
-          {
-            "title": "In ấn và xuất file",
-            "content": "Các cách in và xuất báo cáo:",
-            "steps": [
-              "Nhấn nút 'In' hoặc Ctrl+P (Cmd+P trên Mac)",
-              "Hộp thoại in của trình duyệt sẽ mở ra",
-              "Chọn 'Save as PDF' để lưu file PDF",
-              "Hoặc chọn máy in để in trực tiếp",
-              "Định dạng in: A4 (210mm x 297mm)",
-              "Hỗ trợ in màu và in trắng đen",
-              "Tự động ẩn các nút điều khiển khi in"
+              "Tổng hợp tức thì kết quả Vàng - Bạc - Đồng cho từng đơn vị.",
+              "Xuất ra Excel nhanh để phục vụ cho báo chí và ban tổ chức.",
+              "Lịch sử được lưu trữ toàn vẹn để hậu kiểm tra."
             ]
           }
         ]
       },
       "troubleshooting": {
-        "title": "Xử lý sự cố thường gặp",
+        "title": "Quản trị Hệ thống & Sự cố",
         "sections": [
           {
-            "title": "Sự cố về kết nối Socket.IO",
-            "content": "Giải quyết các vấn đề liên quan đến kết nối thiết bị:",
+            "title": "Xử lý Rớt mạng kết nối giám định",
+            "content": "Các cách khắc phục khi thiết bị giám định mất đường truyền:",
             "steps": [
-              "Thiết bị không kết nối được:",
-              "  • Kiểm tra WiFi/LAN của cả 2 thiết bị",
-              "  • Đảm bảo cùng mạng (không dùng 4G/5G)",
-              "  • Kiểm tra Room ID và UUID Desktop đúng",
-              "  • Thử xóa room và tạo lại",
-              "Mất kết nối giữa chừng:",
-              "  • Kiểm tra độ ổn định mạng WiFi",
-              "  • Tắt chế độ tiết kiệm pin trên mobile",
-              "  • Không để màn hình mobile tắt quá lâu",
-              "Không quét được QR:",
-              "  • Thử nhập thủ công Room ID + UUID Desktop",
-              "  • Kiểm tra camera có quyền truy cập",
-              "Thiết bị không hiển thị:",
-              "  • Nhấn 'Làm mới' để cập nhật danh sách",
-              "  • Kiểm tra server Socket.IO đang chạy",
-              "Lỗi Socket.IO:",
-              "  • Khởi động lại server: npm run dev",
-              "  • Xóa cache trình duyệt và reload"
+              "Kiểm tra lại WiFi Router, tránh để các luồng sóng 2.4Ghz bị nhiễu do mạng công cộng.",
+              "Vào Quản lý Kết Nối trên Server, xóa bỏ thiết bị cũ và kết nối quét lại QR Code.",
+              "Đảm bảo các Tablets đều sạc đầy pin và không tự động tắt màn hình lúc thi đấu."
             ]
           },
           {
-            "title": "Sự cố về chấm điểm",
-            "content": "Xử lý các vấn đề trong quá trình chấm điểm:",
+            "title": "Đồng bộ liên máy (LAN Sync) lỗi",
+            "content": "Khắc phục khi LAN Sync không truyền được điểm:",
             "steps": [
-              "Điểm không cập nhật:",
-              "  • Kiểm tra kết nối thiết bị giám định",
-              "  • Kiểm tra thiết bị đã được cấp quyền chưa",
-              "  • Làm mới trang trên thiết bị mobile",
-              "Không bắt đầu được trận:",
-              "  • Kiểm tra đã cấu hình đủ giám định chưa",
-              "  • Kiểm tra trạng thái trận (phải là WAI)",
-              "  • Thử reload trang và vào lại trận",
-              "Thời gian không chạy (Đối Kháng):",
-              "  • Kiểm tra đã nhấn 'Bắt đầu' chưa",
-              "  • Kiểm tra không bị tạm dừng",
-              "  • Làm mới trang và thử lại",
-              "Lỗi tính điểm:",
-              "  • Kiểm tra cấu hình số giám định",
-              "  • Kiểm tra cấu hình điểm loại bỏ",
-              "  • Xem log console để debug",
-              "Không lưu được kết quả:",
-              "  • Kiểm tra kết nối server",
-              "  • Kiểm tra database đang chạy",
-              "  • Xem log server để biết lỗi"
+              "Tắt tường lửa (Firewall) trên máy tính chạy ứng dụng (Windows Defender).",
+              "Đảm bảo ứng dụng chạy với quyền Administrator trên Windows hoặc Root quyền trên MacOS.",
+              "Kiểm tra lại IP tĩnh của máy nhận và máy gửi."
             ]
           },
           {
-            "title": "Sự cố về dữ liệu",
-            "content": "Khắc phục các vấn đề liên quan đến dữ liệu:",
+            "title": "Vấn đề bảo mật cơ sở dữ liệu",
+            "content": "Hệ thống bảo vệ dữ liệu tự động, tuy nhiên cần lưu ý:",
             "steps": [
-              "Import Excel thất bại:",
-              "  • Kiểm tra format Excel đúng chuẩn",
-              "  • Kiểm tra sheet name đúng (DOL, SOL, TUV, DAL, VON, DK)",
-              "  • Kiểm tra dữ liệu không có ô trống",
-              "Không tải được danh sách trận:",
-              "  • Kiểm tra server đang chạy",
-              "  • Kiểm tra database connection",
-              "  • Xem log server để biết lỗi",
-              "Dữ liệu bị mất:",
-              "  • Kiểm tra database backup (nếu có)",
-              "  • Kiểm tra file database SQLite",
-              "  • Liên hệ quản trị viên",
-              "Không xóa được trận:",
-              "  • Chỉ xóa được trận chưa bắt đầu (WAI)",
-              "  • Trận đã thi (IN, FIN) không thể xóa",
-              "Lỗi database:",
-              "  • Kiểm tra file database không bị corrupt",
-              "  • Thử restart server",
-              "  • Restore từ backup"
-            ]
-          },
-          {
-            "title": "Sự cố về giao diện",
-            "content": "Xử lý các vấn đề về hiển thị:",
-            "steps": [
-              "Giao diện bị lỗi:",
-              "  • Xóa cache trình duyệt (Ctrl+Shift+Delete)",
-              "  • Hard reload (Ctrl+Shift+R hoặc Cmd+Shift+R)",
-              "  • Thử trình duyệt khác",
-              "Dark mode không hoạt động:",
-              "  • Kiểm tra cài đặt hệ thống",
-              "  • Thử toggle dark mode trong app",
-              "Modal không hiển thị:",
-              "  • Kiểm tra không bị popup blocker chặn",
-              "  • Thử reload trang",
-              "In ấn bị lỗi:",
-              "  • Kiểm tra cài đặt in của trình duyệt",
-              "  • Thử 'Save as PDF' thay vì in trực tiếp",
-              "  • Kiểm tra định dạng giấy A4"
-            ]
-          },
-          {
-            "title": "Phím tắt hữu ích",
-            "content": "Các phím tắt để sử dụng nhanh hơn:",
-            "steps": [
-              "F1: Mở quản lý kết nối thiết bị (trong màn hình chấm điểm)",
-              "Ctrl+P (Cmd+P): Mở hộp thoại in",
-              "Ctrl+Shift+R (Cmd+Shift+R): Hard reload trang",
-              "Ctrl+Shift+Delete: Xóa cache trình duyệt",
-              "F5: Reload trang thường",
-              "F12: Mở Developer Tools để debug"
-            ]
-          },
-          {
-            "title": "Liên hệ hỗ trợ",
-            "content": "Khi cần hỗ trợ kỹ thuật:",
-            "steps": [
-              "Ghi lại chi tiết lỗi:",
-              "  • Thông báo lỗi chính xác",
-              "  • Thời điểm xảy ra lỗi",
-              "  • Các bước dẫn đến lỗi",
-              "Chụp màn hình lỗi nếu có thể",
-              "Kiểm tra phiên bản phần mềm đang sử dụng",
-              "Xem log console (F12 → Console)",
-              "Xem log server (terminal đang chạy server)",
-              "Liên hệ qua email: support@digisports.vn",
-              "Hoặc gọi hotline: 1900-xxxx (giờ hành chính)",
-              "Cung cấp đầy đủ thông tin để được hỗ trợ nhanh nhất"
+              "Luôn sử dụng USB Token dự phòng để copy Backup dữ liệu sau mỗi phiên đấu sáng/chiều.",
+              "Chỉ cấp quyền tài khoản giới hạn đối với thu thập viên."
             ]
           }
         ]
@@ -1328,6 +1181,17 @@
     "restore_backup": "Khôi phục sao lưu",
     "backup_created": "Đã tạo bản sao lưu",
     "restore_completed": "Khôi phục hoàn tất",
+    "select_action": "CHỌN HÀNH ĐỘNG",
+    "partial_sync_mode": "CHẾ ĐỘ ĐỒNG BỘ MỘT PHẦN",
+    "close": "Đóng",
+    "confirm": "Xác nhận",
+    "target": "Máy đích",
+    "select_target_record": "CHỌN BẢN GHI ĐÍCH",
+    "target_linked": "Đã liên kết dữ liệu đích",
+    "click_to_browse_list": "Nhấp để duyệt danh sách bản ghi cục bộ",
+    "search_records": "Tìm kiếm bản ghi...",
+    "no_matching_records": "Không tìm thấy bản ghi nào khớp với tìm kiếm",
+    "total_records_available": "Tổng số {{count}} bản ghi khả dụng",
     "your_machine_id": "Mã định danh máy của bạn",
     "copied_connection_code": "Đã sao chép mã kết nối!",
     "copy_code": "Sao chép mã",
@@ -1391,6 +1255,7 @@
     "items_selected": "{{count}} MỤC ĐÃ CHỌN",
     "source_machine_detail_arrow": "Chi tiết máy gửi →",
     "data_mismatch": "DATA MISMATCH",
+    "type_mismatch_error": "SAI LOẠI DỮ LIỆU (PREFIX)",
     "merge_queue": "MERGE QUEUE",
     "extracting_data": "Đang trích xuất dữ liệu...",
     "send_to_target": "Gửi đến máy đích",
@@ -1398,16 +1263,30 @@
     "send_data_package": "Gửi gói dữ liệu ({{count}} bảng)",
     "delete_selected_count": "Xóa mục đã chọn ({{count}})",
     "skipped": "Đã bỏ qua",
-    "ignored": "Đã lờ đi",
+    "ignored": "Đã bỏ qua",
     "restore": "Khôi phục",
-    "ignore": "Lờ đi",
+    "ignore": "Bỏ qua",
     "rows": "Dòng",
-    "json": "📝 JSON",
-    "data": "📊 Dữ liệu",
+    "json": "JSON",
+    "data": "Dữ liệu",
     "partial_sync": "Đồng bộ một phần",
     "host_identifier": "MÃ ĐỊNH DANH MÁY CHỦ",
     "not_found": "KHÔNG TÌM THẤY",
     "select_target": "CHỌN MỤC ĐÍCH...",
+    "role_labels": {
+      "center": "Trọng tài chính",
+      "r1": "Giám định 1",
+      "r2": "Giám định 2",
+      "r3": "Giám định 3",
+      "r4": "Giám định 4",
+      "r5": "Giám định 5",
+      "r6": "Giám định 6",
+      "r7": "Giám định 7",
+      "technical": "Kỹ thuật",
+      "operator": "Vận hành",
+      "machine": "Trọng tài máy",
+      "court": "Trọng tài sân"
+    },
     "error_loading_table_data": "Lỗi khi tải dữ liệu bảng",
     "error_loading_table_list": "Lỗi khi tải danh sách bảng",
     "rejected": "Bị từ chối",
@@ -1508,9 +1387,9 @@
     "export_csv_label": "Xuất CSV",
     "master_sheet": "BẢN CHÍNH",
     "check_data_properties": "Kiểm tra thuộc tính dữ liệu",
-    "config": "⚙️ Cấu hình",
-    "scores": "🏆 Điểm số",
-    "referees": "👥 Giám định",
+    "config": "Cấu hình",
+    "scores": "Điểm số",
+    "referees": "Giám định",
     "json_data_structure": "Cấu trúc dữ liệu JSON",
     "connect_server": "KẾT NỐI MÁY CHỦ",
     "send_data": "DỮ LIỆU GỬI",
@@ -1555,7 +1434,7 @@
       "data": "Cấu trúc dữ liệu",
       "config": "Cấu hình hệ thống",
       "scores": "Điểm số",
-      "referrers": "Giám định viên",
+      "referrers": "Giám định/Trọng tài",
       "team_id": "ID Đội",
       "order": "Thứ tự",
       "level": "Cấp độ",
@@ -1585,8 +1464,30 @@
       "result": "Kết quả",
       "notes": "Ghi chú",
       "config_key": "Khóa cấu hình",
-      "config_value": "Giá trị cấu hình"
-    }
+      "config_value": "Giá trị cấu hình",
+      "full_name": "Họ tên",
+      "role": "Vai trò"
+    },
+    "local_backup": "Sao lưu Tĩnh",
+    "manual_storage": "Lưu trữ thủ công",
+    "local_backup_desc": "Tải tệp về máy hoặc khôi phục từ tệp có sẵn. An toàn tuyệt đối cho lưu trữ ngoại tuyến.",
+    "download_file": "Tải file",
+    "restore_local": "Khôi phục tĩnh",
+    "confirm_reset_app": "CẢNH BÁO: Ghi đè dữ liệu & Reset ứng dụng?",
+    "server_backup": "Sao lưu Server",
+    "sftp_infrastructure": "Hạ tầng DigiSports (SFTP)",
+    "test_connection": "Kiểm tra kết nối",
+    "refresh_list": "Làm mới danh sách",
+    "server_backup_desc": "Lưu trữ dữ liệu lên đám mây bảo mật của chúng tôi. Cho phép khôi phục tức thì từ bất kỳ đâu.",
+    "create_cloud_backup": "Tạo bản sao lưu Cloud",
+    "backup_history": "Lịch sử sao lưu",
+    "total_records": "Tổng số: {{count}} bản ghi",
+    "no_backups_found": "Hệ thống chưa ghi nhận bản sao lưu nào",
+    "restore_action": "Khôi phục",
+    "confirm_backup_ftp": "Bạn có muốn sao lưu dữ liệu hiện tại lên máy chủ FTP?",
+    "confirm_restore_ftp": "CẢNH BÁO: Thao tác này sẽ GHI ĐÈ dữ liệu hiện tại từ bản sao lưu FTP và KHỞI ĐỘNG LẠI phần mềm. Tiếp tục?",
+    "backup_success": "Sao lưu thành công!",
+    "restore_success": "Khôi phục thành công! Ứng dụng sẽ tự động khởi động lại."
   },
   "competition_detail": {
     "round_history": {
@@ -1694,7 +1595,8 @@
       "ongoing": "Đang diễn ra",
       "finished": "Kết thúc",
       "cancelled": "Hủy",
-      "matches": "trận"
+      "matches": "trận",
+      "match_count_label": "Số lượng:"
     },
     "buttons": {
       "back": "Quay lại",
@@ -2070,7 +1972,11 @@
     "description": "Hệ thống quản lý dữ liệu vận động viên, trọng tài và bốc thăm thi đấu",
     "tab_data_management": "Quản lý dữ liệu",
     "tab_referee_management": "Quản lý trọng tài",
-    "tab_upload_import": "Upload & Import",
+    "tab_upload_import": "Nhập danh sách",
+    "create_auto_list": "Tạo danh sách tự động",
+    "filter_all": "Tất cả",
+    "filter_manual": "Thủ công",
+    "filter_auto": "Tự Động",
     "saved_data": "Dữ liệu đã lưu",
     "saved_data_desc": "Quản lý và xem chi tiết các nội dung thi đấu đã nhập",
     "total_files": "Tổng số file",
@@ -2492,5 +2398,40 @@
     "warning": "Cảnh cáo",
     "kick": "Đòn chân",
     "medical": "Y tế"
+  },
+  "bracket_merge": {
+    "step_1_title": "BƯỚC 1: UPLOAD FILE DATA",
+    "step_1_desc": "Vui lòng chọn file mẫu có chứa các Sheet (Bắt đầu với tiền tố HC) để hệ thống trích xuất VĐV và phân nhánh vòng bảng tự động.",
+    "select_excel_file": "Chọn File Excel",
+    "step_2_title": "BƯỚC 2: CHỌN HẠNG CÂN (SHEET)",
+    "error_no_hc_sheet": "Lỗi: Không tìm thấy bất kỳ Sheet nào bắt đầu bằng 'HC'. Vui lòng làm lại.",
+    "back": "Quay Lại",
+    "confirm_preview": "Xác Nhận & Xem Trước Bracket",
+    "step_3_title": "BƯỚC 3: REVIEW DANH SÁCH TỪNG SHEET",
+    "step_3_desc": "Đây là bảng đấu nội bộ của từng hạng cân trước khi ghép chéo.",
+    "athletes_count": "VĐV Tham Gia",
+    "matches_count": "Số trận thi đấu",
+    "match": "Trận",
+    "continue_merge": "Tiếp Tục: Kéo Thả Trộn Bảng",
+    "step_4_title": "BƯỚC 4: KÉO THẢ GỘP",
+    "step_4_desc": "Lưu Ý: Kéo thả để sắp xếp các hạng cân đan xen nhau. Trình tự mới ở đây là trình tự sẽ gọi thi đấu thực tế.",
+    "save_progress": "Tiến Hành Lưu",
+    "step_5_title": "BƯỚC 5: ĐANG LƯU...",
+    "step_5_desc": "Hệ thống đang đồng bộ và tạo lịch thi đấu gốc...",
+    "save_success": "Lưu giải đấu gộp thành công hệ thống dữ liệu!",
+    "save_failed": "Lưu thất bại.",
+    "require_select_sheet": "Vui lòng chọn ít nhất 1 Hạng cân.",
+    "empty": "Trống",
+    "view_bracket": "Xem Sơ Đồ",
+    "bracket_title": "SƠ ĐỒ THI ĐẤU",
+    "close": "Đóng",
+    "export_excel": "Xuất Excel",
+    "bye_position_config": "Cấu hình vị trí Miễn đấu",
+    "bye_name": "Miễn đấu",
+    "bye_position_top": "Miễn vòng nhánh trên",
+    "bye_position_bottom": "Miễn vòng nhánh dưới",
+    "custom_sheet_name": "Tên danh sách (HC_AUTO_...)",
+    "custom_sheet_name_placeholder": "Nhập hậu tố (Bỏ trống để dùng ngày giờ tạo)",
+    "win_prefix": "T.T."
   }
 }

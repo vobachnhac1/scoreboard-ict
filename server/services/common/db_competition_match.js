@@ -187,6 +187,32 @@ class DBCompetitionMatchService {
         });
     }
 
+    // Cập nhật gộp re-index match_no và win.X
+    bulkUpdateReindex(matches) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let count = 0;
+                for (const match of matches) {
+                    const query = `
+                        UPDATE competition_match 
+                        SET match_no = ?, red_name = ?, blue_name = ?, updated_at = datetime('now')
+                        WHERE id = ?
+                    `;
+                    await new Promise((res, rej) => {
+                        this.db.run(query, [match.match_no, match.red_name, match.blue_name, match.id], function (err) {
+                            if (err) return rej(err);
+                            count++;
+                            res();
+                        });
+                    });
+                }
+                resolve({ count });
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+
     // Lấy match theo competition_dk_id
     getMatchesByCompetitionDKId(competition_dk_id) {
         return new Promise((resolve, reject) => {

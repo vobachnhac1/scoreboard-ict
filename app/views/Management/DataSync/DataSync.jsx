@@ -6,6 +6,7 @@ import RecordsView from "./components/RecordsView";
 import StagingSection from "./components/StagingSection";
 import DatabaseCleanupModal from "./components/DatabaseCleanupModal";
 import RecordDetailModal from "./components/RecordDetailModal";
+import ProcessingControlModal from "./components/ProcessingControlModal";
 import ConfirmModal from "../../../components/ConfirmModal";
 import { META_FIELDS_NAME, HIDDEN_DETAIL_KEYS } from "./constants";
 
@@ -30,6 +31,7 @@ const DataSync = () => {
     stagingView, loadingStaging, applyingStaging,
     stagingMappings, setStagingMappings,
     stagingDetailRecord, setStagingDetailRecord,
+    editingMappingRecord, setEditingMappingRecord,
     allDatabaseTables, selectedTablesToDelete,
     showCleanupModal, setShowCleanupModal, loadingCleanup,
     handleRefreshAll, handleTableToggle, handleRecordToggle,
@@ -77,7 +79,7 @@ const DataSync = () => {
           <button
             onClick={handleRefreshAll}
             disabled={isRefreshing}
-            className="group flex items-center gap-3 px-8 py-4 bg-white dark:bg-gray-800 border-2 border-blue-50 dark:border-blue-900/30 rounded-2xl shadow-xl shadow-blue-500/10 hover:shadow-blue-500/20 hover:border-blue-200 transition-all active:scale-95 disabled:opacity-50"
+            className="group flex items-center gap-3 px-8 py-4 bg-white dark:bg-gray-800 border-2 border-blue-50 dark:border-blue-900/30 rounded-2xl hover:border-blue-200 transition-all active:scale-95 disabled:opacity-50"
           >
             <div className={`p-1.5 rounded-lg bg-blue-50 dark:bg-blue-900 group-hover:rotate-180 transition-transform duration-700 ${isRefreshing ? "animate-spin" : ""}`}>
               <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 text-sm font-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -93,11 +95,11 @@ const DataSync = () => {
 
       {/* ===== TABS - Modern Pill Style ===== */}
       <div className="flex flex-col flex-1 overflow-hidden min-w-0 mb-8">
-        <div className="flex flex-wrap items-center gap-3 p-2 bg-white/50 dark:bg-gray-800/50 rounded-[2.5rem] border-2 border-blue-50 dark:border-blue-900/30 w-fit mb-8 shadow-inner">
+        <div className="flex flex-wrap items-center gap-3 p-2 bg-white/50 dark:bg-gray-800/50 rounded border-2 border-blue-50 dark:border-blue-900/30 w-fit mb-8">
           <button
             onClick={() => setActiveTab("connect")}
-            className={`px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === "connect"
-              ? "bg-blue-600 text-white shadow-xl shadow-blue-500/30 scale-105"
+            className={`m-1 px-4 py-3 rounded text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === "connect"
+              ? "bg-blue-600 text-white shadow-blue-500/30 scale-105"
               : "text-blue-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/40"
               }`}
           > {t("data_sync.connect_server")} </button>
@@ -106,17 +108,17 @@ const DataSync = () => {
 
           <button
             onClick={() => setActiveTab("send")}
-            className={`px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === "send"
-              ? "bg-indigo-600 text-white shadow-xl shadow-indigo-500/30 scale-105"
-              : "text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/40"
+            className={`m-1 px-4 py-3 rounded text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === "send"
+              ? "bg-blue-600 text-white scale-105"
+              : "text-blue-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/40"
               }`}
           > {t("data_sync.send_data")} </button>
 
           <button
             onClick={() => setActiveTab("receive")}
-            className={`px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === "receive"
-              ? "bg-emerald-600 text-white shadow-xl shadow-emerald-500/30 scale-105"
-              : "text-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/40"
+            className={`m-1 px-4 py-3 rounded text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === "receive"
+              ? "bg-blue-600 text-white scale-105"
+              : "text-blue-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/40"
               }`}
           > {t("data_sync.receive_data")} </button>
 
@@ -124,8 +126,8 @@ const DataSync = () => {
 
           <button
             onClick={() => setActiveTab("clean")}
-            className={`px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === "clean"
-              ? "bg-rose-600 text-white shadow-xl shadow-rose-500/30 scale-105"
+            className={`m-1 px-4 py-3 rounded text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === "clean"
+              ? "bg-rose-600 text-white scale-105"
               : "text-rose-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/40"
               }`}
           > {t("data_sync.clean_data")} </button>
@@ -155,10 +157,10 @@ const DataSync = () => {
           {activeTab === "send" && viewMode === "table" && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
               <div className="flex items-center gap-4 mb-2">
-                <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center text-indigo-600">
+                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center text-blue-600">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                 </div>
-                <h2 className="text-[11px] font-black text-indigo-400 uppercase tracking-widest">{t("data_sync.system_database_category")}</h2>
+                <h2 className="text-[11px] font-black text-blue-400 uppercase tracking-widest">{t("data_sync.system_database_category")}</h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
@@ -168,9 +170,9 @@ const DataSync = () => {
                     <div
                       key={table.name}
                       onClick={() => handleTableToggle(table.name)}
-                      className={`group relative p-5 rounded-[2rem] border-2 transition-all duration-300 cursor-pointer overflow-hidden ${selectedTables.includes(table.name)
-                        ? "bg-indigo-600 border-indigo-600 shadow-xl shadow-indigo-500/20"
-                        : "bg-white dark:bg-gray-800 border-indigo-50 dark:border-indigo-900/30 hover:border-indigo-200 hover:shadow-lg shadow-indigo-500/5"}`}
+                      className={`group relative p-5 rounded border-2 transition-all duration-300 cursor-pointer overflow-hidden ${selectedTables.includes(table.name)
+                        ? "bg-blue-600 border-blue-600 shadow-blue-500/20"
+                        : "bg-white dark:bg-gray-800 border-blue-50 dark:border-blue-900/30 hover:border-blue-200 hover:shadow-lg shadow-blue-500/5"}`}
                     >
                       {selectedTables.includes(table.name) && (
                         <div className="absolute top-0 right-0 p-4">
@@ -182,7 +184,7 @@ const DataSync = () => {
 
                       <div className="relative z-10 space-y-3">
                         <div className="flex items-center gap-3">
-                          <div className={`p-2 rounded-xl border ${selectedTables.includes(table.name) ? "bg-white/10 border-white/20 text-white" : "bg-indigo-50 dark:bg-indigo-900/50 border-indigo-100 dark:border-indigo-800 text-indigo-600"}`}>
+                          <div className={`p-2 rounded-xl border ${selectedTables.includes(table.name) ? "bg-white/10 border-white/20 text-white" : "bg-blue-50 dark:bg-blue-900/50 border-blue-100 dark:border-blue-800 text-blue-600"}`}>
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" /></svg>
                           </div>
                           <span className={`text-sm font-black uppercase tracking-tight ${selectedTables.includes(table.name) ? "text-white" : "text-blue-950 dark:text-blue-100"}`}>
@@ -195,7 +197,7 @@ const DataSync = () => {
                             <div className={`text-[10px] font-black uppercase tracking-widest ${selectedTables.includes(table.name) ? "text-white/60" : "text-gray-400 dark:text-gray-500"}`}>
                               {t("data_sync.records_count", { count: metadata[table.name].count })}
                               {selectedRecords[table.name]?.length > 0 && (
-                                <span className="ml-2 px-1.5 py-0.5 bg-indigo-900/10 rounded dark:bg-indigo-100/10">
+                                <span className="ml-2 px-1.5 py-0.5 bg-blue-900/10 rounded dark:bg-blue-100/10">
                                   ✓ {t("data_sync.items_selected", { count: selectedRecords[table.name].length })}
                                 </span>
                               )}
@@ -204,9 +206,9 @@ const DataSync = () => {
                           <button
                             onClick={(e) => { e.stopPropagation(); loadTableRecords(table.name); }}
                             disabled={syncing}
-                            className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${selectedTables.includes(table.name)
-                              ? "bg-white text-indigo-600 hover:bg-indigo-50"
-                              : "bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white shadow-inner"}`}
+                            className={`px-4 py-2 rounded text-[9px] font-black uppercase tracking-widest transition-all ${selectedTables.includes(table.name)
+                              ? "bg-white text-blue-600 hover:bg-blue-50"
+                              : "bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white shadow-inner"}`}
                           >
                             {t("data_sync.detail")}
                           </button>
@@ -221,7 +223,7 @@ const DataSync = () => {
                   <button
                     onClick={handleSendToManualServer}
                     disabled={syncing}
-                    className="px-10 py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-indigo-500/30 active:scale-95 transition-all flex items-center gap-4"
+                    className="px-10 py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/30 active:scale-95 transition-all flex items-center gap-4"
                   >
                     {syncing ? (
                       <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> {t("data_sync.processing").toUpperCase()}</>
@@ -237,6 +239,7 @@ const DataSync = () => {
             </div>)}
 
           {activeTab === "send" && viewMode !== "table" && (<RecordsView
+            availableTables={availableTables}
             selectedTableForRecords={selectedTableForRecords}
             tableRecords={tableRecords}
             loadingRecords={loadingRecords}
@@ -291,18 +294,19 @@ const DataSync = () => {
             handleDeleteSession={handleDeleteSession}
             handleApplyStaging={handleApplyStaging}
             handleUpdateMapping={handleUpdateMapping}
+            setEditingMappingRecord={setEditingMappingRecord}
           />)}
 
           {/* ===== CLEANUP SECTION - Modern Control Card ===== */}
           {activeTab === "clean" && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-              <div className="relative p-10 bg-white dark:bg-gray-800 rounded-[3rem] border border-blue-50 dark:border-blue-900/30 shadow-2xl shadow-blue-500/5 overflow-hidden">
+              <div className="relative p-10 bg-white dark:bg-gray-800 rounded border border-blue-50 dark:border-blue-900/30 shadow-2xl shadow-blue-500/5 overflow-hidden">
                 <div className="absolute top-0 right-0 p-12 opacity-5">
                   <svg className="w-40 h-40 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                 </div>
 
                 <div className="relative z-10 max-w-xl">
-                  <div className="w-16 h-16 bg-rose-50 dark:bg-rose-900/30 rounded-3xl flex items-center justify-center text-rose-500 mb-8 border border-rose-100 dark:border-rose-800">
+                  <div className="w-16 h-16 bg-rose-50 dark:bg-rose-900/30 rounded flex items-center justify-center text-rose-500 mb-8 border border-rose-100 dark:border-rose-800">
                     <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
@@ -318,7 +322,7 @@ const DataSync = () => {
 
                   <button
                     onClick={handleOpenCleanupModal}
-                    className="px-10 py-5 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-rose-500/20 active:scale-95 transition-all flex items-center gap-4"
+                    className="px-10 py-5 bg-rose-600 hover:bg-rose-700 text-white rounded text-[11px] font-black uppercase tracking-[0.2em] shadow-rose-500/20 active:scale-95 transition-all flex items-center gap-4"
                   >
                     {t("data_sync.start_cleanup")}
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
@@ -331,7 +335,7 @@ const DataSync = () => {
 
       {/* ===== SYNC PROGRESS - Premium Overlay ===== */}
       {syncing && Object.keys(syncProgress).length > 0 && (
-        <div className="fixed bottom-10 right-10 z-[70] w-96 p-8 bg-white/90 dark:bg-gray-800/90 rounded-[2.5rem] border border-blue-50 dark:border-blue-900/30 shadow-2xl shadow-blue-500/20 animate-in slide-in-from-right-10 duration-500">
+        <div className="fixed bottom-10 right-10 z-[70] w-96 p-8 bg-white/90 dark:bg-gray-800/90 rounded border border-blue-50 dark:border-blue-900/30 shadow-2xl shadow-blue-500/20 animate-in slide-in-from-right-10 duration-500">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-1">{t("data_sync.processing_status")}</h2>
@@ -378,11 +382,11 @@ const DataSync = () => {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-500">
           <div className="absolute inset-0 bg-blue-950/40" onClick={() => setStagingDetailRecord(null)}></div>
 
-          <div className="relative bg-white dark:bg-gray-800 rounded-[3rem] shadow-2xl shadow-blue-500/10 max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-blue-50 dark:border-blue-900/30">
+          <div className="relative bg-white dark:bg-gray-800 rounded shadow-2xl shadow-blue-500/10 max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-blue-50 dark:border-blue-900/30">
             {/* Modal Header */}
-            <div className={`px-10 py-8 flex items-center justify-between border-b ${stagingDetailRecord.type === "incoming" ? "bg-blue-600 border-blue-500" : "bg-emerald-600 border-emerald-500"}`}>
+            <div className={`px-10 py-8 flex items-center justify-between border-b ${stagingDetailRecord.type === "incoming" ? "bg-blue-600 border-blue-500" : "bg-blue-600 border-blue-500"}`}>
               <div className="flex items-center gap-6">
-                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-white shadow-xl border border-white/30">
+                <div className="w-16 h-16 bg-white/20 rounded flex items-center justify-center text-white border border-white/30">
                   <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
                   </svg>
@@ -405,12 +409,12 @@ const DataSync = () => {
 
             {/* Content */}
             <div className="overflow-auto p-10 flex-1 bg-gray-50/10 dark:bg-gray-900/40 custom-scrollbar">
-              <div className="rounded-[2.5rem] border-2 border-blue-50/50 dark:border-blue-900/20 bg-white dark:bg-gray-800 shadow-2xl shadow-blue-500/5 overflow-hidden">
+              <div className="rounded border-2 border-blue-50/50 dark:border-blue-900/20 bg-white dark:bg-gray-800 shadow-2xl shadow-blue-500/5 overflow-hidden">
                 <div className="overflow-x-auto w-full custom-scrollbar">
                   <table className="w-full min-w-max text-left border-collapse">
                     <thead>
                       <tr className="bg-blue-50/50 dark:bg-blue-900/20 border-b border-blue-50 dark:border-blue-900/30">
-                        <th className="px-8 py-5 text-[11px] font-black uppercase tracking-[0.2em] text-blue-900/50 dark:text-blue-100/50 w-1/3 border-r border-blue-50 dark:border-blue-900/20">{t("data_sync.data_field")}</th>
+                        <th className="px-8 py-5 text-[11px] font-black uppercase tracking-[0.2em] text-blue-900/50 dark:text-blue-100/50 border-r border-blue-50 dark:border-blue-900/20 max-w-[150px] ">{t("data_sync.data_field")}</th>
                         <th className="px-8 py-5 text-[11px] font-black uppercase tracking-[0.2em] text-blue-900/50 dark:text-blue-100/50">{t("data_sync.detail_value")}</th>
                       </tr>
                     </thead>
@@ -443,13 +447,13 @@ const DataSync = () => {
                               <div className="text-[11px] font-black text-blue-900 dark:text-blue-100 uppercase tracking-tight mb-1">
                                 {t(`data_sync.meta_labels.${key}`, { defaultValue: key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ') })}
                               </div>
-                              <div className="font-mono text-[9px] text-blue-400 dark:text-blue-500 uppercase tracking-widest font-black opacity-60">
+                              {/* <div className="font-mono text-[9px] text-blue-400 dark:text-blue-500 uppercase tracking-widest font-black opacity-60">
                                 {key}
-                              </div>
+                              </div> */}
                             </td>
                             <td className="px-8 py-6 align-top">
                               {isArrayOfArrays ? (
-                                <div className="rounded-2xl border-2 border-blue-50 dark:border-blue-900/30 overflow-hidden shadow-lg shadow-blue-500/5">
+                                <div className="rounded border-2 border-blue-50 dark:border-blue-900/30 overflow-hidden shadow-lg shadow-blue-500/5">
                                   <div className="max-h-[400px] overflow-auto custom-scrollbar">
                                     <table className="w-full min-w-max text-left border-collapse">
                                       <thead className="sticky top-0 z-10">
@@ -475,8 +479,42 @@ const DataSync = () => {
                                     </table>
                                   </div>
                                 </div>
-                              ) : isObject || displayValue.length > 50 ? (
-                                <div className="bg-blue-50/30 dark:bg-black/30 p-5 rounded-[1.5rem] border-2 border-blue-50 dark:border-blue-900/30 shadow-inner">
+                              ) : key === 'referrers' && isObject ? (() => {
+                                const refData = Array.isArray(parsedValue) ? parsedValue : Object.values(parsedValue);
+                                if (refData.length === 0) return <div className="text-gray-400 italic">No referrers</div>;
+                                const cols = Object.keys(refData[0]).filter(c => c?.toUpperCase() !== 'REFEREE_ID');
+                                return (
+                                  <div className="rounded border-2 border-blue-50 dark:border-blue-900/30 overflow-hidden shadow-lg shadow-blue-500/5">
+                                    <div className="max-h-[400px] overflow-auto custom-scrollbar">
+                                      <table className="w-full min-w-max text-left border-collapse">
+                                        <thead className="sticky top-0 z-10">
+                                          <tr className="bg-blue-50/80 dark:bg-blue-900/60">
+                                            <th className="px-3 py-2 border-r border-blue-100 dark:border-blue-800 text-center w-10 text-[9px] font-black text-blue-400 uppercase tracking-widest">#</th>
+                                            {cols.map((col) => (
+                                              <th key={col} className="px-4 py-2 text-[9px] font-black uppercase tracking-widest text-blue-900/60 dark:text-blue-100/60 border-r border-blue-100 dark:border-blue-800 whitespace-nowrap">{t(`data_sync.meta_labels.${col}`, { defaultValue: col })}</th>
+                                            ))}
+                                          </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-blue-50/50 dark:divide-blue-900/20">
+                                          {refData.map((row, idx) => (
+                                            <tr key={idx} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/20 transition-colors">
+                                              <td className="px-3 py-1.5 text-center text-[10px] font-mono text-gray-400 border-r border-blue-50 dark:border-blue-900/10 font-bold">{idx + 1}</td>
+                                              {cols.map((col) => (
+                                                <td key={col} className="px-4 py-1.5 text-xs font-bold text-gray-700 dark:text-gray-200 border-r border-blue-50 dark:border-blue-900/10">
+                                                  <div className="max-w-[250px] truncate" title={String(row[col] ?? "")}>
+                                                    {col === 'role' ? (t(`data_sync.role_labels.${row[col]}`, { defaultValue: row[col] })) : String(row[col] ?? "-")}
+                                                  </div>
+                                                </td>
+                                              ))}
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+                                );
+                              })() : isObject || displayValue.length > 50 ? (
+                                <div className="bg-blue-50/30 dark:bg-black/30 p-5 rounded border-2 border-blue-50 dark:border-blue-900/30 shadow-inner">
                                   <pre className="text-[11px] font-mono whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed">
                                     {displayValue}
                                   </pre>
@@ -500,7 +538,7 @@ const DataSync = () => {
             <div className="px-10 py-6 border-t border-blue-50 dark:border-blue-900/30 bg-gray-50/30 dark:bg-gray-900 flex justify-end">
               <button
                 onClick={() => setStagingDetailRecord(null)}
-                className="px-8 py-3 bg-white dark:bg-gray-800 border-2 border-blue-50 dark:border-blue-900/30 hover:bg-blue-50 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/5 active:scale-95 transition-all"
+                className="px-8 py-3 bg-white dark:bg-gray-800 border-2 border-blue-50 dark:border-blue-900/30 hover:bg-blue-50 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-blue-500/5 active:scale-95 transition-all"
               >
                 {t("data_sync.close_details")}
               </button>
@@ -514,7 +552,7 @@ const DataSync = () => {
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 animate-in fade-in duration-500">
           <div className="absolute inset-0 bg-blue-950/60"></div>
 
-          <div className="relative bg-white dark:bg-gray-900 rounded-[3.5rem] p-12 max-w-xl w-full mx-4 shadow-[0_32px_128px_-16px_rgba(59,130,246,0.25)] border-4 border-blue-500 dark:border-blue-600 animate-in zoom-in-95 duration-500">
+          <div className="relative bg-white dark:bg-gray-900 rounded p-12 max-w-xl w-full mx-4 shadow-[0_32px_128px_-16px_rgba(59,130,246,0.25)] border-4 border-blue-500 dark:border-blue-600 animate-in zoom-in-95 duration-500">
             {/* Pulsing Indicator Icon */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
               <div className="relative">
@@ -537,12 +575,12 @@ const DataSync = () => {
               </div>
             </div>
 
-            <div className="bg-blue-50/50 dark:bg-blue-900/20 rounded-[2rem] p-8 border-2 border-blue-100/50 dark:border-blue-800/30 mb-8 max-h-[250px] overflow-y-auto custom-scrollbar">
+            <div className="bg-blue-50/50 dark:bg-blue-900/20 rounded p-8 border-2 border-blue-100/50 dark:border-blue-800/30 mb-8 max-h-[250px] overflow-y-auto custom-scrollbar">
               <div className="space-y-4">
                 {incomingRequest.tables.map((table) => (
-                  <div key={table} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-blue-50 dark:border-blue-900/20">
+                  <div key={table} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded shadow-sm border border-blue-50 dark:border-blue-900/20">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-blue-50 dark:bg-blue-950 rounded-xl flex items-center justify-center text-blue-600">
+                      <div className="w-10 h-10 bg-blue-50 dark:bg-blue-950 rounded flex items-center justify-center text-blue-600">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
                       </div>
                       <span className="text-xs font-black text-blue-900 dark:text-blue-100 uppercase tracking-tight">
@@ -557,8 +595,8 @@ const DataSync = () => {
               </div>
             </div>
 
-            <div className="flex items-start gap-4 p-5 bg-amber-50 dark:bg-amber-900/30 rounded-2xl border-2 border-amber-200 dark:border-amber-800/50 mb-10">
-              <div className="w-10 h-10 bg-amber-200 dark:bg-amber-900 flex items-center justify-center rounded-xl text-amber-700 dark:text-amber-400 shrink-0">
+            <div className="flex items-start gap-4 p-5 bg-amber-50 dark:bg-amber-900/30 rounded border-2 border-amber-200 dark:border-amber-800/50 mb-10">
+              <div className="w-10 h-10 bg-amber-200 dark:bg-amber-900 flex items-center justify-center rounded text-amber-700 dark:text-amber-400 shrink-0">
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
               </div>
               <p className="text-[11px] font-bold text-amber-800 dark:text-amber-300 leading-relaxed pt-1">
@@ -569,7 +607,7 @@ const DataSync = () => {
             <div className="flex gap-4">
               <button
                 onClick={handleAcceptRequest}
-                className="flex-[2] px-8 py-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-[1.5rem] text-[12px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/30 active:scale-95 transition-all flex items-center justify-center gap-3"
+                className="flex-[2] px-8 py-5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[12px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/30 active:scale-95 transition-all flex items-center justify-center gap-3"
               >
                 {t("data_sync.accept_sync")}
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
@@ -602,6 +640,18 @@ const DataSync = () => {
         handleTableDeleteToggle={handleTableDeleteToggle}
         handleDeleteTables={handleDeleteTables}
         onClose={() => setShowCleanupModal(false)}
+      />
+
+      {/* ===== PROCESSING CONTROL MODAL ===== */}
+      <ProcessingControlModal
+        show={!!editingMappingRecord}
+        staging={editingMappingRecord}
+        mapping={editingMappingRecord ? stagingMappings[editingMappingRecord.id] : null}
+        localList={editingMappingRecord ? localRecords[editingMappingRecord.table_name] || [] : []}
+        handleUpdateMapping={handleUpdateMapping}
+        tableName={editingMappingRecord?.table_name}
+        t_name={editingMappingRecord ? (editingMappingRecord.table_name === 'competition_dk' ? t("data_sync.total_list") : editingMappingRecord.table_name === 'competition_match' ? t("data_sync.combat") : editingMappingRecord.table_name === 'competition_match_team' ? t("data_sync.quyen") : editingMappingRecord.table_name) : ""}
+        onClose={() => setEditingMappingRecord(null)}
       />
 
       {/* ===== CONFIRM/ALERT MODAL ===== */}

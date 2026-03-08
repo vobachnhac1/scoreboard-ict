@@ -10,6 +10,8 @@ import { connectSocket, disconnectSocket } from './config/redux/reducers/socket-
 import { useSocketEvent, emitSocketEvent } from './config/hooks/useSocketEvents';
 import { ThemeProvider } from './contexts/ThemeContext';
 
+import { checkLicenseStatus, setLicenseStatus } from './config/redux/controller/licenseSlice';
+
 const App = () => {
   const { language } = useSelector((state) => state.language);
 
@@ -17,11 +19,25 @@ const App = () => {
   const connectionStatus = useSelector((state) => state.socket.connected);
 
   useEffect(() => {
+    // Check license on startup
+    dispatch(checkLicenseStatus());
+
+    // Listen to license status from Electron
+    if (window.electron && window.electron.onLicenseStatus) {
+      window.electron.onLicenseStatus((data) => {
+        console.log("Global License status update:", data);
+        dispatch(setLicenseStatus(data));
+      });
+    }
+
     if(!connectionStatus){
       dispatch(connectSocket('admin'));
     }
     return () => {
       dispatch(disconnectSocket());
+      if (window.electron && window.electron.removeLicenseListeners) {
+        window.electron.removeLicenseListeners();
+      }
     };
   }, []);
 

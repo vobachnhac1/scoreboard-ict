@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { formatMatchName } from "../../utils/nameFormatter";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
@@ -257,7 +258,7 @@ const BangDiemDoiKhang = () => {
         audio.currentTime = 0;
         audio.play().catch((error) => {
           console.warn(
-            t("scoreboard.doikhang.audio_play_error", { name: `score_${team}_${point}` }),
+            t("scoreboard.doikhang.audio_play_error", { name: `score_${team}_${point} ` }),
             error.message,
           );
         });
@@ -288,7 +289,7 @@ const BangDiemDoiKhang = () => {
         audio.currentTime = 0;
         audio.play().catch((error) => {
           console.warn(
-            t("scoreboard.doikhang.audio_play_error", { name: `action_${team}_${action}` }),
+            t("scoreboard.doikhang.audio_play_error", { name: `action_${team}_${action} ` }),
             error.message,
           );
         });
@@ -1932,8 +1933,15 @@ const BangDiemDoiKhang = () => {
           clearInterval(timerRef.current);
           setIsRunning(false);
         } else {
-          // Bắt đầu hiệp - Phát chuông
-          playBell();
+          // Bắt đầu hiệp - Chỉ phát chuông khi mới bắt đầu hiệp đấu
+          const rMaxTime =
+            currentRound > totalMainRounds
+              ? (matchInfo.thoi_gian_hiep_phu || 60) * 10
+              : (matchInfo.thoi_gian_thi_dau || 180) * 10;
+          if (timeLeft === rMaxTime) {
+            playBell();
+          }
+
           setIsRunning(true);
           timerRef.current = setInterval(() => {
             setTimeLeft((prev) => {
@@ -3534,7 +3542,7 @@ const BangDiemDoiKhang = () => {
                     fontWeight: "900",
                   }}
                 >
-                  {matchInfo.red?.name || t("scoreboard.doikhang.red_default")}
+                  {formatMatchName(matchInfo.red?.name, t) || t("scoreboard.doikhang.red_default")}
                 </p>
                 <p
                   className="text-lg font-semibold opacity-95"
@@ -3717,8 +3725,8 @@ const BangDiemDoiKhang = () => {
                     >
                       <p className="text-4xl font-black">
                         {medicalTeam === "red"
-                          ? matchInfo.red.name
-                          : matchInfo.blue.name}
+                          ? formatMatchName(matchInfo.red.name, t)
+                          : formatMatchName(matchInfo.blue.name, t)}
                       </p>
                     </div>
                   </div>
@@ -3817,7 +3825,7 @@ const BangDiemDoiKhang = () => {
                     fontWeight: "900",
                   }}
                 >
-                  {matchInfo.blue?.name || t("scoreboard.doikhang.blue_default")}
+                  {formatMatchName(matchInfo.blue?.name, t) || t("scoreboard.doikhang.blue_default")}
                 </p>
                 <p
                   className="text-lg font-semibold opacity-95"

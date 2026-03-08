@@ -76,6 +76,7 @@ export const useDataSync = () => {
   const [applyingStaging, setApplyingStaging] = useState(false);
   const [stagingMappings, setStagingMappings] = useState({});
   const [stagingDetailRecord, setStagingDetailRecord] = useState(null);
+  const [editingMappingRecord, setEditingMappingRecord] = useState(null);
 
   // --- DB Cleanup ---
   const [allDatabaseTables, setAllDatabaseTables] = useState([]);
@@ -533,9 +534,9 @@ export const useDataSync = () => {
             sendBody.meta.match_detail = matchesQuyen;
           }
           console.log("QUYỀN | Sliced Data: ", slicedData);
-          // await axios.post(`${manualServerInfo.url}/api/sync/import-staging`, sendBody, { timeout: 30000 });
+          await axios.post(`${manualServerInfo.url}/api/sync/import-staging`, sendBody, { timeout: 30000 });
           // THỰC HIỆN DEVELOP
-          await axios.post(`http://localhost:6789/api/sync/import-staging`, sendBody, { timeout: 30000 });
+          // await axios.post(`http://localhost:6789/api/sync/import-staging`, sendBody, { timeout: 30000 });
         } else {
           // lấy danh sách match | match_history
           const competition_dk_id = record.id ?? ''
@@ -880,6 +881,7 @@ export const useDataSync = () => {
     stagingView, loadingStaging, applyingStaging,
     stagingMappings, setStagingMappings,
     stagingDetailRecord, setStagingDetailRecord,
+    editingMappingRecord, setEditingMappingRecord,
     // State - Cleanup
     allDatabaseTables, selectedTablesToDelete,
     showCleanupModal, setShowCleanupModal,

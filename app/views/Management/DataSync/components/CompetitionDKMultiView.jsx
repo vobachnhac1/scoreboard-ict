@@ -23,10 +23,10 @@ const CompetitionDKMultiView = ({
   return (
     <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* ===== STICKY TOOLBAR - Floating Design ===== */}
-      <div className="sticky top-4 z-40 bg-white dark:bg-gray-900 border border-blue-100 dark:border-blue-900/30 mb-8 p-5 rounded-[2.5rem]">
+      <div className="sticky top-4 z-40 bg-white dark:bg-gray-900 border border-blue-100 dark:border-blue-900/30 mb-8 p-5 rounded">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white">
+            <div className="w-12 h-12 bg-blue-600 rounded flex items-center justify-center text-white">
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
             </div>
             <div>
@@ -49,7 +49,7 @@ const CompetitionDKMultiView = ({
             {totalSelectedRows > 0 && (
               <button
                 onClick={() => setSelectedDataRows({})}
-                className="px-6 py-3 bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 rounded-2xl text-[10px] font-black uppercase tracking-widest border-2 border-rose-50 dark:border-rose-900/30 hover:bg-rose-50 transition-all active:scale-95 flex items-center gap-2"
+                className="px-6 py-3 bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 rounded text-[10px] font-black uppercase tracking-widest border-2 border-rose-50 dark:border-rose-900/30 hover:bg-rose-50 transition-all active:scale-95 flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                 {t("data_sync.deselect_all")}
@@ -58,7 +58,7 @@ const CompetitionDKMultiView = ({
             <button
               onClick={handleSyncSelectedDataRows}
               disabled={!isManualConnected || totalSelectedRows === 0 || syncing}
-              className={`px-8 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center gap-3  transition-all active:scale-95 ${isManualConnected && totalSelectedRows > 0 ? "bg-emerald-600 text-white scale-105" : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed border border-gray-200 dark:border-gray-700"}`}
+              className={`px-8 py-3 rounded text-[11px] font-black uppercase tracking-widest flex items-center gap-3  transition-all active:scale-95 ${isManualConnected && totalSelectedRows > 0 ? "bg-emerald-600 text-white scale-105" : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed border border-gray-200 dark:border-gray-700"}`}
             >
               {syncing ? (
                 <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> {t("data_sync.sending")}</>
@@ -121,11 +121,11 @@ const CompetitionDKMultiView = ({
                 };
 
                 return (
-                  <div key={recordId} className={`bg-white dark:bg-gray-900 rounded-[2.5rem] border-2 transition-all duration-500 overflow-hidden ${isCardExpanded ? 'border-blue-100 dark:border-blue-900/50 ring-4 ring-blue-500/5' : 'border-blue-50 dark:border-blue-900/20'}`}>
+                  <div key={recordId} className={`bg-white dark:bg-gray-900 rounded border-2 transition-all duration-500 overflow-hidden ${isCardExpanded ? 'border-blue-100 dark:border-blue-900/50 ring-4 ring-blue-500/5' : 'border-blue-50 dark:border-blue-900/20'}`}>
                     {/* Card Header */}
                     <div className={`px-8 py-6 flex items-center justify-between transition-colors ${isCardExpanded ? 'bg-blue-50/50 dark:bg-blue-900/20 border-b border-blue-50 dark:border-blue-900/30' : 'bg-white dark:bg-gray-900'}`}>
                       <div className="flex items-center gap-6 flex-1 cursor-pointer" onClick={toggleCard}>
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isCardExpanded ? 'bg-blue-600 text-white scale-110' : 'bg-blue-50 dark:bg-blue-900/30 text-blue-400'}`}>
+                        <div className={`w-12 h-12 rounded flex items-center justify-center transition-all ${isCardExpanded ? 'bg-blue-600 text-white scale-110' : 'bg-blue-50 dark:bg-blue-900/30 text-blue-400'}`}>
                           <svg className={`w-6 h-6 transition-transform duration-500 ${isCardExpanded ? 'rotate-180' : 'rotate-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                           </svg>
@@ -150,13 +150,13 @@ const CompetitionDKMultiView = ({
                       <div className="flex items-center gap-3">
                         <button
                           onClick={(e) => { e.stopPropagation(); toggleAll(selectedRows.length < rows.length); }}
-                          className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-all active:scale-95 ${selectedRows.length === rows.length && rows.length > 0 ? "bg-white dark:bg-gray-800 text-rose-600 border-rose-50 dark:border-rose-900/30" : "bg-white dark:bg-gray-800 text-blue-600 border-blue-50 dark:border-blue-900/30"}`}
+                          className={`px-5 py-2.5 rounded text-[10px] font-black uppercase tracking-widest border-2 transition-all active:scale-95 ${selectedRows.length === rows.length && rows.length > 0 ? "bg-white dark:bg-gray-800 text-rose-600 border-rose-50 dark:border-rose-900/30" : "bg-white dark:bg-gray-800 text-blue-600 border-blue-50 dark:border-blue-900/30"}`}
                         >
                           {selectedRows.length === rows.length && rows.length > 0 ? t("data_sync.deselect_all") : t("data_sync.select_all")}
                         </button>
                         <button
                           onClick={(e) => { e.stopPropagation(); toggleCompDKRecord(recordId); }}
-                          className="w-10 h-10 flex items-center justify-center bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-xl hover:bg-rose-600 hover:text-white transition-all active:scale-90"
+                          className="w-10 h-10 flex items-center justify-center bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded hover:bg-rose-600 hover:text-white transition-all active:scale-90"
                           title={t("data_sync.hide_this_record")}
                         >
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -169,13 +169,13 @@ const CompetitionDKMultiView = ({
                       <div className="p-8 bg-gray-50/30 dark:bg-gray-900/40 animate-in slide-in-from-top-4 duration-500">
                         {headers.length === 0 ? (
                           <div className="py-20 text-center">
-                            <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/30 rounded-3xl mx-auto flex items-center justify-center text-blue-200 dark:text-blue-800 mb-4">
+                            <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/30 rounded mx-auto flex items-center justify-center text-blue-200 dark:text-blue-800 mb-4">
                               <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             </div>
                             <p className="text-[11px] font-black text-blue-400 uppercase tracking-widest italic">{t("data_sync.invalid_record_data")}</p>
                           </div>
                         ) : (
-                          <div className="rounded-[2rem] border border-blue-50 dark:border-blue-900/30 bg-white dark:bg-gray-800 overflow-hidden">
+                          <div className="rounded border border-blue-50 dark:border-blue-900/30 bg-white dark:bg-gray-800 overflow-hidden">
                             <div className="overflow-x-auto custom-scrollbar">
                               <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
                                 <table className="w-full text-left border-collapse">
@@ -187,7 +187,7 @@ const CompetitionDKMultiView = ({
                                             type="checkbox"
                                             checked={selectedRows.length === rows.length && rows.length > 0}
                                             onChange={(e) => toggleAll(e.target.checked)}
-                                            className="w-4 h-4 rounded-lg border-2 border-blue-300 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                                            className="w-4 h-4 rounded border-2 border-blue-300 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                                           />
                                         </div>
                                       </th>
@@ -248,7 +248,7 @@ const CompetitionDKMultiView = ({
                                                     type="checkbox"
                                                     checked={isRowSelected}
                                                     onChange={() => toggleRow(rowIdx)}
-                                                    className="w-4 h-4 rounded-lg border-2 border-gray-200 text-blue-600 focus:ring-blue-500 disabled:opacity-0"
+                                                    className="w-4 h-4 rounded border-2 border-gray-200 text-blue-600 focus:ring-blue-500 disabled:opacity-0"
                                                   />
                                                 </div>
                                               </td>

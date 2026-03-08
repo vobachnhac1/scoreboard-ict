@@ -873,6 +873,7 @@ export function createKeyDownHandler({
         // Space: Toggle timer (start/pause/resume)
         if (code === "space") {
             e.preventDefault();
+            if (h.isBreakTime) return;
             h.toggleTimer();
             return;
         }

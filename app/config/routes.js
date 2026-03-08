@@ -10,7 +10,7 @@ import {
   Connect, Champion, ChampionGroup, ChampionCategory,
   ChampionEvent, ConfigSystem, CompetitionManagement,
   CompetitionDataDetail, MatchAthlete, Athlete, DataAthlete,
-  ReportAthlete, ArrangeSchedule, CompetitionDataDetailOrther,
+  ReportAthlete, ArrangeSchedule, CompetitionDataOther,
   DataSync
 } from '../views/Management';
 import BangDiemQuyen from '../views/BangDiemQuyen';
@@ -64,7 +64,7 @@ const Routers = () => {
     { path: '/management/data-sync', element: <AdminLayout><DataSync /></AdminLayout> },
     // Quản lý thông tin
     { path: '/management/competition-data/:id', element: <AdminLayout><CompetitionDataDetail /></AdminLayout> },
-    { path: '/management/competition-data-other/:id', element: <AdminLayout><CompetitionDataDetailOrther /></AdminLayout> },
+    { path: '/management/competition-data-other/:id', element: <AdminLayout><CompetitionDataOther /></AdminLayout> },
     // Bảng điểm
     { path: '/bang-diem/doi-khang', element: <BangDiemDoiKhang /> },
     { path: '/bang-diem/quyen', element: <BangDiemQuyen /> },

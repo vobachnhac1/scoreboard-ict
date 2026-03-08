@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import CompetitionDKMultiView from "./CompetitionDKMultiView";
+import { cleanObject } from "../utils/dataUtils";
 
 /**
  * Render giá trị cell với logic đặc biệt cho từng bảng/cột
@@ -132,7 +133,7 @@ export const renderCellValue = (record, col, tableName, selectedDataRows, setSel
         </div>
       );
     }
-    return <div className="max-w-xs truncate font-mono text-xs text-gray-600 dark:text-gray-400">{JSON.stringify(parsedJsonValue)}</div>;
+    return <div className="max-w-xs truncate font-mono text-xs text-gray-600 dark:text-gray-400">{JSON.stringify(cleanObject(parsedJsonValue))}</div>;
   }
 
   // Giá trị bình thường
@@ -144,6 +145,7 @@ export const renderCellValue = (record, col, tableName, selectedDataRows, setSel
 };
 
 const RecordsView = ({
+  availableTables = [],
   selectedTableForRecords,
   tableRecords,
   loadingRecords,
@@ -180,9 +182,9 @@ const RecordsView = ({
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* ===== VIEW HEADER ===== */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-white dark:bg-gray-800 rounded-[2.5rem] border border-blue-50 dark:border-blue-900/30 ">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-white dark:bg-gray-800 rounded border border-blue-50 dark:border-blue-900/30 ">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white ">
+          <div className="w-12 h-12 bg-blue-600 rounded flex items-center justify-center text-white ">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
             </svg>
@@ -190,7 +192,9 @@ const RecordsView = ({
           <div>
             <h2 className="text-[11px] font-black text-blue-400 uppercase tracking-[0.2em] mb-1">{t("data_sync.system_data")}</h2>
             <div className="flex items-center gap-3">
-              <span className="text-xl font-black text-blue-950 dark:text-blue-100 tracking-tight">{selectedTableForRecords}</span>
+              <span className="text-xl font-black text-blue-950 dark:text-blue-100 tracking-tight">
+                {availableTables.find(t => t.name === selectedTableForRecords)?.label || selectedTableForRecords}
+              </span>
               <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/30 rounded-full border border-blue-100 dark:border-blue-800">
                 <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{t("common.total")}: {tableRecords.length}</span>
                 {selectedRecords[selectedTableForRecords]?.length > 0 && (
@@ -206,7 +210,7 @@ const RecordsView = ({
 
         <button
           onClick={handleBackToTableView}
-          className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all active:scale-95 border-2 border-blue-50 dark:border-blue-900/30 "
+          className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all active:scale-95 border-2 border-blue-50 dark:border-blue-900/30 "
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -216,24 +220,24 @@ const RecordsView = ({
       </div>
 
       {loadingRecords ? (
-        <div className="flex flex-col items-center justify-center py-20 bg-white/30 dark:bg-gray-800/20 rounded-[3rem] border border-blue-50 dark:border-blue-900/30">
+        <div className="flex flex-col items-center justify-center py-20 bg-white/30 dark:bg-gray-800/20 rounded border border-blue-50 dark:border-blue-900/30">
           <div className="w-12 h-12 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin mb-4"></div>
           <p className="text-[11px] font-black text-blue-400 uppercase tracking-widest">{t("data_sync.extracting_data")}</p>
         </div>
       ) : (
         <div className="space-y-6">
           {/* ===== ACTION TOOLBAR - Premium Pill Design ===== */}
-          <div className="flex flex-wrap items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-[2rem] border border-blue-50 dark:border-blue-900/30 ">
-            <div className="flex items-center gap-2 p-1.5 bg-blue-50 dark:bg-gray-900 rounded-2xl border border-blue-100 dark:border-blue-900/30">
+          <div className="flex flex-wrap items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded border border-blue-50 dark:border-blue-900/30 ">
+            <div className="flex items-center gap-2 p-1.5 bg-blue-50 dark:bg-gray-900 rounded border border-blue-100 dark:border-blue-900/30">
               <button
                 onClick={() => handleSelectAllRecords(selectedTableForRecords)}
-                className="px-4 py-2 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:border-blue-300 border-2 border-transparent transition-all  active:scale-95"
+                className="px-4 py-2 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded text-[10px] font-black uppercase tracking-widest hover:border-blue-300 border-2 border-transparent transition-all  active:scale-95"
               >
                 {t("data_sync.select_all")}
               </button>
               <button
                 onClick={() => handleDeselectAllRecords(selectedTableForRecords)}
-                className="px-4 py-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
+                className="px-4 py-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 rounded text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
               >
                 {t("data_sync.deselect_all")}
               </button>
@@ -245,7 +249,7 @@ const RecordsView = ({
               <button
                 onClick={handleDeleteSelectedRecords}
                 disabled={!selectedRecords[selectedTableForRecords] || selectedRecords[selectedTableForRecords].length === 0}
-                className="px-6 py-3 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 disabled:opacity-30 disabled:grayscale rounded-2xl text-[10px] font-black uppercase tracking-widest border border-rose-100 dark:border-rose-900/30 hover:bg-rose-600 hover:text-white transition-all active:scale-95"
+                className="px-6 py-3 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 disabled:opacity-30 disabled:grayscale rounded text-[10px] font-black uppercase tracking-widest border border-rose-100 dark:border-rose-900/30 hover:bg-rose-600 hover:text-white transition-all active:scale-95"
               >
                 {t("data_sync.delete_selected_count", { count: selectedRecords[selectedTableForRecords]?.length || 0 })}
               </button>
@@ -253,7 +257,7 @@ const RecordsView = ({
               <button
                 onClick={handleSendToManualServer}
                 disabled={!selectedRecords[selectedTableForRecords] || selectedRecords[selectedTableForRecords].length === 0}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest  transition-all active:scale-95 flex items-center gap-2"
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white rounded text-[10px] font-black uppercase tracking-widest  transition-all active:scale-95 flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
                 {t("data_sync.send_to_target")}
@@ -266,7 +270,7 @@ const RecordsView = ({
                 <button
                   onClick={handleSyncSelectedDataRows}
                   disabled={!isManualConnected || totalSelectedRows === 0 || syncing}
-                  className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 active:scale-95 ${isManualConnected && totalSelectedRows > 0 ? "bg-emerald-600 text-white  hover:scale-105" : "bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border border-gray-200 dark:border-gray-800"}`}
+                  className={`px-8 py-3 rounded text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 active:scale-95 ${isManualConnected && totalSelectedRows > 0 ? "bg-emerald-600 text-white  hover:scale-105" : "bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border border-gray-200 dark:border-gray-800"}`}
                 >
                   {syncing ? (
                     <><div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> {t("data_sync.sending")}</>

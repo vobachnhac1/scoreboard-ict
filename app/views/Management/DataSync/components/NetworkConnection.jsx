@@ -25,14 +25,14 @@ const NetworkConnection = ({
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* ===== MY CONNECTION CODE - Gradient Card ===== */}
       <div className="relative group">
-        <div className="absolute -inset-0.5 bg-blue-600 rounded-[2rem] opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-        <div className="relative bg-white dark:bg-gray-800 border border-blue-100 dark:border-blue-900/30 rounded-[2rem] p-8  overflow-hidden">
+        <div className="absolute -inset-0.5 bg-blue-600 rounded-[1rem] opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+        <div className="relative bg-white dark:bg-gray-800 border border-blue-100 dark:border-blue-900/30 rounded-[1rem] p-8  overflow-hidden">
           {/* Decorative shapes */}
           <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-64 h-64 bg-blue-600/5 dark:bg-blue-600/10 rounded-full"></div>
 
           <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-8">
             <div className="flex items-center gap-6">
-              <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center text-white  rotate-3 group-hover:rotate-0 transition-transform duration-500">
+              <div className="w-20 h-20 bg-blue-600 rounded flex items-center justify-center text-white rotate-3 group-hover:rotate-0 transition-transform duration-500">
                 <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                 </svg>
@@ -42,7 +42,7 @@ const NetworkConnection = ({
                   {t("data_sync.your_machine_id")}
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="text-4xl font-black text-blue-950 dark:text-blue-100 font-mono tracking-tighter">
+                  <span className="text-4xl font-black text-blue-950 dark:text-blue-100  tracking-tighter">
                     {IpMasker?.mask(localIP, "hash", null, "sync")?.display ?? "........"}
                   </span>
                   {localIP && (
@@ -51,7 +51,7 @@ const NetworkConnection = ({
                         navigator.clipboard.writeText(iplocalRef.current);
                         showAlert(t("data_sync.copied_connection_code"));
                       }}
-                      className="p-2.5 bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all  active:scale-90"
+                      className="p-2.5 bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded hover:bg-blue-600 hover:text-white transition-all  active:scale-90"
                       title={t("data_sync.copy_code")}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,32 +63,31 @@ const NetworkConnection = ({
               </div>
             </div>
 
-            <div className="flex flex-col items-center lg:items-end gap-2 bg-blue-50/50 dark:bg-blue-950/20 px-6 py-4 rounded-3xl border border-blue-100 dark:border-blue-900/30">
+            <div className="flex flex-col items-center lg:items-end gap-2 bg-blue-50/50 dark:bg-blue-950/20 px-6 py-4 rounded border border-blue-100 dark:border-blue-900/30">
               <div className="text-[10px] font-black text-blue-400 uppercase tracking-widest opacity-60">{t("data_sync.real_ip_address")}</div>
-              <div className="text-lg font-black font-mono text-blue-900 dark:text-blue-100 tracking-tight">{localIP || "N/A"}</div>
+              <div className="text-lg font-black  text-blue-900 dark:text-blue-100 tracking-tight">{localIP || "N/A"}</div>
             </div>
           </div>
 
-          <div className="mt-8 flex items-start gap-4 p-4 bg-amber-50/50 dark:bg-amber-900/10 border-2 border-dashed border-amber-200 dark:border-amber-800 rounded-[1.5rem]">
+          <div className="mt-8 flex gap-4 p-4 bg-amber-50/50 dark:bg-amber-900/10 border-2 border-dashed border-amber-200 dark:border-amber-800 rounded items-center">
             <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 flex-shrink-0">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <p className="text-[11px] font-bold text-amber-800 dark:text-amber-400 italic leading-relaxed" dangerouslySetInnerHTML={{ __html: t("data_sync.connection_guide") }}>
-            </p>
+            <p className="text-[11px] font-bold text-amber-800 dark:text-amber-400 italic leading-relaxed" dangerouslySetInnerHTML={{ __html: t("data_sync.connection_guide") }}></p>
           </div>
         </div>
       </div>
 
       {/* ===== CONNECTION STATUS - Pulse Indicator ===== */}
       {isManualConnected && manualServerInfo && (
-        <div className="bg-white dark:bg-gray-800 border-2 border-emerald-100 dark:border-emerald-900/30 rounded-3xl p-6  group">
+        <div className="bg-white dark:bg-gray-800 border-2 border-emerald-100 dark:border-emerald-900/30 rounded p-6  group">
           <div className="flex items-center justify-between gap-6">
             <div className="flex items-center gap-5">
               <div className="relative flex h-12 w-12">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-2xl bg-emerald-400 opacity-20"></span>
-                <div className="relative inline-flex rounded-2xl h-12 w-12 bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-emerald-600">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded bg-emerald-400 opacity-20"></span>
+                <div className="relative inline-flex rounded h-12 w-12 bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-emerald-600">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
                   </svg>
@@ -98,14 +97,14 @@ const NetworkConnection = ({
                 <div className="text-[11px] font-black text-emerald-600 uppercase tracking-widest mb-1">
                   {t("data_sync.establishing_connection")}
                 </div>
-                <div className="text-xl font-black text-blue-950 dark:text-blue-100 font-mono tracking-tight">
+                <div className="text-xl font-black text-blue-950 dark:text-blue-100  tracking-tight">
                   {t("data_sync.connected_to_host", { ip: manualServerInfo.ip })}
                 </div>
               </div>
             </div>
             <button
               onClick={handleManualDisconnect}
-              className="px-8 py-3.5 bg-rose-50 hover:bg-rose-500 text-rose-600 hover:text-white border-2 border-rose-100 dark:border-rose-900/30 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all  active:scale-95"
+              className="px-8 py-3.5 bg-rose-50 hover:bg-rose-500 text-rose-600 hover:text-white border-2 border-rose-100 dark:border-rose-900/30 rounded text-[10px] font-black uppercase tracking-widest transition-all  active:scale-95"
             >
               {t("data_sync.disconnect")}
             </button>
@@ -115,9 +114,9 @@ const NetworkConnection = ({
 
       {/* ===== MANUAL CONNECT FORM - Premium Inputs ===== */}
       {!isManualConnected && (
-        <div className="bg-white dark:bg-gray-800 border border-blue-50 dark:border-blue-900/30 rounded-3xl p-8  ">
+        <div className="bg-white dark:bg-gray-800 border border-blue-50 dark:border-blue-900/30 rounded p-8  ">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 flex items-center justify-center rounded-xl text-blue-600 dark:text-blue-400">
+            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 flex items-center justify-center rounded text-blue-600 dark:text-blue-400">
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
               </svg>
@@ -140,7 +139,7 @@ const NetworkConnection = ({
                     onChange={(e) => setManualServerIP(e.target.value)}
                     placeholder={t("data_sync.paste_hash_or_ip_placeholder")}
                     disabled={loading}
-                    className="w-full px-6 py-4 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-blue-100 dark:border-blue-800 focus:border-blue-500 outline-none rounded-2xl text-sm font-bold text-blue-950 dark:text-blue-100 transition-all font-mono"
+                    className="w-full px-4 py-2 italic bg-blue-50/50 dark:bg-blue-900/10 border-2 border-blue-100 dark:border-blue-800 focus:border-blue-500 outline-none rounded text-sm text-blue-950 dark:text-blue-100 transition-all "
                   />
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 text-blue-300 dark:text-blue-700 pointer-events-none">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -151,7 +150,7 @@ const NetworkConnection = ({
                 <button
                   onClick={handleManualConnect}
                   disabled={loading || !manualServerIP.trim()}
-                  className="px-10 py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all  active:scale-95  whitespace-nowrap min-w-[200px]"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded text-[10px] font-black uppercase tracking-widest transition-all  active:scale-95  whitespace-nowrap min-w-[150px]"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center gap-2">
@@ -168,7 +167,7 @@ const NetworkConnection = ({
               <div className="pt-6 border-t border-blue-50 dark:border-blue-900/30">
                 <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-4 px-1">{t("data_sync.servers_found_in_network")}</p>
                 {scannedServers.length === 0 ? (
-                  <div className="p-10 bg-blue-50/30 dark:bg-blue-950/10 rounded-3xl border-2 border-dashed border-blue-100 dark:border-blue-900/30 text-center">
+                  <div className="p-10 bg-blue-50/30 dark:bg-blue-950/10 rounded border-2 border-dashed border-blue-100 dark:border-blue-900/30 text-center">
                     <p className="text-[11px] font-black text-blue-400/60 uppercase tracking-widest">{t("data_sync.no_online_machines")}</p>
                   </div>
                 ) : (
@@ -176,26 +175,26 @@ const NetworkConnection = ({
                     {scannedServers.map((server, idx) => (
                       <div
                         key={idx}
-                        className="p-5 bg-white dark:bg-gray-800 border-2 border-blue-50 dark:border-blue-900/30 rounded-2xl flex flex-col gap-4  hover: hover:border-blue-300 transition-all group"
+                        className="p-5 bg-white dark:bg-gray-800 border-2 border-blue-50 dark:border-blue-900/30 rounded flex flex-col gap-4  hover: hover:border-blue-300 transition-all group"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900 rounded-xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                          <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900 rounded flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
                             </svg>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="font-mono text-sm font-black text-blue-950 dark:text-blue-100 truncate">
+                            <div className=" text-sm font-black text-blue-950 dark:text-blue-100 truncate">
                               {server.ip}
                             </div>
-                            <div className="text-[10px] font-black text-blue-400 uppercase tracking-widest opacity-60">
+                            {/* <div className="text-[10px] font-black text-blue-400 uppercase tracking-widest opacity-60">
                               {t("data_sync.port", { port: server.port })}
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                         <button
                           onClick={() => handleConnectScanned(server)}
-                          className="w-full py-2.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
+                          className="w-full py-2.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white rounded text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
                         >
                           {t("data_sync.connect_now")}
                         </button>

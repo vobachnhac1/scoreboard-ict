@@ -32,7 +32,8 @@ Mục tiêu của gói tin này là:
       "ap_dung_vonhac",
       "hien_thi_button_y_te"
     ],
-    "custom_event_name": "Giải Đấu Toàn Quốc"
+    "custom_event_name": "Giải Đấu Toàn Quốc",
+    "forced_keyboard_mode": "pencak"
   }
 }
 ```
@@ -95,6 +96,13 @@ Khóa cứng bất kỳ nút cấu hình, tùy chọn select box, vùng nhập t
 
 ### C. `custom_event_name` (String - Không Bắt Buộc)
 Nếu được khai báo, máy con sẽ tự động được gán cứng và hiển thị tên "Giải Đấu Toàn Quốc" ở tiêu đề, bất chấp mọi thay đổi cục bộ hiện trường. 
+
+### D. `forced_keyboard_mode` (String - Không Bắt Buộc)
+Ép buộc ứng dụng Desktop phải sử dụng một chế độ cấu hình của một môn thi đấu cụ thể. Các giá trị hợp lệ tương ứng với Object `KEYBOARD_MODES`.
+- `"vovinam"` (Vovinam)
+- `"pencak"` (Pencak Silat)
+- `"vohiendai"` (Võ thuật hiện đại)
+Khi tham số này được gửi xuống, màn hình Cài Đặt của Client sẽ tự động chuyển sang Option bộ môn tương ứng và SelectBox "Chế độ phím" sẽ bị vô hiệu hóa (disabled), không cho phép trọng tài đổi tùy tiện ở máy con.
 
 ---
 

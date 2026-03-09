@@ -222,7 +222,7 @@ export default function ConfigSystem() {
   const dispatch = useAppDispatch();
   // @ts-ignore
   const { data, loading } = useAppSelector((state) => state.configSystem);
-  const { packageName } = useAppSelector((state) => state.license);
+  const { packageName, features } = useAppSelector((state) => state.license);
   const {
     register,
     handleSubmit,
@@ -270,13 +270,19 @@ export default function ConfigSystem() {
     if (data) {
       // Nếu server không có keyboard_mode, mặc định vovinam
       const mergedData = { keyboard_mode: "vovinam", ...data };
+
+      // Override keyboard_mode nếu Online Server ép cứng
+      if (features?.forced_keyboard_mode) {
+        mergedData.keyboard_mode = features.forced_keyboard_mode;
+      }
+
       reset(mergedData);
 
       // Apply preset lần đầu nếu chưa apply
       if (!initialPresetApplied.current) {
         const mode = mergedData.keyboard_mode;
         if (mode) {
-          const preset = getConfigPresetsByTier(packageName, mode);
+          const preset = getConfigPresetsByTier(packageName, mode, features);
           Object.entries(preset).forEach(([key, value]) => {
             if (key !== "disabledFields" && key !== "hiddenGroups" && key !== "hiddenFields") {
               setValue(key, value);
@@ -299,7 +305,7 @@ export default function ConfigSystem() {
       selectedKeyboardMode &&
       prevKeyboardMode.current !== selectedKeyboardMode
     ) {
-      const preset = getConfigPresetsByTier(packageName, selectedKeyboardMode);
+      const preset = getConfigPresetsByTier(packageName, selectedKeyboardMode, features);
       Object.entries(preset).forEach(([key, value]) => {
         if (key !== "disabledFields" && key !== "hiddenGroups" && key !== "hiddenFields") {
           setValue(key, value);
@@ -309,10 +315,10 @@ export default function ConfigSystem() {
     }
     prevKeyboardMode.current = selectedKeyboardMode;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedKeyboardMode, packageName]);
+  }, [selectedKeyboardMode, packageName, features]);
 
   // Sinh rule dựa vào hàm getter theo tier mới
-  const currentMergedConfig = getConfigPresetsByTier(packageName, selectedKeyboardMode || "vovinam");
+  const currentMergedConfig = getConfigPresetsByTier(packageName, selectedKeyboardMode || "vovinam", features);
 
   // Danh sách fields bị khoá theo chế độ hiện tại
   const disabledFields = currentMergedConfig?.disabledFields || [];
@@ -706,8 +712,9 @@ export default function ConfigSystem() {
       </div>
       <div className="space-y-3">
         {fields.filter(f => !hiddenFields.includes(f.name)).map(({ name, label, options }, i) => {
-          // keyboard_mode không bị disable để user có thể chuyển chế độ
-          const isDisabled = name !== "keyboard_mode" && disabledFields.includes(name);
+          // keyboard_mode sẽ bị disable nếu bị force từ Server, các trường khác theo disabledFields
+          const isForcedMode = name === "keyboard_mode" && !!features?.forced_keyboard_mode;
+          const isDisabled = isForcedMode || (name !== "keyboard_mode" && disabledFields.includes(name));
           return (
             <div key={i} className={`grid grid-cols-3 gap-2 items-center ${isDisabled ? 'opacity-60' : ''}`}>
               <label

@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { BetterSQLiteWrapper } = require('../common/db_better_sqlite3');
 const { DB_SCHEME } = require('../common/constant_sql');
-const {getMacAddress, getUUID, getIP} = require('../../config/config')
+const { getMacAddress, getUUID, getIP } = require('../../config/config')
 
 /**
  * License Service
@@ -54,7 +54,7 @@ class LicenseService {
      * @param {Object} data - { license_key, device_uuid, mac_address }
      * @returns {Promise<Object>} - License info
      */
-    
+
     async activateLicense(data) {
         const { license_key } = data;
         try {
@@ -62,16 +62,17 @@ class LicenseService {
             const uuid_desktop = await getUUID()
             const ip = await getIP()
             const mac_address = await getMacAddress()
-            const config = {  
+            const config = {
                 licenseKey: license_key,
                 deviceType: 'COMPUTER',
                 deviceId: mac_address,
                 deviceInfo: {
-                    uuid_desktop : uuid_desktop,
-                    mac_address : mac_address,
+                    uuid_desktop: uuid_desktop,
+                    mac_address: mac_address,
                     app_version: require('../../../package.json').version,
                     platform: process.platform
-                } }
+                }
+            }
             // Gọi API kích hoạt
             const response = await axios.post(this.apiUrl, config, {
                 timeout: 10000,
@@ -94,7 +95,8 @@ class LicenseService {
                     deviceInfo: resultCheck.deviceInfo, // object
                     package_name: resultCheck.packageName || resultCheck.package_name || null,
                     max_devices: resultCheck.maxDevices || resultCheck.max_devices || 1,
-                    features: resultCheck.features || {}
+                    features: resultCheck.features || {},
+                    config_presets: resultCheck.config_presets || {}
                 }
 
                 // Lưu vào database với đầy đủ thông tin từ API
@@ -107,7 +109,10 @@ class LicenseService {
                     status: licenseData.is_active ? 'active' : 'inactive',
                     package_name: licenseData.package_name,
                     max_devices: licenseData.max_devices,
-                    features: JSON.stringify(licenseData.features),
+                    features: JSON.stringify({
+                        ...licenseData.features,
+                        config_presets: licenseData.config_presets
+                    }),
                     api_response: JSON.stringify(response.data),
                     last_check_date: new Date().toISOString()
                 });
@@ -131,6 +136,7 @@ class LicenseService {
                         licenseKey: license_key,
                         licenseKeyId: licenseData.licenseKeyId,
                         features: licenseData.features,
+                        config_presets: licenseData.config_presets,
                         status: licenseData.is_active ? 'active' : 'inactive',
                         requireActivation: false,
                         deviceInfo: licenseData.deviceInfo
@@ -241,13 +247,13 @@ class LicenseService {
                             WHERE license_key = ?
                         `, [device_uuid, mac_address, activation_date, expiration_date, status,
                             package_name, max_devices, features, api_response, last_check_date, license_key],
-                        function(err) {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve({ id: row.id, ...data });
-                            }
-                        });
+                            function (err) {
+                                if (err) {
+                                    reject(err);
+                                } else {
+                                    resolve({ id: row.id, ...data });
+                                }
+                            });
                     } else {
                         // Insert new license
                         this.db.run(`
@@ -259,13 +265,13 @@ class LicenseService {
                         `, [license_key, device_uuid, mac_address, activation_date,
                             expiration_date, status, package_name, max_devices,
                             features, api_response, last_check_date],
-                        function(err) {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve({ id: this.lastID, ...data });
-                            }
-                        });
+                            function (err) {
+                                if (err) {
+                                    reject(err);
+                                } else {
+                                    resolve({ id: this.lastID, ...data });
+                                }
+                            });
                     }
                 }
             );
@@ -295,7 +301,7 @@ class LicenseService {
             this.db.run(
                 'DELETE FROM license_activation WHERE license_key = ?',
                 [license_key],
-                function(err) {
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -316,7 +322,7 @@ class LicenseService {
             this.db.run(
                 'DELETE FROM license_activation',
                 [],
-                function(err) {
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -681,7 +687,7 @@ class LicenseService {
             this.db.run(
                 'UPDATE license_activation SET status = ?, updated_at = datetime(\'now\') WHERE license_key = ?',
                 ['inactive', license_key],
-                function(err) {
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {

@@ -1356,6 +1356,9 @@ const BangDiemDoiKhang = () => {
       showConfigModal,
       showHistoryModal,
       showConnectionModal,
+      setShowMatchListModal,
+      setIsSoundEnabled,
+      setShowSecondaryDisplay,
     });
 
     window.addEventListener("keydown", handleKeyDown);

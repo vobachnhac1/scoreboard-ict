@@ -14,7 +14,7 @@ function getDeviceInfo() {
     // Lấy MAC address của network interface đầu tiên
     const networkInterfaces = os.networkInterfaces();
     let macAddress = '';
-    
+
     for (const interfaceName in networkInterfaces) {
         const interfaces = networkInterfaces[interfaceName];
         for (const iface of interfaces) {
@@ -44,7 +44,7 @@ function getDeviceInfo() {
  * Kích hoạt license
  */
 
-const {getMacAddress, getUUID, getIP} = require('../config/config')
+const { getMacAddress, getUUID, getIP } = require('../config/config')
 
 exports.activateLicense = async (req, res) => {
     try {
@@ -61,11 +61,13 @@ exports.activateLicense = async (req, res) => {
         const deviceInfo = getDeviceInfo();
         console.log('deviceInfo: ', deviceInfo);
 
-        // Gọi service để kích hoạt
+        // Gọi service để kích hoạt dùng mac address / mã thiết thị 
+        // mac address / mã thiết thị / ip address
         const result = await licenseService.activateLicense({
             license_key,
-            device_uuid: deviceInfo.device_uuid,
-            mac_address: deviceInfo.mac_address
+            device_uuid: getUUID(),
+            mac_address: getMacAddress(),
+            ip_address: getIP()
         });
 
         if (result.success) {

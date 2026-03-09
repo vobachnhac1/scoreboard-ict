@@ -1,4 +1,7 @@
 {
+  "feature_lock": {
+    "upgrade_required": "Vui lòng nâng cấp gói cước để sử dụng tính năng này!"
+  },
   "common": {
     "save": "Lưu",
     "cancel": "Hủy",

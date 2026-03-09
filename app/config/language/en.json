@@ -1,4 +1,7 @@
 {
+  "feature_lock": {
+    "upgrade_required": "Please upgrade your subscription tier to access this feature!"
+  },
   "common": {
     "save": "Save",
     "cancel": "Cancel",

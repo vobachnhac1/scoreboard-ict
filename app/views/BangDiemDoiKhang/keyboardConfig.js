@@ -18,7 +18,10 @@ export const SYSTEM_KEYS = {
     TOGGLE_CONFIG_MODAL: "F3",
     TOGGLE_HISTORY_MODAL: "F4",
     TOGGLE_CONTROL_BAR: "F5",
+    TOGGLE_MATCH_LIST: "F6",      // Danh sách trận đấu
     SWITCH_KEYBOARD_MODE: "F8",    // Phím chuyển chế độ
+    TOGGLE_SOUND: "F9",           // Bật/Tắt âm thanh
+    TOGGLE_FULLSCREEN: "F11",     // Toàn màn hình
     GO_BACK: "Escape",
 };
 
@@ -730,6 +733,28 @@ export const getConfigPresetsByTier = (packageName, mode = "vovinam", onlineFeat
         basePreset.hiddenGroups = [...new Set([...basePreset.hiddenGroups, ...overrides.hiddenGroups])];
     }
 
+    // 4. Áp dụng config_presets từ Online Server (ghi đè tất cả giá trị của preset theo mode)
+    //    Ví dụ: onlineFeatures.config_presets.pencak = { so_hiep: "5", thoi_gian_thi_dau: 120 }
+    const onlinePresetOverride = onlineFeatures?.config_presets?.[mode];
+    if (onlinePresetOverride && typeof onlinePresetOverride === 'object') {
+        Object.entries(onlinePresetOverride).forEach(([key, value]) => {
+            // Merge các giá trị đặc biệt (mảng)
+            if (key === 'disabledFields' && Array.isArray(value)) {
+                basePreset.disabledFields = [...new Set([...basePreset.disabledFields, ...value])];
+            } else if (key === 'hiddenFields' && Array.isArray(value)) {
+                basePreset.hiddenFields = [...new Set([...basePreset.hiddenFields, ...value])];
+            } else if (key === 'hiddenGroups' && Array.isArray(value)) {
+                basePreset.hiddenGroups = [...new Set([...basePreset.hiddenGroups, ...value])];
+            } else if (key === 'allowedOptions' && typeof value === 'object') {
+                basePreset.allowedOptions = { ...basePreset.allowedOptions, ...value };
+            } else {
+                // Ghi đè trực tiếp các giá trị số/string
+                basePreset[key] = value;
+            }
+        });
+        console.log(`🌐 Đã áp dụng config_presets online cho mode "${mode}":`, onlinePresetOverride);
+    }
+
     return basePreset;
 };
 
@@ -808,6 +833,19 @@ export function getKeymap(mode = "default", onlineFeatures = {}) {
 }
 
 /**
+ * Lấy system keys có ghi đè từ server
+ * @param {Object} onlineFeatures Tính năng online từ License Server
+ * @returns {Object} systemKeys
+ */
+export function getSystemKeys(onlineFeatures = {}) {
+    const customOverrides = onlineFeatures?.custom_keymaps?.system;
+    if (customOverrides && typeof customOverrides === 'object') {
+        return { ...SYSTEM_KEYS, ...customOverrides };
+    }
+    return SYSTEM_KEYS;
+}
+
+/**
  * Tạo reverse map: key -> action (để tra cứu nhanh khi nhấn phím)
  * @param {Object} keymap
  * @returns {Object} reverseMap  { "q": "RED_SCORE_PLUS_1", "w": "RED_SCORE_PLUS_2", ... }
@@ -853,6 +891,9 @@ export function createKeyDownHandler({
     showConfigModal,
     showHistoryModal,
     showConnectionModal,
+    setShowMatchListModal,
+    setIsSoundEnabled,
+    setShowSecondaryDisplay,
 }) {
     const keymap = getKeymap(mode, onlineFeatures);
     const reverseMap = buildReverseKeymap(keymap);
@@ -873,40 +914,74 @@ export function createKeyDownHandler({
         const key = e.key.toLowerCase();
         const code = e.code?.toLowerCase();
 
+        const systemKeys = getSystemKeys(onlineFeatures);
+
         // ========== PHÍM HỆ THỐNG (Luôn hoạt động) ==========
-        if (e.key === SYSTEM_KEYS.GO_BACK) { // Escape
+        if (e.key === systemKeys.GO_BACK) { // Escape
             e.preventDefault();
             btnGoBack();
             return;
         }
 
-        if (e.key === SYSTEM_KEYS.TOGGLE_CONNECTION_MODAL) { // F1
+        if (e.key === systemKeys.TOGGLE_CONNECTION_MODAL) { // F1
             e.preventDefault();
             setShowConnectionModal((prev) => !prev);
             return;
         }
 
-        if (e.key === SYSTEM_KEYS.TOGGLE_CONFIG_MODAL) { // F5
+        if (e.key === systemKeys.TOGGLE_SECONDARY_DISPLAY) { // F2
+            e.preventDefault();
+            if (setShowSecondaryDisplay) setShowSecondaryDisplay((prev) => !prev);
+            return;
+        }
+
+        if (e.key === systemKeys.TOGGLE_CONFIG_MODAL) { // F3
             e.preventDefault();
             setShowConfigModal((prev) => !prev);
             return;
         }
 
-        if (e.key === SYSTEM_KEYS.TOGGLE_HISTORY_MODAL) { // F6
+        if (e.key === systemKeys.TOGGLE_HISTORY_MODAL) { // F4
             e.preventDefault();
             setShowHistoryModal((prev) => !prev);
             return;
         }
 
-        if (e.key === SYSTEM_KEYS.TOGGLE_CONTROL_BAR) { // F7
+        if (e.key === systemKeys.TOGGLE_CONTROL_BAR) { // F5
             e.preventDefault();
             setShowControlBar((prev) => !prev);
             return;
         }
 
-        if (e.key === SYSTEM_KEYS.SWITCH_KEYBOARD_MODE) { // F8
+        if (e.key === systemKeys.SWITCH_KEYBOARD_MODE) { // F8
             e.preventDefault();
             if (onSwitchMode) onSwitchMode();
+            return;
+        }
+
+        if (e.key === systemKeys.TOGGLE_MATCH_LIST) { // F6
+            e.preventDefault();
+            if (setShowMatchListModal) setShowMatchListModal((prev) => !prev);
+            return;
+        }
+
+        if (e.key === systemKeys.TOGGLE_SOUND) { // F9
+            e.preventDefault();
+            if (setIsSoundEnabled) setIsSoundEnabled((prev) => !prev);
+            return;
+        }
+
+        if (e.key === systemKeys.TOGGLE_FULLSCREEN) { // F11
+            e.preventDefault();
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
             return;
         }
 

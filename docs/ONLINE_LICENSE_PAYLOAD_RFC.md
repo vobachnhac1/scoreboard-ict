@@ -43,6 +43,10 @@ Mục tiêu của gói tin này là:
       "default"
     ],
     "custom_keymaps": {
+      "system": {
+        "TOGGLE_CONFIG_MODAL": "F9",
+        "SWITCH_KEYBOARD_MODE": "F10"
+      },
       "pencak": {
         "RED_SCORE_PLUS_2": "bracketright",
         "BLUE_SCORE_PLUS_2": "bracketleft",
@@ -52,6 +56,26 @@ Mục tiêu của gói tin này là:
       "vovinam": {
         "RED_SCORE_PLUS_1": "1",
         "BLUE_SCORE_PLUS_1": "2"
+      }
+    },
+    "config_presets": {
+      "pencak": {
+        "so_hiep": "5",
+        "thoi_gian_thi_dau": 120,
+        "thoi_gian_nghi": 60,
+        "khoang_diem_tuyet_toi": 20,
+        "hien_thi_button_diem_3": 1,
+        "disabledFields": ["he_diem", "so_giam_dinh"],
+        "hiddenFields": ["hien_thi_button_diem_10"],
+        "allowedOptions": {
+          "so_hiep": ["3", "5"],
+          "so_hiep_phu": ["0", "1"]
+        }
+      },
+      "vovinam": {
+        "so_hiep": "3",
+        "thoi_gian_thi_dau": 90,
+        "khoang_diem_tuyet_toi": 15
       }
     }
   }
@@ -144,6 +168,18 @@ Hệ thống con `BangDiemDoiKhang` sẽ tự động mix phím tắt Online nà
 
 **Danh sách toàn bộ các KEY hành động hỗ trợ cấu hình:**
 
+*Nhóm Bảng Phím Cứng (System Keys) - Áp dụng cho mọi bộ môn (Khai báo dưới 'system'):*
+- TOGGLE_CONNECTION_MODAL: Mở liên kết thiết bị (Mặc định: F1)
+- TOGGLE_SECONDARY_DISPLAY: Mở màn hình phụ (Mặc định: F2)
+- TOGGLE_CONFIG_MODAL: Mở Cài đặt bảng (Mặc định: F3)
+- TOGGLE_HISTORY_MODAL: Mở Lịch sử trận đấu (Mặc định: F4)
+- TOGGLE_CONTROL_BAR: Thu gọn thanh công cụ (Mặc định: F5)
+- TOGGLE_MATCH_LIST: Mở danh sách trận đấu (Mặc định: F6)
+- SWITCH_KEYBOARD_MODE: Đổi môn võ (Mặc định: F8)
+- TOGGLE_SOUND: Bật/Tắt âm thanh (Mặc định: F9)
+- TOGGLE_FULLSCREEN: Chế độ toàn màn hình (Mặc định: F11)
+- GO_BACK: Trở về (Mặc định: Escape)
+
 *Nhóm Điều khiển chung:*
 - `TOGGLE_TIMER`: Bật/Dừng thời gian (Mặc định: Space)
 - `UNDO`: Hoàn tác (Mặc định: ctrl+z)
@@ -164,6 +200,22 @@ Hệ thống con `BangDiemDoiKhang` sẽ tự động mix phím tắt Online nà
 - Nhắc nhở (+/-): `BLUE_REMIND_PLUS`, `BLUE_REMIND_MINUS`
 - Cảnh cáo (+/-): `BLUE_WARN_PLUS`, `BLUE_WARN_MINUS`
 - Hành động: `BLUE_WINNER` (Xử thắng), `BLUE_MEDICAL` (Y tế)
+
+### G. `config_presets` (Object - Không Bắt Buộc) — **Nằm ngoài `features`, là field riêng**
+Cho phép Server ghi đè bất kỳ giá trị nào trong `CONFIG_PRESETS` của Desktop App theo từng bộ môn mà không cần deploy lại code. Tầng thứ nhất là `mã_bộ_môn`, tầng thứ hai là từng cấu hình cụ thể.
+
+**Các key được hỗ trợ trong mỗi preset bộ môn:**
+- Giá trị số nguyên/chuỗi bất kỳ: `so_hiep`, `so_hiep_phu`, `he_diem`, `so_giam_dinh`, `thoi_gian_thi_dau`, `thoi_gian_nghi`, `thoi_gian_hiep_phu`, `thoi_gian_y_te`, `thoi_gian_tinh_diem`, `khoang_diem_tuyet_toi`
+- Cài đặt điểm mặc định: `diem_don_chan`, `diem_nga`, `diem_bien_tru`, `diem_bien_cong`
+- Hiển thị nút: `hien_thi_button_*`, `hien_thi_thong_tin_*`
+- Chế độ áp dụng (0/1): `cau_hinh_*`, `ap_dung_*`, `bat_am_thanh`
+- Các mảng đặc biệt (sẽ được **merge** với danh sách local, không ghi đè hoàn toàn):
+  - `disabledFields: []` — Thêm vào danh sách khóa field
+  - `hiddenFields: []` — Thêm vào danh sách ẩn field
+  - `hiddenGroups: []` — Thêm vào danh sách ẩn nhóm
+  - `allowedOptions: {}` — Ghi đè tùy chọn cho select boxes (VD: `{ "so_hiep": ["3","5"] }`)
+
+> **Lưu ý:** `config_presets` là field đặt **ngang hàng** với `features` trong response API (không lồng bên trong `features`). Client sẽ tự merge `config_presets` vào `features` trước khi lưu xuống Redux.
 
 ---
 

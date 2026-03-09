@@ -72,6 +72,7 @@ const licenseSlice = createSlice({
     packageName: null,
     licenseKey: null,
     features: {},
+    config_presets: {},
     online: undefined, // true = online check, false = offline check, undefined = not checked yet
     revoked: false, // true if license was revoked
 
@@ -99,11 +100,12 @@ const licenseSlice = createSlice({
         state.packageName = data.packageName;
         state.licenseKey = data.licenseKey;
         state.features = data.features || {};
+        state.config_presets = data.config_presets || {};
         state.online = data.online;
         state.revoked = data.revoked || false;
       }
     },
-    
+
     // Reset license state
     resetLicense: (state) => {
       state.valid = false;
@@ -114,12 +116,13 @@ const licenseSlice = createSlice({
       state.packageName = null;
       state.licenseKey = null;
       state.features = {};
+      state.config_presets = {};
       state.online = undefined;
       state.revoked = false;
       state.error = null;
       state.activationError = null;
     },
-    
+
     // Clear errors
     clearErrors: (state) => {
       state.error = null;
@@ -143,6 +146,7 @@ const licenseSlice = createSlice({
         state.packageName = action.payload.packageName;
         state.licenseKey = action.payload.licenseKey;
         state.features = action.payload.features || {};
+        state.config_presets = action.payload.config_presets || {};
         state.revoked = action.payload.revoked || false;
       })
       .addCase(checkLicenseStatus.rejected, (state, action) => {
@@ -151,7 +155,7 @@ const licenseSlice = createSlice({
         state.valid = false;
         state.requireActivation = true;
       });
-    
+
     // Activate license
     builder
       .addCase(activateLicense.pending, (state) => {
@@ -168,6 +172,7 @@ const licenseSlice = createSlice({
         state.packageName = action.payload.packageName;
         state.licenseKey = action.payload.licenseKey;
         state.features = action.payload.features || {};
+        state.config_presets = action.payload.config_presets || {};
         state.revoked = false;
       })
       .addCase(activateLicense.rejected, (state, action) => {

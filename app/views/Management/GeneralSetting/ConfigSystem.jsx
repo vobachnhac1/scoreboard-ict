@@ -229,7 +229,7 @@ export default function ConfigSystem() {
   const dispatch = useAppDispatch();
   // @ts-ignore
   const { data, loading } = useAppSelector((state) => state.configSystem);
-  const { packageName, features } = useAppSelector((state) => state.license);
+  const { packageName, features, config_presets } = useAppSelector((state) => state.license);
   const {
     register,
     handleSubmit,
@@ -289,7 +289,10 @@ export default function ConfigSystem() {
       if (!initialPresetApplied.current) {
         const mode = mergedData.keyboard_mode;
         if (mode) {
-          const preset = getConfigPresetsByTier(packageName, mode, features);
+          const preset = getConfigPresetsByTier(packageName, mode, {
+            ...features,
+            config_presets
+          });
           Object.entries(preset).forEach(([key, value]) => {
             if (key !== "disabledFields" && key !== "hiddenGroups" && key !== "hiddenFields") {
               setValue(key, value);

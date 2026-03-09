@@ -37,7 +37,13 @@ Mục tiêu của gói tin này là:
     "allowed_keyboard_modes": [
       "vovinam",
       "pencak"
-    ]
+    ],
+    "custom_keymaps": {
+      "pencak": {
+        "RED_SCORE_PLUS_2": "bracketright",
+        "BLUE_SCORE_PLUS_2": "bracketleft"
+      }
+    }
   }
 }
 ```
@@ -112,6 +118,19 @@ Khi tham số này được gửi xuống, màn hình Cài Đặt của Client s
 Giới hạn danh sách các bộ môn (Chế độ phím) được phép hiển thị trong SelectBox. Khi tham số này được phân phối, người dùng tại máy trạm chỉ có thể chọn các bộ môn nằm trong danh sách này.
 Ví dụ: `["vovinam", "pencak"]` sẽ ẩn môn `vohiendai` (Võ cổ truyền) khỏi menu cấu hình thay đổi bộ môn.
 Các giá trị hợp lệ nằm trong `KEYBOARD_MODES`.
+
+### F. `custom_keymaps` (Object - Không Bắt Buộc)
+Cho phép map và ghi đè lại các phím tắt bàn phím của một bộ môn cụ thể trực tiếp từ Server thay vì dùng code mặc định của Frontend. Tầng Object thứ nhất là `mã_bộ_môn` (vd: `pencak`, `vovinam`, `default`), tầng thứ 2 là `hành_động: phím_bấm`.
+Ví dụ nếu môn Pencak Silat bị xung đột phím điểm "+2" ở Đỏ với màn hình máy Laptop:
+```json
+"custom_keymaps": {
+  "pencak": {
+    "RED_SCORE_PLUS_2": "bracketright",
+    "BLUE_SCORE_PLUS_2": "bracketleft"
+  }
+}
+```
+Hệ thống con `BangDiemDoiKhang` sẽ tự động mix phím tắt Online này với Layout Offline để nhận phím mơí. Không cần Deploy lại mã nguồn App.
 
 ---
 

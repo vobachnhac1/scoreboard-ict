@@ -302,6 +302,7 @@ const BangDiemDoiKhang = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const socket = useSelector((state) => state.socket);
+  const { features } = useSelector((state) => state.license);
 
   // Lấy dữ liệu từ state
   const matchData = location.state?.matchData || {};
@@ -1334,6 +1335,7 @@ const BangDiemDoiKhang = () => {
   useEffect(() => {
     const handleKeyDown = createKeyDownHandler({
       mode: keyboardMode,
+      onlineFeatures: features,
       handlers: handlersRef,
       showConfirm,
       btnGoBack,

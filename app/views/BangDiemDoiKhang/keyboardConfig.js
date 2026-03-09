@@ -691,15 +691,25 @@ export const CONFIG_PRESETS = {
 /**
  * Lấy cấu hình mặc định tương ứng với môn phái và gói cước (Tier)
  * Nếu người dùng dùng gói Basic, một số option như Võ nhạc sẽ bị loại bỏ
+ * Trộn thêm cấu hình trả về trực tiếp từ Online License Server (onlineFeatures)
  * 
  * @param {string} packageName - Tên gói cước từ redux `state.license.packageName`
  * @param {string} mode - "vovinam" | "pencak" | "vohiendai"
+ * @param {Object} onlineFeatures - JSON features từ license server (`state.license.features`)
  * @returns {Object} Config Object hoàn chỉnh
  */
-export const getConfigPresetsByTier = (packageName, mode = "vovinam") => {
+export const getConfigPresetsByTier = (packageName, mode = "vovinam", onlineFeatures = {}) => {
     // 1. Lấy thông tin gói cước và config override tương ứng
     const currentTier = getPackageTier(packageName);
-    const overrides = PACKAGE_OVERRIDES[currentTier] || {};
+    const overrides = JSON.parse(JSON.stringify(PACKAGE_OVERRIDES[currentTier] || {}));
+
+    // Áp phích ghi đè phân quyền (disabled_configs) từ kênh Online (nếu có)
+    if (onlineFeatures && Array.isArray(onlineFeatures.disabled_configs)) {
+        overrides.disabledOptions = overrides.disabledOptions || {};
+        onlineFeatures.disabled_configs.forEach(configKey => {
+            overrides.disabledOptions[configKey] = 1;
+        });
+    }
 
     // 2. Clone preset gốc tránh mutate source
     const basePreset = JSON.parse(JSON.stringify(CONFIG_PRESETS[mode] || CONFIG_PRESETS.vovinam));
@@ -785,10 +795,16 @@ export const ACTION_GROUPS = {
 /**
  * Lấy keymap theo chế độ
  * @param {"default" | "custom"} mode
+ * @param {Object} onlineFeatures Tính năng online từ License Server
  * @returns {Object} keymap
  */
-export function getKeymap(mode = "default") {
-    return KEYBOARD_MODES[mode]?.keymap || DEFAULT_KEYMAP;
+export function getKeymap(mode = "default", onlineFeatures = {}) {
+    const baseMap = KEYBOARD_MODES[mode]?.keymap || DEFAULT_KEYMAP;
+    const customOverrides = onlineFeatures?.custom_keymaps?.[mode];
+    if (customOverrides && typeof customOverrides === 'object') {
+        return { ...baseMap, ...customOverrides };
+    }
+    return baseMap;
 }
 
 /**
@@ -820,10 +836,12 @@ export function buildReverseKeymap(keymap) {
  * @param {boolean} params.showConfigModal
  * @param {boolean} params.showHistoryModal
  * @param {boolean} params.showConnectionModal
+ * @param {Object} params.onlineFeatures Dữ liệu license tính năng
  * @returns {Function} handleKeyDown event handler
  */
 export function createKeyDownHandler({
     mode = "default",
+    onlineFeatures = {},
     handlers,
     showConfirm,
     btnGoBack,
@@ -836,7 +854,7 @@ export function createKeyDownHandler({
     showHistoryModal,
     showConnectionModal,
 }) {
-    const keymap = getKeymap(mode);
+    const keymap = getKeymap(mode, onlineFeatures);
     const reverseMap = buildReverseKeymap(keymap);
 
     return async (e) => {

@@ -12,10 +12,10 @@ Mục tiêu của gói tin này là:
 {
   "isActive": true,
   "activatedAt": "2026-03-09T00:00:00.000Z",
-  "expiredDate": "2027-03-09T00:00:00.000Z",
-  "licenseKeyId": "LK-12345-ABCDE",
-  "packageName": "ADVANCED",
-  "maxDevices": 15,
+  "expiredDate": "2027-03-10T00:00:00.000Z",
+  "licenseKeyId": "LK-FULL-ACCESS-9999",
+  "packageName": "ENTERPRISE",
+  "maxDevices": 50,
   "deviceInfo": {
     "uuid_desktop": "app-generated-uuid",
     "mac_address": "00:1A:2B:3C:4D:5E",
@@ -24,24 +24,34 @@ Mục tiêu của gói tin này là:
   },
   "features": {
     "module_overrides": {
+      "/bang-diem/doi-khang": true,
+      "/bang-diem/quyen": true,
       "/bang-diem/vo-nhac": true,
-      "/management/data-sync": false
+      "/secondary-display": true,
+      "/management/general-setting/competition-management": true,
+      "/management/general-setting/config-system": true,
+      "/management/connect": true,
+      "/management/data-sync": true
     },
-    "disabled_configs": [
-      "cau_hinh_lan_sync",
-      "ap_dung_vonhac",
-      "hien_thi_button_y_te"
-    ],
-    "custom_event_name": "Giải Đấu Toàn Quốc",
+    "disabled_configs": [],
+    "custom_event_name": "GIẢI ONLINE TOÀN QUYỀN",
     "forced_keyboard_mode": "pencak",
     "allowed_keyboard_modes": [
       "vovinam",
-      "pencak"
+      "pencak",
+      "vohiendai",
+      "default"
     ],
     "custom_keymaps": {
       "pencak": {
         "RED_SCORE_PLUS_2": "bracketright",
-        "BLUE_SCORE_PLUS_2": "bracketleft"
+        "BLUE_SCORE_PLUS_2": "bracketleft",
+        "TOGGLE_TIMER": "Enter",
+        "UNDO": "Delete"
+      },
+      "vovinam": {
+        "RED_SCORE_PLUS_1": "1",
+        "BLUE_SCORE_PLUS_1": "2"
       }
     }
   }

@@ -142,6 +142,29 @@ Ví dụ nếu môn Pencak Silat bị xung đột phím điểm "+2" ở Đỏ v
 ```
 Hệ thống con `BangDiemDoiKhang` sẽ tự động mix phím tắt Online này với Layout Offline để nhận phím mơí. Không cần Deploy lại mã nguồn App.
 
+**Danh sách toàn bộ các KEY hành động hỗ trợ cấu hình:**
+
+*Nhóm Điều khiển chung:*
+- `TOGGLE_TIMER`: Bật/Dừng thời gian (Mặc định: Space)
+- `UNDO`: Hoàn tác (Mặc định: ctrl+z)
+- `RESET`: Chơi lại từ đầu (Mặc định: g)
+- `PREVIOUS_MATCH`: Chuyển trận trước (Mặc định: ArrowLeft)
+- `NEXT_MATCH`: Chuyển trận tiếp (Mặc định: ArrowRight)
+
+*Nhóm Đỏ (Red Team):*
+- Điểm cộng: `RED_SCORE_PLUS_1`, `RED_SCORE_PLUS_2`, `RED_SCORE_PLUS_3`
+- Điểm trừ: `RED_SCORE_MINUS_1`, `RED_SCORE_MINUS_2`, `RED_SCORE_MINUS_3`
+- Nhắc nhở (+/-): `RED_REMIND_PLUS`, `RED_REMIND_MINUS`
+- Cảnh cáo (+/-): `RED_WARN_PLUS`, `RED_WARN_MINUS`
+- Hành động: `RED_WINNER` (Xử thắng), `RED_MEDICAL` (Y tế)
+
+*Nhóm Xanh (Blue Team):*
+- Điểm cộng: `BLUE_SCORE_PLUS_1`, `BLUE_SCORE_PLUS_2`, `BLUE_SCORE_PLUS_3`
+- Điểm trừ: `BLUE_SCORE_MINUS_1`, `BLUE_SCORE_MINUS_2`, `BLUE_SCORE_MINUS_3`
+- Nhắc nhở (+/-): `BLUE_REMIND_PLUS`, `BLUE_REMIND_MINUS`
+- Cảnh cáo (+/-): `BLUE_WARN_PLUS`, `BLUE_WARN_MINUS`
+- Hành động: `BLUE_WINNER` (Xử thắng), `BLUE_MEDICAL` (Y tế)
+
 ---
 
 Với việc tổ chức dữ liệu dạng JSON thuần và ánh xạ chính xác 1-1 với State trong Redux Desktop App này, **Server Quản Trị Trực Tuyến** đã hoàn toàn có sức mạnh tối thượng điều phối mọi góc cạnh phần mềm, phục vụ cho bất kì gói kinh doanh B2B/B2C tương lai nào linh hoạt nhất.

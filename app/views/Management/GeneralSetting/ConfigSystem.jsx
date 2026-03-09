@@ -77,15 +77,22 @@ const getInputFields = (t) => ({
   ],
 });
 
-const getSelectFields = (t) => ({
+const getSelectFields = (t, features = {}) => ({
   [t("config_system.quantity_settings")]: [
     {
       name: "keyboard_mode",
       label: t("config_system.keyboard_mode"),
-      options: Object.entries(KEYBOARD_MODES).map(([key, mode]) => ({
-        value: key,
-        label: `${mode.description}`,
-      })),
+      options: Object.entries(KEYBOARD_MODES)
+        .filter(([key]) => {
+          if (features?.allowed_keyboard_modes && Array.isArray(features.allowed_keyboard_modes)) {
+            return features.allowed_keyboard_modes.includes(key);
+          }
+          return true;
+        })
+        .map(([key, mode]) => ({
+          value: key,
+          label: `${mode.description}`,
+        })),
     },
     {
       name: "he_diem",
@@ -236,7 +243,7 @@ export default function ConfigSystem() {
 
   // Get translated fields
   const inputFields = getInputFields(t);
-  const selectFields = getSelectFields(t);
+  const selectFields = getSelectFields(t, features);
   const textareaFields = getTextareaFields(t);
   const switchFields = getSwitchFields(t);
   const backgroundScreens = getBackgroundScreens(t);

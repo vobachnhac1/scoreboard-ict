@@ -33,7 +33,11 @@ Mục tiêu của gói tin này là:
       "hien_thi_button_y_te"
     ],
     "custom_event_name": "Giải Đấu Toàn Quốc",
-    "forced_keyboard_mode": "pencak"
+    "forced_keyboard_mode": "pencak",
+    "allowed_keyboard_modes": [
+      "vovinam",
+      "pencak"
+    ]
   }
 }
 ```
@@ -103,6 +107,11 @@ Nếu được khai báo, máy con sẽ tự động được gán cứng và hi
 - `"pencak"` (Pencak Silat)
 - `"vohiendai"` (Võ thuật hiện đại)
 Khi tham số này được gửi xuống, màn hình Cài Đặt của Client sẽ tự động chuyển sang Option bộ môn tương ứng và SelectBox "Chế độ phím" sẽ bị vô hiệu hóa (disabled), không cho phép trọng tài đổi tùy tiện ở máy con.
+
+### E. `allowed_keyboard_modes` (Array of Strings - Không Bắt Buộc)
+Giới hạn danh sách các bộ môn (Chế độ phím) được phép hiển thị trong SelectBox. Khi tham số này được phân phối, người dùng tại máy trạm chỉ có thể chọn các bộ môn nằm trong danh sách này.
+Ví dụ: `["vovinam", "pencak"]` sẽ ẩn môn `vohiendai` (Võ cổ truyền) khỏi menu cấu hình thay đổi bộ môn.
+Các giá trị hợp lệ nằm trong `KEYBOARD_MODES`.
 
 ---
 

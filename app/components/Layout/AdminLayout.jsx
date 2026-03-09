@@ -13,11 +13,13 @@ import {
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import Breadcrumb from "../Breadcrumb";
+import { usePackageAccess, PACKAGE_TIERS } from "../FeatureLock";
 
 const AdminLayout = ({ children }) => {
   const { t } = useTranslation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { valid, revoked } = useSelector((state) => state.license);
+  const { hasAccess } = usePackageAccess();
 
   const isActivated = valid && !revoked;
 
@@ -49,7 +51,7 @@ const AdminLayout = ({ children }) => {
       name: t("data_sync.title"),
       href: "/management/data-sync",
       icon: ArrowPathIcon,
-      hidden: !isActivated,
+      hidden: !isActivated || !hasAccess(PACKAGE_TIERS.ENTERPRISE, "/management/data-sync"),
     },
     {
       name: t("user_guide.title"),

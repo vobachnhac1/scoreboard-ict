@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import logoDigiSports from "../../assets/logo_nhacvb_light.png";
 import { activateLicense, clearErrors } from "../../config/redux/controller/licenseSlice";
+import { usePackageAccess, PACKAGE_TIERS } from "../../components/FeatureLock";
 
 export default function Dashboard() {
   const { t } = useTranslation();
@@ -13,6 +14,7 @@ export default function Dashboard() {
   const [inputLicenseKey, setInputLicenseKey] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
+  const { hasAccess } = usePackageAccess();
 
   const {
     valid,
@@ -66,6 +68,8 @@ export default function Dashboard() {
             </svg>
           ),
           gradient: "from-rose-500 to-red-600",
+          requiredTier: PACKAGE_TIERS.BASIC,
+          featureKey: '/bang-diem/doi-khang'
         },
         {
           title: t("dashboard.features.quyen_board.title"),
@@ -82,6 +86,8 @@ export default function Dashboard() {
             </svg>
           ),
           gradient: "from-amber-500 to-orange-600",
+          requiredTier: PACKAGE_TIERS.BASIC,
+          featureKey: '/bang-diem/quyen'
         },
         {
           title: t("dashboard.features.vonhac_board.title"),
@@ -97,6 +103,8 @@ export default function Dashboard() {
             </svg>
           ),
           gradient: "from-purple-500 to-indigo-600",
+          requiredTier: PACKAGE_TIERS.ADVANCED,
+          featureKey: '/bang-diem/vo-nhac'
         },
         {
           title: t("dashboard.features.secondary_display.title"),
@@ -113,6 +121,8 @@ export default function Dashboard() {
             </svg>
           ),
           gradient: "from-emerald-500 to-teal-600",
+          requiredTier: PACKAGE_TIERS.ADVANCED,
+          featureKey: '/secondary-display'
         },
       ]
     },
@@ -135,6 +145,8 @@ export default function Dashboard() {
             </svg>
           ),
           gradient: "from-blue-600 to-blue-700",
+          requiredTier: PACKAGE_TIERS.BASIC,
+          featureKey: '/management/general-setting/competition-management'
         },
         {
           title: t("dashboard.features.system_config.title"),
@@ -150,6 +162,8 @@ export default function Dashboard() {
             </svg>
           ),
           gradient: "from-blue-500 to-blue-600",
+          requiredTier: PACKAGE_TIERS.BASIC,
+          featureKey: '/management/general-setting/config-system'
         },
         {
           title: t("dashboard.features.connection_management.title"),
@@ -165,6 +179,8 @@ export default function Dashboard() {
             </svg>
           ),
           gradient: "from-cyan-500 to-blue-600",
+          requiredTier: PACKAGE_TIERS.BASIC,
+          featureKey: '/management/connect'
         },
         {
           title: t("dashboard.features.lan_sync.title"),
@@ -180,6 +196,8 @@ export default function Dashboard() {
             </svg>
           ),
           gradient: "from-blue-600 to-indigo-700",
+          requiredTier: PACKAGE_TIERS.ENTERPRISE,
+          featureKey: '/management/data-sync'
         },
         {
           title: t("dashboard.features.data_safety.title"),
@@ -195,6 +213,8 @@ export default function Dashboard() {
             </svg>
           ),
           gradient: "from-indigo-500 to-violet-600",
+          requiredTier: PACKAGE_TIERS.ENTERPRISE,
+          featureKey: '/management/data-sync' // Assume backup is in data-sync for now
         },
       ]
     },
@@ -214,6 +234,7 @@ export default function Dashboard() {
             </svg>
           ),
           gradient: "from-slate-600 to-slate-700",
+          requiredTier: PACKAGE_TIERS.BASIC,
         },
         {
           title: t("dashboard.features.support_channel.title"),
@@ -230,6 +251,7 @@ export default function Dashboard() {
             </svg>
           ),
           gradient: "from-emerald-600 to-teal-700",
+          requiredTier: PACKAGE_TIERS.BASIC,
         },
         {
           title: t("dashboard.features.about_digisports.title"),
@@ -246,6 +268,7 @@ export default function Dashboard() {
             </svg>
           ),
           gradient: "from-blue-600 to-indigo-700",
+          requiredTier: PACKAGE_TIERS.BASIC,
         },
       ]
     }
@@ -400,43 +423,57 @@ export default function Dashboard() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {group.features.map((feature, idx) => (
-                    <div
-                      key={idx}
-                      className="bg-white dark:bg-gray-800/80 rounded p-6 shadow-sm border border-slate-200 dark:border-gray-700 hover:border-blue-500/30 transition-all duration-300"
-                    >
-                      <div className={`inline-flex p-2.5 bg-gradient-to-br ${feature.gradient} rounded text-white mb-4`}>
-                        {feature.icon}
-                      </div>
+                  {group.features.map((feature, idx) => {
+                    const featureLocked = !hasAccess(feature.requiredTier, feature.featureKey);
 
-                      <h3 className="text-base font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tight underline decoration-blue-500/30 decoration-2 underline-offset-4">
-                        {feature.title}
-                      </h3>
-
-                      <p className="text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed mb-6 italic">
-                        {feature.description}
-                      </p>
-
-                      <div className="space-y-2.5">
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-3">
-                          <span className="w-1 h-3 bg-blue-500 rounded-full"></span>
-                          {t("dashboard.main_tasks")}
-                        </p>
-                        {feature.tasks.map((task, taskIdx) => (
-                          <div key={taskIdx} className="flex items-start gap-2.5 group">
-                            <div className="mt-1">
-                              <svg className="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
-                              </svg>
-                            </div>
-                            <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                              {task}
-                            </span>
+                    return (
+                      <div
+                        key={idx}
+                        className={`bg-white dark:bg-gray-800/80 rounded p-6 shadow-sm border border-slate-200 dark:border-gray-700 hover:border-blue-500/30 transition-all duration-300 relative ${featureLocked ? "opacity-60 cursor-not-allowed grayscale-[50%]" : ""
+                          }`}
+                      >
+                        {featureLocked && (
+                          <div className="absolute top-4 right-4 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-2.5 py-1 rounded text-[10px] font-black uppercase flex items-center gap-1 shadow-sm">
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            {feature.requiredTier === PACKAGE_TIERS.ADVANCED ? "Gói Nâng cao" : "Gói Doanh nghiệp"}
                           </div>
-                        ))}
+                        )}
+
+                        <div className={`inline-flex p-2.5 bg-gradient-to-br ${feature.gradient} rounded text-white mb-4`}>
+                          {feature.icon}
+                        </div>
+
+                        <h3 className="text-base font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tight underline decoration-blue-500/30 decoration-2 underline-offset-4">
+                          {feature.title}
+                        </h3>
+
+                        <p className="text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed mb-6 italic">
+                          {feature.description}
+                        </p>
+
+                        <div className="space-y-2.5">
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-3">
+                            <span className="w-1 h-3 bg-blue-500 rounded-full"></span>
+                            {t("dashboard.main_tasks")}
+                          </p>
+                          {feature.tasks.map((task, taskIdx) => (
+                            <div key={taskIdx} className="flex items-start gap-2.5 group">
+                              <div className="mt-1">
+                                <svg className="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </div>
+                              <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                {task}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             );

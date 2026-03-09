@@ -7,10 +7,8 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { Empty } from 'antd';
 import AdminLayout from '../components/Layout/AdminLayout';
 import {
-  Connect, Champion, ChampionGroup, ChampionCategory,
-  ChampionEvent, ConfigSystem, CompetitionManagement,
-  CompetitionDataDetail, MatchAthlete, Athlete, DataAthlete,
-  ReportAthlete, ArrangeSchedule, CompetitionDataOther,
+  Connect, ConfigSystem, CompetitionManagement,
+  CompetitionDataDetail, CompetitionDataOther,
   DataSync
 } from '../views/Management';
 import BangDiemQuyen from '../views/BangDiemQuyen';
@@ -37,20 +35,19 @@ import QuyenResultReport from '../views/Reports/QuyenResultReport';
 
 // Import License
 import LicenseActivation from '../views/LicenseActivation';
-import FeatureLock from '../components/FeatureLock';
+import FeatureLock, { PACKAGE_TIERS } from '../components/FeatureLock';
 
 // Export socketClient singleton để sử dụng ở các component khác
 export { socketClient };
 
 // Tạo component App
 const Routers = () => {
-  const navigate = useNavigate();
   const routes = [
     // License Activation - Không cần AdminLayout
     { path: '/license-activation', element: <LicenseActivation />, sidebar: false },
 
     // Secondary Display - Màn hình phụ (Electron BrowserWindow riêng)
-    { path: '/secondary-display', element: <SecondaryDisplay />, sidebar: false },
+    { path: '/secondary-display', element: <SecondaryDisplay />, sidebar: false, requiredTier: PACKAGE_TIERS.ADVANCED },
 
     { path: '/', element: <AdminLayout><Dashboard /></AdminLayout> },
     { path: '/user-guide', element: <AdminLayout><UserGuide /></AdminLayout> },
@@ -62,14 +59,14 @@ const Routers = () => {
     { path: '/management/general-setting', element: <AdminLayout><div>QUẢN LÝ CÀI ĐẶT CHUNG</div></AdminLayout> },
     { path: '/management/general-setting/config-system', element: <AdminLayout><ConfigSystem /></AdminLayout> },
     { path: '/management/general-setting/competition-management', element: <AdminLayout><CompetitionManagement /></AdminLayout> },
-    { path: '/management/data-sync', element: <AdminLayout><DataSync /></AdminLayout> },
+    { path: '/management/data-sync', element: <AdminLayout><DataSync /></AdminLayout>, requiredTier: PACKAGE_TIERS.ENTERPRISE },
     // Quản lý thông tin
     { path: '/management/competition-data/:id', element: <AdminLayout><CompetitionDataDetail /></AdminLayout> },
     { path: '/management/competition-data-other/:id', element: <AdminLayout><CompetitionDataOther /></AdminLayout> },
     // Bảng điểm
     { path: '/bang-diem/doi-khang', element: <BangDiemDoiKhang /> },
     { path: '/bang-diem/quyen', element: <BangDiemQuyen /> },
-    { path: '/bang-diem/vo-nhac', element: <BangDiemVoNhac /> },
+    { path: '/bang-diem/vo-nhac', element: <BangDiemVoNhac />, requiredTier: PACKAGE_TIERS.ADVANCED },
     // Báo cáo
     // { path: '/reports', element: <AdminLayout><Reports /></AdminLayout> },
     // { path: '/reports/template-editor', element: <AdminLayout><TemplateManager /></AdminLayout> },
@@ -85,12 +82,12 @@ const Routers = () => {
       return route.element;
     }
 
-    if (route.sidebar === false) {
+    if (route.sidebar === false && !route.requiredTier) {
       return route.element;
     }
 
     // Wrap tất cả routes khác với FeatureLock
-    return <FeatureLock>{route.element}</FeatureLock>;
+    return <FeatureLock requiredTier={route.requiredTier} feature={route.path}>{route.element}</FeatureLock>;
   };
 
   return (

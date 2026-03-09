@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import Sidebar from "./Sidebar";
 import {
   HomeIcon,
@@ -16,6 +17,9 @@ import Breadcrumb from "../Breadcrumb";
 const AdminLayout = ({ children }) => {
   const { t } = useTranslation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { valid, revoked } = useSelector((state) => state.license);
+
+  const isActivated = valid && !revoked;
 
   const navigation = [
     {
@@ -27,27 +31,26 @@ const AdminLayout = ({ children }) => {
       name: t("connection.title"),
       href: "/management/connect",
       icon: LinkIcon,
+      hidden: !isActivated,
     },
     {
       name: t("competition.title"),
       href: "/management/general-setting/competition-management",
       icon: TrophyIcon,
+      hidden: !isActivated,
     },
     {
       name: t("config.title"),
       href: "/management/general-setting/config-system",
       icon: ServerStackIcon,
+      hidden: !isActivated,
     },
     {
       name: t("data_sync.title"),
       href: "/management/data-sync",
       icon: ArrowPathIcon,
+      hidden: !isActivated,
     },
-    // {
-    //   name: t("reports.title"),
-    //   href: "/reports",
-    //   icon: DocumentTextIcon,
-    // },
     {
       name: t("user_guide.title"),
       href: "/user-guide",
@@ -57,59 +60,19 @@ const AdminLayout = ({ children }) => {
       name: t("dashboard.update_manager"),
       href: "/update-manager",
       icon: ArrowUpCircleIcon,
+      hidden: !isActivated
     },
-    {
-      name: t("license.activation"),
-      href: "/license-activation",
-      icon: ShieldCheckIcon,
-    },
-    // {
-    //   name: "Quản lý cài đặt chung",
-    //   icon: Cog6ToothIcon,
-    //   href: "/management/general-setting",
-    //   children: [
-    //     {
-    //       name: "Quản lý Thi đấu",
-    //       href: "/management/general-setting/competition-management",
-    //       icon: TrophyIcon
-    //     },
-    //     {
-    //       name: "Quản lý cài đặt",
-    //       href: "/management/general-setting/config-system",
-    //       icon: ServerStackIcon
-    //     }
-    //   ],
-    // },
-    // {
-    //   name: "Bảng điểm",
-    //   icon: ChartBarIcon,
-    //   href: "/scoreboard",
-    //   children: [
-    //     {
-    //       name: "Vovinam",
-    //       href: "/bang-diem/doi-khang",
-    //       icon: ClipboardDocumentListIcon
-    //     },
-    //     {
-    //       name: "Chấm điểm",
-    //       href: "/bang-diem/quyen",
-    //       icon: DocumentTextIcon
-    //     },
-    //   ],
-    // },
-    // {
-    //   name: "Test Error",
-    //   href: "/test-error",
-    //   icon: ExclamationTriangleIcon
-    // },
   ];
+
+  // Filter out hidden items
+  const filteredNavigation = navigation.filter(item => !item.hidden);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-white dark:bg-gray-900">
       <Fragment>
         <div className="flex flex-1 overflow-hidden relative">
           <Sidebar
-            navigation={navigation}
+            navigation={filteredNavigation}
             collapsed={sidebarCollapsed}
             onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
           />
@@ -118,7 +81,7 @@ const AdminLayout = ({ children }) => {
             className={`flex-1 bg-gray-100 dark:bg-gray-900 p-4 overflow-auto transition-all duration-300
               ${sidebarCollapsed ? "ml-20" : "ml-72"}`}
           >
-            <Breadcrumb navigation={navigation} />
+            {/* <Breadcrumb navigation={navigation} /> */}
             {children}
           </div>
         </div>

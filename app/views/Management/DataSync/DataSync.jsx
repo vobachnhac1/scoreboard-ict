@@ -6,6 +6,7 @@ import RecordsView from "./components/RecordsView";
 import StagingSection from "./components/StagingSection";
 import DatabaseCleanupModal from "./components/DatabaseCleanupModal";
 import RecordDetailModal from "./components/RecordDetailModal";
+import BackupSection from "./components/BackupSection";
 import ProcessingControlModal from "./components/ProcessingControlModal";
 import ConfirmModal from "../../../components/ConfirmModal";
 import { META_FIELDS_NAME, HIDDEN_DETAIL_KEYS } from "./constants";
@@ -40,17 +41,213 @@ const DataSync = () => {
     handleDeleteRecord, handleDeleteSelectedRecords,
     toggleCompDKMultiView, toggleCompDKRecord,
     handleManualConnect, handleManualDisconnect, handleScanNetwork, handleConnectScanned,
-    handleSendToManualServer, handleSyncSelectedDataRows,
+    handleSendToManualServer, handleSyncSelectedDataRows, handleQuickSyncAll,
     handleAcceptRequest, handleRejectRequest,
     loadTableRecords, loadStagingSessions,
     handleOpenSession, handleCloseReview, handleDeleteSession, handleApplyStaging,
     handleUpdateMapping,
     handleOpenCleanupModal, handleTableDeleteToggle, handleDeleteTables,
-    modalProps, showAlert
+    modalProps, showAlert, showConfirm, showError, showSuccess, showWarning
   } = useDataSync();
 
   // Xử lý tabar
   const [activeTab, setActiveTab] = React.useState("connect"); // send / receive / connect / clean
+  const [cloudBackups, setCloudBackups] = React.useState([]);
+  const [isLoadingCloud, setIsLoadingCloud] = React.useState(false);
+  const [isCloudConnected, setIsCloudConnected] = React.useState(false);
+  const [authUrl, setAuthUrl] = React.useState(null);
+  const [authCode, setAuthCode] = React.useState("");
+  const [authMode, setAuthMode] = React.useState("service_account");
+
+  // FTP State
+  const [ftpBackups, setFtpBackups] = React.useState([]);
+  const [isLoadingFtp, setIsLoadingFtp] = React.useState(false);
+
+  const checkCloudStatus = async () => {
+    try {
+      const res = await fetch("http://localhost:6789/api/sync/cloud/status");
+      const data = await res.json();
+      if (data.success) {
+        setIsCloudConnected(data.data.isAuthenticated);
+        setAuthUrl(data.data.authUrl);
+        setAuthMode(data.data.authMode);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleCloudAuthorize = async () => {
+    if (!authCode.trim()) return showAlert("Vui lòng nhập mã xác thực từ Google");
+    setIsLoadingCloud(true);
+    try {
+      const res = await fetch("http://localhost:6789/api/sync/cloud/authorize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: authCode })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showSuccess("Kết nối Google Drive thành công!");
+        setIsCloudConnected(true);
+        setAuthCode("");
+        refreshCloudBackups();
+      } else {
+        showError("Lỗi: " + data.message);
+      }
+    } catch (err) {
+      showError("Lỗi xác thực: " + err.message);
+    } finally {
+      setIsLoadingCloud(false);
+    }
+  };
+
+  const refreshCloudBackups = async () => {
+    setIsLoadingCloud(true);
+    try {
+      await checkCloudStatus();
+      const res = await fetch("http://localhost:6789/api/sync/cloud/backups");
+      const data = await res.json();
+      if (data.success) {
+        setCloudBackups(data.data);
+      } else if (data.isAuthError) {
+        setIsCloudConnected(false);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoadingCloud(false);
+    }
+  };
+
+  const handleCloudBackup = async () => {
+    const confirm = await showConfirm("Bạn có muốn sao lưu dữ liệu hiện tại lên Google Drive?");
+    if (!confirm) return;
+    setIsLoadingCloud(true);
+    try {
+      const res = await fetch("http://localhost:6789/api/sync/cloud/backup", { method: "POST" });
+      const data = await res.json();
+      if (data.success) {
+        showSuccess("Sao lưu Cloud thành công!");
+        refreshCloudBackups();
+      } else {
+        showError("Lỗi: " + data.message);
+      }
+    } catch (err) {
+      showError("Lỗi kết nối: " + err.message);
+    } finally {
+      setIsLoadingCloud(false);
+    }
+  };
+
+  const handleCloudRestore = async (fileId) => {
+    const confirm = await showConfirm("CẢNH BÁO: Thao tác này sẽ GHI ĐÈ dữ liệu hiện tại từ bản sao lưu Cloud và KHỞI ĐỘNG LẠI phần mềm. Tiếp tục?");
+    if (!confirm) return;
+    setIsLoadingCloud(true);
+    try {
+      const res = await fetch("http://localhost:6789/api/sync/cloud/restore", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showSuccess("Khôi phục thành công! Ứng dụng sẽ reload.");
+        window.location.reload();
+      } else {
+        showError("Lỗi: " + data.message);
+      }
+    } catch (err) {
+      showError("Lỗi: " + err.message);
+    } finally {
+      setIsLoadingCloud(false);
+    }
+  };
+
+  // FTP Handlers
+  const refreshFtpBackups = async () => {
+    setIsLoadingFtp(true);
+    try {
+      const res = await fetch("http://localhost:6789/api/sync/ftp/backups");
+      const data = await res.json();
+      if (data.success) {
+        setFtpBackups(data.data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoadingFtp(false);
+    }
+  };
+
+  const handleFtpBackup = async () => {
+    const confirm = await showConfirm(t("data_sync.confirm_backup_ftp", "Bạn có muốn sao lưu dữ liệu hiện tại lên máy chủ FTP?"));
+    if (!confirm) return;
+    setIsLoadingFtp(true);
+    try {
+      const res = await fetch("http://localhost:6789/api/sync/ftp/backup", { method: "POST" });
+      const data = await res.json();
+      if (data.success) {
+        showSuccess(t("data_sync.backup_success", "Sao lưu thành công!"));
+        refreshFtpBackups();
+      } else {
+        showError(t("common.error", "Lỗi") + ": " + data.message);
+      }
+    } catch (err) {
+      showError(t("common.error", "Lỗi") + " " + t("common.connection", "kết nối") + " FTP: " + err.message);
+    } finally {
+      setIsLoadingFtp(false);
+    }
+  };
+
+  const handleFtpRestore = async (filePath) => {
+    const confirm = await showConfirm(t("data_sync.confirm_restore_ftp", "CẢNH BÁO: Thao tác này sẽ GHI ĐÈ dữ liệu hiện tại từ bản sao lưu FTP và KHỞI ĐỘNG LẠI phần mềm. Tiếp tục?"));
+    if (!confirm) return;
+    setIsLoadingFtp(true);
+    try {
+      const res = await fetch("http://localhost:6789/api/sync/ftp/restore", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filePath })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showSuccess(t("data_sync.restore_success", "Khôi phục thành công! Ứng dụng sẽ reload."));
+        // window.location.reload(); // Server will restart electron app
+      } else {
+        showError(t("common.error", "Lỗi") + ": " + data.message);
+      }
+    } catch (err) {
+      showError(t("common.error", "Lỗi") + ": " + err.message);
+    } finally {
+      setIsLoadingFtp(false);
+    }
+  };
+
+  const handleTestFtpConnection = async () => {
+    setIsLoadingFtp(true);
+    try {
+      console.log('Testing FTP connection...');
+      const res = await fetch("http://localhost:6789/api/sync/ftp/test", { method: "POST" });
+      const data = await res.json();
+      if (data.success) {
+        showSuccess("Kết nối FTP SUCCESS! \n\n" + data.message);
+      } else {
+        showError("Kết nối FTP FAILED! \n\n" + data.message);
+      }
+    } catch (err) {
+      showError("Lỗi kiểm tra kết nối: " + err.message);
+    } finally {
+      setIsLoadingFtp(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (activeTab === "backup") {
+      refreshCloudBackups();
+      refreshFtpBackups();
+    }
+  }, [activeTab]);
 
 
   return (
@@ -79,14 +276,14 @@ const DataSync = () => {
           <button
             onClick={handleRefreshAll}
             disabled={isRefreshing}
-            className="group flex items-center gap-3 px-8 py-4 bg-white dark:bg-gray-800 border-2 border-blue-50 dark:border-blue-900/30 rounded-2xl hover:border-blue-200 transition-all active:scale-95 disabled:opacity-50"
+            className="group flex items-center gap-4 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded border-0 shadow-lg shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-50"
           >
-            <div className={`p-1.5 rounded-lg bg-blue-50 dark:bg-blue-900 group-hover:rotate-180 transition-transform duration-700 ${isRefreshing ? "animate-spin" : ""}`}>
-              <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 text-sm font-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            <div className={`p-1.5 rounded-xl bg-white/20 group-hover:rotate-180 transition-transform duration-700 ${isRefreshing ? "animate-spin" : ""}`}>
+              <svg className="w-5 h-5 text-white text-sm font-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
             </div>
-            <span className="text-[11px] font-black uppercase tracking-widest text-blue-900 dark:text-blue-100">
+            <span className="text-[11px] font-black uppercase tracking-[0.2em]">
               {isRefreshing ? t("data_sync.processing") : t("data_sync.refresh_data")}
             </span>
           </button>
@@ -127,10 +324,20 @@ const DataSync = () => {
           <button
             onClick={() => setActiveTab("clean")}
             className={`m-1 px-4 py-3 rounded text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === "clean"
-              ? "bg-rose-600 text-white scale-105"
+              ? "bg-rose-600 text-white shadow-rose-500/30 scale-105"
               : "text-rose-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/40"
               }`}
           > {t("data_sync.clean_data")} </button>
+
+          <div className="w-px h-6 bg-blue-100 dark:bg-blue-900/50 mx-1"></div>
+
+          <button
+            onClick={() => setActiveTab("backup")}
+            className={`m-1 px-4 py-3 rounded text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === "backup"
+              ? "bg-amber-600 text-white shadow-amber-500/30 scale-105"
+              : "text-amber-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/40"
+              }`}
+          > {t("data_sync.backup_restore", { defaultValue: "SAO LƯU & KHÔI PHỤC" })} </button>
         </div>
 
         {/* TAB CONTENT - Premium Card Layout */}
@@ -151,6 +358,8 @@ const DataSync = () => {
             handleManualDisconnect={handleManualDisconnect}
             handleScanNetwork={handleScanNetwork}
             handleConnectScanned={handleConnectScanned}
+            handleQuickSyncAll={handleQuickSyncAll}
+            syncing={syncing}
             showAlert={showAlert}
           />)}
           {/* ===== SEND DATA SECTION - Table Grid Design ===== */}
@@ -330,6 +539,23 @@ const DataSync = () => {
                 </div>
               </div>
             </div>)}
+
+          {/* ===== BACKUP & RESTORE DASHBOARD ===== */}
+          {activeTab === "backup" && (
+            <BackupSection
+              t={t}
+              ftpBackups={ftpBackups}
+              isLoadingFtp={isLoadingFtp}
+              handleFtpBackup={handleFtpBackup}
+              handleFtpRestore={handleFtpRestore}
+              handleTestFtpConnection={handleTestFtpConnection}
+              refreshFtpBackups={refreshFtpBackups}
+              showConfirm={showConfirm}
+              showError={showError}
+              showSuccess={showSuccess}
+            />
+          )}
+
         </div>
       </div>
 

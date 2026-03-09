@@ -60,11 +60,10 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
         <Link
           to={item.href}
           className={`group flex items-center py-3 px-3 space-x-3 rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden
-          ${
-            isActive(item.href)
+          ${isActive(item.href)
               ? `bg-gradient-to-r ${getGradient(index)} text-white shadow-lg scale-105`
               : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-102"
-          }`}
+            }`}
         >
           {/* Gradient overlay on hover */}
           {!isActive(item.href) && (
@@ -75,11 +74,10 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
 
           <div
             className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 relative z-10
-            ${
-              isActive(item.href)
+            ${isActive(item.href)
                 ? "bg-white/20 text-white"
                 : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 group-hover:bg-gray-200 dark:group-hover:bg-gray-600"
-            }`}
+              }`}
           >
             {item.icon && <item.icon className="h-5 w-5" />}
           </div>
@@ -167,10 +165,9 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
                     <DisclosureButton
                       disabled={collapsed}
                       className={`group w-full flex items-center py-1 px-3 space-x-3 rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden
-                        ${
-                          hasActiveChild
-                            ? `bg-gradient-to-r ${gradient} text-white shadow-lg`
-                            : "text-gray-700 hover:bg-gray-100"
+                        ${hasActiveChild
+                          ? `bg-gradient-to-r ${gradient} text-white shadow-lg`
+                          : "text-gray-700 hover:bg-gray-100"
                         }`}
                       aria-expanded={open}
                       aria-controls={`panel-${item.name}`}
@@ -184,11 +181,10 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
 
                       <div
                         className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 relative z-10
-                        ${
-                          hasActiveChild
+                        ${hasActiveChild
                             ? "bg-white/20 text-white"
                             : "bg-gray-100 text-gray-600 group-hover:bg-gray-200"
-                        }`}
+                          }`}
                       >
                         {item.icon && <item.icon className="h-5 w-5" />}
                       </div>
@@ -226,10 +222,9 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
                             <Link
                               to={child.href}
                               className={`group flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative overflow-hidden
-                                ${
-                                  isActive(child.href)
-                                    ? `bg-gradient-to-r ${gradient} text-white shadow-md`
-                                    : "hover:bg-gray-100 text-gray-700"
+                                ${isActive(child.href)
+                                  ? `bg-gradient-to-r ${gradient} text-white shadow-md`
+                                  : "hover:bg-gray-100 text-gray-700"
                                 }`}
                             >
                               {/* Gradient overlay on hover */}
@@ -241,11 +236,10 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
 
                               <div
                                 className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 relative z-10
-                                ${
-                                  isActive(child.href)
+                                ${isActive(child.href)
                                     ? "bg-white/20 text-white"
                                     : "bg-gray-100 text-gray-600 group-hover:bg-gray-200"
-                                }`}
+                                  }`}
                               >
                                 {child.icon && (
                                   <child.icon className="h-4 w-4" />
@@ -279,59 +273,49 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
         )}
       </ul>
 
-      {/* Theme Toggle, Language Switcher & Collapse Button - At Bottom */}
-      <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 pt-3 pb-3 px-0 space-y-2">
-        {/* Theme Toggle & Language Switcher */}
-        <div className="flex justify-center items-center gap-2">
-          <ThemeToggle />
-          <LanguageSwitcher />
-        </div>
+      {/* Footer Actions */}
+      <div className="flex-shrink-0 py-4 border-t border-slate-200 dark:border-slate-700">
+        <div className={`flex flex-col gap-2 bg-slate-100/80 dark:bg-slate-800/80 p-2 rounded-2xl border border-slate-200/50 dark:border-slate-700/50`}>
+          <div className={`flex ${collapsed ? 'flex-col items-center gap-2' : 'justify-center items-center gap-2'}`}>
+            <ThemeToggle compact={collapsed} className={collapsed ? '' : 'flex-1'} />
+            <LanguageSwitcher compact={collapsed} />
+          </div>
 
-        {/* Toggle Button */}
-        {onToggle && (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onToggle();
-            }}
-            className="group w-full flex items-center justify-center gap-2 py-3 px-3 rounded  bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden cursor-pointer"
-            title={collapsed ? t("common.expand") : t("common.collapse")}
-            type="button"
-          >
-            {/* Animated background */}
-            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-
-            {/* Icon */}
-            <svg
-              className={`w-5 h-5 transition-transform duration-300 relative z-10 ${collapsed ? "rotate-0" : "rotate-180"}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth={2.5}
+          {onToggle && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onToggle();
+              }}
+              className={`group flex items-center justify-center p-2.5 w-full rounded-xl bg-white/50 dark:bg-slate-700/50 hover:bg-white dark:hover:bg-slate-600 text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400 transition-all shadow-sm relative`}
+              title={collapsed ? t("common.expand", "Mở rộng") : t("common.collapse", "Thu gọn")}
+              type="button"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
-              />
-            </svg>
+              <svg
+                className={`w-5 h-5 transition-transform duration-300 flex-shrink-0 ${collapsed ? "rotate-0" : "rotate-180"}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2.5}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+              </svg>
 
-            {/* Text */}
-            {!collapsed && (
-              <span className="font-semibold text-sm relative z-10">
-                Thu gọn
-              </span>
-            )}
+              {!collapsed && (
+                <span className="ml-2 font-bold text-sm tracking-tight text-slate-600 group-hover:text-blue-600 dark:text-slate-300 dark:group-hover:text-blue-400">
+                  {t("common.collapse_sidebar", "Thu gọn Sidebar")}
+                </span>
+              )}
 
-            {/* Tooltip khi collapsed */}
-            {collapsed && (
-              <div className="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
-                Mở rộng sidebar
-              </div>
-            )}
-          </button>
-        )}
+              {collapsed && (
+                <div className="absolute left-full ml-4 px-3 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow-xl">
+                  {t("common.expand", "Mở rộng")}
+                </div>
+              )}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

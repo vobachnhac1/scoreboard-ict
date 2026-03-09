@@ -2,22 +2,23 @@ import React from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 
-const ThemeToggle = ({ className = '' }) => {
+const ThemeToggle = ({ className = '', compact = false }) => {
   const { theme, toggleTheme, isDark } = useTheme();
 
   return (
     <button
       onClick={toggleTheme}
-      className={`group relative inline-flex items-center justify-center w-12 h-12 rounded  transition-all duration-300 hover:scale-110 ${className}`}
+      className={`group relative inline-flex items-center justify-center ${compact ? 'w-10 h-10' : 'w-12 h-10'} rounded-xl transition-all duration-300 hover:scale-105 shadow-inner border border-slate-200/50 dark:border-slate-600/50 ${className}`}
       title={isDark ? 'Chuyển sang Light Mode' : 'Chuyển sang Dark Mode'}
       aria-label="Toggle theme"
     >
       {/* Background with gradient */}
-      <div className={`absolute inset-0 rounded  transition-all duration-300 ${
+      <div className={`absolute inset-0 rounded-xl transition-all duration-300 ${
         isDark 
-          ? 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-purple-500/50' 
-          : 'bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg shadow-orange-500/50'
+          ? 'bg-gradient-to-br from-indigo-500/80 to-purple-600/80' 
+          : 'bg-gradient-to-br from-yellow-400/80 to-orange-500/80'
       }`}></div>
+
 
       {/* Icon */}
       <div className="relative z-10 transition-transform duration-300 group-hover:rotate-12">

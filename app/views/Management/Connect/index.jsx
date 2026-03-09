@@ -313,7 +313,7 @@ export default function ManagementConnectionSocket() {
           />
         </svg>
       ),
-      color: "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/20",
+      color: "bg-blue-600 hover:bg-blue-700 shadow-blue-500/20",
       textColor: "text-white",
       description: t("connection.send_notification_to_referee"),
       callback: (row) => {
@@ -569,6 +569,7 @@ export default function ManagementConnectionSocket() {
             data={openActions?.row}
             onAgree={(formData) => {
               setOpenActions({ ...openActions, isOpen: false });
+              handleRefresh();
             }}
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
@@ -580,6 +581,7 @@ export default function ManagementConnectionSocket() {
             onAgree={(formData) => {
               console.log("NotificationForm", formData);
               setOpenActions({ ...openActions, isOpen: false });
+              handleRefresh();
             }}
             onGoBack={() => setOpenActions({ ...openActions, isOpen: false })}
           />
@@ -605,6 +607,7 @@ export default function ManagementConnectionSocket() {
         socket_id: row.socket_id,
         room_id: row.room_id,
       });
+      handleRefresh();
     }
   };
 
@@ -619,6 +622,7 @@ export default function ManagementConnectionSocket() {
       accepted: formData.accepted,
       status: formData.status,
     });
+    handleRefresh();
   };
 
   // Hàm refresh danh sách thiết bị
@@ -658,7 +662,7 @@ export default function ManagementConnectionSocket() {
 
       // Refresh lại danh sách sau 1 giây
       setTimeout(() => {
-        setData([]);
+        handleRefresh();
       }, 1000);
       // khi socket mất kết nối thì cập nhật lại state
       dispatch(setConnected({ connected: false, socketId: null }));
@@ -809,16 +813,16 @@ export default function ManagementConnectionSocket() {
     <div className="w-full h-auto overflow-auto p-1 py-1">
       {/* Room Info Bar - Premium Design */}
       {currentRoom && (
-        <div className="bg-white dark:bg-gray-800 border-2 border-blue-50 dark:border-blue-900/30 rounded-3xl p-6 mb-6 shadow-xl shadow-blue-500/10 overflow-hidden relative group">
+        <div className="bg-white dark:bg-gray-800 border-2 border-blue-50 dark:border-blue-900/30 rounded p-6 mb-6 shadow-xl shadow-blue-500/10 overflow-hidden relative group">
           {/* Decorative background elements */}
           <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-64 h-64 bg-blue-600/5 dark:bg-blue-600/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700"></div>
-          <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-48 h-48 bg-indigo-600/5 dark:bg-indigo-600/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
+          <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-48 h-48 bg-blue-600/5 dark:bg-blue-600/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
 
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex flex-col md:flex-row items-center gap-10">
               {/* Server Details */}
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-blue-500/10 rotate-3 group-hover:rotate-0 transition-all duration-500">
+                <div className="w-14 h-14 bg-blue-600 rounded flex items-center justify-center text-white shadow-2xl shadow-blue-500/10 rotate-3 group-hover:rotate-0 transition-all duration-500">
                   <svg
                     className="w-8 h-8"
                     fill="none"
@@ -849,7 +853,7 @@ export default function ManagementConnectionSocket() {
                   {t("connection.system_status")}
                 </div>
                 {socket.connected ? (
-                  <div className="flex items-center gap-2.5 px-4 py-2 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/50 rounded-xl shadow-inner shadow-emerald-500/5">
+                  <div className="flex items-center gap-2.5 px-4 py-2 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/50 rounded shadow-inner shadow-emerald-500/5">
                     <div className="relative flex h-2.5 w-2.5">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
@@ -859,7 +863,7 @@ export default function ManagementConnectionSocket() {
                     </span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2.5 px-4 py-2 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/50 rounded-xl">
+                  <div className="flex items-center gap-2.5 px-4 py-2 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/50 rounded">
                     <div className="w-2.5 h-2.5 bg-rose-500 rounded-full shadow-lg shadow-rose-500/10"></div>
                     <span className="text-[11px] font-black text-rose-700 dark:text-rose-400 uppercase tracking-widest">
                       {t("connection.server_disconnected")}
@@ -870,24 +874,24 @@ export default function ManagementConnectionSocket() {
             </div>
 
             {/* Room ID Badge */}
-            <div className="px-6 py-4 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-dashed border-blue-200 dark:border-blue-800 rounded-3xl flex flex-col items-center md:items-end justify-center min-w-[200px]">
+            {/* <div className="px-6 py-4 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-dashed border-blue-200 dark:border-blue-800 rounded flex flex-col items-center md:items-end justify-center min-w-[200px]">
               <div className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1.5 opacity-60">
                 Mã định danh Room
               </div>
               <div className="text-2xl font-black text-blue-600 dark:text-blue-400 tracking-[0.2em] leading-none">
                 {currentRoom.room_id || "N/A"}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       )}
 
       {/* Action Toolbar - Premium Design */}
-      <div className="bg-white dark:bg-gray-800 rounded-3xl p-5 mb-8 shadow-xl shadow-blue-500/10 border border-blue-50 dark:border-blue-900/30">
+      <div className="bg-white dark:bg-gray-800 rounded p-5 mb-8 shadow-xl shadow-blue-500/10 border border-blue-50 dark:border-blue-900/30">
         <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
           {/* Left: Device Statistic */}
           <div className="flex items-center gap-5">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/50">
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950 rounded flex items-center justify-center text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/50">
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -918,7 +922,7 @@ export default function ManagementConnectionSocket() {
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className="flex items-center gap-2.5 px-6 py-3.5 bg-blue-50 hover:bg-white dark:bg-blue-950 dark:hover:bg-blue-900 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-sm hover:shadow-xl transition-all duration-300 active:scale-95 disabled:opacity-50"
+              className="flex items-center gap-2.5 px-6 py-3.5 bg-blue-50 hover:bg-white dark:bg-blue-950 dark:hover:bg-blue-900 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800 rounded text-[10px] font-black uppercase tracking-widest shadow-sm hover:shadow-xl transition-all duration-300 active:scale-95 disabled:opacity-50"
             >
               <svg
                 className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
@@ -939,7 +943,7 @@ export default function ManagementConnectionSocket() {
             {/* Scan QR Button */}
             <button
               onClick={handleOpenCreateRoom}
-              className="flex items-center gap-2.5 px-6 py-3.5 bg-indigo-50 hover:bg-white dark:bg-indigo-950 dark:hover:bg-indigo-900 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-sm hover:shadow-xl transition-all duration-300 active:scale-95"
+              className="flex items-center gap-2.5 px-6 py-3.5 bg-blue-50 hover:bg-white dark:bg-blue-950 dark:hover:bg-blue-900 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800 rounded text-[10px] font-black uppercase tracking-widest shadow-sm hover:shadow-xl transition-all duration-300 active:scale-95"
             >
               <svg
                 className="w-4 h-4"
@@ -963,7 +967,7 @@ export default function ManagementConnectionSocket() {
             <button
               onClick={handleRecreateConnection}
               disabled={isReconnecting || loading || !currentRoom}
-              className="flex items-center gap-2.5 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/10 transition-all duration-300 active:scale-95 disabled:bg-gray-400 disabled:shadow-none"
+              className="flex items-center gap-2.5 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/10 transition-all duration-300 active:scale-95 disabled:bg-gray-400 disabled:shadow-none"
             >
               <svg
                 className={`w-4 h-4 ${isReconnecting ? "animate-spin" : ""}`}
@@ -1001,7 +1005,7 @@ export default function ManagementConnectionSocket() {
         onClose={() => setOpenActions({ ...openActions, isOpen: false })}
         title={
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-white/20 rounded flex items-center justify-center">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
@@ -1009,7 +1013,7 @@ export default function ManagementConnectionSocket() {
             <span className="text-[11px] font-black uppercase tracking-[0.2em]">{getActionConfig(openActions?.key)?.titleModal || t("connection.update_data")}</span>
           </div>
         }
-        headerClass="bg-gradient-to-r from-blue-600 to-indigo-600 text-white !py-6 border-b-0"
+        headerClass="bg-gradient-to-r from-blue-600 to-blue-600 text-white !py-6 border-b-0"
       >
         {renderContentModal(openActions)}
       </Modal>
@@ -1027,7 +1031,7 @@ export default function ManagementConnectionSocket() {
         }}
         title={
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-white/20 rounded flex items-center justify-center">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
               </svg>
@@ -1035,7 +1039,7 @@ export default function ManagementConnectionSocket() {
             <span className="text-[11px] font-black uppercase tracking-[0.2em]">Cấu hình & Thiết lập máy chủ</span>
           </div>
         }
-        headerClass="bg-gradient-to-r from-blue-700 to-indigo-700 text-white !py-8 border-b-0"
+        headerClass="bg-gradient-to-r from-blue-700 to-blue-700 text-white !py-8 border-b-0"
         width="1200px"
       >
         <CreateRoomForm

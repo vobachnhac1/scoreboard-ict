@@ -9,7 +9,7 @@ import {
   updateConfigSystem,
 } from "../../../config/redux/controller/configSystemSlice";
 import axios from "axios";
-import { KEYBOARD_MODES, CONFIG_PRESETS } from "../../BangDiemDoiKhang/keyboardConfig";
+import { KEYBOARD_MODES, getConfigPresetsByTier, CONFIG_PRESETS } from "../../BangDiemDoiKhang/keyboardConfig";
 
 // Moved to function to support i18n
 const getInputFields = (t) => ({
@@ -222,6 +222,7 @@ export default function ConfigSystem() {
   const dispatch = useAppDispatch();
   // @ts-ignore
   const { data, loading } = useAppSelector((state) => state.configSystem);
+  const { packageName } = useAppSelector((state) => state.license);
   const {
     register,
     handleSubmit,
@@ -274,14 +275,14 @@ export default function ConfigSystem() {
       // Apply preset lần đầu nếu chưa apply
       if (!initialPresetApplied.current) {
         const mode = mergedData.keyboard_mode;
-        if (mode && CONFIG_PRESETS[mode]) {
-          const preset = CONFIG_PRESETS[mode];
+        if (mode) {
+          const preset = getConfigPresetsByTier(packageName, mode);
           Object.entries(preset).forEach(([key, value]) => {
-            if (key !== "disabledFields") {
+            if (key !== "disabledFields" && key !== "hiddenGroups" && key !== "hiddenFields") {
               setValue(key, value);
             }
           });
-          console.log(`⚙️ Đã áp dụng preset cấu hình lần đầu: ${mode}`);
+          console.log(`⚙️ Đã áp dụng preset cấu hình lần đầu: ${mode} (Tier: ${packageName})`);
         }
         initialPresetApplied.current = true;
       }
@@ -296,12 +297,11 @@ export default function ConfigSystem() {
     // Chỉ apply khi user thực sự thay đổi chế độ (không phải lần đầu load)
     if (
       selectedKeyboardMode &&
-      CONFIG_PRESETS[selectedKeyboardMode] &&
       prevKeyboardMode.current !== selectedKeyboardMode
     ) {
-      const preset = CONFIG_PRESETS[selectedKeyboardMode];
+      const preset = getConfigPresetsByTier(packageName, selectedKeyboardMode);
       Object.entries(preset).forEach(([key, value]) => {
-        if (key !== "disabledFields") {
+        if (key !== "disabledFields" && key !== "hiddenGroups" && key !== "hiddenFields") {
           setValue(key, value);
         }
       });
@@ -309,16 +309,19 @@ export default function ConfigSystem() {
     }
     prevKeyboardMode.current = selectedKeyboardMode;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedKeyboardMode]);
+  }, [selectedKeyboardMode, packageName]);
+
+  // Sinh rule dựa vào hàm getter theo tier mới
+  const currentMergedConfig = getConfigPresetsByTier(packageName, selectedKeyboardMode || "vovinam");
 
   // Danh sách fields bị khoá theo chế độ hiện tại
-  const disabledFields = (selectedKeyboardMode && CONFIG_PRESETS[selectedKeyboardMode]?.disabledFields) || [];
+  const disabledFields = currentMergedConfig?.disabledFields || [];
   // Danh sách fields ẩn hoàn toàn theo chế độ hiện tại
-  const hiddenFields = (selectedKeyboardMode && CONFIG_PRESETS[selectedKeyboardMode]?.hiddenFields) || [];
+  const hiddenFields = currentMergedConfig?.hiddenFields || [];
   // Giá trị được phép hiển thị cho select fields theo chế độ hiện tại
-  const allowedOptions = (selectedKeyboardMode && CONFIG_PRESETS[selectedKeyboardMode]?.allowedOptions) || {};
-  // Danh sách nhóm (group key) ẩn hoàn toàn theo chế độ hiện tại
-  const hiddenGroups = (selectedKeyboardMode && CONFIG_PRESETS[selectedKeyboardMode]?.hiddenGroups) || [];
+  const allowedOptions = currentMergedConfig?.allowedOptions || {};
+  // Danh sách nhóm (group key) ẩn hoàn toàn hiện tại
+  const hiddenGroups = currentMergedConfig?.hiddenGroups || [];
 
   // Fetch logos từ API
   const fetchLogos = async () => {

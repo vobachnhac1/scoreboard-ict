@@ -436,6 +436,64 @@ export const useDataSync = () => {
 
   // ========== SEND DATA ==========
 
+  const handleQuickSyncAll = async () => {
+    if (!isManualConnected || !manualServerInfo) {
+      showAlert(t("data_sync.connect_before_sync"), { title: t("data_sync.not_connected") });
+      return;
+    }
+    
+    // Select all available tables
+    const allTableNames = availableTables.map(t => t.name);
+    setSelectedTables(allTableNames);
+    
+    // Start sending
+    const confirm = await showConfirm(t("data_sync.confirm_sync_all_msg", { count: allTableNames.length }));
+    if (!confirm) return;
+    
+    try {
+      setSyncing(true);
+      const res = await axios.get(`${API}/export?tables=${allTableNames.join(",")}`);
+      if (!res.data.success) throw new Error("Export failed");
+      const exportData = res.data.data;
+
+      for (const table of allTableNames) {
+        let tableData = exportData[table];
+        if (!tableData || tableData.error) continue;
+        
+        const chunkSize = 100;
+        const chunks = [];
+        for (let i = 0; i < tableData.length; i += chunkSize) chunks.push(tableData.slice(i, i + chunkSize));
+        
+        for (let i = 0; i < chunks.length; i++) {
+          const sessionId = `sync_full_${Date.now()}_${IpMasker.mask(localIP, "hash", 999, "sync")?.display}`;
+          await axios.post(`${manualServerInfo.url}/api/sync/import-staging`, { 
+            table, 
+            data: chunks[i], 
+            session_id: sessionId, 
+            source_ip: localIP 
+          }, { timeout: 30000 });
+          
+          setSyncProgress((prev) => ({ 
+            ...prev, 
+            [table]: { 
+              current: i + 1, 
+              total: chunks.length, 
+              percentage: Math.round(((i + 1) / chunks.length) * 100) 
+            } 
+          }));
+          await new Promise((r) => setTimeout(r, 100));
+        }
+      }
+      setSyncing(false);
+      setSyncProgress({});
+      showSuccess(t("data_sync.sync_all_success_msg"), { title: t("data_sync.sync_success") });
+    } catch (error) {
+      setSyncing(false);
+      setSyncProgress({});
+      showError(t("data_sync.sync_all_error_fmt", { error: error.message }), { title: t("data_sync.sync_error") });
+    }
+  };
+
   const handleSendToManualServer = async () => {
     if (!isManualConnected || !manualServerInfo) { showAlert(t("data_sync.connect_before_send"), { title: t("data_sync.not_connected") }); return; }
     if (selectedTables.length === 0) { showAlert(t("data_sync.select_at_least_one_table"), { title: t("data_sync.no_table_selected") }); return; }
@@ -892,7 +950,7 @@ export const useDataSync = () => {
     handleBackToTableView, handleShowRecordDetail, handleCloseRecordDetail,
     toggleCompDKMultiView, toggleCompDKRecord, toggleCardExpand,
     handleManualConnect, handleManualDisconnect, handleScanNetwork, handleConnectScanned,
-    handleSendToManualServer, handleSyncSelectedDataRows, handleSendRequest,
+    handleSendToManualServer, handleSyncSelectedDataRows, handleSendRequest, handleQuickSyncAll,
     handleAcceptRequest, handleRejectRequest,
     loadTableRecords, loadStagingSessions,
     handleOpenSession, handleCloseReview, handleDeleteSession, handleApplyStaging,
@@ -902,7 +960,7 @@ export const useDataSync = () => {
     // Redux
     configSystem, socketState,
     // Modal
-    modalProps, showAlert
+    modalProps, showAlert, showConfirm, showError, showSuccess, showWarning
   };
 };
 

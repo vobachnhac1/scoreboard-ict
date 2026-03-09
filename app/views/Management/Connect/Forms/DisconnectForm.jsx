@@ -40,7 +40,7 @@ export default function DisconnectForm({ data, onAgree, onGoBack }) {
 
   return (
     <div className="p-2 pt-4">
-      <div className="bg-blue-50/30 dark:bg-blue-900/10 rounded-3xl p-6 border border-blue-50 dark:border-blue-900/30 mb-8 shadow-inner">
+      <div className="bg-blue-50/30 dark:bg-blue-900/10 rounded p-6 border border-blue-50 dark:border-blue-900/30 mb-8 shadow-inner">
         <p className="text-[10px] font-black text-blue-900 dark:text-blue-300 uppercase tracking-widest mb-6 px-1 opacity-60"> Tùy chọn ngắt kết nối </p>
         <div className="space-y-4">
           {[
@@ -58,7 +58,7 @@ export default function DisconnectForm({ data, onAgree, onGoBack }) {
                   type="checkbox"
                   checked={formData[item.name]}
                   onChange={handleChange}
-                  className="peer appearance-none w-6 h-6 border-2 border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-gray-800 checked:bg-blue-600 checked:border-blue-600 transition-all duration-300 hover:border-blue-400"
+                  className="peer appearance-none w-6 h-6 border-2 border-blue-200 dark:border-blue-800 rounded bg-white dark:bg-gray-800 checked:bg-blue-600 checked:border-blue-600 transition-all duration-300 hover:border-blue-400"
                 />
                 <svg className="absolute w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-300 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -73,10 +73,10 @@ export default function DisconnectForm({ data, onAgree, onGoBack }) {
       </div>
 
       <div className="flex items-center justify-end gap-3 pt-6 border-t border-blue-50 dark:border-blue-900/30">
-        <Button disabled={loading} className="min-w-32 py-3.5 !rounded-2xl" variant="secondary" onClick={() => onGoBack()}>
+        <Button disabled={loading} className="min-w-32 py-3.5 !rounded" variant="secondary" onClick={() => onGoBack()}>
           <span className="text-[10px] font-black uppercase tracking-widest">Quay lại</span>
         </Button>
-        <Button loading={loading} className="min-w-48 py-3.5 !rounded-2xl shadow-xl shadow-blue-500/20" variant="primary" onClick={handleSubmit}>
+        <Button loading={loading} className="min-w-48 py-3.5 !rounded shadow-xl shadow-blue-500/20" variant="primary" onClick={handleSubmit}>
           <span className="text-[10px] font-black uppercase tracking-widest">Xác nhận ngắt</span>
         </Button>
       </div>

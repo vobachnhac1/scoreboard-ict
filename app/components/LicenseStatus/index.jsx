@@ -58,7 +58,7 @@ export default function LicenseStatus({ compact = false }) {
   }, [dispatch]);
 
   const handleActivate = () => {
-    navigate("/license-activation");
+    navigate("/");
   };
 
   const handleRefresh = () => {

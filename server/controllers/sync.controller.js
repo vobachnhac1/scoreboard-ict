@@ -1,6 +1,97 @@
 const SyncService = require('../services/sync');
+const { DB_SCHEME } = require('../services/common/constant_sql');
+const Database = require('better-sqlite3');
+const path = require('path');
+const os = require('os');
+const fs = require('fs');
+const GoogleDriveService = require('../services/google-drive');
+const FtpService = require('../services/ftp');
+const { getUUID } = require('../config/config');
+const electron = require('electron'); // Import electron for relaunching
 
 class SyncController {
+    constructor() {
+        // Bind all methods to ensure 'this' context is preserved in route handlers
+        this.restartApp = this.restartApp.bind(this);
+        this.exportData = this.exportData.bind(this);
+        this.getTables = this.getTables.bind(this);
+        this.getAllTables = this.getAllTables.bind(this);
+        this.getTableRecords = this.getTableRecords.bind(this);
+        this.getMetadata = this.getMetadata.bind(this);
+        this.importData = this.importData.bind(this);
+        this.deleteTable = this.deleteTable.bind(this);
+        this.deleteTables = this.deleteTables.bind(this);
+        this.deleteRecord = this.deleteRecord.bind(this);
+        this.deleteRecords = this.deleteRecords.bind(this);
+        this.importToStaging = this.importToStaging.bind(this);
+        this.getStagingSessions = this.getStagingSessions.bind(this);
+        this.getStagingData = this.getStagingData.bind(this);
+        this.updateStagingMapping = this.updateStagingMapping.bind(this);
+        this.applyStagingChanges = this.applyStagingChanges.bind(this);
+        this.deleteStagingSession = this.deleteStagingSession.bind(this);
+        this.backupDatabase = this.backupDatabase.bind(this);
+        this.restoreDatabase = this.restoreDatabase.bind(this);
+        this.getCloudStatus = this.getCloudStatus.bind(this);
+        this.authorizeCloud = this.authorizeCloud.bind(this);
+        this.listCloudBackups = this.listCloudBackups.bind(this);
+        this.backupToCloud = this.backupToCloud.bind(this);
+        this.restoreFromCloud = this.restoreFromCloud.bind(this);
+        this.testFtpConnection = this.testFtpConnection.bind(this);
+        this.listFtpBackups = this.listFtpBackups.bind(this);
+        this.downloadFtpBackup = this.downloadFtpBackup.bind(this);
+        this.backupToFtp = this.backupToFtp.bind(this);
+        this.restoreFromFtp = this.restoreFromFtp.bind(this);
+    }
+
+    /**
+     * Helper to restart the Electron application safely
+     */
+    restartApp() {
+        console.log('[SyncController] Initiating application restart...');
+        
+        // Try to close the main database connection
+        try {
+            if (SyncService && SyncService.db && typeof SyncService.db.close === 'function') {
+                console.log('[SyncController] Closing database connection...');
+                SyncService.db.close();
+            }
+        } catch (e) {
+            console.warn('[SyncController] Could not close database cleanly before restart:', e);
+        }
+
+        // Check environment
+        const isElectron = !!process.versions.electron;
+        console.log('[SyncController] Environment: ' + (isElectron ? 'Electron' : 'Node.js'));
+
+        if (isElectron) {
+            try {
+                const { app } = require('electron');
+                if (app && typeof app.relaunch === 'function') {
+                    console.log('[SyncController] Relaunching Electron app...');
+                    
+                    // In some environments, we might need to be explicit about the relaunch
+                    // app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) });
+                    app.relaunch();
+                    
+                    console.log('[SyncController] Exiting current instance...');
+                    // Use exit(0) to bypass "window-all-closed" handlers and other quit-blocking logic
+                    app.exit(0);
+                } else {
+                    console.error('[SyncController] Electron app.relaunch not found. Falling back to process.exit.');
+                    process.exit(0);
+                }
+            } catch (err) {
+                console.error('[SyncController] Error during Electron relaunch:', err);
+                process.exit(1);
+            }
+        } else {
+            // Fallback for non-electron (dev)
+            console.warn('[SyncController] Not in Electron process. Using process.exit(0).');
+            // In dev mode, if using nodemon, exit(0) will trigger a restart.
+            // If using standard node, it just stops.
+            process.exit(0);
+        }
+    }
     
     /**
      * GET /api/sync/export
@@ -467,6 +558,344 @@ class SyncController {
                 message: 'Lỗi khi xóa session',
                 error: error.message
             });
+        }
+    }
+
+    /**
+     * GET /api/sync/backup
+     * Sao lưu tĩnh CSDL SQLite
+     */
+    async backupDatabase(req, res) {
+        try {
+            const tempDir = os.tmpdir();
+            const dateStr = new Date().toISOString().replace(/[:.]/g, '-');
+            const backupFileName = `DigiSports_Backup_${dateStr}.sqlite`;
+            const backupPath = path.join(tempDir, backupFileName);
+
+            const db = new Database(DB_SCHEME);
+            await db.backup(backupPath);
+            db.close();
+
+            res.download(backupPath, backupFileName, (err) => {
+                if (err) {
+                    console.error('Error downloading backup:', err);
+                }
+                setTimeout(() => {
+                    if (fs.existsSync(backupPath)) fs.unlinkSync(backupPath);
+                }, 5000);
+            });
+        } catch (error) {
+            console.error('Error backupDatabase:', error);
+            if (!res.headersSent) {
+                res.status(500).json({ success: false, message: 'Lỗi sao lưu CSDL', error: error.message });
+            }
+        }
+    }
+
+    /**
+     * POST /api/sync/restore
+     * Khôi phục CSDL từ file tải lên
+     */
+    async restoreDatabase(req, res) {
+        try {
+            if (!req.file) {
+                return res.status(400).json({ success: false, message: 'Không tìm thấy file' });
+            }
+
+            const uploadedFile = req.file.path;
+            
+            // Đảm bảo đóng kết nối trước khi ghi đè
+            if (SyncService && SyncService.db) {
+                SyncService.db.close();
+                console.log(' Main database connection closed for restore.');
+            }
+
+            // Xóa file SHM và WAL để tránh corrupt db sau khi copy
+            if (fs.existsSync(`${DB_SCHEME}-shm`)) fs.unlinkSync(`${DB_SCHEME}-shm`);
+            if (fs.existsSync(`${DB_SCHEME}-wal`)) fs.unlinkSync(`${DB_SCHEME}-wal`);
+            
+            // Ghi đè file chính
+            fs.copyFileSync(uploadedFile, DB_SCHEME);
+            fs.unlinkSync(uploadedFile);
+
+            res.json({ success: true, message: 'Khôi phục CSDL thành công. Ứng dụng sẽ tự động khởi động lại.' });
+            
+            // Restart process to clear all memory sqlite connections
+            setTimeout(() => {
+                this.restartApp();
+            }, 2000);
+        } catch (error) {
+            console.error('Error restoreDatabase:', error);
+            res.status(500).json({ success: false, message: 'Lỗi khôi phục CSDL', error: error.message });
+        }
+    }
+
+    /**
+     * GET /api/sync/cloud/status
+     */
+    async getCloudStatus(req, res) {
+        try {
+            const isAuth = GoogleDriveService.isAuthenticated();
+            const authUrl = !isAuth ? GoogleDriveService.getAuthUrl() : null;
+            // Trả về thêm info về authMode để Frontend biết
+            res.json({ success: true, data: { isAuthenticated: isAuth, authUrl, authMode: GoogleDriveService.authMode } });
+        } catch (error) {
+            res.status(500).json({ success: false, message: error.message });
+        }
+    }
+
+    /**
+     * POST /api/sync/cloud/authorize
+     */
+    async authorizeCloud(req, res) {
+        try {
+            const { code } = req.body;
+            await GoogleDriveService.authorize(code);
+            res.json({ success: true, message: 'Kết nối Google Drive thành công' });
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Lỗi xác thực Google: ' + error.message });
+        }
+    }
+
+    /**
+     * GET /api/sync/cloud/backups
+     * Liệt kê các bản sao lưu từ Google Drive
+     */
+    async listCloudBackups(req, res) {
+        try {
+            if (!GoogleDriveService.isAuthenticated()) {
+                return res.status(401).json({ success: false, message: 'Chưa kết nối Google Drive', isAuthError: true });
+            }
+            const uuid = await getUUID();
+            const backups = await GoogleDriveService.listBackups(uuid);
+            res.json({ success: true, data: backups });
+        } catch (error) {
+            console.error('Error listCloudBackups:', error);
+            res.status(500).json({ success: false, message: 'Lỗi lấy danh sách sao lưu từ Cloud', error: error.message });
+        }
+    }
+
+    /**
+     * POST /api/sync/cloud/backup
+     * Sao lưu CSDL lên Google Drive
+     */
+    async backupToCloud(req, res) {
+        console.log('[SyncController] Starting backupToCloud process...');
+        try {
+            if (!GoogleDriveService.isAuthenticated()) {
+                console.warn('[SyncController] Backup failed: Not authenticated.');
+                return res.status(401).json({ success: false, message: 'Chưa kết nối Google Drive', isAuthError: true });
+            }
+            const uuid = await getUUID();
+            const tempDir = os.tmpdir();
+            const dateStr = new Date().toISOString().replace(/[:.]/g, '-');
+            const fileName = `DigiSports_${dateStr}.sqlite`;
+            const tempPath = path.join(tempDir, fileName);
+
+            console.log(`[SyncController] Creating local backup file: ${fileName}`);
+            // Tạo bản sao lưu tĩnh trước
+            const db = new Database(DB_SCHEME);
+            await db.backup(tempPath);
+            db.close();
+
+            console.log('[SyncController] Local backup created. Resolving Drive folders...');
+            // Tìm/Tạo thư mục thiết bị
+            const folderId = await GoogleDriveService.findOrCreateFolder(uuid);
+            
+            console.log('[SyncController] Uploading to Google Drive...');
+            // Upload lên Drive
+            const result = await GoogleDriveService.uploadFile(tempPath, fileName, folderId);
+
+            console.log('[SyncController] Cleaning up temporary file.');
+            // Xóa file tạm
+            fs.unlinkSync(tempPath);
+
+            console.log('[SyncController] Backup process completed successfully.');
+            res.json({ success: true, message: 'Sao lưu lên Google Drive thành công', data: result });
+        } catch (error) {
+            console.error('[SyncController] Error backupToCloud:', error);
+            res.status(500).json({ success: false, message: 'Lỗi sao lưu lên Cloud', error: error.message });
+        }
+    }
+
+    /**
+     * POST /api/sync/cloud/restore
+     * Khôi phục CSDL từ Google Drive
+     * Body: { fileId }
+     */
+    async restoreFromCloud(req, res) {
+        console.log('[SyncController] Starting restoreFromCloud process...');
+        try {
+            if (!GoogleDriveService.isAuthenticated()) {
+                console.warn('[SyncController] Restore failed: Not authenticated.');
+                return res.status(401).json({ success: false, message: 'Chưa kết nối Google Drive', isAuthError: true });
+            }
+            const { fileId } = req.body;
+            if (!fileId) {
+                console.warn('[SyncController] Restore failed: Missing fileId.');
+                return res.status(400).json({ success: false, message: 'Thiếu fileId' });
+            }
+
+            console.log(`[SyncController] Downloading file ${fileId} from Drive...`);
+            const tempPath = path.join(os.tmpdir(), `restore_${Date.now()}.sqlite`);
+            
+            // Download từ Drive
+            await GoogleDriveService.downloadFile(fileId, tempPath);
+            console.log('[SyncController] Download complete. Restoring database...');
+
+            // Đảm bảo đóng kết nối trước khi ghi đè
+            if (SyncService && SyncService.db) {
+                SyncService.db.close();
+                console.log(' Main database connection closed for cloud restore.');
+            }
+
+            // Áp dụng logic restore giống restoreDatabase
+            if (fs.existsSync(`${DB_SCHEME}-shm`)) fs.unlinkSync(`${DB_SCHEME}-shm`);
+            if (fs.existsSync(`${DB_SCHEME}-wal`)) fs.unlinkSync(`${DB_SCHEME}-wal`);
+            
+            fs.copyFileSync(tempPath, DB_SCHEME);
+            fs.unlinkSync(tempPath);
+
+            res.json({ success: true, message: 'Khôi phục từ Cloud thành công. Ứng dụng sẽ khởi động lại.' });
+
+            setTimeout(() => {
+                this.restartApp();
+            }, 2000);
+        } catch (error) {
+            console.error('Error restoreFromCloud:', error);
+            res.status(500).json({ success: false, message: 'Lỗi khôi phục từ Cloud', error: error.message });
+        }
+    }
+
+    /**
+     * GET /api/sync/ftp/test
+     */
+    async testFtpConnection(req, res) {
+        try {
+            await FtpService.testConnection();
+            res.json({ success: true, message: 'Kết nối FTP thành công!' });
+        } catch (error) {
+            console.error('[SyncController] FTP Test Connection Error:', error);
+            res.status(500).json({ success: false, message: 'Lỗi kết nối FTP: ' + error.message });
+        }
+    }
+
+    /**
+     * GET /api/sync/ftp/backups
+     */
+    async listFtpBackups(req, res) {
+        try {
+            const uuid = await getUUID();
+            const backups = await FtpService.listBackups(uuid);
+            res.json({ success: true, data: backups });
+        } catch (error) {
+            console.error('Error listFtpBackups:', error);
+            res.status(500).json({ success: false, message: 'Lỗi lấy danh sách sao lưu từ FTP', error: error.message });
+        }
+    }
+
+    /**
+     * POST /api/sync/ftp/backup
+     */
+    async backupToFtp(req, res) {
+        console.log('[SyncController] Starting backupToFtp process...');
+        try {
+            const uuid = await getUUID();
+            const tempDir = os.tmpdir();
+            const dateStr = new Date().toISOString().replace(/[:.]/g, '-');
+            const fileName = `DigiSports_FTP_${dateStr}.sqlite`;
+            const tempPath = path.join(tempDir, fileName);
+
+            console.log(`[SyncController] Creating local backup file: ${fileName}`);
+            const db = new Database(DB_SCHEME);
+            await db.backup(tempPath);
+            db.close();
+
+            console.log('[SyncController] Uploading to FTP...');
+            const result = await FtpService.uploadFile(tempPath, fileName, uuid);
+
+            console.log('[SyncController] Cleaning up temporary file.');
+            fs.unlinkSync(tempPath);
+
+            console.log('[SyncController] FTP Backup completed.');
+            res.json({ success: true, message: 'Sao lưu lên FTP thành công', data: result });
+        } catch (error) {
+            console.error('[SyncController] Error backupToFtp:', error);
+            res.status(500).json({ success: false, message: 'Lỗi sao lưu lên FTP', error: error.message });
+        }
+    }
+
+    /**
+     * POST /api/sync/ftp/restore
+     */
+    async restoreFromFtp(req, res) {
+        console.log('[SyncController] Starting restoreFromFtp process...');
+        try {
+            const { filePath } = req.body;
+            if (!filePath) {
+                return res.status(400).json({ success: false, message: 'Thiếu filePath' });
+            }
+
+            console.log(`[SyncController] Downloading ${filePath} from FTP...`);
+            const tempPath = path.join(os.tmpdir(), `restore_ftp_${Date.now()}.sqlite`);
+            
+            await FtpService.downloadFile(filePath, tempPath);
+            
+            console.log('[SyncController] Download complete. Restoring database...');
+
+            // Đảm bảo đóng kết nối trước khi ghi đè
+            if (SyncService && SyncService.db) {
+                SyncService.db.close();
+                console.log(' Main database connection closed for FTP restore.');
+            }
+
+            if (fs.existsSync(`${DB_SCHEME}-shm`)) fs.unlinkSync(`${DB_SCHEME}-shm`);
+            if (fs.existsSync(`${DB_SCHEME}-wal`)) fs.unlinkSync(`${DB_SCHEME}-wal`);
+            
+            fs.copyFileSync(tempPath, DB_SCHEME);
+            fs.unlinkSync(tempPath);
+
+            res.json({ success: true, message: 'Khôi phục từ FTP thành công. Ứng dụng sẽ khởi động lại.' });
+
+            setTimeout(() => {
+                this.restartApp();
+            }, 2000);
+        } catch (error) {
+            console.error('Error restoreFromFtp:', error);
+            res.status(500).json({ success: false, message: 'Lỗi khôi phục từ FTP', error: error.message });
+        }
+    }
+
+    /**
+     * GET /api/sync/ftp/download?filePath=...
+     */
+    async downloadFtpBackup(req, res) {
+        console.log('[SyncController] Starting downloadFtpBackup process...');
+        try {
+            const { filePath } = req.query;
+            if (!filePath) {
+                return res.status(400).json({ success: false, message: 'Thiếu filePath' });
+            }
+
+            const fileName = path.basename(filePath);
+            const tempPath = path.join(os.tmpdir(), fileName);
+            
+            console.log(`[SyncController] Downloading ${filePath} from FTP to temporary storage...`);
+            await FtpService.downloadFile(filePath, tempPath);
+            
+            console.log(`[SyncController] Sending file ${fileName} to browser.`);
+            res.download(tempPath, fileName, (err) => {
+                if (err) {
+                    console.error('[SyncController] Error sending file:', err);
+                }
+                // Cleanup
+                try {
+                    if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+                } catch (e) {}
+            });
+        } catch (error) {
+            console.error('[SyncController] Error downloadFtpBackup:', error);
+            res.status(500).json({ success: false, message: 'Lỗi tải file từ FTP', error: error.message });
         }
     }
 }

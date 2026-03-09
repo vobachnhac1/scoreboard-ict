@@ -9,6 +9,9 @@
  */
 
 // ========== PHÍM HỆ THỐNG (Luôn hoạt động, không đổi theo chế độ) ==========
+import { PACKAGE_OVERRIDES } from "../../config/constants/packageFeatures";
+import { getPackageTier } from "../../components/FeatureLock";
+
 export const SYSTEM_KEYS = {
     TOGGLE_CONNECTION_MODAL: "F1",
     TOGGLE_SECONDARY_DISPLAY: "F2",
@@ -685,6 +688,41 @@ export const CONFIG_PRESETS = {
     },
 };
 
+/**
+ * Lấy cấu hình mặc định tương ứng với môn phái và gói cước (Tier)
+ * Nếu người dùng dùng gói Basic, một số option như Võ nhạc sẽ bị loại bỏ
+ * 
+ * @param {string} packageName - Tên gói cước từ redux `state.license.packageName`
+ * @param {string} mode - "vovinam" | "pencak" | "vohiendai"
+ * @returns {Object} Config Object hoàn chỉnh
+ */
+export const getConfigPresetsByTier = (packageName, mode = "vovinam") => {
+    // 1. Lấy thông tin gói cước và config override tương ứng
+    const currentTier = getPackageTier(packageName);
+    const overrides = PACKAGE_OVERRIDES[currentTier] || {};
+
+    // 2. Clone preset gốc tránh mutate source
+    const basePreset = JSON.parse(JSON.stringify(CONFIG_PRESETS[mode] || CONFIG_PRESETS.vovinam));
+
+    // 3. Hoà trộn (merge) danh sách ẩn / khoá field
+    if (overrides.disabledOptions) {
+        Object.keys(overrides.disabledOptions).forEach(key => {
+            // Đẩy key vào danh sách disable nếu chưa có
+            if (!basePreset.disabledFields.includes(key)) {
+                basePreset.disabledFields.push(key);
+            }
+            // Thiết lập giá trị của field đó về 0 (VD: tắt ap_dung_vonhac)
+            basePreset[key] = 0;
+        });
+    }
+
+    if (overrides.hiddenGroups && overrides.hiddenGroups.length > 0) {
+        basePreset.hiddenGroups = [...new Set([...basePreset.hiddenGroups, ...overrides.hiddenGroups])];
+    }
+
+    return basePreset;
+};
+
 // ========== LABELS: Mô tả từng action (cho UI hiển thị) ==========
 export const ACTION_LABELS = {
     TOGGLE_TIMER: "Bắt đầu / Tạm dừng",
@@ -1065,4 +1103,6 @@ export default {
     getModeNames,
     getNextMode,
     getKeyDisplayLabel,
+    CONFIG_PRESETS,
+    getConfigPresetsByTier
 };

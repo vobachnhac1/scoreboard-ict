@@ -23,19 +23,19 @@ export default function FeatureLock({ children, feature = null }) {
   );
 
   useEffect(() => {
-    // Nếu license không hợp lệ -> redirect đến trang activation
+    // Nếu license không hợp lệ -> redirect đến trang Dashboard để kích hoạt
     if (!valid || requireActivation) {
-      console.log(" License invalid. Redirecting to activation page...");
-      navigate("/license-activation");
+      console.log(" License invalid. Redirecting to Dashboard...");
+      navigate("/");
       return;
     }
 
     // Nếu yêu cầu feature cụ thể nhưng feature không được bật
     if (feature && features && !features[feature]) {
       console.log(
-        ` Feature "${feature}" not enabled. Redirecting to activation page...`,
+        ` Feature "${feature}" not enabled. Redirecting to Dashboard...`,
       );
-      navigate("/license-activation");
+      navigate("/");
       return;
     }
   }, [valid, requireActivation, feature, features, navigate]);

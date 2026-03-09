@@ -8,10 +8,13 @@ export default function UpdateForm({ data, onAgree, onGoBack }) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: { ...data, judge_permission: data?.referrer ?? 1 } || null,
   });
+
+  const acceptedValue = watch("accepted");
 
   const onSubmit = (formData) => {
     // Xử lý dữ liệu gửi đi
@@ -31,7 +34,7 @@ export default function UpdateForm({ data, onAgree, onGoBack }) {
             id="device_name"
             {...register("device_name", { required: "Tên thiết bị là bắt buộc" })}
             type="text"
-            className="w-full px-4 py-3 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-blue-100 dark:border-blue-800 focus:border-blue-500 outline-none rounded-2xl text-sm font-bold text-blue-900 dark:text-blue-100 transition-all shadow-inner"
+            className="w-full px-4 py-3 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-blue-100 dark:border-blue-800 focus:border-blue-500 outline-none rounded text-sm font-bold text-blue-900 dark:text-blue-100 transition-all shadow-inner"
             placeholder="Nhập tên thiết bị"
           />
           {errors.device_name && <p className="text-rose-500 text-[10px] font-bold px-1">{errors.device_name.message}</p>}
@@ -46,7 +49,7 @@ export default function UpdateForm({ data, onAgree, onGoBack }) {
             id="device_ip"
             {...register("device_ip", { required: "IP là bắt buộc" })}
             type="text"
-            className="w-full px-4 py-3 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-blue-100 dark:border-blue-800 focus:border-blue-500 outline-none rounded-2xl text-sm font-bold text-blue-900 dark:text-blue-100 transition-all shadow-inner font-mono"
+            className="w-full px-4 py-3 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-blue-100 dark:border-blue-800 focus:border-blue-500 outline-none rounded text-sm font-bold text-blue-900 dark:text-blue-100 transition-all shadow-inner font-mono"
             placeholder="Nhập địa chỉ IP"
           />
           {errors.device_ip && <p className="text-rose-500 text-[10px] font-bold px-1">{errors.device_ip.message}</p>}
@@ -61,7 +64,7 @@ export default function UpdateForm({ data, onAgree, onGoBack }) {
             <select
               id="judge_permission"
               {...register("judge_permission", { required: "Quyền giám định là bắt buộc" })}
-              className="w-full px-4 py-3 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-blue-100 dark:border-blue-800 focus:border-blue-500 outline-none rounded-2xl text-sm font-bold text-blue-900 dark:text-blue-100 appearance-none transition-all shadow-inner"
+              className="w-full px-4 py-3 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-blue-100 dark:border-blue-800 focus:border-blue-500 outline-none rounded text-sm font-bold text-blue-900 dark:text-blue-100 appearance-none transition-all shadow-inner"
             >
               {LIST_JUDGE_PRORMISSION.map((item) => (
                 <option key={item.key} value={item.key}>
@@ -79,7 +82,7 @@ export default function UpdateForm({ data, onAgree, onGoBack }) {
             <select
               id="status"
               {...register("status", { required: "Trạng thái là bắt buộc" })}
-              className="w-full px-4 py-3 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-blue-100 dark:border-blue-800 focus:border-blue-500 outline-none rounded-2xl text-sm font-bold text-blue-900 dark:text-blue-100 appearance-none transition-all shadow-inner"
+              className="w-full px-4 py-3 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-blue-100 dark:border-blue-800 focus:border-blue-500 outline-none rounded text-sm font-bold text-blue-900 dark:text-blue-100 appearance-none transition-all shadow-inner"
             >
               {LIST_STATUS.map((item) => (
                 <option key={item.key} value={item.key}>
@@ -104,8 +107,8 @@ export default function UpdateForm({ data, onAgree, onGoBack }) {
                   {...register("accepted")}
                   className="hidden"
                 />
-                <div className={`px-4 py-3 rounded-2xl border-2 text-center transition-all duration-300 font-black text-[10px] uppercase tracking-widest shadow-sm
-                  ${register("accepted").value === item.key
+                <div className={`px-4 py-3 rounded border-2 text-center transition-all duration-300 font-black text-[10px] uppercase tracking-widest shadow-sm
+                  ${acceptedValue === item.key
                     ? 'bg-blue-600 border-blue-700 text-white shadow-blue-500/20 scale-105'
                     : 'bg-white dark:bg-gray-800 border-blue-50 dark:border-blue-900/30 text-blue-400 dark:text-blue-600 hover:border-blue-200'}
                 `}>
@@ -117,10 +120,10 @@ export default function UpdateForm({ data, onAgree, onGoBack }) {
         </div>
 
         <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-blue-50 dark:border-blue-900/30">
-          <Button type="button" className="min-w-32 py-3.5 !rounded-2xl" variant="secondary" onClick={onGoBack}>
+          <Button type="button" className="min-w-32 py-3.5 !rounded" variant="secondary" onClick={onGoBack}>
             <span className="text-[10px] font-black uppercase tracking-widest">Hủy bỏ</span>
           </Button>
-          <Button type="submit" className="min-w-48 py-3.5 !rounded-2xl shadow-xl shadow-blue-500/20" variant="primary">
+          <Button type="submit" className="min-w-48 py-3.5 !rounded shadow-xl shadow-blue-500/20" variant="primary">
             <span className="text-[10px] font-black uppercase tracking-widest">Lưu thay đổi</span>
           </Button>
         </div>

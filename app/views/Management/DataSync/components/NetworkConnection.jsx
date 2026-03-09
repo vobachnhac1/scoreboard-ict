@@ -102,12 +102,50 @@ const NetworkConnection = ({
                 </div>
               </div>
             </div>
-            <button
-              onClick={handleManualDisconnect}
-              className="px-8 py-3.5 bg-rose-50 hover:bg-rose-500 text-rose-600 hover:text-white border-2 border-rose-100 dark:border-rose-900/30 rounded text-[10px] font-black uppercase tracking-widest transition-all  active:scale-95"
-            >
-              {t("data_sync.disconnect")}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleQuickSyncAll}
+                disabled={syncing}
+                className="px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 text-white rounded text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center gap-2"
+              >
+                {syncing ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                )}
+                {t("data_sync.quick_sync_all", { defaultValue: "ĐỒNG BỘ NHANH (ALL)" })}
+              </button>
+              
+              <button
+                onClick={handleManualDisconnect}
+                className="px-8 py-3.5 bg-rose-50 hover:bg-rose-500 text-rose-600 hover:text-white border-2 border-rose-100 dark:border-rose-900/30 rounded text-[10px] font-black uppercase tracking-widest transition-all  active:scale-95"
+              >
+                {t("data_sync.disconnect")}
+              </button>
+            </div>
+          </div>
+          
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 bg-blue-50/50 dark:bg-blue-900/20 rounded border border-blue-100 dark:border-blue-800">
+               <div className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                 <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                 VAI TRÒ THIẾT BỊ NÀY
+               </div>
+               <p className="text-[11px] font-bold text-blue-900 dark:text-blue-200 uppercase tracking-tight">
+                 MÁY TRẠM (CLIENT) - Gửi dữ liệu đi
+               </p>
+            </div>
+            <div className="p-4 bg-indigo-50/50 dark:bg-indigo-900/20 rounded border border-indigo-100 dark:border-indigo-800">
+               <div className="text-[9px] font-black text-indigo-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                 <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
+                 VAI TRÒ MÁY ĐỐI TÁC
+               </div>
+               <p className="text-[11px] font-bold text-indigo-900 dark:text-indigo-200 uppercase tracking-tight">
+                 MÁY CHỦ (SERVER) - Nhận & Duyệt dữ liệu
+               </p>
+            </div>
           </div>
         </div>
       )}

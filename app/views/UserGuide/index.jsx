@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import OperationFlowchart from "./components/OperationFlowchart";
 
 export default function UserGuide() {
   const navigate = useNavigate();
@@ -158,80 +159,69 @@ export default function UserGuide() {
 
 
   const guides = t("user_guide.guides", { returnObjects: true }) || {};
-
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate("/")}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
-              >
-                <svg
-                  className="w-6 h-6 text-gray-700 dark:text-gray-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                  />
-                </svg>
-              </button>
-              <div>
-                <div className="flex items-center gap-3">
-                  <svg
-                    className="w-8 h-8 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                    />
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] transition-colors duration-500 relative">
+      {/* Background decoration */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-600/5 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-500/5 dark:bg-emerald-600/5 rounded-full blur-[100px]"></div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-6">
+        {/* Header Section */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-6">
+            <button
+              onClick={() => navigate("/")}
+              className="p-3 bg-white dark:bg-gray-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 transition-all hover:scale-105 active:scale-95"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </button>
+            <div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
-                  <h1 className="text-3xl font-black text-gray-900 dark:text-white">
-                    {t("user_guide.title")}
-                  </h1>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {t("user_guide.description")}
-                </p>
+                <h1 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                  {t("user_guide.title")}
+                </h1>
               </div>
+              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-2">
+                {t("user_guide.description")}
+              </p>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Bottom Section */}
+        <div className="px-8 pb-2">
+          <OperationFlowchart />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
           {/* Sidebar - Tabs */}
-          <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded  shadow-xl p-4 sticky top-8">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 px-2">
+          <div className="lg:col-span-1 sticky top-8">
+            <div className="bg-white dark:bg-gray-800 rounded p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
+              <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-6 px-4">
                 {t("user_guide.table_of_contents")}
               </h3>
-              <nav className="space-y-1">
+              <nav className="space-y-2">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`w-full text-left px-4 py-3 rounded font-semibold transition-all duration-200 flex items-center gap-3 ${activeTab === tab.id
-                      ? "bg-blue-600 text-white shadow-md"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setExpandedSection(null);
+                    }}
+                    className={`w-full text-left px-4 py-3 rounded text-xs font-bold transition-all duration-300 flex items-center gap-3 ${activeTab === tab.id
+                      ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20 translate-x-2"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-blue-600 dark:hover:text-blue-400"
                       }`}
                   >
                     {tab.icon}
-                    <span className="text-sm">{tab.name}</span>
+                    <span className="uppercase tracking-wider">{tab.name}</span>
                   </button>
                 ))}
               </nav>
@@ -240,15 +230,15 @@ export default function UserGuide() {
 
           {/* Main Content */}
           <div className="lg:col-span-3">
-            <div className="bg-white dark:bg-gray-800 rounded  shadow-xl p-8">
+            <div className="bg-white dark:bg-gray-800 rounded p-8 shadow-2xl border border-slate-200 dark:border-slate-700">
               {guides[activeTab] && (
                 <div>
                   {/* Title */}
-                  <div className="mb-8">
-                    <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2">
+                  <div className="mb-10">
+                    <h2 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight mb-4">
                       {guides[activeTab].title}
                     </h2>
-                    <div className="h-1 w-20 bg-blue-600 rounded-full"></div>
+                    <div className="h-1.5 w-16 bg-gradient-to-r from-blue-600 to-emerald-500 rounded-full"></div>
                   </div>
 
                   {/* Sections */}
@@ -256,7 +246,10 @@ export default function UserGuide() {
                     {guides[activeTab].sections.map((section, index) => (
                       <div
                         key={index}
-                        className="border border-gray-200 dark:border-gray-700 rounded overflow-hidden"
+                        className={`border rounded transition-all duration-300 ${expandedSection === index
+                          ? "border-blue-500/50 shadow-lg shadow-blue-500/10 bg-white dark:bg-gray-800"
+                          : "border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 hover:border-blue-500/30"
+                          }`}
                       >
                         {/* Section Header */}
                         <button
@@ -265,50 +258,56 @@ export default function UserGuide() {
                               expandedSection === index ? null : index,
                             )
                           }
-                          className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-gray-600 transition-all duration-200 flex items-center justify-between"
+                          className="w-full px-6 py-4 flex items-center justify-between group"
                         >
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-blue-600 text-white rounded flex items-center justify-center font-bold text-sm">
+                          <div className="flex items-center gap-4">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-xs transition-colors ${expandedSection === index
+                              ? "bg-blue-600 text-white"
+                              : "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white"
+                              }`}>
                               {index + 1}
                             </div>
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white text-left">
+                            <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight text-left">
                               {section.title}
                             </h3>
                           </div>
-                          <svg
-                            className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${expandedSection === index ? "rotate-180" : ""
-                              }`}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 9l-7 7-7-7"
-                            />
-                          </svg>
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${expandedSection === index
+                            ? "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                            : "text-slate-400 group-hover:text-blue-600"
+                            }`}>
+                            <svg
+                              className={`w-5 h-5 transition-transform duration-300 ${expandedSection === index ? "rotate-180" : ""
+                                }`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </div>
                         </button>
 
                         {/* Section Content */}
-                        {expandedSection === index && (
-                          <div className="px-6 py-6 bg-white dark:bg-gray-800">
-                            <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                        <div
+                          className={`overflow-hidden transition-all duration-300 ${expandedSection === index ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+                            }`}
+                        >
+                          <div className="px-6 pb-6 pt-2 border-t border-slate-100 dark:border-slate-700/50 mt-2">
+                            <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
                               {section.content}
                             </p>
 
                             {section.steps && (
-                              <div className="space-y-3">
+                              <div className="space-y-4">
                                 {section.steps.map((step, stepIndex) => (
                                   <div
                                     key={stepIndex}
-                                    className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded"
+                                    className="flex items-start gap-4 p-4 bg-slate-50 dark:bg-slate-900 rounded border border-slate-100 dark:border-slate-800"
                                   >
-                                    <div className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">
+                                    <div className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-[10px] font-black mt-0.5">
                                       {stepIndex + 1}
                                     </div>
-                                    <p className="text-gray-700 dark:text-gray-300 flex-1">
+                                    <p className="text-xs font-bold text-slate-700 dark:text-slate-300 flex-1 leading-relaxed">
                                       {step}
                                     </p>
                                   </div>
@@ -317,16 +316,16 @@ export default function UserGuide() {
                             )}
 
                             {section.image && (
-                              <div className="mt-6">
+                              <div className="mt-8 rounded overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm flex justify-center p-2 bg-slate-50 dark:bg-slate-900">
                                 <img
                                   src={section.image}
                                   alt={section.title}
-                                  className="w-full rounded border border-gray-200 dark:border-gray-700"
+                                  className="max-w-full h-auto rounded"
                                 />
                               </div>
                             )}
                           </div>
-                        )}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -335,6 +334,7 @@ export default function UserGuide() {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );

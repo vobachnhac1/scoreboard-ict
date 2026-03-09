@@ -5,4 +5,5 @@ export { default as CompetitionDKMultiView }from './CompetitionDKMultiView';
 export { default as StagingSection } from './StagingSection';
 export { default as DatabaseCleanupModal } from './DatabaseCleanupModal';
 export { default as RecordDetailModal } from './RecordDetailModal';
+export { default as BackupSection } from './BackupSection';
 

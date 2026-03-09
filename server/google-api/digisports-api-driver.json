@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "digisports-489607",
+  "private_key_id": "94c6301bb9a52263b61dbb6c49ad41e5a7ea2910",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDWXXquGH7ONWaI\ndneoA76+H6bFjowiP/yMXFGKF5qywwA7+0PbFlJyMi8bVwx+FgoiZJKunsUDyRnC\noNhHdeywO+9IFZYkbpfWixWWSesdY9zmYea7d4HlR0DCuk66EWLQrpDuFiy3UGQy\n/Mo6vHdTgQpGvRL/8tzJfofrzUWQtEqEXJ/APdDCDhoeGiaeMhV2tlcVeKNLfDah\nyNBwBCD5iOyGYAsAmBPQgP0fW0YZo/RIeqN+RabnXgs0B11iWI7dsvCtldH1VEqk\nk4jdaxJhsAogR+hD/GfPxLToB7w9A/GRi1oOVs+Yn/5/QRMElW4syQbXe+86kBo4\nuH2DvoFJAgMBAAECggEAC7Uxj/xhwZqwScv5m00wD+N76O6RCAZZYWOh5vJE1lZY\n5w3BPiAlGtxTjxFVKvZCcbAvRDcC8OLdA7Cj+1wtFA+D8TqPl5gMNjEkuc959kIX\n5KPMdajwaOC4QGJrThWIwXfFTeGbadwrys6cb3KPbFnAAU7OkLjXlvAwlYABuIZM\noUReSjr7KptzXtxx6flRJbHuNCj3qzJbVXayFxM5eCSZvdYMn9KXggjzYy6hX1vw\nZkRzkRiLF6Q1kMRyf+wIn04pGZ3go0kyimVO5HO3QfV19VaM01HzR2q7Gn5HVgQY\nQ/AZOI9gRgMXodS/tUIeXbjDRLiUEMBBd+RDEcdOUQKBgQD8zpztllxBfGYG2aVD\nG5o7sbwHul30FpSAAIwrpjbE6M/UJjBgcL11pr6tczxifbBaLWuDkLPAUUkxm2SB\nJxgDx0ZBy/hR40dBLdpw2PLVkTx/yNX4omt/G6D4YQVDAsisSuPB9TyKeVAdJfJx\nfusTr8vjsQ6MDyi49cNhNjGWkQKBgQDZEpL26jeSJP1tlbxBfEPSpvpoGHqvxF/J\nKqTtHL5vd0UfmpbIx5tepwfhN3yatljpIWPxRCWhqaXMjeXvyvZEBnbPYrZF4rKx\nEz+RdYudGH4z8yeBxDdQJnTAD4G4rBa4oLxpyTBhwayLCZ+gIsqS26xYo9LBtJyM\nh7MJeN/LOQKBgQCggmYsiwzkHyGAM+uzofDY+c3Sckd41GVQqAhXJl8bwl1B60VH\n1gzUiBwEcGfkeLzhZHkgvV0DPBjmwCydu76Jl5pJ6EEvbMgu3/gTMgtsAZyR3WfN\nRwJNX7NiP+dhVoEmsx3MZfIcUU3GU/OMj/KdOz6OwDnmPzGxzYhRTmFJoQKBgQCO\nd99XCTABzh86viy5ehp1djwg9/gFxkfrmv511Qiz1b7bWDWgf0lc3RmR2j4AuK8w\nC0cyAT0FlneIApWoRThOO0PdJvdkdL4889oj2NcR+xJRfEQwqhx3kVXM/CBymRes\ng2pFr9L+RgO9mUpX6p2zt1OtNZBMrAKXRTTfgaK4GQKBgQCx9UipZxJgw8/embM+\niES6DDpwTqxXDnmaLYcI5p+ss7mxZnEaGMiMXn6Y3cmTKrxcIE0jxUQvn470Gqp3\nK2Wf0QWeKiTiHASIUtqo2mVCFlkzUpUzkEkq+ByEX3DMFy3M1gwDQk/ZW/+Ie5ZG\nCCYJXrvXklJ0abSLv6AzV3FMVA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "api-google-driver-backup@digisports-489607.iam.gserviceaccount.com",
+  "client_id": "110832751579445097330",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/api-google-driver-backup%40digisports-489607.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

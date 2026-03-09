@@ -53,7 +53,8 @@ const Routers = () => {
     { path: '/secondary-display', element: <SecondaryDisplay />, sidebar: false },
 
     { path: '/', element: <AdminLayout><Dashboard /></AdminLayout> },
-    { path: '/user-guide', element: <UserGuide /> },
+    { path: '/user-guide', element: <AdminLayout><UserGuide /></AdminLayout> },
+    // { path: '/user-guide', element: <UserGuide /> },
     { path: '/about-us', element: <AboutUs /> },
     { path: '/update-manager', element: <AdminLayout><UpdateManager /></AdminLayout> },
     // { path: '/test-error', element: <AdminLayout><TestError /></AdminLayout> },
@@ -77,8 +78,10 @@ const Routers = () => {
   ];
 
   const renderElement = (route) => {
-    // License activation page - không cần lock
-    if (route.path === '/license-activation') {
+    // Các trang không cần lock (Dashboard, hướng dẫn, giới thiệu, kích hoạt)
+    const publicRoutes = ['/', '/license-activation', '/user-guide', '/about-us'];
+
+    if (publicRoutes.includes(route.path)) {
       return route.element;
     }
 

@@ -3,6 +3,10 @@ const router = express.Router();
 const SyncController = require('../controllers/sync.controller');
 const { getIP } = require('../config/config');
 const axios = require('axios');
+const multer = require('multer');
+const os = require('os');
+
+const upload = multer({ dest: os.tmpdir() });
 
 // GET /api/sync/local-ip - Lấy IP của máy hiện tại
 router.get('/local-ip', async (req, res) => {
@@ -161,5 +165,24 @@ router.post('/staging/:sessionId/apply', SyncController.applyStagingChanges);
 // DELETE /api/sync/staging/:sessionId - Xóa staging session
 router.delete('/staging/:sessionId', SyncController.deleteStagingSession);
 
-module.exports = router;
+// GET /api/sync/backup - Tải về bản sao lưu database SQLite
+router.get('/backup', SyncController.backupDatabase);
 
+// POST /api/sync/restore - Tải lên bản sao lưu và khôi phục
+router.post('/restore', upload.single('db_file'), SyncController.restoreDatabase);
+
+// Cloud Backup Routes
+router.get('/cloud/status', SyncController.getCloudStatus.bind(SyncController));
+router.post('/cloud/authorize', SyncController.authorizeCloud.bind(SyncController));
+router.get('/cloud/backups', SyncController.listCloudBackups);
+router.post('/cloud/backup', SyncController.backupToCloud);
+router.post('/cloud/restore', SyncController.restoreFromCloud);
+
+// FTP Backup Routes
+router.get('/ftp/test', SyncController.testFtpConnection.bind(SyncController));
+router.get('/ftp/backups', SyncController.listFtpBackups);
+router.get('/ftp/download', SyncController.downloadFtpBackup.bind(SyncController));
+router.post('/ftp/backup', SyncController.backupToFtp);
+router.post('/ftp/restore', SyncController.restoreFromFtp);
+
+module.exports = router;

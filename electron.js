@@ -1,5 +1,5 @@
 const { app, globalShortcut, BrowserWindow, ipcMain, dialog, Menu } = require('electron');
-const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-assembler');
+// const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-assembler');
 const { fork } = require('child_process');
 const { autoUpdater } = require('electron-updater');
 
@@ -388,9 +388,9 @@ app.on('ready', () => {
 });
 
 app.whenReady().then(() => {
-  installExtension(REACT_DEVELOPER_TOOLS)
-    .then((name) => console.log(`Added Extension:  ${name}`))
-    .catch((err) => console.log('An error occurred: ', err));
+  // installExtension(REACT_DEVELOPER_TOOLS)
+  //   .then((name) => console.log(`Added Extension:  ${name}`))
+  //   .catch((err) => console.log('An error occurred: ', err));
   // globalShortcut.register('F2', () => {
   //   mainWindow.loadURL('http://localhost:6789/#/versus');
   // });

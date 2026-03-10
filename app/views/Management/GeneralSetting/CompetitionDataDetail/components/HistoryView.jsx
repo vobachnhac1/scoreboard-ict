@@ -113,27 +113,11 @@ export default function HistoryView({
         ];
 
         allLogs.forEach((log, index) => {
-          const actionMap = {
-            SCORE_1: "Điểm 1",
-            SCORE_2: "Điểm 2",
-            SCORE_3: "Điểm 3",
-            SCORE_5: "Điểm 5",
-            SCORE_10: "Điểm 10",
-            WIN: "Thắng",
-            FALL: "Ngã",
-            OUT: "Biên",
-            WARNING: "Nhắc nhở",
-            PENALTY: "Cảnh cáo",
-            MEDICAL: "Y tế",
-            ROUND_END: "Kết thúc hiệp",
-            MATCH_END: "Kết thúc trận",
-          };
-
           logData.push([
             index + 1,
             log.timestamp || "",
             log.round || "",
-            actionMap[log.action] || log.action,
+            getActionTypeLabel(log.action?.toLowerCase(), t) || log.action,
             log.side === "RED" ? t("competition_detail.round_history.red") : log.side === "BLUE" ? t("competition_detail.round_history.blue") : "",
             `${log.redScore || 0} - ${log.blueScore || 0}`,
           ]);
@@ -196,7 +180,7 @@ export default function HistoryView({
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin  h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
         <span className="ml-3 text-gray-600 dark:text-gray-400">
-          Đang tải lịch sử...
+          {t("competition_detail.messages.loading")}
         </span>
       </div>
     );
@@ -362,7 +346,7 @@ export default function HistoryView({
                       {t("competition_detail.round_history.description")}
                     </th>
                     <th className="px-4 py-3 text-center font-semibold text-gray-500 dark:text-gray-400 w-32 text-xs uppercase tracking-wider">
-                      Tỷ số
+                      {t("competition_detail.modals.score_column")}
                     </th>
                   </tr>
                 </thead>

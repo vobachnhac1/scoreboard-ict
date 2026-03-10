@@ -41,7 +41,7 @@ export default function MatchCard({
       ),
     },
     CAN: {
-      label: t("competition_detail.match_card.status_cancelled"),
+      label: t("competition_detail.match_card.cancelled"),
       color: "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">

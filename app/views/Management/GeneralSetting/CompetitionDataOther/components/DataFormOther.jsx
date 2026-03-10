@@ -107,7 +107,7 @@ export default function DataFormOther({
               <h3 className="text-[10px] font-black text-gray-900 dark:text-white uppercase tracking-[0.3em]">{t("competition_data_other.form_match_profile")}</h3>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white dark:bg-gray-900/40 p-4 rounded-2xl border border-gray-100 dark:border-gray-800">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white dark:bg-gray-900/40 p-4 rounded border border-gray-100 dark:border-gray-800">
               <div className="md:col-span-1 space-y-1">
                 <label className="block text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest px-1">{t("competition_data_other.form_match_no")}</label>
                 <input
@@ -115,7 +115,7 @@ export default function DataFormOther({
                   type="text"
                   value={formData.match_no}
                   onChange={(e) => setFormData({ ...formData, match_no: e.target.value })}
-                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-gray-800 rounded-lg transition-all outline-none font-bold text-gray-900 dark:text-white read-only:opacity-60"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-gray-800 rounded transition-all outline-none font-bold text-gray-900 dark:text-white read-only:opacity-60"
                   placeholder={t("competition_data_other.form_match_no_placeholder")}
                 />
               </div>
@@ -126,7 +126,7 @@ export default function DataFormOther({
                   <select
                     value={formData.match_status}
                     onChange={(e) => setFormData({ ...formData, match_status: e.target.value })}
-                    className={`w-full px-3 py-2 border-2 border-transparent focus:border-blue-500 rounded-lg transition-all outline-none font-bold appearance-none cursor-pointer ${getStatusColor(formData.match_status)}`}
+                    className={`w-full px-3 py-2 border-2 border-transparent focus:border-blue-500 rounded transition-all outline-none font-bold appearance-none cursor-pointer ${getStatusColor(formData.match_status)}`}
                   >
                     <option value="WAI">{t("competition_data_other.form_status_waiting")}</option>
                     <option value="IN">{t("competition_data_other.form_status_in_progress")}</option>
@@ -146,7 +146,7 @@ export default function DataFormOther({
                   type="text"
                   value={formData.match_name || ""}
                   onChange={(e) => setFormData({ ...formData, match_name: e.target.value })}
-                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-gray-800 rounded-lg transition-all outline-none font-bold text-gray-900 dark:text-white read-only:opacity-60"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-gray-800 rounded transition-all outline-none font-bold text-gray-900 dark:text-white read-only:opacity-60"
                   placeholder={t("competition_data_other.form_match_content_placeholder")}
                 />
               </div>
@@ -160,7 +160,7 @@ export default function DataFormOther({
                     const newAthletes = formData.athletes.map((a) => ({ ...a, athlete_unit: e.target.value }));
                     setFormData({ ...formData, athletes: newAthletes, team_name: e.target.value });
                   }}
-                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-gray-800 rounded-lg transition-all outline-none font-bold text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-gray-800 rounded transition-all outline-none font-bold text-gray-900 dark:text-white"
                   placeholder={t("competition_data_other.form_unit_name_placeholder")}
                 />
               </div>
@@ -174,7 +174,7 @@ export default function DataFormOther({
               <h3 className="text-[10px] font-black text-gray-900 dark:text-white uppercase tracking-[0.3em]">{t("competition_data_other.form_score_system")}</h3>
             </div>
 
-            <div className="bg-white dark:bg-gray-900/40 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-4">
+            <div className="bg-white dark:bg-gray-900/40 p-4 rounded border border-gray-100 dark:border-gray-800 space-y-4">
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {Array.from({ length: formData.match_type === "VON" ? 7 : soGiamDinh }).map((_, i) => {
                   let judgeLabel = `${t("competition_data_other.form_judge_short")} ${i + 1}`;
@@ -187,7 +187,7 @@ export default function DataFormOther({
                   }
 
                   return (
-                    <div key={`judge-input-${i}`} className="group relative bg-gray-50 dark:bg-gray-800/50 px-2.5 py-2 rounded-lg border-2 border-transparent focus-within:border-blue-500 transition-all">
+                    <div key={`judge-input-${i}`} className="group relative bg-gray-50 dark:bg-gray-800/50 px-2.5 py-2 rounded border-2 border-transparent focus-within:border-blue-500 transition-all">
                       <div className="flex items-center justify-between mb-0.5">
                         <label className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{judgeLabel}</label>
                         <span className="text-[7px] font-black text-blue-500/60 uppercase">{subLabel}</span>
@@ -233,10 +233,10 @@ export default function DataFormOther({
 
               <div className="pt-3 border-t border-gray-100 dark:border-gray-800">
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-blue-600/10 rounded-xl blur-lg group-focus-within:bg-blue-600/20 transition-all"></div>
-                  <div className="relative bg-blue-50 dark:bg-blue-900/10 p-3 rounded-xl border-2 border-blue-100 dark:border-blue-900/50 flex items-center justify-between">
+                  <div className="absolute inset-0 bg-blue-600/10 rounded blur-lg group-focus-within:bg-blue-600/20 transition-all"></div>
+                  <div className="relative bg-blue-50 dark:bg-blue-900/10 p-3 rounded border-2 border-blue-100 dark:border-blue-900/50 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                      <div className="w-9 h-9 bg-blue-600 rounded flex items-center justify-center text-white">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                       </div>
                       <div>
@@ -268,11 +268,11 @@ export default function DataFormOther({
                 <h3 className="text-[10px] font-black text-gray-900 dark:text-white uppercase tracking-[0.3em]">{t("competition_data_other.form_competing_members")}</h3>
               </div>
 
-              <div className="bg-white dark:bg-gray-900/40 p-1 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+              <div className="bg-white dark:bg-gray-900/40 p-1 rounded border border-gray-100 dark:border-gray-800 overflow-hidden">
                 <div className="max-h-[400px] overflow-y-auto p-3 custom-scrollbar space-y-2">
                   {formData.athletes.map((athlete, idx) => (
-                    <div key={`athlete-item-${idx}`} className="group relative flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/40 rounded-xl border-2 border-transparent hover:border-emerald-500/20 hover:bg-white dark:hover:bg-gray-800 transition-all duration-300">
-                      <div className="w-8 h-8 flex-shrink-0 bg-white dark:bg-gray-700 rounded-lg flex items-center justify-center font-black text-sm text-emerald-600 dark:text-emerald-400 border border-gray-100 dark:border-gray-600 group-hover:bg-emerald-600 group-hover:text-white group-hover:border-emerald-500 transition-all">
+                    <div key={`athlete-item-${idx}`} className="group relative flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/40 rounded border-2 border-transparent hover:border-emerald-500/20 hover:bg-white dark:hover:bg-gray-800 transition-all duration-300">
+                      <div className="w-8 h-8 flex-shrink-0 bg-white dark:bg-gray-700 rounded flex items-center justify-center font-black text-sm text-emerald-600 dark:text-emerald-400 border border-gray-100 dark:border-gray-600 group-hover:bg-emerald-600 group-hover:text-white group-hover:border-emerald-500 transition-all">
                         {idx + 1}
                       </div>
                       <div className="flex-1 space-y-0.5">
@@ -299,7 +299,7 @@ export default function DataFormOther({
                   <h3 className="text-[10px] font-black text-gray-900 dark:text-white uppercase tracking-[0.3em]">{t("competition_data_other.form_referee_council")}</h3>
                 </div>
 
-                <div className="bg-white dark:bg-gray-900/40 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-2">
+                <div className="bg-white dark:bg-gray-900/40 p-3 rounded border border-gray-100 dark:border-gray-800 space-y-2">
                   {referrers.map((ref, idx) => {
                     let roleLabel = ref.role;
                     let iconColor = "bg-purple-600";
@@ -317,7 +317,7 @@ export default function DataFormOther({
                     }
 
                     return (
-                      <div key={`ref-${idx}`} className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800/40 rounded-lg border border-gray-100 dark:border-gray-700">
+                      <div key={`ref-${idx}`} className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800/40 rounded border border-gray-100 dark:border-gray-700">
                         <div className={`w-7 h-7 flex-shrink-0 ${iconColor} rounded-md flex items-center justify-center text-white font-black text-[10px]`}>
                           {ref.role.startsWith("r") ? ref.role.substring(1) : ref.role === "machine" ? "M" : "S"}
                         </div>
@@ -340,13 +340,13 @@ export default function DataFormOther({
         <button
           type="button"
           onClick={onCancel}
-          className="px-8 py-3.5 rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all active:scale-95 uppercase tracking-[0.2em] text-[11px]"
+          className="px-8 py-3.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all active:scale-95 uppercase tracking-[0.2em] text-[11px]"
         >
           {t("competition_data_other.form_cancel_changes")}
         </button>
         <button
           type="submit"
-          className="px-10 py-3.5 rounded-2xl bg-blue-600 text-white font-black transition-all active:scale-95 uppercase tracking-[0.2em] text-[11px] flex items-center gap-2"
+          className="px-10 py-3.5 rounded bg-blue-600 text-white font-black transition-all active:scale-95 uppercase tracking-[0.2em] text-[11px] flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
           {row ? t("competition_data_other.form_update_profile") : t("competition_data_other.form_create_match")}

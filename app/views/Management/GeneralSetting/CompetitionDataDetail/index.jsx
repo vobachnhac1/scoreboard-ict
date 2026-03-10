@@ -8,7 +8,6 @@ import { fetchConfigSystem } from "../../../../config/redux/controller/configSys
 import useConfirmModal from "../../../../hooks/useConfirmModal";
 
 // UI Components
-import Modal from "../../../../components/Modal";
 import SearchInput from "../../../../components/SearchInput";
 import ConfirmModal from "../../../../components/ConfirmModal";
 
@@ -366,59 +365,199 @@ export default function CompetitionDataDetail() {
           <button onClick={() => navigate("/management/general-setting/competition-management")} className="text-blue-600 mb-4 flex items-center gap-2 font-bold text-xs uppercase tracking-widest"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>{t("competition_detail.buttons.back")}</button>
           <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase">{sheetData.sheet_name}</h2>
         </div>
-        <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
-          <button onClick={() => setActiveTab("matches")} className={`px-6 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === "matches" ? "bg-blue-600 text-white shadow-lg" : "text-gray-500"}`}>{t("competition_detail.tabs.matches")}</button>
-          <button onClick={() => setActiveTab("referrers")} className={`px-6 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === "referrers" ? "bg-blue-600 text-white shadow-lg" : "text-gray-500"}`}>{t("competition_detail.tabs.referees")}</button>
+        <div className="flex items-center gap-1 bg-blue-50/50 dark:bg-blue-900/10 p-1.5 rounded border border-blue-100 dark:border-blue-800/30">
+          <button
+            onClick={() => setActiveTab("matches")}
+            className={`py-2.5 px-6 text-xs font-black uppercase tracking-widest rounded transition-all duration-300 ${activeTab === "matches"
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+              : "text-blue-400 hover:text-blue-600 hover:bg-white dark:hover:bg-blue-900/30"
+              }`}
+          >
+            {t("competition_detail.tabs.matches")}
+          </button>
+          <button
+            onClick={() => setActiveTab("referrers")}
+            className={`py-2.5 px-6 text-xs font-black uppercase tracking-widest rounded transition-all duration-300 ${activeTab === "referrers"
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+              : "text-blue-400 hover:text-blue-600 hover:bg-white dark:hover:bg-blue-900/30"
+              }`}
+          >
+            {t("competition_detail.tabs.referees")}
+          </button>
+          <button
+            onClick={() => setActiveTab("results")}
+            className={`py-2.5 px-6 text-xs font-black uppercase tracking-widest rounded transition-all duration-300 ${activeTab === "results"
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+              : "text-blue-400 hover:text-blue-600 hover:bg-white dark:hover:bg-blue-900/30"
+              }`}
+          >
+            {t("competition_detail.tabs.results")}
+          </button>
         </div>
       </div>
 
-      {activeTab === "matches" ? (
+      {activeTab === "matches" && (
         <>
           <div className="grid grid-cols-3 gap-4 mb-8">
-            {["WAI", "IN", "FIN"].map(s => (
-              <div key={s} className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-700">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">{t(`competition_detail.match_status.${s === "WAI" ? "waiting" : s === "IN" ? "ongoing" : "finished"}`)}</p>
-                <p className="text-3xl font-black text-gray-900 dark:text-white">{tableData.filter(r => r.match_status === s).length}</p>
-              </div>
-            ))}
+            {["WAI", "IN", "FIN"].map(s => {
+              const statusColors = {
+                WAI: "bg-amber-50/50 border-amber-100 dark:bg-amber-500/5 dark:border-amber-500/20 text-amber-600",
+                IN: "bg-blue-50/50 border-blue-100 dark:bg-blue-500/5 dark:border-blue-500/20 text-blue-600",
+                FIN: "bg-emerald-50/50 border-emerald-100 dark:bg-emerald-500/5 dark:border-emerald-500/20 text-emerald-600"
+              };
+              const labelColors = {
+                WAI: "text-amber-500/70",
+                IN: "text-blue-500/70",
+                FIN: "text-emerald-500/70"
+              };
+              return (
+                <div key={s} className={`p-4 rounded border transition-all duration-300 ${statusColors[s]}`}>
+                  <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-1 ${labelColors[s]}`}>
+                    {t(`competition_detail.match_status.${s === "WAI" ? "waiting" : s === "IN" ? "ongoing" : "finished"}`)}
+                  </p>
+                  <p className="text-3xl font-black">{tableData.filter(r => r.match_status === s).length}</p>
+                </div>
+              );
+            })}
           </div>
 
-          <div className="flex flex-wrap gap-4 mb-6 items-center justify-between bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex flex-wrap gap-4 mb-6 items-center justify-between bg-white dark:bg-gray-800 p-4 rounded shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex flex-1 min-w-[300px] gap-3">
               <SearchInput value={search} onChange={setSearch} placeholder={t("competition_detail.form.search_placeholder")} />
-              <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="px-4 py-2 bg-gray-50 dark:bg-gray-900 border-none rounded-xl text-xs font-bold"><option value="ALL">{t("competition_detail.filters.all_status")}</option><option value="WAI">Chờ</option><option value="IN">Đang đấu</option><option value="FIN">Kết thúc</option></select>
+              <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="px-4 py-2 min-w-[250px] bg-gray-50 dark:bg-gray-900 border-none rounded text-xs font-bold"><option value="ALL">{t("competition_detail.filters.all_status")}</option><option value="WAI">Chờ</option><option value="IN">Đang đấu</option><option value="FIN">Kết thúc</option></select>
             </div>
-            <div className="flex bg-gray-50 dark:bg-gray-900 p-1.5 rounded-xl border border-gray-100 dark:border-gray-700">
-              <button onClick={() => setViewMode("grid")} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "grid" ? "bg-blue-600 text-white shadow-md" : "text-gray-400"}`}>Grid</button>
-              <button onClick={() => setViewMode("list")} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "list" ? "bg-blue-600 text-white shadow-md" : "text-gray-400"}`}>List</button>
+            <div className="flex bg-gray-50 dark:bg-gray-900 p-1.5 rounded border border-gray-100 dark:border-gray-700">
+              <button onClick={() => setViewMode("grid")} className={`flex items-center gap-1.5 px-4 py-2 rounded text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "grid" ? "bg-blue-600 text-white shadow-md" : "text-gray-400"}`}>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                  />
+                </svg>
+                <span>{t("competition_management.grid_view")}</span>
+              </button>
+              <button onClick={() => setViewMode("list")} className={`flex items-center gap-1.5 px-4 py-2 rounded text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "list" ? "bg-blue-600 text-white shadow-md" : "text-gray-400"}`}>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+                <span>{t("competition_management.list_view")}</span>
+              </button>
             </div>
           </div>
 
           <div className={viewMode === "grid" ? "grid grid-cols-1 lg:grid-cols-2 gap-4" : "space-y-3"}>
             {paginatedData.map(row => <MatchCard key={row.key} row={row} listActions={listActions} getActionsByStatus={getActionsByStatus} viewMode={viewMode} onDoubleClick={r => setOpenActions({ isOpen: true, key: Constants.ACTION_UPDATE, row: r })} />)}
           </div>
-          {totalPages > 1 && <div className="mt-8 flex justify-center gap-2">{[...Array(totalPages)].map((_, i) => <button key={i} onClick={() => setPage(i + 1)} className={`w-10 h-10 rounded-xl font-bold transition-all ${page === i + 1 ? "bg-blue-600 text-white shadow-lg scale-110" : "bg-white dark:bg-gray-800 text-gray-500"}`}>{i + 1}</button>)}</div>}
+          {totalPages > 1 && <div className="mt-8 flex justify-center gap-2">{[...Array(totalPages)].map((_, i) => <button key={i} onClick={() => setPage(i + 1)} className={`w-10 h-10 rounded font-bold transition-all ${page === i + 1 ? "bg-blue-600 text-white shadow-lg scale-110" : "bg-white dark:bg-gray-800 text-gray-500"}`}>{i + 1}</button>)}</div>}
         </>
-      ) : (
+      )}
+
+      {activeTab === "referrers" && (
         <RefereeAllocationSection availableReferees={availableReferees} initialReferrers={sheetData?.referrers || []} onSave={handleSaveReferrers} configSystem={configSystem} />
       )}
 
+      {activeTab === "results" && (
+        <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <table className="w-full text-left">
+            <thead className="bg-gray-50 dark:bg-gray-900/50">
+              <tr className="text-[10px] font-black uppercase tracking-widest text-gray-400 border-b border-gray-100 dark:border-gray-700">
+                <th className="px-6 py-4 w-20">Trận</th>
+                <th className="px-6 py-4">Nội dung</th>
+                <th className="px-6 py-4">Đối đầu</th>
+                <th className="px-6 py-4 text-center">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+              {tableData.filter(r => r.match_status === "FIN").map(row => (
+                <tr key={row.key} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/5 transition-colors">
+                  <td className="px-6 py-4 font-black">{row.data[0]}</td>
+                  <td className="px-6 py-4 text-xs font-bold text-gray-600 dark:text-gray-400">{row.data[2]}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2 text-[11px] font-black uppercase">
+                      <span className="text-red-600">{row.data[3]}</span>
+                      <span className="text-gray-300">vs</span>
+                      <span className="text-blue-600">{row.data[6]}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => setOpenActions({ isOpen: true, key: Constants.ACTION_MATCH_LOGS, row })}
+                        className="px-4 py-2 bg-blue-600 text-white text-[10px] font-black uppercase rounded shadow-lg shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all inline-flex items-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        {t("competition_detail.modals.match_log")}
+                      </button>
+                      <button
+                        onClick={() => setOpenActions({ isOpen: true, key: Constants.ACTION_MATCH_REPORT, row })}
+                        className="px-4 py-2 bg-emerald-600 text-white text-[10px] font-black uppercase rounded shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all inline-flex items-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                        {t("competition_detail.modals.result_report")}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {tableData.filter(r => r.match_status === "FIN").length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-6 py-12 text-center text-gray-400 font-bold uppercase text-xs">
+                    Chưa có trận đấu nào kết thúc để xem kết quả
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+
       {openActions?.isOpen && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-blue-950/40 backdrop-blur-md transition-all duration-500">
-          <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.3)] w-full max-w-7xl max-h-[94vh] overflow-hidden flex flex-col border border-white/20">
+          <div className={`bg-white dark:bg-gray-900 rounded shadow-[0_40px_100px_-20px_rgba(0,0,0,0.3)] w-full ${[Constants.ACTION_MATCH_START, Constants.ACTION_DELETE, Constants.ACTION_MATCH_RESULT].includes(openActions?.key) ? "max-w-md" : [Constants.ACTION_UPDATE, Constants.ACTION_MATCH_CONFIG].includes(openActions?.key) ? "max-w-2xl" : "max-w-7xl"} max-h-[94vh] overflow-hidden flex flex-col border border-white/20`}>
             <div className="px-8 py-6 bg-blue-600 text-white flex justify-between items-center shrink-0">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg></div>
+                <div className="w-12 h-12 bg-white/20 rounded flex items-center justify-center backdrop-blur-md"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg></div>
                 <div><p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60 mb-0.5">{t("competition_detail.modals.subtitle") || "Competition Management"}</p><h3 className="text-2xl font-black uppercase tracking-tight">{listActions.find(a => a.key === openActions.key)?.btnText || "Action"}</h3></div>
               </div>
-              <button onClick={() => setOpenActions(null)} className="w-10 h-10 flex items-center justify-center hover:bg-white/20 rounded-full transition-all active:scale-90 font-bold">✕</button>
+              <div className="flex items-center gap-3">
+                {[Constants.ACTION_MATCH_REPORT, Constants.ACTION_MATCH_LOGS].includes(openActions?.key) && (
+                  <button
+                    onClick={() => window.print()}
+                    className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded font-bold transition-all active:scale-95 uppercase tracking-widest text-xs backdrop-blur-md border border-white/10"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    {openActions?.key === Constants.ACTION_MATCH_REPORT ? t("competition_detail.modals.print_report") : t("competition_detail.modals.print_log")}
+                  </button>
+                )}
+                <button onClick={() => setOpenActions(null)} className="w-10 h-10 flex items-center justify-center hover:bg-white/20 rounded-full transition-all active:scale-90 font-bold">✕</button>
+              </div>
             </div>
             <div className="flex-1 overflow-y-auto p-8 bg-gray-50/50 dark:bg-gray-950/50 custom-scrollbar">{renderModalContent()}</div>
           </div>
         </div>
       )}
       <ConfirmModal {...modalProps} />
-      {showScrollTop && <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="fixed bottom-8 right-8 w-14 h-14 bg-blue-600 text-white rounded-2xl shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" /></svg></button>}
+      {showScrollTop && <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="fixed bottom-8 right-8 w-14 h-14 bg-blue-600 text-white rounded shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" /></svg></button>}
     </div>
   );
 }

@@ -17,7 +17,11 @@ const { getMacAddress, getUUID, getIP } = require('../../config/config')
 class LicenseService {
     constructor() {
         this.db = new BetterSQLiteWrapper(DB_SCHEME);
-        this.apiUrl = 'https://digisports.com.vn/api/v1/device-activations/activate';
+        // this.apiUrl = 'https://digisports.com.vn/api/v1/device-activations/activate';
+        this.apiUrl = 'http://localhost:3000/api/v1/device-activations/activate';
+        // URL cho việc huỷ key (revoke)
+        // this.revokeBaseUrl = 'https://license.digisports.com.vn/api/v1/device-activations/device';
+        this.revokeBaseUrl = 'http://localhost:3000/api/v1/device-activations/device';
         this.initDatabase();
     }
 
@@ -65,7 +69,7 @@ class LicenseService {
             const config = {
                 licenseKey: license_key,
                 deviceType: 'COMPUTER',
-                deviceId: mac_address,
+                deviceId: uuid_desktop,
                 deviceInfo: {
                     uuid_desktop: uuid_desktop,
                     mac_address: mac_address,
@@ -74,6 +78,8 @@ class LicenseService {
                 }
             }
             // Gọi API kích hoạt
+            console.log('API URL:', this.apiUrl);
+            console.log('API Config:', JSON.stringify(config, null, 2));
             const response = await axios.post(this.apiUrl, config, {
                 timeout: 10000,
                 headers: {
@@ -155,18 +161,21 @@ class LicenseService {
                 const status = error.response.status;
                 let errorMessage = error.response.data?.message || 'Invalid license key';
 
-                // Xử lý lỗi 400 - có thể là revoked
-                if (status === 400) {
+                // Xử lý lỗi 400 hoặc 403
+                if (status === 400 || status === 403) {
                     // Lấy error message (có thể là string hoặc array)
                     if (Array.isArray(errorMessage)) {
                         errorMessage = errorMessage.join(' ');
                     }
 
-                    // Kiểm tra nếu license bị revoked
-                    if (errorMessage.toLowerCase().includes('revoked') ||
+                    console.log(`  API returned ${status}. Error: ${errorMessage}`);
+
+                    // Kiểm tra nếu license bị revoked hoặc trả về 403 (Forbidden/Invalid access)
+                    if (status === 403 ||
+                        errorMessage.toLowerCase().includes('revoked') ||
                         errorMessage.toLowerCase().includes('thu hồi') ||
                         errorMessage.toLowerCase().includes('đã bị thu hồi')) {
-                        console.log('  License has been revoked. Deleting ALL licenses from database...');
+                        console.log('  Access forbidden or License revoked. Deleting ALL licenses from database...');
 
                         // Xóa TẤT CẢ license khỏi database (không chỉ license key hiện tại)
                         try {
@@ -178,7 +187,7 @@ class LicenseService {
 
                         return {
                             success: false,
-                            error: 'License has been revoked',
+                            error: status === 403 ? 'Access forbidden by license server' : 'License has been revoked',
                             code: status,
                             revoked: true
                         };
@@ -348,7 +357,7 @@ class LicenseService {
             const response = await axios.post(this.apiUrl, {
                 licenseKey: license_key,
                 deviceType: 'COMPUTER',
-                deviceId: mac_address,
+                deviceId: device_uuid,
                 deviceInfo: {
                     uuid_desktop: device_uuid,
                     mac_address: mac_address,
@@ -406,8 +415,9 @@ class LicenseService {
             };
 
         } catch (error) {
-            // Xử lý lỗi 400 - License has been revoked hoặc invalid
-            if (error.response && error.response.status === 400) {
+            // Xử lý lỗi 400 hoặc 403
+            if (error.response && (error.response.status === 400 || error.response.status === 403)) {
+                const status = error.response.status;
                 // Lấy error message (có thể là string hoặc array)
                 let errorMessage = '';
                 if (Array.isArray(error.response.data?.message)) {
@@ -416,13 +426,14 @@ class LicenseService {
                     errorMessage = error.response.data?.message || error.response.data?.error || '';
                 }
 
-                console.log('  API returned 400:', errorMessage);
+                console.log(`  API returned ${status}: ${errorMessage}`);
 
-                // Kiểm tra nếu license bị revoked
-                if (errorMessage.toLowerCase().includes('revoked') ||
+                // Kiểm tra nếu license bị revoked hoặc trả về 403 (Forbidden)
+                if (status === 403 ||
+                    errorMessage.toLowerCase().includes('revoked') ||
                     errorMessage.toLowerCase().includes('thu hồi') ||
                     errorMessage.toLowerCase().includes('đã bị thu hồi')) {
-                    console.log('  License has been revoked. Deleting ALL licenses from database...');
+                    console.log(`  Access forbidden (${status}) or License revoked. Deleting ALL licenses from database...`);
 
                     // Xóa TẤT CẢ license khỏi database
                     await this.deleteAllLicenses();
@@ -431,21 +442,24 @@ class LicenseService {
                         success: false,
                         online: true,
                         revoked: true,
-                        error: 'License has been revoked',
+                        error: status === 403 ? 'Access forbidden by license server' : 'License has been revoked',
                         requireActivation: true
                     };
                 }
-                // Xóa TẤT CẢ license khỏi database
-                await this.deleteAllLicenses();
 
-                // Lỗi 400 khác (validation error, etc.) - Không xóa database, fallback to offline
-                console.log('  API validation error, falling back to offline check...');
-                return {
-                    success: false,
-                    online: false,
-                    error: `API Error: ${errorMessage}`,
-                    requireActivation: true
-                };
+                // Nếu là lỗi 400 khác (validation error, etc.) - Có thể xóa database tùy yêu cầu, 
+                // nhưng ở đây y/c là khi gọi apiUrl mà lỗi 403 thì huỷ key.
+                // Do đó 400 ta giữ logic cũ là fallback hoặc xóa tùy thông báo.
+                if (status === 400) {
+                    await this.deleteAllLicenses();
+                    console.log('  API validation error (400), database cleared.');
+                    return {
+                        success: false,
+                        online: false,
+                        error: `API Error: ${errorMessage}`,
+                        requireActivation: true
+                    };
+                }
             }
 
             // Lỗi khác (network, timeout, etc.)
@@ -607,12 +621,12 @@ class LicenseService {
                     console.log(' Online check successful');
                     return onlineResult;
                 } else if (onlineResult.revoked) {
-                    // License bị revoke - đã xóa khỏi database
-                    console.log('  License revoked');
+                    // License bị revoke hoặc access forbidden - đã xóa khỏi database
+                    console.log('  License revoked or Access Forbidden by server');
                     return onlineResult;
                 } else {
-                    // Online check failed, fallback to offline
-                    console.log('  Online check failed, falling back to offline...');
+                    // Online check failed (network error, etc.), fallback to offline
+                    console.log('  Online check failed (likely network), falling back to offline...');
                     return await this.checkLicenseOffline(license_key);
                 }
             } else {
@@ -680,7 +694,7 @@ class LicenseService {
     }
 
     /**
-     * Deactivate license
+     * Deactivate license (local only)
      */
     async deactivateLicense(license_key) {
         return new Promise((resolve, reject) => {
@@ -696,6 +710,58 @@ class LicenseService {
                 }
             );
         });
+    }
+
+    /**
+     * Huỷ kích hoạt thiết bị - gọi API DELETE /device-activations/device/:identifier
+     * rồi xóa license khỏi local database
+     * @param {string} identifier - UUID hoặc deviceId (mac address) của thiết bị
+     * @returns {Promise<Object>}
+     */
+    async revokeDeviceKey(identifier) {
+        try {
+            console.log('🗑️  Revoking device activation online, identifier:', identifier);
+
+            // Gọi API DELETE lên server online
+            const revokeUrl = `${this.revokeBaseUrl}/${identifier}`;
+            console.log('Revoke URL:', revokeUrl);
+
+            let onlineRevoked = false;
+            let onlineError = null;
+
+            try {
+                const response = await axios.delete(revokeUrl, {
+                    timeout: 10000,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                console.log('✅ Online revoke response status:', response.status);
+                onlineRevoked = true;
+            } catch (apiError) {
+                console.warn('⚠️  Online revoke failed (will still clear local):', apiError.message);
+                onlineError = apiError.response?.data?.message || apiError.message;
+            }
+
+            // Dù API thành công hay không, luôn xóa local database
+            await this.deleteAllLicenses();
+            console.log('✅ Local license data cleared');
+
+            return {
+                success: true,
+                onlineRevoked,
+                onlineError,
+                message: onlineRevoked
+                    ? 'License revoked from server and removed from device'
+                    : `Local license removed. Server revoke failed: ${onlineError}`
+            };
+        } catch (error) {
+            console.error('❌ revokeDeviceKey error:', error.message);
+            // Thử xóa local dù có lỗi
+            try { await this.deleteAllLicenses(); } catch (e) { /* ignore */ }
+            return {
+                success: false,
+                error: error.message
+            };
+        }
     }
 }
 

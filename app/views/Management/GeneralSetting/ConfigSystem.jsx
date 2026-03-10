@@ -79,21 +79,21 @@ const getInputFields = (t) => ({
 
 const getSelectFields = (t, features = {}) => ({
   [t("config_system.quantity_settings")]: [
-    {
-      name: "keyboard_mode",
-      label: t("config_system.keyboard_mode"),
-      options: Object.entries(KEYBOARD_MODES)
-        .filter(([key]) => {
-          if (features?.allowed_keyboard_modes && Array.isArray(features.allowed_keyboard_modes)) {
-            return features.allowed_keyboard_modes.includes(key);
-          }
-          return true;
-        })
-        .map(([key, mode]) => ({
-          value: key,
-          label: `${mode.description}`,
-        })),
-    },
+    // {
+    //   name: "keyboard_mode",
+    //   label: t("config_system.keyboard_mode"),
+    //   options: Object.entries(KEYBOARD_MODES)
+    //     .filter(([key]) => {
+    //       if (features?.allowed_keyboard_modes && Array.isArray(features.allowed_keyboard_modes)) {
+    //         return features.allowed_keyboard_modes.includes(key);
+    //       }
+    //       return true;
+    //     })
+    //     .map(([key, mode]) => ({
+    //       value: key,
+    //       label: `${mode.description}`,
+    //     })),
+    // },
     {
       name: "he_diem",
       label: t("config_system.score_settings"),

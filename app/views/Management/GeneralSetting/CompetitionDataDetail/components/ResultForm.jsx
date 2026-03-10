@@ -109,7 +109,7 @@ export default function ResultForm({ row, onSubmit, onCancel, showAlert }) {
                   value={formData.red_score}
                   onChange={(e) => setFormData({ ...formData, red_score: e.target.value })}
                   disabled={!isEditing}
-                  className="w-full text-center text-3xl font-black p-4 bg-gray-50 dark:bg-gray-950 border-2 border-gray-200 dark:border-gray-800 rounded-2xl focus:ring-4 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all disabled:opacity-50 min-w-[14rem] shadow-inner font-mono"
+                  className="w-full text-center text-3xl font-black p-4 bg-gray-50 dark:bg-gray-950 border-2 border-gray-200 dark:border-gray-800 rounded focus:ring-4 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all disabled:opacity-50 min-w-[14rem] shadow-inner font-mono"
                   placeholder="0.00"
                 />
               </div>
@@ -152,7 +152,7 @@ export default function ResultForm({ row, onSubmit, onCancel, showAlert }) {
                   value={formData.blue_score}
                   onChange={(e) => setFormData({ ...formData, blue_score: e.target.value })}
                   disabled={!isEditing}
-                  className="w-full text-center text-3xl font-black p-4 bg-gray-50 dark:bg-gray-950 border-2 border-gray-200 dark:border-gray-800 rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all disabled:opacity-50 min-w-[14rem] shadow-inner font-mono"
+                  className="w-full text-center text-3xl font-black p-4 bg-gray-50 dark:bg-gray-950 border-2 border-gray-200 dark:border-gray-800 rounded focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all disabled:opacity-50 min-w-[14rem] shadow-inner font-mono"
                   placeholder="0.00"
                 />
               </div>

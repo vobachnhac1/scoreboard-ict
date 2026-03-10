@@ -974,6 +974,18 @@ export default function CompetitionDataOther() {
             soGiamDinh={configSystem?.data?.so_giam_dinh || 5}
           />
         );
+      case Constants.ACTION_MATCH_LOGS:
+        return (
+          <div className="p-8 text-center flex flex-col items-center justify-center min-h-[300px]">
+            <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded flex items-center justify-center mb-4 text-blue-600">
+              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <h3 className="text-lg font-black text-gray-900 dark:text-white uppercase mb-2">Nhật ký diễn biến</h3>
+            <p className="text-gray-500 dark:text-gray-400 text-sm max-w-sm">
+              Nhật ký diễn biến chi tiết hiện tại chỉ được hỗ trợ cho các nội dung thi đấu đối kháng trực tiếp.
+            </p>
+          </div>
+        );
       case Constants.ACTION_DELETE:
         return (
           <DeleteConfirm
@@ -1088,218 +1100,171 @@ export default function CompetitionDataOther() {
 
   return (
     <div className="p-6 bg-white dark:bg-gray-900 rounded border border-gray-100 dark:border-gray-800">
-      {/* Header */}
-      <div className="mb-6">
-        <button
-          onClick={() =>
-            navigate("/management/general-setting/competition-management")
-          }
-          className="group mb-6 flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-all w-fit"
-        >
-          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 group-hover:bg-blue-600 group-hover:text-white transition-all">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={3}
-                d="M15 19l-7-7 7-7"
-              />
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <button
+            onClick={() => navigate("/management/general-setting/competition-management")}
+            className="text-blue-600 mb-4 flex items-center gap-2 font-bold text-xs uppercase tracking-widest group"
+          >
+            <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
             </svg>
-          </div>
-          <span className="text-xs font-black uppercase tracking-widest">{t("competition_data_other.back")}</span>
-        </button>
-
-        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-          {sheetData?.sheet_name || t("competition_data_other.loading")}
-        </h2>
-        <div className="flex items-center gap-1 mb-8 bg-blue-50/50 dark:bg-blue-900/10 p-1.5 rounded w-fit border border-blue-100 dark:border-blue-800/30">
+            {t("competition_data_other.back")}
+          </button>
+          <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase">
+            {sheetData?.sheet_name || t("competition_data_other.loading")}
+          </h2>
+        </div>
+        <div className="flex items-center gap-1 bg-blue-50/50 dark:bg-blue-900/10 p-1.5 rounded w-fit border border-blue-100 dark:border-blue-800/30">
           <button
             onClick={() => setActiveTab("matches")}
             className={`py-2.5 px-6 text-xs font-black uppercase tracking-widest rounded transition-all duration-300 ${activeTab === "matches"
-              ? "bg-blue-600 text-white"
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
               : "text-blue-400 hover:text-blue-600 hover:bg-white dark:hover:bg-blue-900/30"
               }`}
           >
-            {t('competition_data_other.match_list')}
+            {t("competition_data_other.tabs.matches")}
           </button>
           <button
             onClick={() => setActiveTab("referrers")}
             className={`py-2.5 px-6 text-xs font-black uppercase tracking-widest rounded transition-all duration-300 ${activeTab === "referrers"
-              ? "bg-blue-600 text-white"
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
               : "text-blue-400 hover:text-blue-600 hover:bg-white dark:hover:bg-blue-900/30"
               }`}
           >
-            {t('competition_data_other.referee_allocation_tab')}
+            {t("competition_data_other.tabs.referrers")}
+          </button>
+          <button
+            onClick={() => setActiveTab("results")}
+            className={`py-2.5 px-6 text-xs font-black uppercase tracking-widest rounded transition-all duration-300 ${activeTab === "results"
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+              : "text-blue-400 hover:text-blue-600 hover:bg-white dark:hover:bg-blue-900/30"
+              }`}
+          >
+            {t("competition_data_other.tabs.results")}
           </button>
         </div>
       </div>
 
-      {activeTab === "matches" ? (
+      {activeTab === "matches" && (
         <>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 mb-8">
-            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded p-5 transition-all">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                  </svg>
+          {/* Match Stats Section */}
+          <div className="grid grid-cols-3 gap-4 mb-8">
+            {["WAI", "IN", "FIN"].map((s) => {
+              const statusColors = {
+                WAI: "bg-amber-50/50 border-amber-100 dark:bg-amber-500/5 dark:border-amber-500/20 text-amber-600",
+                IN: "bg-blue-50/50 border-blue-100 dark:bg-blue-500/5 dark:border-blue-500/20 text-blue-600",
+                FIN: "bg-emerald-50/50 border-emerald-100 dark:bg-emerald-500/5 dark:border-emerald-500/20 text-emerald-600"
+              };
+              const labelColors = {
+                WAI: "text-amber-500/70",
+                IN: "text-blue-500/70",
+                FIN: "text-emerald-500/70"
+              };
+              return (
+                <div key={s} className={`p-4 rounded border transition-all duration-300 ${statusColors[s]}`}>
+                  <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-1 ${labelColors[s]}`}>
+                    {t(`competition_data_other.filter_${s === "WAI" ? "waiting" : s === "IN" ? "in_progress" : "finished"}`)}
+                  </p>
+                  <p className="text-3xl font-black">
+                    {tableData.filter((r) => r.match_status === s).length}
+                  </p>
                 </div>
-                <span className="text-xs font-black text-amber-900 dark:text-amber-300 uppercase tracking-widest">{t("competition_data_other.status_waiting_badge")}</span>
-              </div>
-              <div className="text-3xl font-black text-amber-600 dark:text-amber-200">
-                {tableData.filter((r) => r.match_status === "WAI").length}
-              </div>
-            </div>
-
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded p-5 transition-all">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <span className="text-xs font-black text-blue-900 dark:text-blue-300 uppercase tracking-widest">{t("competition_data_other.status_competing_badge")}</span>
-              </div>
-              <div className="text-3xl font-black text-blue-600 dark:text-blue-200">
-                {tableData.filter((r) => r.match_status === "IN").length}
-              </div>
-            </div>
-
-            <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 rounded p-5 transition-all">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <span className="text-xs font-black text-emerald-900 dark:text-emerald-300 uppercase tracking-widest">{t("competition_data_other.status_finished_badge")}</span>
-              </div>
-              <div className="text-3xl font-black text-emerald-600 dark:text-emerald-200">
-                {tableData.filter((r) => r.match_status === "FIN").length}
-              </div>
-            </div>
+              );
+            })}
           </div>
 
 
-          {/* Toolbar - Filter, Sort, View Mode */}
-          <div className="bg-white dark:bg-gray-800 rounded p-3 mb-4 border border-blue-50 dark:border-blue-900/30">
-            <div className="flex flex-row items-center justify-between gap-4">
-              {/* Left: Search & Filter */}
-              <div className="flex flex-row items-center gap-3 flex-1 overflow-x-auto no-scrollbar">
-                {/* Search */}
-                <div className="min-w-[200px] flex-1 max-w-xs">
-                  <SearchInput
-                    value={search}
-                    onChange={setSearch}
-                    onSearch={handleSearch}
-                    placeholder={t("competition_data_other.search_placeholder")}
+          {/* Toolbar Section */}
+          <div className="flex flex-wrap gap-4 mb-6 items-center justify-between bg-white dark:bg-gray-800 p-4 rounded shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex flex-1 min-w-[300px] gap-3">
+              <div className="flex-1 max-w-sm">
+                <SearchInput
+                  value={search}
+                  onChange={setSearch}
+                  onSearch={handleSearch}
+                  placeholder={t("competition_data_other.search_placeholder")}
+                />
+              </div>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="px-4 py-2 bg-gray-50 dark:bg-gray-900 border-none rounded text-xs font-bold min-w-[150px]"
+              >
+                <option value="ALL">{t("competition_data_other.filter_all_status")}</option>
+                <option value="WAI">{t("competition_data_other.filter_waiting")}</option>
+                <option value="IN">{t("competition_data_other.filter_in_progress")}</option>
+                <option value="FIN">{t("competition_data_other.filter_finished")}</option>
+              </select>
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="px-4 py-2 bg-gray-50 dark:bg-gray-900 border-none rounded text-xs font-bold min-w-[150px]"
+              >
+                <option value="ALL">{t("competition_data_other.filter_all_content")}</option>
+                <option value="DOL">{t("competition_data_other.type_doi_luyen")}</option>
+                <option value="SOL">{t("competition_data_other.type_song_luyen")}</option>
+                <option value="TUV">{t("competition_data_other.type_tu_ve")}</option>
+                <option value="DAL">{t("competition_data_other.type_da_luyen")}</option>
+                <option value="VON">{t("competition_data_other.type_vo_nhac")}</option>
+              </select>
+            </div>
+
+            <div className="flex bg-gray-50 dark:bg-gray-900 p-1.5 rounded border border-gray-100 dark:border-gray-700 items-center">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "grid" ? "bg-blue-600 text-white shadow-md" : "text-gray-400"
+                  }`}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
                   />
-                </div>
+                </svg>
+                <span>{t("competition_management.grid_view")}</span>
 
-                {/* Filter Status */}
-                <div className="relative group shrink-0">
-                  <select
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className="pl-3 pr-8 py-2 bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded text-[11px] font-black text-blue-900 dark:text-blue-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer appearance-none min-w-[130px]"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233b82f6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center', backgroundSize: '14px' }}
-                  >
-                    <option value="ALL">{t("competition_data_other.filter_all_status")}</option>
-                    <option value="WAI">{t("competition_data_other.filter_waiting")}</option>
-                    <option value="IN">{t("competition_data_other.filter_in_progress")}</option>
-                    <option value="FIN">{t("competition_data_other.filter_finished")}</option>
-                    <option value="CAN">{t("competition_data_other.filter_cancelled")}</option>
-                  </select>
-                </div>
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "list" ? "bg-blue-600 text-white shadow-md" : "text-gray-400"
+                  }`}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+                <span>{t("competition_management.list_view")}</span>
 
-                {/* Filter Type */}
-                <div className="relative group shrink-0">
-                  <select
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                    className="pl-3 pr-8 py-2 bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded text-[11px] font-black text-blue-900 dark:text-blue-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer appearance-none min-w-[130px]"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233b82f6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center', backgroundSize: '14px' }}
-                  >
-                    <option value="ALL">{t("competition_data_other.filter_all_content")}</option>
-                    <option value="DOL">{t("competition_data_other.type_doi_luyen")}</option>
-                    <option value="SOL">{t("competition_data_other.type_song_luyen")}</option>
-                    <option value="TUV">{t("competition_data_other.type_tu_ve")}</option>
-                    <option value="DAL">{t("competition_data_other.type_da_luyen")}</option>
-                    <option value="VON">{t("competition_data_other.type_vo_nhac")}</option>
-                  </select>
-                </div>
-
-                {/* Sort */}
-                <div className="relative group shrink-0">
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="pl-3 pr-8 py-2 bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded text-[11px] font-black text-blue-900 dark:text-blue-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer appearance-none min-w-[130px]"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233b82f6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center', backgroundSize: '14px' }}
-                  >
-                    <option value="match_no">{t("competition_data_other.sort_by_stt")}</option>
-                    <option value="status">{t("competition_data_other.sort_by_status")}</option>
-                    <option value="type">{t("competition_data_other.sort_by_content")}</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Right: View Mode & Stats */}
-              <div className="flex flex-row items-center gap-3 shrink-0">
-                {/* Stats Counter */}
-                <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-blue-600 rounded text-white min-w-[100px] justify-center">
-                  <span className="text-[10px] font-black uppercase opacity-80">{t('competition_data_other.column_stt')}:</span>
-                  <span className="text-xs font-black">{filteredData.length}/{tableData.length}</span>
-                </div>
-
-                {/* View Mode Toggle */}
-                <div className="flex items-center gap-1 bg-blue-50 dark:bg-blue-950 p-1 rounded border border-blue-100 dark:border-blue-900/50">
-                  <button
-                    onClick={() => setViewMode("grid")}
-                    className={`flex items-center justify-center h-8 w-8 rounded transition-all ${viewMode === "grid"
-                      ? "bg-white dark:bg-blue-600 text-blue-600 dark:text-white"
-                      : "text-blue-400 hover:text-blue-600"
-                      }`}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => setViewMode("list")}
-                    className={`flex items-center justify-center h-8 w-8 rounded transition-all ${viewMode === "list"
-                      ? "bg-white dark:bg-blue-600 text-blue-600 dark:text-white"
-                      : "text-blue-400 hover:text-blue-600"
-                      }`}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                  <div className="w-px h-4 bg-blue-100 dark:bg-blue-900 mx-1"></div>
-                  <button
-                    onClick={() => setViewMode("rank")}
-                    className={`h-8 rounded transition-all flex items-center gap-1.5 px-3 text-[10px] font-black uppercase tracking-widest ${viewMode === "rank"
-                      ? "bg-amber-500 text-white"
-                      : "text-amber-600 hover:bg-amber-50"
-                      }`}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
-                    </svg>
-                    <span>{t('competition_data_other.rank')}</span>
-                  </button>
-                </div>
-              </div>
+              </button>
+              <div className="w-px h-4 bg-gray-200 dark:bg-gray-800 mx-2"></div>
+              <button
+                onClick={() => setViewMode("rank")}
+                className={`px-4 py-2 rounded text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "rank" ? "bg-amber-500 text-white shadow-md" : "text-amber-600"
+                  }`}
+              >
+                {t("competition_data_other.rank")}
+              </button>
             </div>
           </div>
+
 
           {/* Cards Grid/List */}
           <div className="space-y-6">
@@ -1615,11 +1580,11 @@ export default function CompetitionDataOther() {
                   </div>
                 )}
               </>
-            )
-            }
-          </div >
+            )}
+          </div>
         </>
-      ) : (
+      )}
+      {activeTab === "referrers" && (
         <RefereeAllocationSection
           availableReferees={availableReferees}
           initialReferrers={sheetData?.referrers || []}
@@ -1629,150 +1594,118 @@ export default function CompetitionDataOther() {
         />
       )}
 
-      {/* Scroll to Top Button */}
-      {
-        showScrollTop && (
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full hover:scale-110 transition-all duration-300 z-40 group"
-            title={t('competition_data_other.scroll_to_top')}
+      {activeTab === "results" && (
+        <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <table className="w-full text-left">
+            <thead className="bg-gray-50 dark:bg-gray-900/50">
+              <tr className="text-[10px] font-black uppercase tracking-widest text-gray-400 border-b border-gray-100 dark:border-gray-700">
+                <th className="px-6 py-4 w-24">{t("competition_data_other.match_no_label") || "Mã số"}</th>
+                <th className="px-6 py-4">{t("competition_data_other.match_content") || "Nội dung thi"}</th>
+                <th className="px-6 py-4">{t("competition_data_other.athletes_label") || "VĐV Tham Gia"}</th>
+                <th className="px-6 py-4 text-center">{t("competition_data_other.column_actions") || "Thao tác"}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {tableData.filter(r => r.match_status === "FIN").map(row => (
+                <tr key={row.match_id} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/5 transition-colors group">
+                  <td className="px-6 py-4 font-black">T{row.match_no}</td>
+                  <td className="px-6 py-4 text-xs font-bold text-gray-600 dark:text-gray-400">{row.match_content || row.match_name}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap gap-1">
+                        {row.athletes?.map((a, idx) => (
+                          <span key={idx} className="bg-gray-100 dark:bg-gray-900 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-tight text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+                            {a.athlete_name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-center gap-2">
+                      {/* <button
+                        onClick={() => setOpenActions({ isOpen: true, key: Constants.ACTION_MATCH_LOGS, row })}
+                        className="px-4 py-2 bg-blue-600 text-white text-[10px] font-black uppercase rounded shadow-lg shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all inline-flex items-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        {t("competition_detail.modals.match_log")}
+                      </button> */}
+                      <button
+                        onClick={() => setOpenActions({ isOpen: true, key: Constants.ACTION_MATCH_REPORT, row })}
+                        className="px-4 py-2 bg-emerald-600 text-white text-[10px] font-black uppercase rounded shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all inline-flex items-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                        {t("competition_detail.modals.result_report")}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {tableData.filter(r => r.match_status === "FIN").length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center">
+                      <svg className="w-12 h-12 text-gray-200 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                      <p className="text-gray-400 font-bold uppercase text-xs tracking-widest">{t("competition_detail.messages.no_data")}</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {showScrollTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full hover:scale-110 transition-all duration-300 z-40 group"
+          title={t('competition_data_other.scroll_to_top')}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 group-hover:animate-bounce"
+            viewBox="0 0 20 20"
+            fill="currentColor"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 group-hover:animate-bounce"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-        )
-      }
+            <path
+              fillRule="evenodd"
+              d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+      )}
 
       {/* Modal Kết quả */}
-      {openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_RESULT && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 animate-in fade-in duration-500">
-          <div className="absolute inset-0 bg-blue-950/60 backdrop-blur-2xl" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
+      {
+        openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_RESULT && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 animate-in fade-in duration-500">
+            <div className="absolute inset-0 bg-blue-950/60 backdrop-blur-2xl" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
 
-          <div className={`relative bg-white dark:bg-gray-900 rounded-3xl ${openActions?.row?.match_type === 'VON' ? 'max-w-6xl' : 'max-w-4xl'} w-full mx-4 overflow-hidden flex flex-col max-h-[90vh] border border-yellow-500 dark:border-yellow-600`}>
-            {/* Header */}
-            <div className="relative px-6 py-4 bg-yellow-500 dark:bg-yellow-600 flex-shrink-0">
+            <div className={`relative bg-white dark:bg-gray-900 rounded ${openActions?.row?.match_type === 'VON' ? 'max-w-6xl' : 'max-w-4xl'} w-full mx-4 overflow-hidden flex flex-col max-h-[90vh] border border-yellow-500 dark:border-yellow-600`}>
+              {/* Header */}
+              <div className="relative px-6 py-4 bg-yellow-500 dark:bg-yellow-600 flex-shrink-0">
 
-              <div className="relative z-10 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <h2 className="text-[8px] font-black text-white/60 uppercase tracking-[0.3em]">{t('competition_data_other.modal_match_data_analysis')}</h2>
-                      {openActions?.row?.match_type === 'VON' && (
-                        <span className="text-[8px] font-mono bg-white/20 text-white px-2 py-0.5 rounded-full">
-                          {t('competition_data_other.type_vo_nhac')} • 7 {t('competition_data_other.form_judge')}
-                        </span>
-                      )}
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-white/20 rounded flex items-center justify-center text-white">
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
                     </div>
-                    <h3 className="text-xl font-black text-white tracking-tight uppercase leading-none">
-                      {t('competition_data_other.modal_detailed_score_table')}
-                    </h3>
+                    <div>
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <h2 className="text-[8px] font-black text-white/60 uppercase tracking-[0.3em]">{t('competition_data_other.modal_match_data_analysis')}</h2>
+                        {openActions?.row?.match_type === 'VON' && (
+                          <span className="text-[8px] font-mono bg-white/20 text-white px-2 py-0.5 rounded-full">
+                            {t('competition_data_other.type_vo_nhac')} • 7 {t('competition_data_other.form_judge')}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-xl font-black text-white tracking-tight uppercase leading-none">
+                        {t('competition_data_other.modal_detailed_score_table')}
+                      </h3>
+                    </div>
                   </div>
-                </div>
 
-                <button
-                  onClick={() => setOpenActions({ ...openActions, isOpen: false })}
-                  className="w-9 h-9 flex items-center justify-center bg-black/10 hover:bg-black/20 text-white rounded-full transition-all active:scale-95"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-              </div>
-            </div>
-
-            {/* Content - Scrollable */}
-            <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950 p-5 custom-scrollbar">
-              {renderContentModal(openActions, modalProps)}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Cập nhật */}
-      {openActions?.isOpen && openActions?.key === Constants.ACTION_UPDATE && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-blue-950/60" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
-
-          <div className="relative bg-white dark:bg-gray-900 rounded-3xl max-w-5xl w-full mx-4 overflow-hidden flex flex-col max-h-[90vh] border border-emerald-500 dark:border-emerald-600">
-            {/* Header */}
-            <div className="relative px-6 py-4 bg-emerald-500 dark:bg-emerald-600 flex-shrink-0">
-              <div className="relative z-10 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                  </div>
-                  <div>
-                    <h2 className="text-[8px] font-black text-white/60 uppercase tracking-[0.3em] mb-0.5">{t('competition_data_other.modal_match_management')}</h2>
-                    <h3 className="text-xl font-black text-white tracking-tight uppercase leading-none">
-                      {t('competition_data_other.modal_update_info')}
-                    </h3>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setOpenActions({ ...openActions, isOpen: false })}
-                  className="w-9 h-9 flex items-center justify-center bg-black/10 hover:bg-black/20 text-white rounded-full transition-all active:scale-95"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-              </div>
-            </div>
-
-            {/* Content - Scrollable */}
-            <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950 p-5 custom-scrollbar">
-              {renderContentModal(openActions, modalProps)}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Biên bản */}
-      {openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_REPORT && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-blue-950/60" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
-
-          <div className="relative bg-white dark:bg-gray-900 rounded-3xl max-w-5xl w-full mx-4 overflow-hidden flex flex-col max-h-[90vh] border border-blue-500 dark:border-blue-600">
-            {/* Header */}
-            <div className="relative px-6 py-4 bg-blue-600 dark:bg-blue-700 flex-shrink-0">
-              <div className="relative z-10 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white">
-                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h2 className="text-[8px] font-black text-white/60 uppercase tracking-[0.3em] mb-0.5">{t('competition_data_other.modal_match_management')}</h2>
-                    <h3 className="text-xl font-black text-white tracking-tight uppercase leading-none">
-                      {t('competition_data_other.modal_match_report')}
-                    </h3>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  {/* Nút In biên bản */}
-                  <button
-                    onClick={() => window.print()}
-                    className="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold transition-all active:scale-95 uppercase tracking-widest text-xs flex items-center gap-2 backdrop-blur"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                    </svg>
-                    {t('competition_detail.modals.print_report')}
-                  </button>
-
-                  {/* Nút Đóng */}
                   <button
                     onClick={() => setOpenActions({ ...openActions, isOpen: false })}
                     className="w-9 h-9 flex items-center justify-center bg-black/10 hover:bg-black/20 text-white rounded-full transition-all active:scale-95"
@@ -1781,134 +1714,291 @@ export default function CompetitionDataOther() {
                   </button>
                 </div>
               </div>
-            </div>
 
-            {/* Content - Scrollable */}
-            <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950 p-5 custom-scrollbar">
-              {renderContentModal(openActions, modalProps)}
+              {/* Content - Scrollable */}
+              <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950 p-5 custom-scrollbar">
+                {renderContentModal(openActions, modalProps)}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
+
+      {/* Modal Cập nhật */}
+      {
+        openActions?.isOpen && openActions?.key === Constants.ACTION_UPDATE && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-blue-950/60" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
+
+            <div className="relative bg-white dark:bg-gray-900 rounded max-w-5xl w-full mx-4 overflow-hidden flex flex-col max-h-[90vh] border border-emerald-500 dark:border-emerald-600">
+              {/* Header */}
+              <div className="relative px-6 py-4 bg-emerald-500 dark:bg-emerald-600 flex-shrink-0">
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-white/20 rounded flex items-center justify-center text-white">
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    </div>
+                    <div>
+                      <h2 className="text-[8px] font-black text-white/60 uppercase tracking-[0.3em] mb-0.5">{t('competition_data_other.modal_match_management')}</h2>
+                      <h3 className="text-xl font-black text-white tracking-tight uppercase leading-none">
+                        {t('competition_data_other.modal_update_info')}
+                      </h3>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                    className="w-9 h-9 flex items-center justify-center bg-black/10 hover:bg-black/20 text-white rounded-full transition-all active:scale-95"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Content - Scrollable */}
+              <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950 p-5 custom-scrollbar">
+                {renderContentModal(openActions, modalProps)}
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Modal Nhật ký */}
+      {
+        openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_LOGS && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-blue-950/60" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
+
+            <div className="relative bg-white dark:bg-gray-900 rounded max-w-xl w-full mx-4 overflow-hidden flex flex-col border border-blue-500">
+              {/* Header */}
+              <div className="relative px-6 py-4 bg-blue-600 dark:bg-blue-700 flex-shrink-0 text-white">
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-white/20 rounded flex items-center justify-center text-white">
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-black tracking-tight uppercase leading-none">
+                        {t("competition_detail.modals.match_log")}
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => window.print()}
+                      className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded font-bold transition-all active:scale-95 uppercase tracking-widest text-xs backdrop-blur-md border border-white/10"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                      </svg>
+                      {t("competition_detail.modals.print_log")}
+                    </button>
+                    <button
+                      onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                      className="w-9 h-9 flex items-center justify-center bg-black/10 hover:bg-black/20 text-white rounded-full transition-all active:scale-95"
+                    >
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="bg-gray-50 dark:bg-gray-950 p-8 text-center">
+                {renderContentModal(openActions, modalProps)}
+                <div className="mt-8 flex justify-center">
+                  <button onClick={() => setOpenActions({ ...openActions, isOpen: false })} className="px-8 py-2 bg-blue-600 text-white font-bold rounded uppercase tracking-widest text-xs hover:scale-105 active:scale-95 transition-all shadow-lg shadow-blue-500/20">Đóng</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Modal Biên bản */}
+      {
+        openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_REPORT && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-blue-950/60" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
+
+            <div className="relative bg-white dark:bg-gray-900 rounded max-w-5xl w-full mx-4 overflow-hidden flex flex-col max-h-[90vh] border border-blue-500 dark:border-blue-600">
+              {/* Header */}
+              <div className="relative px-6 py-4 bg-blue-600 dark:bg-blue-700 flex-shrink-0">
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-white/20 rounded flex items-center justify-center text-white">
+                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h2 className="text-[8px] font-black text-white/60 uppercase tracking-[0.3em] mb-0.5">{t('competition_data_other.modal_match_management')}</h2>
+                      <h3 className="text-xl font-black text-white tracking-tight uppercase leading-none">
+                        {t('competition_data_other.modal_match_report')}
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {/* Nút In biên bản */}
+                    <button
+                      onClick={() => window.print()}
+                      className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded font-bold transition-all active:scale-95 uppercase tracking-widest text-xs backdrop-blur-md border border-white/10"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                      </svg>
+                      {t("competition_detail.modals.print_report")}
+                    </button>
+
+                    {/* Nút Đóng */}
+                    <button
+                      onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                      className="w-9 h-9 flex items-center justify-center bg-black/10 hover:bg-black/20 text-white rounded-full transition-all active:scale-95"
+                    >
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Content - Scrollable */}
+              <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950 p-5 custom-scrollbar">
+                {renderContentModal(openActions, modalProps)}
+              </div>
+            </div>
+          </div>
+        )
+      }
 
       {/* Modal Thêm mới */}
-      {openActions?.isOpen && openActions?.key === Constants.ACTION_CREATE && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
-          <div className="absolute inset-0 bg-blue-950/60" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
+      {
+        openActions?.isOpen && openActions?.key === Constants.ACTION_CREATE && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
+            <div className="absolute inset-0 bg-blue-950/60" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
 
-          <div className="relative bg-white dark:bg-gray-900 rounded-3xl max-w-5xl w-full mx-4 overflow-hidden flex flex-col border border-blue-500 dark:border-blue-600">
-            {/* Header */}
-            <div className="relative px-8 py-6 bg-blue-600 flex-shrink-0">
-              <div className="relative z-10 flex items-center justify-between">
-                <div className="flex items-center gap-5">
-                  <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-white">
-                    <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+            <div className="relative bg-white dark:bg-gray-900 rounded max-w-5xl w-full mx-4 overflow-hidden flex flex-col border border-blue-500 dark:border-blue-600">
+              {/* Header */}
+              <div className="relative px-8 py-6 bg-blue-600 flex-shrink-0">
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex items-center gap-5">
+                    <div className="w-12 h-12 bg-white/20 rounded flex items-center justify-center text-white">
+                      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                    </div>
+                    <div>
+                      <h2 className="text-[9px] font-black text-white/60 uppercase tracking-[0.4em] mb-0.5">{t("competition_detail.modals.update_match_subtitle")}</h2>
+                      <h3 className="text-2xl font-black text-white tracking-tight uppercase leading-none">
+                        {t("competition_data_other.form_create_match")}
+                      </h3>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-[9px] font-black text-white/60 uppercase tracking-[0.4em] mb-0.5">{t("competition_detail.modals.update_match_subtitle")}</h2>
-                    <h3 className="text-2xl font-black text-white tracking-tight uppercase leading-none">
-                      {t("competition_data_other.form_create_match")}
-                    </h3>
-                  </div>
+
+                  <button
+                    onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                    className="w-10 h-10 flex items-center justify-center bg-black/10 hover:bg-black/20 text-white rounded-full transition-all active:scale-95"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
                 </div>
+              </div>
 
-                <button
-                  onClick={() => setOpenActions({ ...openActions, isOpen: false })}
-                  className="w-10 h-10 flex items-center justify-center bg-black/10 hover:bg-black/20 text-white rounded-full transition-all active:scale-95"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
+              <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950 p-8 custom-scrollbar">
+                {renderContentModal(openActions, modalProps)}
               </div>
             </div>
-
-            <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950 p-8 custom-scrollbar">
-              {renderContentModal(openActions, modalProps)}
-            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Modal Cấu hình */}
-      {openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_CONFIG && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
-          <div className="absolute inset-0 bg-blue-950/60" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
+      {
+        openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_CONFIG && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
+            <div className="absolute inset-0 bg-blue-950/60" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
 
-          <div className="relative bg-white dark:bg-gray-900 rounded-3xl max-w-6xl w-full mx-4 overflow-hidden flex flex-col border border-blue-500 dark:border-blue-600">
-            {/* Header */}
-            <div className="relative px-8 py-6 bg-blue-600 flex-shrink-0">
-              <div className="relative z-10 flex items-center justify-between">
-                <div className="flex items-center gap-5">
-                  <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-white">
-                    <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+            <div className="relative bg-white dark:bg-gray-900 rounded max-w-6xl w-full mx-4 overflow-hidden flex flex-col border border-blue-500 dark:border-blue-600">
+              {/* Header */}
+              <div className="relative px-8 py-6 bg-blue-600 flex-shrink-0">
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex items-center gap-5">
+                    <div className="w-12 h-12 bg-white/20 rounded flex items-center justify-center text-white">
+                      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    </div>
+                    <div>
+                      <h2 className="text-[9px] font-black text-white/60 uppercase tracking-[0.4em] mb-0.5">{t("competition_detail.modals.config_subtitle")}</h2>
+                      <h3 className="text-2xl font-black text-white tracking-tight uppercase leading-none">
+                        {t("competition_detail.modals.config_title")}
+                      </h3>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-[9px] font-black text-white/60 uppercase tracking-[0.4em] mb-0.5">{t("competition_detail.modals.config_subtitle")}</h2>
-                    <h3 className="text-2xl font-black text-white tracking-tight uppercase leading-none">
-                      {t("competition_detail.modals.config_title")}
-                    </h3>
-                  </div>
+
+                  <button
+                    onClick={() => setOpenActions({ ...openActions, isOpen: false })}
+                    className="w-10 h-10 flex items-center justify-center bg-black/10 hover:bg-black/20 text-white rounded-full transition-all active:scale-95"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
                 </div>
+              </div>
+              <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950 p-8 custom-scrollbar">
+                {renderContentModal(openActions, modalProps)}
+              </div>
+            </div>
+          </div>
+        )
+      }
 
-                <button
-                  onClick={() => setOpenActions({ ...openActions, isOpen: false })}
-                  className="w-10 h-10 flex items-center justify-center bg-black/10 hover:bg-black/20 text-white rounded-full transition-all active:scale-95"
-                >
+      {/* Modal Xoá */}
+      {
+        openActions?.isOpen && openActions?.key === Constants.ACTION_DELETE && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
+            <div className="absolute inset-0 bg-blue-950/60" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
+            <div className="relative bg-white dark:bg-gray-900 rounded max-w-xl w-full mx-4 overflow-hidden border border-rose-500">
+              <div className="px-8 py-6 bg-rose-600 text-white flex items-center justify-between">
+                <div className="flex items-center gap-5">
+                  <div className="w-12 h-12 bg-white/20 rounded flex items-center justify-center">
+                    <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  </div>
+                  <h3 className="text-xl font-black uppercase tracking-widest">{t("competition_data_other.action_confirm_delete")}</h3>
+                </div>
+                <button onClick={() => setOpenActions({ ...openActions, isOpen: false })} className="w-10 h-10 flex items-center justify-center bg-black/10 hover:bg-black/20 rounded-full transition-all">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               </div>
-            </div>
-            <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950 p-8 custom-scrollbar">
-              {renderContentModal(openActions, modalProps)}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Xoá */}
-      {openActions?.isOpen && openActions?.key === Constants.ACTION_DELETE && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
-          <div className="absolute inset-0 bg-blue-950/60" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
-          <div className="relative bg-white dark:bg-gray-900 rounded-3xl max-w-xl w-full mx-4 overflow-hidden border border-rose-500">
-            <div className="px-8 py-6 bg-rose-600 text-white flex items-center justify-between">
-              <div className="flex items-center gap-5">
-                <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
-                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                </div>
-                <h3 className="text-xl font-black uppercase tracking-widest">{t("competition_data_other.action_confirm_delete")}</h3>
+              <div className="p-8">
+                {renderContentModal(openActions, modalProps)}
               </div>
-              <button onClick={() => setOpenActions({ ...openActions, isOpen: false })} className="w-10 h-10 flex items-center justify-center bg-black/10 hover:bg-black/20 rounded-full transition-all">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            </div>
-            <div className="p-8">
-              {renderContentModal(openActions, modalProps)}
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Modal Vào trận */}
-      {openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_START && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
-          <div className="absolute inset-0 bg-blue-950/60" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
-          <div className="relative bg-white dark:bg-gray-900 rounded-3xl max-w-xl w-full mx-4 overflow-hidden border border-blue-500">
-            <div className="px-8 py-6 bg-blue-600 text-white flex items-center justify-between">
-              <div className="flex items-center gap-5">
-                <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
-                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      {
+        openActions?.isOpen && openActions?.key === Constants.ACTION_MATCH_START && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
+            <div className="absolute inset-0 bg-blue-950/60" onClick={() => setOpenActions({ ...openActions, isOpen: false })}></div>
+            <div className="relative bg-white dark:bg-gray-900 rounded max-w-xl w-full mx-4 overflow-hidden border border-blue-500">
+              <div className="px-8 py-6 bg-blue-600 text-white flex items-center justify-between">
+                <div className="flex items-center gap-5">
+                  <div className="w-12 h-12 bg-white/20 rounded flex items-center justify-center">
+                    <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  </div>
+                  <h3 className="text-xl font-black uppercase tracking-widest">{t("competition_data_other.action_start_match")}</h3>
                 </div>
-                <h3 className="text-xl font-black uppercase tracking-widest">{t("competition_data_other.action_start_match")}</h3>
+                <button onClick={() => setOpenActions({ ...openActions, isOpen: false })} className="w-10 h-10 flex items-center justify-center bg-black/10 hover:bg-black/20 rounded-full transition-all">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
               </div>
-              <button onClick={() => setOpenActions({ ...openActions, isOpen: false })} className="w-10 h-10 flex items-center justify-center bg-black/10 hover:bg-black/20 rounded-full transition-all">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            </div>
-            <div className="p-8">
-              {renderContentModal(openActions, modalProps)}
+              <div className="p-8">
+                {renderContentModal(openActions, modalProps)}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Modal thông báo */}
       <ConfirmModal {...modalProps} />

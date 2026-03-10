@@ -94,7 +94,7 @@ const BackupSection = ({
                       Enterprise
                     </span>
                   </div>
-                  <p className="text-[11px] font-bold text-amber-600/60 dark:text-amber-400/40 uppercase tracking-[0.2em]">{t("data_sync.sftp_infrastructure", "Hạ tầng DigiSports (SFTP)")}</p>
+                  <p className="text-[11px] font-bold text-amber-600/60 dark:text-amber-400/40 uppercase tracking-[0.2em]">{t("data_sync.sftp_infrastructure", "Hạ tầng DigiSports")}</p>
                 </div>
               </div>
 
@@ -178,7 +178,9 @@ const BackupSection = ({
                       </svg>
                     </div>
                     <div className="space-y-1.5 focus:outline-none">
-                      <h4 className="font-black text-gray-950 dark:text-gray-50 text-base tracking-tight mb-1">{file.name}</h4>
+                      <h4 className="font-black text-gray-950 dark:text-gray-50 text-base tracking-tight mb-1 truncate max-w-[300px]" title={file.name}>
+                        {t("data_sync.backup_display_name", "Bản sao lưu")} - {new Date(file.createdTime).toLocaleString()}
+                      </h4>
                       <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 dark:text-gray-500">
                         <span className="flex items-center gap-2 bg-gray-50 dark:bg-gray-900/80 px-2 py-1 rounded border border-gray-100 dark:border-gray-800">
                           <svg className="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeWidth={2.5} /></svg>

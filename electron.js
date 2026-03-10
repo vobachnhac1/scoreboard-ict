@@ -109,19 +109,38 @@ ipcMain.handle('license:check-status', async () => {
     return response.data;
   } catch (error) {
     log.error('License check error:', error);
-    return { success: false, error: error.message };
+    return {
+      success: false,
+      error: error.response?.data?.error || error.message,
+      status: error.response?.status
+    };
   }
 });
 
 ipcMain.handle('license:activate', async (event, licenseKey) => {
+  const axios = require('axios');
   try {
-    const axios = require('axios');
     const response = await axios.post('http://localhost:6789/api/license/activate', {
       license_key: licenseKey,
     });
     return response.data;
   } catch (error) {
     log.error('License activation error:', error);
+    return {
+      success: false,
+      error: error.response?.data?.error || error.message,
+      status: error.response?.status
+    };
+  }
+});
+
+ipcMain.handle('license:revoke-device', async () => {
+  try {
+    const axios = require('axios');
+    const response = await axios.delete('http://localhost:6789/api/license/revoke-device');
+    return response.data;
+  } catch (error) {
+    log.error('License revoke device error:', error);
     return {
       success: false,
       error: error.response?.data?.error || error.message

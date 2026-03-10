@@ -70,266 +70,201 @@ export default function DataForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto py-2">
+      {/* 1. General Info Section */}
+      <section className="bg-white dark:bg-gray-800/40 p-6 rounded border border-gray-100 dark:border-gray-700 shadow-sm">
+        <h3 className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+          {t("competition_detail.modals.general_info_status")}
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">
+              {editableHeaders[0] || t("competition_detail.data_form.stt_label")} <span className="text-red-500">*</span>
+            </label>
+            <input
+              disabled
+              type="text"
+              value={formData.col_0 || ""}
+              className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 rounded text-sm font-bold border-none ring-1 ring-gray-100 dark:ring-gray-800 text-gray-400"
+            />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">
+              {t("competition_detail.data_form.status_label")}
+            </label>
+            <div className="relative">
+              <select
+                value={formData.match_status}
+                onChange={(e) => setFormData({ ...formData, match_status: e.target.value })}
+                className={`w-full px-4 py-3 bg-white dark:bg-gray-900 rounded text-sm font-bold transition-all appearance-none ring-1 ${formData.match_status === "IN" ? "ring-blue-500/50 text-blue-600" :
+                  formData.match_status === "FIN" ? "ring-emerald-500/50 text-emerald-600" :
+                    "ring-gray-200 dark:ring-gray-800"
+                  }`}
+              >
+                <option value="WAI">{t("competition_detail.data_form.status_waiting")}</option>
+                <option value="IN">{t("competition_detail.data_form.status_ongoing")}</option>
+                <option value="FIN">{t("competition_detail.data_form.status_finished")}</option>
+                <option value="CAN">{t("competition_detail.data_form.status_cancelled")}</option>
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
+              </div>
+            </div>
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">
+              {editableHeaders[1] || t("competition_detail.data_form.content_label")}
+            </label>
+            <input
+              type="text"
+              value={formData.col_1 || ""}
+              onChange={(e) => setFormData({ ...formData, col_1: e.target.value })}
+              className="w-full px-4 py-3 bg-white dark:bg-gray-900 border-none ring-1 ring-gray-200 dark:ring-gray-800 rounded text-sm font-bold focus:ring-2 focus:ring-blue-500 transition-all"
+              placeholder={t("competition_detail.data_form.content_placeholder")}
+            />
+          </div>
+          <div>
+            <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">
+              {editableHeaders[2] || t("competition_detail.data_form.weight_label")}
+            </label>
+            <input
+              type="text"
+              value={formData.col_2 || ""}
+              onChange={(e) => setFormData({ ...formData, col_2: e.target.value })}
+              className="w-full px-4 py-3 bg-white dark:bg-gray-900 border-none ring-1 ring-gray-200 dark:ring-gray-800 rounded text-sm font-bold focus:ring-2 focus:ring-blue-500 transition-all uppercase"
+              placeholder={t("competition_detail.data_form.weight_placeholder")}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 2. Athletes Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Cột trái: Thông tin chung & Đỏ */}
-        <div className="space-y-5">
-          {/* Thông tin chung & Trạng thái */}
-          <section>
-            <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3 border-b border-gray-200 dark:border-gray-700 pb-2">
-              {t("competition_detail.modals.general_info_status")}
-            </h3>
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    {editableHeaders[0] || t("competition_detail.data_form.stt_label")} <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    disabled
-                    type="text"
-                    value={formData.col_0 || ""}
-                    onChange={(e) => setFormData({ ...formData, col_0: e.target.value })}
-                    className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
-                    placeholder={t("competition_detail.data_form.stt_placeholder")}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    {t("competition_detail.data_form.status_label")}
-                  </label>
-                  <select
-                    value={formData.match_status}
-                    onChange={(e) => setFormData({ ...formData, match_status: e.target.value })}
-                    className={`w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-shadow ${getStatusColor(formData.match_status)}`}
-                  >
-                    <option value="WAI">{t("competition_detail.data_form.status_waiting")}</option>
-                    <option value="IN">{t("competition_detail.data_form.status_ongoing")}</option>
-                    <option value="FIN">{t("competition_detail.data_form.status_finished")}</option>
-                    <option value="CAN">{t("competition_detail.data_form.status_cancelled")}</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  {editableHeaders[1] || t("competition_detail.data_form.content_label")} <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.col_1 || ""}
-                  onChange={(e) => setFormData({ ...formData, col_1: e.target.value })}
-                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
-                  placeholder={t("competition_detail.data_form.content_placeholder")}
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  {editableHeaders[2] || t("competition_detail.data_form.weight_label")} <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.col_2 || ""}
-                  onChange={(e) => setFormData({ ...formData, col_2: e.target.value })}
-                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
-                  placeholder={t("competition_detail.data_form.weight_placeholder")}
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center justify-between gap-2">
-                  <span>{t("competition_detail.data_form.winner_label")}</span>
-                  {formData.winner && (
-                    <button
-                      type="button"
-                      onClick={() => setFormData({ ...formData, winner: "" })}
-                      className="text-xs text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 flex items-center gap-1 transition-colors"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                      {t("competition_detail.data_form.clear_winner")}
-                    </button>
-                  )}
-                </label>
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, winner: "red" })}
-                    className={`py-2 px-3 border rounded shadow-sm text-sm font-bold flex items-center justify-center gap-2 transition-all ${formData.winner === "red"
-                      ? "bg-red-600 border-red-600 text-white ring-2 ring-red-500 ring-offset-1 dark:ring-offset-gray-900"
-                      : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-red-400 dark:hover:border-red-500 hover:text-red-600 dark:hover:text-red-400"
-                      }`}
-                  >
-                    {formData.winner === "red" ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-                    ) : (
-                      <span className="w-4 h-4 rounded-full bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 flex items-center justify-center text-[10px] border border-red-200 dark:border-red-800">{t("competition_detail.data_form.red_corner_icon")}</span>
-                    )}
-                    {t("competition_detail.data_form.red_wins")}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, winner: "blue" })}
-                    className={`py-2 px-3 border rounded shadow-sm text-sm font-bold flex items-center justify-center gap-2 transition-all ${formData.winner === "blue"
-                      ? "bg-blue-600 border-blue-600 text-white ring-2 ring-blue-500 ring-offset-1 dark:ring-offset-gray-900"
-                      : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
-                      }`}
-                  >
-                    {formData.winner === "blue" ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-                    ) : (
-                      <span className="w-4 h-4 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-[10px] border border-blue-200 dark:border-blue-800">{t("competition_detail.data_form.blue_corner_icon")}</span>
-                    )}
-                    {t("competition_detail.data_form.blue_wins")}
-                  </button>
-                </div>
-
-                <select
-                  value={formData.winner}
-                  onChange={(e) => setFormData({ ...formData, winner: e.target.value })}
-                  className={`w-full px-3 py-2 bg-white dark:bg-gray-800 border ${formData.winner ? 'border-yellow-400 ring-1 ring-yellow-400 dark:border-yellow-500 text-yellow-700 dark:text-yellow-500 bg-yellow-50 dark:bg-yellow-900/10' : 'border-gray-300 dark:border-gray-600'} rounded shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm font-semibold transition-shadow`}
-                >
-                  <option value="">{t("competition_detail.data_form.no_winner")}</option>
-                  <option value="red">{t("competition_detail.data_form.red_athlete")}: {formData.col_3 || t("competition_detail.data_form.updating")}</option>
-                  <option value="blue">{t("competition_detail.data_form.blue_athlete")}: {formData.col_6 || t("competition_detail.data_form.updating")}</option>
-                </select>
-              </div>
+        {/* RED ATHLETE */}
+        <section className="bg-red-50/30 dark:bg-red-950/20 p-6 rounded border border-red-100/50 dark:border-red-900/30">
+          <h3 className="text-[10px] font-black text-red-600 dark:text-red-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+            {t("competition_detail.data_form.red_corner_label")}
+          </h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-[10px] font-black text-red-400 dark:text-red-600/50 uppercase tracking-widest mb-2 px-1">
+                {t("competition_detail.data_form.name_label")}
+              </label>
+              <input
+                type="text"
+                value={formData.col_3 || ""}
+                onChange={(e) => setFormData({ ...formData, col_3: e.target.value })}
+                className="w-full px-4 py-3 bg-white dark:bg-gray-900 border-none ring-1 ring-red-200 dark:ring-red-900/50 rounded text-sm font-bold focus:ring-2 focus:ring-red-500 transition-all uppercase"
+                placeholder={t("competition_detail.data_form.red_athlete_name_placeholder")}
+              />
             </div>
-          </section>
-        </div>
-
-        {/* Cột phải: Các VĐV */}
-        <div className="space-y-5">
-          {/* VĐV ĐỎ */}
-          <section>
-            <h3 className="text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-widest mb-3 border-b border-red-100 dark:border-red-900/50 pb-2">
-              {t("competition_detail.data_form.red_corner_label")}
-            </h3>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  {t("competition_detail.data_form.name_label")} <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.col_3 || ""}
-                  onChange={(e) => setFormData({ ...formData, col_3: e.target.value })}
-                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
-                  placeholder={t("competition_detail.data_form.red_athlete_name_placeholder")}
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    {t("competition_detail.data_form.unit_label")}
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.col_4 || ""}
-                    onChange={(e) => setFormData({ ...formData, col_4: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
-                    placeholder={t("competition_detail.data_form.unit_placeholder")}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    {editableHeaders[5] || t("competition_detail.data_form.birth_year_label")}
-                  </label>
-                  <input
-                    disabled
-                    type="text"
-                    value={formData.col_5 || ""}
-                    onChange={(e) => setFormData({ ...formData, col_5: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
-                    placeholder={t("competition_detail.data_form.flag_placeholder")}
-                  />
-                </div>
-              </div>
+            <div>
+              <label className="block text-[10px] font-black text-red-400 dark:text-red-600/50 uppercase tracking-widest mb-2 px-1">
+                {t("competition_detail.data_form.unit_label")}
+              </label>
+              <input
+                type="text"
+                value={formData.col_4 || ""}
+                onChange={(e) => setFormData({ ...formData, col_4: e.target.value })}
+                className="w-full px-4 py-3 bg-white dark:bg-gray-900 border-none ring-1 ring-red-200 dark:ring-red-900/50 rounded text-sm font-bold focus:ring-2 focus:ring-red-500 transition-all"
+                placeholder={t("competition_detail.data_form.unit_placeholder")}
+              />
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* VĐV XANH */}
-          <section>
-            <h3 className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-3 border-b border-blue-100 dark:border-blue-900/50 pb-2">
-              {t("competition_detail.data_form.blue_corner_label")}
-            </h3>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  {t("competition_detail.data_form.name_label")} <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.col_6 || ""}
-                  onChange={(e) => setFormData({ ...formData, col_6: e.target.value })}
-                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
-                  placeholder={t("competition_detail.data_form.blue_athlete_name_placeholder")}
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    {t("competition_detail.data_form.unit_label")}
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.col_7 || ""}
-                    onChange={(e) => setFormData({ ...formData, col_7: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
-                    placeholder={t("competition_detail.data_form.unit_placeholder")}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    {editableHeaders[8] || t("competition_detail.data_form.birth_year_label")}
-                  </label>
-                  <input
-                    disabled
-                    type="text"
-                    value={formData.col_8 || ""}
-                    onChange={(e) => setFormData({ ...formData, col_8: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 dark:text-gray-100 transition-shadow"
-                    placeholder={t("competition_detail.data_form.flag_placeholder")}
-                  />
-                </div>
-              </div>
+        {/* BLUE ATHLETE */}
+        <section className="bg-blue-50/30 dark:bg-blue-950/20 p-6 rounded border border-blue-100/50 dark:border-blue-900/30">
+          <h3 className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+            {t("competition_detail.data_form.blue_corner_label")}
+          </h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-[10px] font-black text-blue-400 dark:text-blue-600/50 uppercase tracking-widest mb-2 px-1">
+                {t("competition_detail.data_form.name_label")}
+              </label>
+              <input
+                type="text"
+                value={formData.col_6 || ""}
+                onChange={(e) => setFormData({ ...formData, col_6: e.target.value })}
+                className="w-full px-4 py-3 bg-white dark:bg-gray-900 border-none ring-1 ring-blue-200 dark:ring-blue-900/50 rounded text-sm font-bold focus:ring-2 focus:ring-blue-500 transition-all uppercase"
+                placeholder={t("competition_detail.data_form.blue_athlete_name_placeholder")}
+              />
             </div>
-          </section>
-        </div>
+            <div>
+              <label className="block text-[10px] font-black text-blue-400 dark:text-blue-600/50 uppercase tracking-widest mb-2 px-1">
+                {t("competition_detail.data_form.unit_label")}
+              </label>
+              <input
+                type="text"
+                value={formData.col_7 || ""}
+                onChange={(e) => setFormData({ ...formData, col_7: e.target.value })}
+                className="w-full px-4 py-3 bg-white dark:bg-gray-900 border-none ring-1 ring-blue-200 dark:ring-blue-900/50 rounded text-sm font-bold focus:ring-2 focus:ring-blue-500 transition-all"
+                placeholder={t("competition_detail.data_form.unit_placeholder")}
+              />
+            </div>
+          </div>
+        </section>
       </div>
 
-      {/* Footer buttons */}
-      <div className="flex justify-end gap-3 pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+      {/* 3. Result Section */}
+      <section className="bg-amber-50/30 dark:bg-amber-950/20 p-6 rounded border border-amber-100/50 dark:border-amber-900/30">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-[0.2em] flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
+            {t("competition_detail.data_form.winner_label")}
+          </h3>
+          {formData.winner && (
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, winner: "" })}
+              className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-red-500 transition-colors"
+            >
+              {t("competition_detail.data_form.clear_winner")}
+            </button>
+          )}
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            type="button"
+            onClick={() => setFormData({ ...formData, winner: "red" })}
+            className={`flex items-center justify-center gap-3 p-4 rounded font-black text-[11px] uppercase tracking-widest transition-all ${formData.winner === "red"
+              ? "bg-red-600 text-white shadow-xl shadow-red-500/30 scale-[1.02]"
+              : "bg-white dark:bg-gray-900 text-gray-400 border border-gray-100 dark:border-gray-800"
+              }`}
+          >
+            {t("competition_detail.data_form.red_wins")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setFormData({ ...formData, winner: "blue" })}
+            className={`flex items-center justify-center gap-3 p-4 rounded font-black text-[11px] uppercase tracking-widest transition-all ${formData.winner === "blue"
+              ? "bg-blue-600 text-white shadow-xl shadow-blue-500/30 scale-[1.02]"
+              : "bg-white dark:bg-gray-900 text-gray-400 border border-gray-100 dark:border-gray-800"
+              }`}
+          >
+            {t("competition_detail.data_form.blue_wins")}
+          </button>
+        </div>
+      </section>
+
+      {/* Footer Buttons */}
+      <div className="flex gap-4 pt-4">
         <button
           type="button"
           onClick={onCancel}
-          className="px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-600 transition-all"
+          className="flex-1 px-8 py-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 rounded text-[11px] font-black uppercase tracking-widest transition-all active:scale-95"
         >
           {t("competition_detail.buttons.cancel")}
         </button>
         <button
           type="submit"
-          className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+          className="flex- [2] px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded text-[11px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all active:scale-95 flex items-center justify-center gap-3"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
           {data ? t("competition_detail.confirm.update") : t("competition_detail.confirm.add_new")}
         </button>
       </div>

@@ -1540,7 +1540,7 @@
     "restore_local": "Restore Local",
     "confirm_reset_app": "WARNING: Overwrite data & Reset application?",
     "server_backup": "Server Backup",
-    "sftp_infrastructure": "DigiSports Infrastructure (SFTP)",
+    "sftp_infrastructure": "DigiSports Infrastructure",
     "test_connection": "Test Connection",
     "refresh_list": "Refresh List",
     "server_backup_desc": "Store data on our secure cloud. Allows instant recovery from anywhere.",
@@ -1552,7 +1552,8 @@
     "confirm_backup_ftp": "Do you want to backup current data to the FTP server?",
     "confirm_restore_ftp": "WARNING: This action will OVERWRITE current data from FTP backup and RESTART software. Continue?",
     "backup_success": "Backup successful!",
-    "restore_success": "Restore successful! Application will automatically restart."
+    "restore_success": "Restore successful! Application will automatically restart.",
+    "backup_display_name": "Backup"
   },
   "competition_detail": {
     "round_history": {
@@ -1652,7 +1653,8 @@
     "tabs": {
       "matches": "Match List",
       "referees": "Referee Allocation",
-      "history": "Match History"
+      "history": "Match History",
+      "results": "Results"
     },
     "stats": {
       "total": "Total",
@@ -1763,6 +1765,7 @@
       "notes_placeholder": "Enter notes (if any)..."
     },
     "modals": {
+      "subtitle": "Competition Management",
       "config_title": "System Configuration",
       "config_subtitle": "Set exam parameters",
       "result_title": "Match Result",
@@ -1792,8 +1795,11 @@
       "number_column": "#",
       "preparing_report": "Preparing report...",
       "organizing_committee": "ORGANIZING COMMITTEE",
+      "organizing_committee_en": "Organizing Committee",
       "socialist_republic": "SOCIALIST REPUBLIC OF VIETNAM",
+      "socialist_republic_en": "SOCIALIST REPUBLIC OF VIETNAM",
       "independence_freedom": "Independence - Freedom - Happiness",
+      "independence_freedom_en": "Independence - Freedom - Happiness",
       "official_record_title": "OFFICIAL COMPETITION RECORD",
       "official_record_subtitle": "OFFICIAL COMPETITION RECORD",
       "venue": "Venue",
@@ -2252,6 +2258,11 @@
     "form_score_system": "Score System",
     "form_judge_short": "J",
     "form_judge": "Judge",
+    "tabs": {
+      "matches": "Match List",
+      "referrers": "Referee Allocation",
+      "results": "Results"
+    },
     "form_final_score": "Official Final Score",
     "form_auto_calculated": "Auto-calculated value",
     "form_competing_members": "Competing Members",
@@ -2466,6 +2477,18 @@
     "warning": "Warning",
     "kick": "Kick",
     "medical": "Medical"
+  },
+  "action_types": {
+    "score": "Score",
+    "remind": "Remind",
+    "warn": "Warning",
+    "kick": "Kick",
+    "medical": "Medical",
+    "fall": "Fall",
+    "win": "Win",
+    "out": "Out",
+    "reset": "Reset",
+    "finish": "Finish"
   },
   "bracket_merge": {
     "step_1_title": "STEP 1: UPLOAD FILE DATA",

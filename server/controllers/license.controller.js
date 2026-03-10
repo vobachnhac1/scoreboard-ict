@@ -77,7 +77,7 @@ exports.activateLicense = async (req, res) => {
                 message: 'License activated successfully'
             });
         } else {
-            return res.status(400).json({
+            return res.status(result.code).json({
                 success: false,
                 error: result.error,
                 code: result.code
@@ -148,7 +148,7 @@ exports.checkLicense = async (req, res) => {
 
 /**
  * POST /api/license/deactivate
- * Hủy kích hoạt license
+ * Hủy kích hoạt license (local only)
  */
 exports.deactivateLicense = async (req, res) => {
     try {
@@ -170,6 +170,46 @@ exports.deactivateLicense = async (req, res) => {
         });
     } catch (error) {
         console.error(' Deactivate license error:', error);
+        return res.status(500).json({
+            success: false,
+            error: 'Internal server error',
+            message: error.message
+        });
+    }
+};
+
+/**
+ * DELETE /api/license/revoke-device
+ * Hủy key license: Gọi API DELETE /device-activations/device/:identifier lên server online
+ * và xóa dữ liệu license khỏi thiết bị
+ */
+exports.revokeDeviceKey = async (req, res) => {
+    try {
+        // Lấy identifier của thiết bị (UUID hoặc MAC address)
+        const mac_address = await getMacAddress();
+        const uuid_desktop = await getUUID();
+
+        // Ư u tiên dùng MAC address (deviceId), fallback sang UUID
+        const identifier = mac_address || uuid_desktop;
+
+        if (!identifier) {
+            return res.status(400).json({
+                success: false,
+                error: 'Cannot determine device identifier'
+            });
+        }
+
+        console.log('🗑️  Revoking device key, identifier:', identifier);
+
+        const result = await licenseService.revokeDeviceKey(identifier);
+
+        return res.json({
+            success: result.success,
+            data: result,
+            message: result.message || (result.success ? 'License revoked successfully' : result.error)
+        });
+    } catch (error) {
+        console.error('❌ Revoke device key error:', error);
         return res.status(500).json({
             success: false,
             error: 'Internal server error',

@@ -40,6 +40,7 @@ contextBridge.exposeInMainWorld('electron', {
   // License APIs
   checkLicenseStatus: () => ipcRenderer.invoke('license:check-status'),
   activateLicense: (licenseKey) => ipcRenderer.invoke('license:activate', licenseKey),
+  revokeDeviceLicense: () => ipcRenderer.invoke('license:revoke-device'),
 
   // License event listeners
   onLicenseStatus: (callback) => {

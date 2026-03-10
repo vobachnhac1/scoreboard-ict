@@ -34,7 +34,7 @@ export default function MatchLogsReportView({ row }) {
     return (
       <div className="flex flex-col items-center justify-center py-20 bg-white">
         <div className="w-10 h-10 border-4 border-gray-100 border-t-black rounded-full animate-spin"></div>
-        <p className="mt-4 text-gray-500 font-bold uppercase text-[7pt] tracking-widest">Đang tải chi tiết diễn biến...</p>
+        <p className="mt-4 text-gray-500 font-bold uppercase text-[7pt] tracking-widest">{t("competition_detail.modals.preparing_logs")}</p>
       </div>
     );
   }
@@ -48,12 +48,12 @@ export default function MatchLogsReportView({ row }) {
         {/* Header */}
         <div className="flex justify-between items-start mb-10 border-b border-black pb-8">
           <div className="text-center w-5/12">
-            <h4 className="font-bold text-[9pt] uppercase">{configSystem.data?.don_vi_to_chuc || "BAN TỔ CHỨC GIẢI"}</h4>
-            <p className="text-[7pt] italic font-medium -mt-1">Organizing Committee</p>
+            <h4 className="font-bold text-[9pt] uppercase">{configSystem.data?.don_vi_to_chuc || t("competition_detail.modals.organizing_committee")}</h4>
+            <p className="text-[7pt] italic font-medium -mt-1">{t("competition_detail.modals.organizing_committee_en")}</p>
           </div>
           <div className="text-center w-6/12">
-            <h4 className="font-bold text-[9pt] uppercase leading-tight">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h4>
-            <h5 className="font-bold text-[8pt]">Độc lập - Tự do - Hạnh phúc</h5>
+            <h4 className="font-bold text-[9pt] uppercase leading-tight">{t("competition_detail.modals.socialist_republic")}</h4>
+            <h5 className="font-bold text-[8pt]">{t("competition_detail.modals.independence_freedom")}</h5>
           </div>
         </div>
 
@@ -66,7 +66,7 @@ export default function MatchLogsReportView({ row }) {
         <div className="grid grid-cols-3 border-2 border-black divide-x-2 divide-black mb-8 bg-gray-50 uppercase font-black text-[8pt]">
           <div className="p-3 text-center flex flex-col items-center">
             <span className="text-[12pt] font-black">{redAthlete.name}</span>
-            <span className="text-gray-400">ĐỎ (RED)</span>
+            <span className="text-gray-400">{t("competition_detail.modals.red_corner")} (RED)</span>
           </div>
           <div className="p-3 text-center flex flex-col items-center justify-center">
             <span className="text-lg">#{row.data[0]}</span>
@@ -74,7 +74,7 @@ export default function MatchLogsReportView({ row }) {
           </div>
           <div className="p-3 text-center flex flex-col items-center">
             <span className="text-[12pt] font-black">{blueAthlete.name}</span>
-            <span className="text-gray-400">XANH (BLUE)</span>
+            <span className="text-gray-400">{t("competition_detail.modals.blue_corner")} (BLUE)</span>
           </div>
         </div>
 

@@ -110,15 +110,15 @@ export default function MatchReportView({ row, onClose }) {
         {/* Info Grid - Minimalist */}
         <div className="grid grid-cols-3 border-2 border-black divide-x-2 divide-black mb-8 bg-gray-50/50 uppercase font-black text-[9pt]">
           <div className="p-3 text-center">
-            <span className="text-gray-400 block text-[7pt] mb-1">Mã Trận / Match No.</span>
+            <span className="text-gray-400 block text-[7pt] mb-1">{t("competition_detail.modals.match_no")} / Match No.</span>
             <span className="text-lg">{row.data[0]}</span>
           </div>
           <div className="p-3 text-center flex flex-col justify-center">
-            <span className="text-gray-400 block text-[7pt] mb-1">Nội dung / Category</span>
+            <span className="text-gray-400 block text-[7pt] mb-1">{t("competition_detail.modals.category")} / Category</span>
             <span className="truncate">{row.data[2]}</span>
           </div>
           <div className="p-3 text-center flex flex-col justify-center">
-            <span className="text-gray-400 block text-[7pt] mb-1">Hạng cân / Weight</span>
+            <span className="text-gray-400 block text-[7pt] mb-1">{t("competition_detail.modals.weight")} / Weight</span>
             <span className="truncate">{row.data[1]}</span>
           </div>
         </div>
@@ -127,15 +127,15 @@ export default function MatchReportView({ row, onClose }) {
         <div className="grid grid-cols-2 gap-0 border-2 border-black divide-x-2 divide-black rounded overflow-hidden mb-8">
           {/* Red athlete (now as neutral) */}
           <div className={`p-6 flex flex-col items-center justify-center relative ${isRedWinner ? 'bg-gray-100' : 'bg-white'}`}>
-            {isRedWinner && <div className="absolute top-2 right-2 text-[7pt] font-black bg-black text-white px-2 py-0.5 rounded shadow-sm">WINNER</div>}
-            <span className="text-[7pt] font-black text-black uppercase mb-2 tracking-widest border-b border-black pb-0.5">GIÁP ĐỎ / RED CORNER</span>
+            {isRedWinner && <div className="absolute top-2 right-2 text-[7pt] font-black bg-black text-white px-2 py-0.5 rounded shadow-sm">{t("competition_detail.modals.winner_label")}</div>}
+            <span className="text-[7pt] font-black text-black uppercase mb-2 tracking-widest border-b border-black pb-0.5">{t("competition_detail.modals.red_corner")} / RED CORNER</span>
             <h3 className="text-[16pt] font-black text-center text-black uppercase leading-none mt-2">{redAthlete.name}</h3>
             <p className="text-[9pt] font-bold text-gray-500 mt-2 uppercase">{redAthlete.unit}</p>
           </div>
           {/* Blue athlete (now as neutral) */}
           <div className={`p-6 flex flex-col items-center justify-center relative ${isBlueWinner ? 'bg-gray-200' : 'bg-white'}`}>
-            {isBlueWinner && <div className="absolute top-2 left-2 text-[7pt] font-black bg-black text-white px-2 py-0.5 rounded shadow-sm">WINNER</div>}
-            <span className="text-[7pt] font-black text-black uppercase mb-2 tracking-widest border-b border-black pb-0.5">GIÁP XANH / BLUE CORNER</span>
+            {isBlueWinner && <div className="absolute top-2 left-2 text-[7pt] font-black bg-black text-white px-2 py-0.5 rounded shadow-sm">{t("competition_detail.modals.winner_label")}</div>}
+            <span className="text-[7pt] font-black text-black uppercase mb-2 tracking-widest border-b border-black pb-0.5">{t("competition_detail.modals.blue_corner")} / BLUE CORNER</span>
             <h3 className="text-[16pt] font-black text-center text-black uppercase leading-none mt-2">{blueAthlete.name}</h3>
             <p className="text-[9pt] font-bold text-gray-500 mt-2 uppercase">{blueAthlete.unit}</p>
           </div>
@@ -203,10 +203,10 @@ export default function MatchReportView({ row, onClose }) {
         <div className="p-4 border-2 border-black bg-gray-50 flex items-center justify-center gap-8 mb-12 shadow-sm">
           <div className="flex flex-col items-center">
             <p className="text-[8pt] font-black uppercase text-gray-500 tracking-widest mb-1 italic">Declaration of Victory</p>
-            <h4 className="text-[11pt] font-black uppercase">NGƯỜI CHIẾN THẮNG / WINNER</h4>
+            <h4 className="text-[11pt] font-black uppercase">{t("competition_detail.modals.winner_title")} / WINNER</h4>
           </div>
           <div className={`px-12 py-3 border-4 border-black text-[18pt] font-black uppercase tracking-tighter transform -rotate-1 shadow-sm ${isRedWinner || isBlueWinner ? 'bg-black text-white' : 'bg-white text-gray-400'}`}>
-            {isRedWinner ? redAthlete.name : isBlueWinner ? blueAthlete.name : "CHƯA XÁC ĐỊNH"}
+            {isRedWinner ? redAthlete.name : isBlueWinner ? blueAthlete.name : t("competition_detail.modals.not_determined")}
           </div>
         </div>
 

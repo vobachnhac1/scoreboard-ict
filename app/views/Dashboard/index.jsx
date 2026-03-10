@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import logoDigiSports from "../../assets/logo_nhacvb_light.png";
-import { activateLicense, clearErrors } from "../../config/redux/controller/licenseSlice";
+import { activateLicense, clearErrors, revokeDeviceLicense } from "../../config/redux/controller/licenseSlice";
 import { usePackageAccess, PACKAGE_TIERS } from "../../components/FeatureLock";
 
 export default function Dashboard() {
@@ -14,6 +14,8 @@ export default function Dashboard() {
   const [inputLicenseKey, setInputLicenseKey] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
+  const [confirmRevoke, setConfirmRevoke] = useState(false);
+  const [revokeMsg, setRevokeMsg] = useState(null); // { success, text }
   const { hasAccess } = usePackageAccess();
 
   const {
@@ -47,6 +49,17 @@ export default function Dashboard() {
         setShowForm(false);
       }, 3000);
     }
+  };
+
+  const handleRevokeKey = async () => {
+    setConfirmRevoke(false);
+    const result = await dispatch(revokeDeviceLicense());
+    if (result.type === "license/revokeDevice/fulfilled") {
+      setRevokeMsg({ success: true, text: t("dashboard.revoke_success") });
+    } else {
+      setRevokeMsg({ success: false, text: result.payload || t("dashboard.revoke_error_default") });
+    }
+    setTimeout(() => setRevokeMsg(null), 5000);
   };
 
   const featureGroups = [
@@ -275,234 +288,323 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] transition-colors duration-500">
-      {/* Background decoration */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-600/5 rounded-full blur-[100px]"></div>
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-500/5 dark:bg-indigo-600/5 rounded-full blur-[100px]"></div>
-      </div>
+    <>
+      <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] transition-colors duration-500">
+        {/* Background decoration */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-600/5 rounded-full blur-[100px]"></div>
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-500/5 dark:bg-indigo-600/5 rounded-full blur-[100px]"></div>
+        </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
-        {/* Header Section */}
-        <div className="text-center mb-16">
-          <div className="inline-block p-4 bg-white dark:bg-gray-800 rounded shadow-2xl mb-8 border border-slate-100 dark:border-gray-700">
-            <img src={logoDigiSports} alt="Logo" className="w-24 h-auto" />
-          </div>
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white uppercase tracking-tight mb-4">
-            {t("dashboard.feature_introduction")} <span className="text-blue-600">{t("dashboard.brand_name")}</span>
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-bold max-w-2xl mx-auto">
-            {t("dashboard.dashboard_description")}
-          </p>
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
+          {/* Header Section */}
+          <div className="text-center mb-16">
+            <div className="inline-block p-4 bg-white dark:bg-gray-800 rounded shadow-2xl mb-8 border border-slate-100 dark:border-gray-700">
+              <img src={logoDigiSports} alt="Logo" className="w-24 h-auto" />
+            </div>
+            <h1 className="text-4xl font-black text-slate-900 dark:text-white uppercase tracking-tight mb-4">
+              {t("dashboard.feature_introduction")} <span className="text-blue-600">{t("dashboard.brand_name")}</span>
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 font-bold max-w-2xl mx-auto">
+              {t("dashboard.dashboard_description")}
+            </p>
 
-          {/* License Status Bar & Inline Activation Form */}
-          <div className="mt-10 max-w-3xl mx-auto">
-            {isActivated && !showForm ? (
-              <div className="flex flex-wrap items-center justify-center gap-4 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 rounded">
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                  <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest">{t("dashboard.system_activated")}</span>
-                </div>
-                <div className="h-4 w-px bg-emerald-200 dark:bg-emerald-800 hidden sm:block"></div>
-                <div className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  {t("dashboard.package")}: <span className="text-blue-600 dark:text-blue-400 uppercase">{packageName || "Professional"}</span>
-                </div>
-                {expirationDate && (
-                  <>
-                    <div className="h-4 w-px bg-emerald-200 dark:bg-emerald-800 hidden sm:block"></div>
-                    <div className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                      {t("dashboard.expired_on")}: <span className="text-rose-600 dark:text-rose-400">{new Date(expirationDate).toLocaleDateString('vi-VN')}</span>
-                      <span className="ml-1 text-[10px] opacity-70">{t("dashboard.days_remaining_info", { days: daysRemaining })}</span>
-                    </div>
-                  </>
-                )}
-                <div className="h-4 w-px bg-emerald-200 dark:bg-emerald-800 hidden sm:block"></div>
-                <button
-                  onClick={() => setShowForm(true)}
-                  className="text-[10px] font-black uppercase text-blue-600 hover:text-blue-700 transition-colors"
-                >
-                  {t("dashboard.change_key")}
-                </button>
-              </div>
-            ) : (
-              <div className="bg-white dark:bg-gray-800 rounded p-8 shadow-2xl border border-slate-200 dark:border-gray-700">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isActivated ? 'bg-blue-100 text-blue-600' : 'bg-rose-100 text-rose-600'}`}>
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">
-                      {isActivated ? t("dashboard.change_activation_code") : t("dashboard.activate_license")}
-                    </h4>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 italic">
-                      {isActivated ? t("dashboard.update_package_desc") : t("dashboard.unlock_features_desc")}
-                    </p>
-                  </div>
-                </div>
+            {/* License Status Bar & Inline Activation Form */}
+            <div className="mt-10 max-w-3xl mx-auto">
 
-                {successMsg && (
-                  <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 rounded text-emerald-700 dark:text-emerald-400 text-xs font-bold flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {/* Revoke result message */}
+              {revokeMsg && (
+                <div className={`mb-4 p-3 rounded border text-xs font-bold flex items-center gap-2 ${revokeMsg.success
+                  ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400"
+                  : "bg-rose-50 dark:bg-rose-900/20 border-rose-100 dark:border-rose-800 text-rose-700 dark:text-rose-400"
+                  }`}>
+                  {revokeMsg.success ? (
+                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
-                    {t("dashboard.activation_success_msg")}
-                  </div>
-                )}
-
-                {activationError && (
-                  <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-800 rounded text-rose-700 dark:text-rose-400 text-xs font-bold flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  ) : (
+                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    {activationError}
-                  </div>
-                )}
-
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <input
-                    type="text"
-                    value={inputLicenseKey}
-                    onChange={(e) => setInputLicenseKey(e.target.value)}
-                    placeholder={t("dashboard.enter_activation_code_placeholder")}
-                    className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded text-xs font-bold focus:ring-2 focus:ring-blue-500 dark:text-white transition-all ring-offset-2 ring-offset-white dark:ring-offset-gray-800"
-                    disabled={activating}
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleActivate}
-                      disabled={activating || !inputLicenseKey.trim()}
-                      className="whitespace-nowrap px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white rounded text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 transition-all active:scale-95 flex items-center justify-center min-w-[140px]"
-                    >
-                      {activating ? (
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      ) : (
-                        t("dashboard.activate_button")
-                      )}
-                    </button>
-                    {isActivated && (
-                      <button
-                        onClick={() => setShowForm(false)}
-                        className="px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded text-xs font-black uppercase tracking-widest"
-                      >
-                        {t("dashboard.cancel_button")}
-                      </button>
-                    )}
-                  </div>
+                  )}
+                  {revokeMsg.text}
                 </div>
+              )}
 
-                {!isActivated && (
-                  <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                      {t("dashboard.no_code_contact_support")}<span className="text-blue-600">0815 192 759</span>
-                    </p>
+              {isActivated && !showForm ? (
+                <div className="flex flex-wrap items-center justify-center gap-4 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 rounded">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest">{t("dashboard.system_activated")}</span>
                   </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Feature Groups */}
-        <div className="space-y-16">
-          {featureGroups.map((group, groupIdx) => {
-            // Check if this group should be hidden when not activated
-            const isFunctionalGroup = group.groupTitle.includes("Arena") || group.groupTitle.includes("Core");
-
-            // if (isFunctionalGroup) return null;
-            // if (!isActivated && isFunctionalGroup) return null;
-
-            return (
-              <div key={groupIdx}>
-                <div className="flex items-center gap-4 mb-8">
-                  <h2 className="text-[14px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.3em] whitespace-nowrap pl-2">
-                    {group.groupTitle}
-                  </h2>
-                  <div className="h-px w-full bg-slate-200 dark:bg-slate-800"></div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {group.features.map((feature, idx) => {
-                    const featureLocked = !hasAccess(feature.requiredTier, feature.featureKey);
-
-                    return (
-                      <div
-                        key={idx}
-                        className={`bg-white dark:bg-gray-800/80 rounded p-6 shadow-sm border border-slate-200 dark:border-gray-700 hover:border-blue-500/30 transition-all duration-300 relative ${featureLocked ? "opacity-60 cursor-not-allowed grayscale-[50%]" : ""
-                          }`}
-                      >
-                        {featureLocked && (
-                          <div className="absolute top-4 right-4 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-2.5 py-1 rounded text-[10px] font-black uppercase flex items-center gap-1 shadow-sm">
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                            </svg>
-                            {feature.requiredTier === PACKAGE_TIERS.ADVANCED ? "Gói Nâng cao" : "Gói Doanh nghiệp"}
-                          </div>
-                        )}
-
-                        <div className={`inline-flex p-2.5 bg-gradient-to-br ${feature.gradient} rounded text-white mb-4`}>
-                          {feature.icon}
-                        </div>
-
-                        <h3 className="text-base font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tight underline decoration-blue-500/30 decoration-2 underline-offset-4">
-                          {feature.title}
-                        </h3>
-
-                        <p className="text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed mb-6 italic">
-                          {feature.description}
-                        </p>
-
-                        <div className="space-y-2.5">
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-3">
-                            <span className="w-1 h-3 bg-blue-500 rounded-full"></span>
-                            {t("dashboard.main_tasks")}
-                          </p>
-                          {feature.tasks.map((task, taskIdx) => (
-                            <div key={taskIdx} className="flex items-start gap-2.5 group">
-                              <div className="mt-1">
-                                <svg className="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
-                                </svg>
-                              </div>
-                              <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                {task}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
+                  <div className="h-4 w-px bg-emerald-200 dark:bg-emerald-800 hidden sm:block"></div>
+                  <div className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    {t("dashboard.package")}: <span className="text-blue-600 dark:text-blue-400 uppercase">{packageName || "Professional"}</span>
+                  </div>
+                  {expirationDate && (
+                    <>
+                      <div className="h-4 w-px bg-emerald-200 dark:bg-emerald-800 hidden sm:block"></div>
+                      <div className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                        {t("dashboard.expired_on")}: <span className="text-rose-600 dark:text-rose-400">{new Date(expirationDate).toLocaleDateString('vi-VN')}</span>
+                        <span className="ml-1 text-[10px] opacity-70">{t("dashboard.days_remaining_info", { days: daysRemaining })}</span>
                       </div>
-                    );
-                  })}
+                    </>
+                  )}
+                  <div className="h-4 w-px bg-emerald-200 dark:bg-emerald-800 hidden sm:block"></div>
+                  <button
+                    onClick={() => setShowForm(true)}
+                    className="text-[10px] font-black uppercase text-blue-600 hover:text-blue-700 transition-colors"
+                  >
+                    {t("dashboard.change_key")}
+                  </button>
+                  <div className="h-4 w-px bg-emerald-200 dark:bg-emerald-800 hidden sm:block"></div>
+                  {/* Nút huỷ key */}
+                  <button
+                    onClick={() => setConfirmRevoke(true)}
+                    disabled={activating}
+                    className="text-[10px] font-black uppercase text-rose-500 hover:text-rose-600 transition-colors flex items-center gap-1 disabled:opacity-50"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    {t("dashboard.revoke_key")}
+                  </button>
+                </div>
+              ) : (
+                <div className="bg-white dark:bg-gray-800 rounded p-8 shadow-2xl border border-slate-200 dark:border-gray-700">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isActivated ? 'bg-blue-100 text-blue-600' : 'bg-rose-100 text-rose-600'}`}>
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                        {isActivated ? t("dashboard.change_activation_code") : t("dashboard.activate_license")}
+                      </h4>
+                      <p className="text-xs font-bold text-slate-500 dark:text-slate-400 italic">
+                        {isActivated ? t("dashboard.update_package_desc") : t("dashboard.unlock_features_desc")}
+                      </p>
+                    </div>
+                  </div>
+
+                  {successMsg && (
+                    <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 rounded text-emerald-700 dark:text-emerald-400 text-xs font-bold flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                      {t("dashboard.activation_success_msg")}
+                    </div>
+                  )}
+
+                  {activationError && (
+                    <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-800 rounded text-rose-700 dark:text-rose-400 text-xs font-bold flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      {activationError}
+                    </div>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <input
+                      type="text"
+                      value={inputLicenseKey}
+                      onChange={(e) => setInputLicenseKey(e.target.value)}
+                      placeholder={t("dashboard.enter_activation_code_placeholder")}
+                      className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded text-xs font-bold focus:ring-2 focus:ring-blue-500 dark:text-white transition-all ring-offset-2 ring-offset-white dark:ring-offset-gray-800"
+                      disabled={activating}
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleActivate}
+                        disabled={activating || !inputLicenseKey.trim()}
+                        className="whitespace-nowrap px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white rounded text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 transition-all active:scale-95 flex items-center justify-center min-w-[140px]"
+                      >
+                        {activating ? (
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        ) : (
+                          t("dashboard.activate_button")
+                        )}
+                      </button>
+                      {isActivated && (
+                        <button
+                          onClick={() => setShowForm(false)}
+                          className="px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded text-xs font-black uppercase tracking-widest"
+                        >
+                          {t("dashboard.cancel_button")}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {!isActivated && (
+                    <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        {t("dashboard.no_code_contact_support")}<span className="text-blue-600">0815 192 759</span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Feature Groups */}
+          <div className="space-y-16">
+            {featureGroups.map((group, groupIdx) => {
+              // Check if this group should be hidden when not activated
+              const isFunctionalGroup = group.groupTitle.includes("Arena") || group.groupTitle.includes("Core");
+
+              // if (isFunctionalGroup) return null;
+              // if (!isActivated && isFunctionalGroup) return null;
+
+              return (
+                <div key={groupIdx}>
+                  <div className="flex items-center gap-4 mb-8">
+                    <h2 className="text-[14px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.3em] whitespace-nowrap pl-2">
+                      {group.groupTitle}
+                    </h2>
+                    <div className="h-px w-full bg-slate-200 dark:bg-slate-800"></div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {group.features.map((feature, idx) => {
+                      const featureLocked = !hasAccess(feature.requiredTier, feature.featureKey);
+
+                      return (
+                        <div
+                          key={idx}
+                          className={`bg-white dark:bg-gray-800/80 rounded p-6 shadow-sm border border-slate-200 dark:border-gray-700 hover:border-blue-500/30 transition-all duration-300 relative ${featureLocked ? "opacity-60 cursor-not-allowed grayscale-[50%]" : ""
+                            }`}
+                        >
+                          {featureLocked && (
+                            <div className="absolute top-4 right-4 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-2.5 py-1 rounded text-[10px] font-black uppercase flex items-center gap-1 shadow-sm">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                              </svg>
+                              {feature.requiredTier === PACKAGE_TIERS.ADVANCED ? "Gói Nâng cao" : "Gói Doanh nghiệp"}
+                            </div>
+                          )}
+
+                          <div className={`inline-flex p-2.5 bg-gradient-to-br ${feature.gradient} rounded text-white mb-4`}>
+                            {feature.icon}
+                          </div>
+
+                          <h3 className="text-base font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tight underline decoration-blue-500/30 decoration-2 underline-offset-4">
+                            {feature.title}
+                          </h3>
+
+                          <p className="text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed mb-6 italic">
+                            {feature.description}
+                          </p>
+
+                          <div className="space-y-2.5">
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-3">
+                              <span className="w-1 h-3 bg-blue-500 rounded-full"></span>
+                              {t("dashboard.main_tasks")}
+                            </p>
+                            {feature.tasks.map((task, taskIdx) => (
+                              <div key={taskIdx} className="flex items-start gap-2.5 group">
+                                <div className="mt-1">
+                                  <svg className="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </div>
+                                <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                  {task}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* System Health / Footer */}
+          <div className="mt-20 pt-10 border-t border-slate-200 dark:border-slate-800">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{t("dashboard.system_health.system_time")}</p>
+                <p className="text-sm font-bold text-slate-800 dark:text-white">{currentTime.toLocaleString('vi-VN')}</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{t("dashboard.system_health.server_connection_status")}</p>
+                <div className="flex items-center gap-2 px-4 py-1.5 bg-slate-100 dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800">
+                  <div className={`w-2 h-2 rounded-full ${socket.connected ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`}></div>
+                  <span className="text-xs font-black uppercase text-slate-700 dark:text-slate-300">
+                    {socket.connected ? t("dashboard.system_health.online_stable") : t("dashboard.system_health.offline_stopped")}
+                  </span>
                 </div>
               </div>
-            );
-          })}
-        </div>
-
-        {/* System Health / Footer */}
-        <div className="mt-20 pt-10 border-t border-slate-200 dark:border-slate-800">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
-            <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{t("dashboard.system_health.system_time")}</p>
-              <p className="text-sm font-bold text-slate-800 dark:text-white">{currentTime.toLocaleString('vi-VN')}</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{t("dashboard.system_health.server_connection_status")}</p>
-              <div className="flex items-center gap-2 px-4 py-1.5 bg-slate-100 dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800">
-                <div className={`w-2 h-2 rounded-full ${socket.connected ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`}></div>
-                <span className="text-xs font-black uppercase text-slate-700 dark:text-slate-300">
-                  {socket.connected ? t("dashboard.system_health.online_stable") : t("dashboard.system_health.offline_stopped")}
-                </span>
+              <div className="md:text-right">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">&copy; 2026 DIGISPORTS ICT TEAM</p>
+                <p className="text-xs font-bold text-blue-600">PROFESSIONAL DIGISPORTS PROJECT</p>
               </div>
-            </div>
-            <div className="md:text-right">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">&copy; 2026 DIGISPORTS ICT TEAM</p>
-              <p className="text-xs font-bold text-blue-600">PROFESSIONAL DIGISPORTS PROJECT</p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* === Modal xác nhận huỷ key === */}
+      {confirmRevoke && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setConfirmRevoke(false)}
+          />
+          {/* Dialog */}
+          <div className="relative z-10 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-slate-200 dark:border-gray-700 max-w-md w-full p-8">
+            {/* Icon cảnh báo */}
+            <div className="flex justify-center mb-5">
+              <div className="w-16 h-16 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
+                <svg className="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                </svg>
+              </div>
+            </div>
+            <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight text-center mb-2">
+              {t("dashboard.confirm_revoke_title")}
+            </h3>
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 text-center mb-1 leading-relaxed">
+              {t("dashboard.confirm_revoke_desc")}
+            </p>
+            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 text-center mb-7 italic">
+              {t("dashboard.confirm_revoke_note")}
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmRevoke(false)}
+                className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded text-xs font-black uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-600 transition-all"
+              >
+                {t("dashboard.confirm_revoke_no")}
+              </button>
+              <button
+                onClick={handleRevokeKey}
+                disabled={activating}
+                className="flex-1 px-4 py-3 bg-rose-600 hover:bg-rose-700 disabled:bg-slate-400 text-white rounded text-xs font-black uppercase tracking-widest shadow-lg shadow-rose-500/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+              >
+                {activating ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    {t("dashboard.confirm_revoke_yes")}
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

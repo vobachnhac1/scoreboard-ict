@@ -16,19 +16,23 @@ export const checkLicenseStatus = createAsyncThunk(
         if (response.success) {
           return response.data;
         } else {
-          return rejectWithValue(response.error || 'Failed to check license');
+          return rejectWithValue(response); // Trả về cả object có status
         }
       } else {
         // Fallback cho môi trường dev (trình duyệt)
-        const res = await axios.get('http://localhost:6789/api/license/status');
-        if (res.data && res.data.success) {
-          return res.data.data;
-        } else {
-          return rejectWithValue(res.data?.error || 'Failed to check license');
+        try {
+          const res = await axios.get('http://localhost:6789/api/license/status');
+          if (res.data && res.data.success) {
+            return res.data.data;
+          } else {
+            return rejectWithValue({ error: res.data?.error || 'Failed to check license', status: res.status });
+          }
+        } catch (err) {
+          return rejectWithValue({ error: err.response?.data?.error || err.message, status: err.response?.status });
         }
       }
     } catch (error) {
-      return rejectWithValue(error.response?.data?.error || error.message);
+      return rejectWithValue({ error: error.message, status: error.response?.status });
     }
   }
 );
@@ -43,15 +47,46 @@ export const activateLicense = createAsyncThunk(
         if (response.success) {
           return response.data;
         } else {
-          return rejectWithValue(response.error || 'Activation failed');
+          return rejectWithValue(response); // Trả về cả object response có chứa status
         }
       } else {
         // Fallback cho môi trường dev (trình duyệt)
-        const res = await axios.post('http://localhost:6789/api/license/activate', { license_key: licenseKey });
-        if (res.data && res.data.success) {
-          return res.data.data;
+        try {
+          const res = await axios.post('http://localhost:6789/api/license/activate', { license_key: licenseKey });
+          if (res.data && res.data.success) {
+            return res.data.data;
+          } else {
+            return rejectWithValue({ error: res.data?.error || 'Activation failed', status: res.status });
+          }
+        } catch (err) {
+          return rejectWithValue({ error: err.response?.data?.error || err.message, status: err.response?.status });
+        }
+      }
+    } catch (error) {
+      return rejectWithValue({ error: error.message, status: error.response?.status });
+    }
+  }
+);
+
+// Async thunk: Huỷ key license khỏi thiết bị
+export const revokeDeviceLicense = createAsyncThunk(
+  'license/revokeDevice',
+  async (_, { rejectWithValue }) => {
+    try {
+      if (window.electron && window.electron.revokeDeviceLicense) {
+        const response = await window.electron.revokeDeviceLicense();
+        if (response.success) {
+          return response;
         } else {
-          return rejectWithValue(res.data?.error || 'Activation failed');
+          return rejectWithValue(response.error || 'Revoke failed');
+        }
+      } else {
+        // Fallback cho môi trường dev (trình duyệt)
+        const res = await axios.delete('http://localhost:6789/api/license/revoke-device');
+        if (res.data && res.data.success) {
+          return res.data;
+        } else {
+          return rejectWithValue(res.data?.error || 'Revoke failed');
         }
       }
     } catch (error) {
@@ -151,9 +186,17 @@ const licenseSlice = createSlice({
       })
       .addCase(checkLicenseStatus.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload?.error || action.payload || 'Failed to check license';
         state.valid = false;
         state.requireActivation = true;
+
+        // Nếu lỗi 403 (Forbidden) thì reset license vì server đã huỷ/không chấp nhận
+        if (action.payload?.status === 403) {
+          state.daysRemaining = 0;
+          state.licenseKey = null;
+          state.features = {};
+          state.revoked = true;
+        }
       });
 
     // Activate license
@@ -177,12 +220,49 @@ const licenseSlice = createSlice({
       })
       .addCase(activateLicense.rejected, (state, action) => {
         state.activating = false;
+        state.activationError = action.payload?.error || action.payload || 'Activation failed';
+
+        // Nếu lỗi 403 (Forbidden) thì reset license vì server đã huỷ/không chấp nhận
+        if (action.payload?.status === 403) {
+          state.valid = false;
+          state.requireActivation = true;
+          state.daysRemaining = 0;
+          state.licenseKey = null;
+          state.features = {};
+          state.revoked = true;
+        }
+      });
+
+    // Revoke device license
+    builder
+      .addCase(revokeDeviceLicense.pending, (state) => {
+        state.activating = true;
+        state.activationError = null;
+      })
+      .addCase(revokeDeviceLicense.fulfilled, (state) => {
+        // Reset toàn bộ state về chưa kích hoạt
+        state.activating = false;
+        state.valid = false;
+        state.requireActivation = true;
+        state.daysRemaining = 0;
+        state.expirationDate = null;
+        state.activationDate = null;
+        state.packageName = null;
+        state.licenseKey = null;
+        state.features = {};
+        state.config_presets = {};
+        state.online = undefined;
+        state.revoked = false;
+        state.error = null;
+        state.activationError = null;
+      })
+      .addCase(revokeDeviceLicense.rejected, (state, action) => {
+        state.activating = false;
         state.activationError = action.payload;
       });
   },
 });
 
 export const { setLicenseStatus, resetLicense, clearErrors } = licenseSlice.actions;
-
 export default licenseSlice.reducer;
 

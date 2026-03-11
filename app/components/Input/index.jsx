@@ -11,7 +11,7 @@ const Input = ({
   ...props
 }) => {
   const baseStyle =
-    "w-full px-4 py-2 border rounded-2xl transition-all outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-10";
+    "w-full px-4 py-2 border rounded transition-all outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-10";
   const disabledStyle = disabled
     ? "bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed"
     : "";

@@ -45,7 +45,7 @@ export default function Header({ title, desc, logos, config = {} }) {
             {logos.map((logo, index) => (
               <div
                 key={logo.id || index}
-                className="flex justify-center items-center shadow-lg hover:shadow-xl transition-shadow rounded-lg"
+                className="flex justify-center items-center shadow-lg hover:shadow-xl transition-shadow rounded"
                 style={{ minWidth: "50px", maxWidth: "50px" }}
               >
                 <img

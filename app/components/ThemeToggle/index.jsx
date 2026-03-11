@@ -8,16 +8,15 @@ const ThemeToggle = ({ className = '', compact = false }) => {
   return (
     <button
       onClick={toggleTheme}
-      className={`group relative inline-flex items-center justify-center ${compact ? 'w-10 h-10' : 'w-12 h-10'} rounded-xl transition-all duration-300 hover:scale-105 shadow-inner border border-slate-200/50 dark:border-slate-600/50 ${className}`}
+      className={`group relative inline-flex items-center justify-center ${compact ? 'w-10 h-10' : 'w-12 h-10'} rounded transition-all duration-300 hover:scale-105 shadow-inner border border-slate-200/50 dark:border-slate-600/50 ${className}`}
       title={isDark ? 'Chuyển sang Light Mode' : 'Chuyển sang Dark Mode'}
       aria-label="Toggle theme"
     >
       {/* Background with gradient */}
-      <div className={`absolute inset-0 rounded-xl transition-all duration-300 ${
-        isDark 
-          ? 'bg-gradient-to-br from-indigo-500/80 to-purple-600/80' 
+      <div className={`absolute inset-0 rounded transition-all duration-300 ${isDark
+          ? 'bg-gradient-to-br from-indigo-500/80 to-purple-600/80'
           : 'bg-gradient-to-br from-yellow-400/80 to-orange-500/80'
-      }`}></div>
+        }`}></div>
 
 
       {/* Icon */}
@@ -30,11 +29,10 @@ const ThemeToggle = ({ className = '', compact = false }) => {
       </div>
 
       {/* Glow effect on hover */}
-      <div className={`absolute inset-0 rounded  opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md ${
-        isDark 
-          ? 'bg-gradient-to-br from-indigo-400 to-purple-500' 
+      <div className={`absolute inset-0 rounded  opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md ${isDark
+          ? 'bg-gradient-to-br from-indigo-400 to-purple-500'
           : 'bg-gradient-to-br from-yellow-300 to-orange-400'
-      }`}></div>
+        }`}></div>
     </button>
   );
 };

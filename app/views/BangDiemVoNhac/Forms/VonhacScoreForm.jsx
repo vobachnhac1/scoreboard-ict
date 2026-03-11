@@ -156,14 +156,14 @@ export default function VonhacScoreForm({
             {soGiamDinh === 7 ? (
               <>
                 {/* Chuyên môn */}
-                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-4">
                   <h4 className="font-bold text-gray-700 dark:text-gray-300 uppercase mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
                     1. {t("scoreboard.score_form.specialty")}
                   </h4>
                   <div className="grid grid-cols-3 gap-4">
                     {renderJudgeInput(1)}
                     {renderJudgeInput(2)}
-                    <div className="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
+                    <div className="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/10 rounded border border-blue-100 dark:border-blue-900/30">
                       <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">{t("scoreboard.score_form.average")}</span>
                       <span className="text-2xl font-black text-blue-700 dark:text-blue-300">
                         {(((Number(watchedJudges.judge1) || 0) + (Number(watchedJudges.judge2) || 0)) / 2).toFixed(2)}
@@ -173,14 +173,14 @@ export default function VonhacScoreForm({
                 </div>
 
                 {/* Nghệ thuật */}
-                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-4">
                   <h4 className="font-bold text-gray-700 dark:text-gray-300 uppercase mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
                     2. {t("scoreboard.score_form.artistic")}
                   </h4>
                   <div className="grid grid-cols-3 gap-4">
                     {renderJudgeInput(3)}
                     {renderJudgeInput(4)}
-                    <div className="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
+                    <div className="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/10 rounded border border-blue-100 dark:border-blue-900/30">
                       <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">{t("scoreboard.score_form.average")}</span>
                       <span className="text-2xl font-black text-blue-700 dark:text-blue-300">
                         {(((Number(watchedJudges.judge3) || 0) + (Number(watchedJudges.judge4) || 0)) / 2).toFixed(2)}
@@ -190,14 +190,14 @@ export default function VonhacScoreForm({
                 </div>
 
                 {/* Thực hiện */}
-                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-4">
                   <h4 className="font-bold text-gray-700 dark:text-gray-300 uppercase mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
                     3. {t("scoreboard.score_form.execution")}
                   </h4>
                   <div className="grid grid-cols-3 gap-4">
                     {renderJudgeInput(5)}
                     {renderJudgeInput(6)}
-                    <div className="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
+                    <div className="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/10 rounded border border-blue-100 dark:border-blue-900/30">
                       <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">{t("scoreboard.score_form.average")}</span>
                       <span className="text-2xl font-black text-blue-700 dark:text-blue-300">
                         {(((Number(watchedJudges.judge5) || 0) + (Number(watchedJudges.judge6) || 0)) / 2).toFixed(2)}
@@ -207,7 +207,7 @@ export default function VonhacScoreForm({
                 </div>
 
                 {/* Trọng tài trưởng */}
-                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-4">
                   <h4 className="font-bold text-gray-700 dark:text-gray-300 uppercase mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
                     4. {t("scoreboard.score_form.chief_referee")}
                   </h4>
@@ -237,7 +237,7 @@ export default function VonhacScoreForm({
             </div>
             <div className="flex items-center gap-3">
               <span className="text-base font-medium text-gray-700 dark:text-gray-300">{t("scoreboard.score_form.total_score")}:</span>
-              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-4 py-1.5 rounded-md border border-blue-200 dark:border-blue-800">
+              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-4 py-1.5 rounded border border-blue-200 dark:border-blue-800">
                 {totalScore}
               </span>
             </div>

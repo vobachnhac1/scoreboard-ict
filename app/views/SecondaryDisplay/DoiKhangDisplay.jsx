@@ -227,7 +227,7 @@ export default function DoiKhangDisplay({
             {lsLogo.map((logo, index) => (
               <div
                 key={logo.id || index}
-                className="flex justify-center items-center shadow-lg hover:shadow-xl transition-shadow rounded-lg"
+                className="flex justify-center items-center shadow-lg hover:shadow-xl transition-shadow rounded"
                 style={{ minWidth: "50px", maxWidth: "50px" }}
               >
                 <img
@@ -550,7 +550,7 @@ export default function DoiKhangDisplay({
             </div>
             <div className="mb-4">
               <div
-                className={`inline-block px-10 py-3 rounded-2xl ${medicalTeam === "red" ? "bg-red-700" : "bg-blue-700"} shadow-lg`}
+                className={`inline-block px-10 py-3 rounded ${medicalTeam === "red" ? "bg-red-700" : "bg-blue-700"} shadow-lg`}
               >
                 <p className="text-4xl font-black">
                   {medicalTeam === "red"
@@ -559,7 +559,7 @@ export default function DoiKhangDisplay({
                 </p>
               </div>
             </div>
-            <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded-2xl px-12 py-6">
+            <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded px-12 py-6">
               <span className="text-8xl font-black tabular-nums">
                 {formatTime(medicalTimeLeft).main}
               </span>
@@ -591,7 +591,7 @@ export default function DoiKhangDisplay({
                 </p>
               </div>
             </div>
-            <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded-2xl px-12 py-6">
+            <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded px-12 py-6">
               <span className="text-8xl font-black tabular-nums">
                 {formatTime(breakTimeLeft).main}
               </span>
@@ -610,7 +610,7 @@ export default function DoiKhangDisplay({
         !isMedicalTime &&
         !ready && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50">
-            <div className="relative bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 text-white px-16 py-10 rounded-3xl shadow-2xl border-4 border-yellow-300">
+            <div className="relative bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 text-white px-16 py-10 rounded shadow-2xl border-4 border-yellow-300">
               <div className="text-center">
                 <div className="mb-3">
                   <div className="inline-block bg-white/20 backdrop-blur-sm px-6 py-1 rounded-full">
@@ -628,7 +628,7 @@ export default function DoiKhangDisplay({
                     </p>
                   </div>
                 </div>
-                <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded-2xl px-12 py-6">
+                <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded px-12 py-6">
                   <span className="text-8xl font-black tabular-nums">
                     {formatTime(timeLeft).main}
                   </span>

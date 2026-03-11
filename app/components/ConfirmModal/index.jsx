@@ -73,7 +73,7 @@ const ConfirmModal = ({
             leaveFrom="opacity-100 scale-100 translate-y-0"
             leaveTo="opacity-0 scale-95 translate-y-4"
           >
-            <DialogPanel className="w-full max-w-sm rounded-3xl bg-white dark:bg-gray-900 shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800 flex flex-col">
+            <DialogPanel className="w-full max-w-sm rounded bg-white dark:bg-gray-900 shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800 flex flex-col">
               {/* Header */}
               <div className={`flex items-center justify-between px-6 py-4 ${headerClass}`}>
                 <DialogTitle className="text-lg font-black uppercase tracking-tight flex items-center gap-2 m-0">
@@ -102,14 +102,14 @@ const ConfirmModal = ({
                 {showCancel && (
                   <button
                     onClick={onCancel}
-                    className="flex-1 px-4 py-3.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
+                    className="flex-1 px-4 py-3.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
                   >
                     {cancelText}
                   </button>
                 )}
                 <button
                   onClick={onConfirm}
-                  className={`flex-1 px-4 py-3.5 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 ${getConfirmButtonClass()}`}
+                  className={`flex-1 px-4 py-3.5 text-white rounded text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 ${getConfirmButtonClass()}`}
                 >
                   {confirmText}
                 </button>

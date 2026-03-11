@@ -86,7 +86,7 @@ export default function DataTotalAthleteList() {
               action?.key !== Constants.ACTION_INSERT && (
                 <Button
                   variant="none"
-                  className={`!rounded-md !p-1 w-20 ${action.color} hover:opacity-75`}
+                  className={`!rounded !p-1 w-20 ${action.color} hover:opacity-75`}
                   onClick={() => action.callback(row)}
                   key={action.key}
                 >

@@ -35,7 +35,7 @@ export default function Pencak() {
         <div className="w-1/3">
           <div className="flex">
             {renderGDScores(gdData, true)}
-            <div className="bg-red-100 text-black  p-4 rounded-lg flex flex-col items-center w-full">
+            <div className="bg-red-100 text-black  p-4 rounded flex flex-col items-center w-full">
               <div className="text-[150px] font-bold">10</div>
               <div className="flex justify-between items-center mt-5">
                 <div className="h-14 w-14 bg-slate-400 mr-2 flex justify-center items-center">LOGO</div>
@@ -80,7 +80,7 @@ export default function Pencak() {
         {/* Xanh */}
         <div className="w-1/3">
           <div className="flex">
-            <div className="bg-blue-100 text-black  p-4 rounded-lg flex flex-col items-center w-full">
+            <div className="bg-blue-100 text-black  p-4 rounded flex flex-col items-center w-full">
               <div className="text-[150px] font-bold">10</div>
               <div className="flex justify-between items-center mt-5">
                 <div className="h-14 w-14 bg-slate-400 mr-2 flex justify-center items-center">LOGO</div>

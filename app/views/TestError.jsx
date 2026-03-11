@@ -10,7 +10,7 @@ const TestError = () => {
   return (
     <div className="p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="bg-white rounded shadow-lg p-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Test Error Boundary
           </h1>
@@ -23,7 +23,7 @@ const TestError = () => {
             {/* Trigger Error Button */}
             <button
               onClick={() => setShouldThrow(true)}
-              className="flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+              className="flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-red-500 to-red-600 text-white rounded font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
             >
               <svg
                 className="w-6 h-6"
@@ -48,7 +48,7 @@ const TestError = () => {
                   setShouldThrow(true);
                 }, 1000);
               }}
-              className="flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+              className="flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
             >
               <svg
                 className="w-6 h-6"
@@ -68,7 +68,7 @@ const TestError = () => {
           </div>
 
           {/* Info Box */}
-          <div className="mt-8 p-6 bg-blue-50 rounded-xl border border-blue-200">
+          <div className="mt-8 p-6 bg-blue-50 rounded border border-blue-200">
             <div className="flex gap-3">
               <svg
                 className="w-6 h-6 text-blue-600 flex-shrink-0"
@@ -101,15 +101,15 @@ const TestError = () => {
 
           {/* Example Scenarios */}
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border border-purple-200">
+            <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded border border-purple-200">
               <h4 className="font-semibold text-purple-900 mb-2">Scenario 1</h4>
               <p className="text-sm text-purple-800">Component render error</p>
             </div>
-            <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg border border-green-200">
+            <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded border border-green-200">
               <h4 className="font-semibold text-green-900 mb-2">Scenario 2</h4>
               <p className="text-sm text-green-800">Async operation error</p>
             </div>
-            <div className="p-4 bg-gradient-to-br from-pink-50 to-pink-100 rounded-lg border border-pink-200">
+            <div className="p-4 bg-gradient-to-br from-pink-50 to-pink-100 rounded border border-pink-200">
               <h4 className="font-semibold text-pink-900 mb-2">Scenario 3</h4>
               <p className="text-sm text-pink-800">State update error</p>
             </div>

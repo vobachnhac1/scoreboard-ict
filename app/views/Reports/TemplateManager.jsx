@@ -224,7 +224,7 @@ export default function TemplateManager() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -255,7 +255,7 @@ export default function TemplateManager() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Panel - Template Selection */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Chọn Template
               </h3>
@@ -263,11 +263,10 @@ export default function TemplateManager() {
                 {Object.entries(TEMPLATE_CONFIGS).map(([key, config]) => (
                   <div
                     key={key}
-                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                      selectedTemplate === key
-                        ? "border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20"
-                        : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
-                    }`}
+                    className={`p-4 rounded border-2 cursor-pointer transition-all ${selectedTemplate === key
+                      ? "border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20"
+                      : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                      }`}
                     onClick={() => setSelectedTemplate(key)}
                   >
                     <div className="flex items-center justify-between">
@@ -300,7 +299,7 @@ export default function TemplateManager() {
               </div>
 
               {/* Template Info */}
-              <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded">
                 <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                   Thông tin Template
                 </h4>
@@ -346,7 +345,7 @@ export default function TemplateManager() {
 
           {/* Right Panel - Data Input */}
           <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Nhập dữ liệu Template
               </h3>
@@ -367,7 +366,7 @@ export default function TemplateManager() {
                           competition_name: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       placeholder="Nhập tên giải đấu"
                     />
                   </div>
@@ -384,7 +383,7 @@ export default function TemplateManager() {
                           date: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     />
                   </div>
                   <div>
@@ -400,7 +399,7 @@ export default function TemplateManager() {
                           content: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       placeholder={
                         selectedTemplate === "QUYEN" ? "QUYỀN" : "ĐỐI KHÁNG"
                       }
@@ -419,7 +418,7 @@ export default function TemplateManager() {
                           unit: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       placeholder="Nhập đơn vị tổ chức"
                     />
                   </div>
@@ -445,7 +444,7 @@ export default function TemplateManager() {
                               [`score${i}`]: e.target.value,
                             })
                           }
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                           placeholder="0"
                         />
                       </div>
@@ -510,7 +509,7 @@ function TemplatePreviewModal({
           </Button>
         </div>
 
-        <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+        <div className="border border-gray-300 dark:border-gray-600 rounded overflow-hidden">
           <div
             ref={printRef}
             className="bg-white p-8"
@@ -553,7 +552,7 @@ function LayoutEditorModal({ isOpen, onClose, template, onSave }) {
               onChange={(e) =>
                 setEditingTemplate({ ...editingTemplate, name: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
           <div>
@@ -568,7 +567,7 @@ function LayoutEditorModal({ isOpen, onClose, template, onSave }) {
                   pageSize: e.target.value,
                 })
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="A4">A4</option>
               <option value="A5">A5</option>

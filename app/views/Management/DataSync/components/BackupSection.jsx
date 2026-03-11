@@ -39,13 +39,13 @@ const BackupSection = ({
           <div className="flex flex-wrap gap-4">
             <button
               onClick={() => window.open('http://localhost:6789/api/sync/backup')}
-              className="flex-1 min-w-[140px] px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-3"
+              className="flex-1 min-w-[140px] px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-3"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-3 3m0 0l-3-3m3 3V4" /></svg>
               {t("data_sync.download_file", "Tải file")}
             </button>
             
-            <label className="flex-1 min-w-[140px] cursor-pointer px-6 py-4 bg-white dark:bg-gray-800 border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg transition-all active:scale-95 flex items-center justify-center gap-3">
+            <label className="flex-1 min-w-[140px] cursor-pointer px-6 py-4 bg-white dark:bg-gray-800 border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900 text-[10px] font-black uppercase tracking-[0.2em] rounded transition-all active:scale-95 flex items-center justify-center gap-3">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-3-3m0 0L8 8m4-4v12" /></svg>
               {t("data_sync.restore_local", "Khôi phục tĩnh")}
               <input type="file" accept=".sqlite" className="hidden" onChange={async (e) => {

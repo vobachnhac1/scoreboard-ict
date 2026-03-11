@@ -26,19 +26,19 @@ const Login = () => {
             <input
               type="text"
               placeholder="Username"
-              className="w-full border-2 py-4 px-12 rounded-md border-slate-200 mb-5"
+              className="w-full border-2 py-4 px-12 rounded border-slate-200 mb-5"
               onChange={(e) => setUserName(e.target.value)}
             />
           </div>
 
           <div className="relative flex items-center">
-            <LockClosedIcon   className="h-6 w-6 absolute top-[1.2rem] left-4"
+            <LockClosedIcon className="h-6 w-6 absolute top-[1.2rem] left-4"
               aria-hidden="true"
               color="gray" />
             <input
               type="password"
               placeholder="Password"
-              className="w-full border-2 py-4 px-12 rounded-md border-slate-200"
+              className="w-full border-2 py-4 px-12 rounded border-slate-200"
               onChange={(e) => setPassword(e.target.value)}
             />
             <EyeSlashIcon
@@ -59,7 +59,7 @@ const Login = () => {
         </div>
       </form>
       <button
-        className="py-4 w-full bg-sky-600 text-white rounded-md mt-3"
+        className="py-4 w-full bg-sky-600 text-white rounded mt-3"
         onClick={handleLogin}
       >
         Log in

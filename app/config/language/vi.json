@@ -2120,7 +2120,8 @@
     "legend_form_desc": "Hiển thị danh sách vận động viên của từng đội theo chiều dọc.",
     "internal_unit": "Nội bộ",
     "round_label": "Vòng",
-    "click_to_change": "Click để thay đổi"
+    "click_to_change": "Click để thay đổi",
+    "download_template": "Tải file mẫu Excel"
   },
   "competition_data_other": {
     "status_waiting": "Chờ",

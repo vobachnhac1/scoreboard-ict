@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 const Post = () => {
   const { t } = useTranslation();
   return (
-    <div className="shadow-md bg-white p-8 pb-2 rounded-lg w-[800px]">
+    <div className="shadow-md bg-white p-8 pb-2 rounded w-[800px]">
       <div className="flex">
         <Avatar size={48} icon={<UserOutlined />} />
         <div className="ml-4">
@@ -31,12 +31,12 @@ const Post = () => {
 
       {/* Actions */}
       <div className="mt-4 flex justify-between w-full items-center">
-        <button className="text-lg hover:bg-gray-300 w-1/2 rounded-lg py-1">
+        <button className="text-lg hover:bg-gray-300 w-1/2 rounded py-1">
           <LikeOutlined className="mr-4" />
           {t('like')}
         </button>
 
-        <button className="text-lg hover:bg-gray-300 w-1/2 rounded-lg py-1">
+        <button className="text-lg hover:bg-gray-300 w-1/2 rounded py-1">
           <CommentOutlined className="mr-4" />
           {t('comment')}
         </button>

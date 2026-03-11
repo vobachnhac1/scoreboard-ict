@@ -1174,8 +1174,6 @@ export default function CompetitionDataOther() {
               );
             })}
           </div>
-
-
           {/* Toolbar Section */}
           <div className="flex flex-wrap gap-4 mb-6 items-center justify-between bg-white dark:bg-gray-800 p-4 rounded shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex flex-1 min-w-[300px] gap-3">

@@ -318,7 +318,7 @@ export default function DataFormOther({
 
                     return (
                       <div key={`ref-${idx}`} className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800/40 rounded border border-gray-100 dark:border-gray-700">
-                        <div className={`w-7 h-7 flex-shrink-0 ${iconColor} rounded-md flex items-center justify-center text-white font-black text-[10px]`}>
+                        <div className={`w-7 h-7 flex-shrink-0 ${iconColor} rounded flex items-center justify-center text-white font-black text-[10px]`}>
                           {ref.role.startsWith("r") ? ref.role.substring(1) : ref.role === "machine" ? "M" : "S"}
                         </div>
                         <div className="flex-1 min-w-0">

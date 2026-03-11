@@ -97,7 +97,7 @@ export default function OperationFlowchart() {
                         <div key={step.id} className="flex flex-col items-center lg:w-1/5 shrink-0 w-full">
                             {/* Icon Circle */}
                             <div
-                                className={`w-20 h-20 rounded-2xl flex flex-col items-center justify-center bg-gradient-to-br ${step.color} shadow-lg text-white mb-4 relative group hover:-translate-y-1 transition-transform duration-300`}
+                                className={`w-20 h-20 rounded flex flex-col items-center justify-center bg-gradient-to-br ${step.color} shadow-lg text-white mb-4 relative group hover:-translate-y-1 transition-transform duration-300`}
                             >
                                 {step.icon}
 

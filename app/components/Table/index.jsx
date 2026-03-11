@@ -45,9 +45,9 @@ const CustomTable = ({ columns, rows, isLoading = false, rowKey }) => {
 
   return (
     <>
-      <table className="border-tools-table-outline w-full min-w-full table-auto border-spacing-0 rounded-xl border-1 border-transparent bg-[#F7F7F7] text-left">
+      <table className="border-tools-table-outline w-full min-w-full table-auto border-spacing-0 rounded border-1 border-transparent bg-[#F7F7F7] text-left">
         <thead className=" bg-[#F7F7F7]">
-          <tr className="rounded-xl px-4">
+          <tr className="rounded px-4">
             {columns.map((col) => (
               <td
                 key={col.key}

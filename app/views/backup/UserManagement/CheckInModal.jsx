@@ -11,7 +11,7 @@ const CheckInModal = ({ isCheckinModal, handleCancel, people }) => {
       <div className="flex justify-end items-center gap-4">
         <span className="text-lg font-semibold">Chọn ngày:</span>
         <DatePicker
-          className="block p-2 h-full w-64 border border-gray-200 rounded-lg text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm "
+          className="block p-2 h-full w-64 border border-gray-200 rounded text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm "
           onChange={(date, dateString) => {
             console.log(date, dateString);
           }}

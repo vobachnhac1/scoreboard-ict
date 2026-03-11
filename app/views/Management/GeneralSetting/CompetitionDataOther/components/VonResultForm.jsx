@@ -131,7 +131,7 @@ export default function VonResultForm({ row, onCancel, referrers = [] }) {
               return (
                 <div key={`ref-${idx}`} className="flex flex-col gap-1.5 p-2 bg-gray-50 dark:bg-gray-800/40 rounded border border-gray-100 dark:border-gray-700">
                   <div className="flex items-center gap-1.5">
-                    <div className={`w-6 h-6 flex-shrink-0 ${iconColor} rounded-md flex items-center justify-center text-white font-black text-[9px]`}>
+                    <div className={`w-6 h-6 flex-shrink-0 ${iconColor} rounded flex items-center justify-center text-white font-black text-[9px]`}>
                       {ref.role.startsWith("r") ? ref.role.substring(1) : ref.role === "machine" ? "M" : "S"}
                     </div>
                     <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none">{roleLabel}</p>

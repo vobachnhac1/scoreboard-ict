@@ -165,7 +165,7 @@ export default function QuyenScoreForm({
             </div>
             <div className="flex items-center gap-3">
               <span className="text-base font-medium text-gray-700 dark:text-gray-300">{t("scoreboard.score_form.total_score")}:</span>
-              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-4 py-1.5 rounded-md border border-blue-200 dark:border-blue-800">
+              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-4 py-1.5 rounded border border-blue-200 dark:border-blue-800">
                 {totalScore}
               </span>
             </div>

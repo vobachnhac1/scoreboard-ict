@@ -18,18 +18,18 @@ export default function ErrorPage({ error }) {
         <h1 className="text-6xl font-black text-gray-900 mb-4 tracking-tight">
           Oops!
         </h1>
-        
+
         <h2 className="text-3xl font-bold text-gray-800 mb-6">
           Đã xảy ra lỗi
         </h2>
 
         {/* Error Message */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border-2 border-red-200">
+        <div className="bg-white rounded shadow-xl p-8 mb-8 border-2 border-red-200">
           <p className="text-gray-600 text-lg mb-4">
             Rất tiếc, hệ thống đã gặp sự cố không mong muốn.
           </p>
           {error && (
-            <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 text-left">
+            <div className="bg-red-50 border-2 border-red-200 rounded p-4 text-left">
               <p className="text-sm font-mono text-red-800 break-all">
                 {error.toString()}
               </p>
@@ -41,7 +41,7 @@ export default function ErrorPage({ error }) {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <button
             onClick={() => navigate('/')}
-            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-200 w-full sm:w-auto"
+            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-200 w-full sm:w-auto"
           >
             <div className="flex items-center justify-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,7 +53,7 @@ export default function ErrorPage({ error }) {
 
           <button
             onClick={() => window.location.reload()}
-            className="px-8 py-4 bg-white text-gray-900 font-bold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-200 border-2 border-gray-200 w-full sm:w-auto"
+            className="px-8 py-4 bg-white text-gray-900 font-bold rounded shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-200 border-2 border-gray-200 w-full sm:w-auto"
           >
             <div className="flex items-center justify-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

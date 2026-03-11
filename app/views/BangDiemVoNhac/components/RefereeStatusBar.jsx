@@ -9,14 +9,14 @@ import React from "react";
  * @param {Number} so_giam_dinh - Số lượng giám định (3, 5, 7, ...)
  */
 export default function RefereeStatusBar({ devices = [], so_giam_dinh = 3 }) {
-  
+
   // Tạo array các referee slots dựa trên so_giam_dinh
   const refereeSlots = Array.from({ length: so_giam_dinh }, (_, index) => {
     const refNum = index + 1;
-    
+
     // Tìm device tương ứng với referrer number
-    const device = devices.find(d => d.referrer ==  refNum);
-    
+    const device = devices.find(d => d.referrer == refNum);
+
     return {
       refNum,
       device,
@@ -29,7 +29,7 @@ export default function RefereeStatusBar({ devices = [], so_giam_dinh = 3 }) {
 
   return (
     <div className="w-full max-w-6xl mb-4">
-      <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-lg shadow-lg p-4 border border-gray-700">
+      <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded shadow-lg p-4 border border-gray-700">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -61,7 +61,7 @@ export default function RefereeStatusBar({ devices = [], so_giam_dinh = 3 }) {
             let borderColor = 'border-red-500';
             let textColor = 'text-red-300';
             let statusText = 'Chưa kết nối';
-            
+
             if (slot.isReady) {
               statusColor = 'bg-green-500';
               borderColor = 'border-green-500';
@@ -77,7 +77,7 @@ export default function RefereeStatusBar({ devices = [], so_giam_dinh = 3 }) {
             return (
               <div
                 key={slot.refNum}
-                className={`relative bg-gray-800 border-2 ${borderColor} rounded-lg p-3 transition-all hover:scale-105`}
+                className={`relative bg-gray-800 border-2 ${borderColor} rounded p-3 transition-all hover:scale-105`}
               >
                 {/* REF Number Badge */}
                 <div className="flex items-center justify-between mb-2">
@@ -130,7 +130,7 @@ export default function RefereeStatusBar({ devices = [], so_giam_dinh = 3 }) {
               </span>
             </span>
           </div>
-          
+
           {/* Ready Indicator */}
           {refereeSlots.filter(s => s.isReady).length === so_giam_dinh ? (
             <div className="flex items-center gap-2 bg-green-500/20 border border-green-500 rounded px-3 py-1">

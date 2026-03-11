@@ -68,7 +68,7 @@ export default function Vovinam() {
       {/* Nút quay lại */}
       <button
         onClick={handleGoBack}
-        className="absolute top-4 left-4 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors z-10"
+        className="absolute top-4 left-4 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded flex items-center gap-2 transition-colors z-10"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -94,7 +94,7 @@ export default function Vovinam() {
       <div className="flex w-full max-w-6xl justify-between items-start mt-4">
         {/* Đỏ */}
         <div className="w-1/3">
-          <div className="bg-red-100 text-black  p-4 rounded-lg flex flex-col items-center">
+          <div className="bg-red-100 text-black  p-4 rounded flex flex-col items-center">
             <div className="text-[150px] font-bold">{redScore}</div>
             <div className="flex justify-between items-center">
               <div className="h-14 w-14 bg-slate-400 mr-2 flex justify-center items-center text-xs">
@@ -150,7 +150,7 @@ export default function Vovinam() {
 
         {/* Xanh */}
         <div className="w-1/3">
-          <div className="bg-sky-200 text-black p-4 rounded-lg flex flex-col items-center">
+          <div className="bg-sky-200 text-black p-4 rounded flex flex-col items-center">
             <div className="text-[150px] font-bold">{blueScore}</div>
             <div className="flex justify-between items-center">
               <div className="font-semibold text-sm mt-2">

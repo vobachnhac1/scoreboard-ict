@@ -96,7 +96,7 @@ export default function MatchLogsReportView({ row }) {
                   {Math.floor((log.current_time || 0) / 60)}:{((log.current_time || 0) % 60).toString().padStart(2, '0')}
                 </td>
                 <td className="p-2 border-r border-gray-200">
-                  <span className={`inline-block border border-black px-2 py-0.5 rounded-sm font-black text-[6pt] uppercase ${log.side?.toUpperCase() === 'RED' ? 'bg-black text-white' : log.side?.toUpperCase() === 'BLUE' ? 'bg-gray-200 text-black' : 'bg-white text-gray-400'}`}>
+                  <span className={`inline-block border border-black px-2 py-0.5 rounded font-black text-[6pt] uppercase ${log.side?.toUpperCase() === 'RED' ? 'bg-black text-white' : log.side?.toUpperCase() === 'BLUE' ? 'bg-gray-200 text-black' : 'bg-white text-gray-400'}`}>
                     {log.side || 'SYS'}
                   </span>
                 </td>

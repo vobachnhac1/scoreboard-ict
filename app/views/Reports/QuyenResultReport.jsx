@@ -257,7 +257,7 @@ import * as XLSX from "xlsx";
 //     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
 //       <div className="max-w-7xl mx-auto">
 //         {/* Header */}
-//         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+//         <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
 //           <div className="flex items-center justify-between">
 //             <div>
 //               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -288,9 +288,9 @@ import * as XLSX from "xlsx";
 
 //         {/* Statistics Cards */}
 //         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-//           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+//           <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6">
 //             <div className="flex items-center">
-//               <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+//               <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded">
 //                 <svg
 //                   className="w-6 h-6 text-blue-600 dark:text-blue-400"
 //                   fill="none"
@@ -316,9 +316,9 @@ import * as XLSX from "xlsx";
 //             </div>
 //           </div>
 
-//           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+//           <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6">
 //             <div className="flex items-center">
-//               <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+//               <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded">
 //                 <svg
 //                   className="w-6 h-6 text-green-600 dark:text-green-400"
 //                   fill="none"
@@ -344,9 +344,9 @@ import * as XLSX from "xlsx";
 //             </div>
 //           </div>
 
-//           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+//           <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6">
 //             <div className="flex items-center">
-//               <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+//               <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded">
 //                 <svg
 //                   className="w-6 h-6 text-purple-600 dark:text-purple-400"
 //                   fill="none"
@@ -372,9 +372,9 @@ import * as XLSX from "xlsx";
 //             </div>
 //           </div>
 
-//           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+//           <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6">
 //             <div className="flex items-center">
-//               <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+//               <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded">
 //                 <svg
 //                   className="w-6 h-6 text-orange-600 dark:text-orange-400"
 //                   fill="none"
@@ -402,7 +402,7 @@ import * as XLSX from "xlsx";
 //         </div>
 
 //         {/* Filters */}
-//         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+//         <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
 //           <div className="flex flex-wrap gap-4">
 //             <div>
 //               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -411,7 +411,7 @@ import * as XLSX from "xlsx";
 //               <select
 //                 value={filterType}
 //                 onChange={(e) => setFilterType(e.target.value)}
-//                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+//                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
 //               >
 //                 <option value="all">Tất cả</option>
 //                 <option value="QY">Chỉ quyền (QY)</option>
@@ -422,7 +422,7 @@ import * as XLSX from "xlsx";
 //         </div>
 
 //         {/* Data Table */}
-//         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+//         <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
 //           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
 //             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
 //               Dữ liệu kết quả ({filteredData.length} bản ghi)
@@ -485,7 +485,7 @@ import * as XLSX from "xlsx";
 //                 </Button>
 //               </div>
 
-//               <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+//               <div className="border border-gray-300 dark:border-gray-600 rounded overflow-hidden">
 //                 <div
 //                   ref={printRef}
 //                   className="bg-white p-8"
@@ -771,7 +771,7 @@ const QuyenResultReport = () => {
             .shadow-lg { box-shadow: none !important; }
 
             /* Rounded corners */
-            .rounded-lg { border-radius: 8px !important; }
+            .rounded { border-radius: 8px !important; }
 
             /* Font sizes */
             .text-xs { font-size: 12px !important; }
@@ -981,52 +981,47 @@ const QuyenResultReport = () => {
               <tbody>
                 <tr>
                   <td
-                    className={`border border-gray-300 px-2 py-1 text-center text-xs ${
-                      data.results.hidden.maxIndex === 0 ||
+                    className={`border border-gray-300 px-2 py-1 text-center text-xs ${data.results.hidden.maxIndex === 0 ||
                       data.results.hidden.minIndex === 0
-                        ? "bg-red-100 line-through text-gray-500"
-                        : "text-gray-700"
-                    }`}
+                      ? "bg-red-100 line-through text-gray-500"
+                      : "text-gray-700"
+                      }`}
                   >
                     {data.results.judge1}
                   </td>
                   <td
-                    className={`border border-gray-300 px-2 py-1 text-center text-xs ${
-                      data.results.hidden.maxIndex === 1 ||
+                    className={`border border-gray-300 px-2 py-1 text-center text-xs ${data.results.hidden.maxIndex === 1 ||
                       data.results.hidden.minIndex === 1
-                        ? "bg-red-100 line-through text-gray-500"
-                        : "text-gray-700"
-                    }`}
+                      ? "bg-red-100 line-through text-gray-500"
+                      : "text-gray-700"
+                      }`}
                   >
                     {data.results.judge2}
                   </td>
                   <td
-                    className={`border border-gray-300 px-2 py-1 text-center text-xs ${
-                      data.results.hidden.maxIndex === 2 ||
+                    className={`border border-gray-300 px-2 py-1 text-center text-xs ${data.results.hidden.maxIndex === 2 ||
                       data.results.hidden.minIndex === 2
-                        ? "bg-red-100 line-through text-gray-500"
-                        : "text-gray-700"
-                    }`}
+                      ? "bg-red-100 line-through text-gray-500"
+                      : "text-gray-700"
+                      }`}
                   >
                     {data.results.judge3}
                   </td>
                   <td
-                    className={`border border-gray-300 px-2 py-1 text-center text-xs ${
-                      data.results.hidden.maxIndex === 3 ||
+                    className={`border border-gray-300 px-2 py-1 text-center text-xs ${data.results.hidden.maxIndex === 3 ||
                       data.results.hidden.minIndex === 3
-                        ? "bg-red-100 line-through text-gray-500"
-                        : "text-gray-700"
-                    }`}
+                      ? "bg-red-100 line-through text-gray-500"
+                      : "text-gray-700"
+                      }`}
                   >
                     {data.results.judge4}
                   </td>
                   <td
-                    className={`border border-gray-300 px-2 py-1 text-center text-xs ${
-                      data.results.hidden.maxIndex === 4 ||
+                    className={`border border-gray-300 px-2 py-1 text-center text-xs ${data.results.hidden.maxIndex === 4 ||
                       data.results.hidden.minIndex === 4
-                        ? "bg-red-100 line-through text-gray-500"
-                        : "text-gray-700"
-                    }`}
+                      ? "bg-red-100 line-through text-gray-500"
+                      : "text-gray-700"
+                      }`}
                   >
                     {data.results.judge5}
                   </td>
@@ -1104,14 +1099,14 @@ const QuyenResultReport = () => {
         <div className="border-t-2 border-gray-300 pt-4 mt-4">
           {/* Thông tin vận động viên thắng */}
           {data.winner && (
-            <div className="mb-6 bg-gray-50 p-4 rounded-lg">
+            <div className="mb-6 bg-gray-50 p-4 rounded">
               <div className="text-center">
                 <h4 className="font-bold text-gray-800 mb-2">
                   VẬN ĐỘNG VIÊN THẮNG CUỘC
                 </h4>
                 <div
-                  className={`inline-block px-4 py-2 rounded-lg font-bold text-black`}
-                  // data.winner === "red" ? "bg-red-500" : "bg-blue-500"
+                  className={`inline-block px-4 py-2 rounded font-bold text-black`}
+                // data.winner === "red" ? "bg-red-500" : "bg-blue-500"
                 >
                   {data.winner === "red" ? data.red.name : data.blue.name}
                   <span className="text-sm font-normal ml-2">
@@ -1146,7 +1141,7 @@ const QuyenResultReport = () => {
       <div className="mt-4 text-center print:hidden flex gap-3 justify-center">
         <button
           onClick={() => navigate(-1)}
-          className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2"
+          className="px-6 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors flex items-center gap-2"
         >
           <svg
             className="w-5 h-5"
@@ -1165,7 +1160,7 @@ const QuyenResultReport = () => {
         </button>
         <button
           onClick={handleDownloadPDF}
-          className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+          className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors flex items-center gap-2"
         >
           <svg
             className="w-5 h-5"
@@ -1184,7 +1179,7 @@ const QuyenResultReport = () => {
         </button>
         <button
           onClick={handlePrint}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+          className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
         >
           <svg
             className="w-5 h-5"

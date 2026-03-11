@@ -262,7 +262,7 @@ import * as XLSX from "xlsx";
 //     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
 //       <div className="max-w-7xl mx-auto">
 //         {/* Header */}
-//         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+//         <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
 //           <div className="flex items-center justify-between">
 //             <div>
 //               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -296,7 +296,7 @@ import * as XLSX from "xlsx";
 //           {/* Left Panel - Settings */}
 //           <div className="lg:col-span-1 space-y-6">
 //             {/* Filter Settings */}
-//             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+//             <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6">
 //               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
 //                 Bộ lọc dữ liệu
 //               </h3>
@@ -308,7 +308,7 @@ import * as XLSX from "xlsx";
 //                   <select
 //                     value={filterType}
 //                     onChange={(e) => setFilterType(e.target.value)}
-//                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+//                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
 //                   >
 //                     <option value="all">Tất cả</option>
 //                     <option value="DK">Chỉ đối kháng (DK)</option>
@@ -320,7 +320,7 @@ import * as XLSX from "xlsx";
 
 //             {/* Statistics */}
 //             {templateSettings.showStats && (
-//               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+//               <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6">
 //                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
 //                   Thống kê
 //                 </h3>
@@ -380,7 +380,7 @@ import * as XLSX from "xlsx";
 //             )}
 
 //             {/* Template Settings */}
-//             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+//             <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6">
 //               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
 //                 Cài đặt báo cáo
 //               </h3>
@@ -393,7 +393,7 @@ import * as XLSX from "xlsx";
 //                     type="text"
 //                     value={reportTitle}
 //                     onChange={(e) => setReportTitle(e.target.value)}
-//                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+//                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
 //                   />
 //                 </div>
 
@@ -409,7 +409,7 @@ import * as XLSX from "xlsx";
 //                         orientation: e.target.value,
 //                       })
 //                     }
-//                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+//                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
 //                   >
 //                     <option value="portrait">Dọc</option>
 //                     <option value="landscape">Ngang</option>
@@ -474,13 +474,13 @@ import * as XLSX from "xlsx";
 
 //           {/* Right Panel - Preview */}
 //           <div className="lg:col-span-3">
-//             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+//             <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6">
 //               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
 //                 Xem trước dữ liệu
 //               </h3>
 
 //               {filteredData.length > 0 ? (
-//                 <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+//                 <div className="border border-gray-300 dark:border-gray-600 rounded overflow-hidden">
 //                   <div className="max-h-96 overflow-auto">
 //                     <table className="w-full text-sm">
 //                       <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0">
@@ -1076,7 +1076,7 @@ const DoiKhangResultReport = () => {
             .shadow-lg { box-shadow: none !important; }
 
             /* Rounded corners */
-            .rounded-lg { border-radius: 8px !important; }
+            .rounded { border-radius: 8px !important; }
 
             /* Font sizes */
             .text-xs { font-size: 12px !important; }
@@ -1460,14 +1460,14 @@ const DoiKhangResultReport = () => {
         <div className="border-t-2 border-gray-300 pt-1 mt-1">
           {/* Thông tin vận động viên thắng */}
           {data.winner && (
-            <div className="mb-6 bg-gray-50 p-4 rounded-lg">
+            <div className="mb-6 bg-gray-50 p-4 rounded">
               <div className="text-center">
                 <h4 className="font-bold text-gray-800 mb-2">
                   VẬN ĐỘNG VIÊN THẮNG CUỘC
                 </h4>
                 <div
-                  className={`inline-block px-4 py-2 rounded-lg font-bold text-black`}
-                  // data.winner === "red" ? "bg-red-500" : "bg-blue-500"
+                  className={`inline-block px-4 py-2 rounded font-bold text-black`}
+                // data.winner === "red" ? "bg-red-500" : "bg-blue-500"
                 >
                   {data.winner === "red" ? data.red.name : data.blue.name}
                   <span className="text-sm font-normal ml-2">
@@ -1511,7 +1511,7 @@ const DoiKhangResultReport = () => {
       <div className="mt-4 text-center print:hidden flex gap-3 justify-center">
         <button
           onClick={() => navigate(-1)}
-          className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2"
+          className="px-6 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors flex items-center gap-2"
         >
           <svg
             className="w-5 h-5"
@@ -1530,7 +1530,7 @@ const DoiKhangResultReport = () => {
         </button>
         <button
           onClick={handleDownloadPDF}
-          className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+          className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors flex items-center gap-2"
         >
           <svg
             className="w-5 h-5"
@@ -1549,7 +1549,7 @@ const DoiKhangResultReport = () => {
         </button>
         <button
           onClick={handlePrint}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+          className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
         >
           <svg
             className="w-5 h-5"

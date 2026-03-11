@@ -34,7 +34,7 @@ const StagingSection = ({
     competition_dk: t("data_sync.total_list"),
     competition_match: t("data_sync.combat"),
     competition_match_team: t("data_sync.quyen")
-  };  const hasCriticalMismatch = stagingData.some((staging) => {
+  }; const hasCriticalMismatch = stagingData.some((staging) => {
     const mapping = stagingMappings[staging.id] || { action: "insert", mapping_to_id: null };
     if (mapping.action !== "update") return false;
     const localList = localRecords[staging.table_name] || [];
@@ -333,7 +333,7 @@ const StagingSection = ({
                                         </div>
                                       );
                                     })}
-                                    <button onClick={() => setStagingDetailRecord({ type: "local", data: matchedLocal })} className="mt-4 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 rounded-lg text-[9px] font-black uppercase tracking-[0.1em] hover:bg-emerald-600 hover:text-white transition-colors">
+                                    <button onClick={() => setStagingDetailRecord({ type: "local", data: matchedLocal })} className="mt-4 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 rounded text-[9px] font-black uppercase tracking-[0.1em] hover:bg-emerald-600 hover:text-white transition-colors">
                                       {t("data_sync.target_machine_detail")} →
                                     </button>
                                   </div>

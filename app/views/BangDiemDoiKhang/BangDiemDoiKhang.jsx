@@ -3434,7 +3434,7 @@ const BangDiemDoiKhang = () => {
             {lsLogo.map((logo, index) => (
               <div
                 key={logo.id || index}
-                className="flex justify-center items-center shadow-lg hover:shadow-xl transition-shadow rounded-lg"
+                className="flex justify-center items-center shadow-lg hover:shadow-xl transition-shadow rounded"
                 style={{ minWidth: "50px", maxWidth: "50px" }}
               >
                 <img
@@ -3669,7 +3669,7 @@ const BangDiemDoiKhang = () => {
           {/* Banner nghỉ giải lao */}
           {!pauseMatch && isBreakTime && (
             <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 pointer-events-none">
-              <div className="relative bg-yellow-500 text-white px-16 py-10 rounded-3xl border-4 border-yellow-300">
+              <div className="relative bg-yellow-500 text-white px-16 py-10 rounded border-4 border-yellow-300">
                 {/* Decorative corners */}
                 {/* <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-2xl"></div>
                 <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white rounded-tr-2xl"></div>
@@ -3684,7 +3684,7 @@ const BangDiemDoiKhang = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded-2xl px-12 py-6">
+                  <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded px-12 py-6">
                     <span className="text-8xl font-black tabular-nums">
                       {formatTime(breakTimeLeft).main}
                     </span>
@@ -3700,7 +3700,7 @@ const BangDiemDoiKhang = () => {
           {/* Banner Y TẾ */}
           {!pauseMatch && isMedicalTime && (
             <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 pointer-events-none">
-              <div className="relative bg-yellow-500 text-white px-16 py-10 rounded-3xl border-4 border-yellow-300">
+              <div className="relative bg-yellow-500 text-white px-16 py-10 rounded border-4 border-yellow-300">
                 {/* Decorative corners */}
                 {/* <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-2xl"></div>
                 <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white rounded-tr-2xl"></div>
@@ -3726,7 +3726,7 @@ const BangDiemDoiKhang = () => {
                   </div>
                   <div className="mb-4">
                     <div
-                      className={`inline-block px-10 py-3 rounded-2xl ${medicalTeam === "red" ? "bg-red-700" : "bg-blue-700"} shadow-lg`}
+                      className={`inline-block px-10 py-3 rounded ${medicalTeam === "red" ? "bg-red-700" : "bg-blue-700"} shadow-lg`}
                     >
                       <p className="text-4xl font-black">
                         {medicalTeam === "red"
@@ -3735,7 +3735,7 @@ const BangDiemDoiKhang = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded-2xl px-12 py-6">
+                  <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded px-12 py-6">
                     <span className="text-8xl font-black tabular-nums">
                       {formatTime(medicalTimeLeft).main}
                     </span>
@@ -3755,7 +3755,7 @@ const BangDiemDoiKhang = () => {
             !isMedicalTime &&
             !ready && (
               <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 pointer-events-none">
-                <div className="relative bg-yellow-500 text-white px-16 py-10 rounded-3xl border-4 border-yellow-300">
+                <div className="relative bg-yellow-500 text-white px-16 py-10 rounded border-4 border-yellow-300">
                   {/* Decorative corners */}
                   {/* <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-2xl"></div>
                   <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white rounded-tr-2xl"></div>
@@ -3779,7 +3779,7 @@ const BangDiemDoiKhang = () => {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded-2xl px-12 py-6">
+                    <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded px-12 py-6">
                       <span className="text-8xl font-black tabular-nums">
                         {formatTime(timeLeft).main}
                       </span>
@@ -4864,7 +4864,7 @@ const BangDiemDoiKhang = () => {
       {/* Toast thông báo chế độ bàn phím */}
       {/* {showKeyboardModeToast && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] animate-fade-in">
-          <div className="bg-gray-900/95 backdrop-blur-md text-white px-6 py-3 rounded-xl shadow-2xl border border-gray-700 flex items-center gap-3">
+          <div className="bg-gray-900/95 backdrop-blur-md text-white px-6 py-3 rounded shadow-2xl border border-gray-700 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clipRule="evenodd" />
             </svg>

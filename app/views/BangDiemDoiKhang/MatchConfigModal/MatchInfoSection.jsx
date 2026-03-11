@@ -12,7 +12,7 @@ const MatchInfoSection = ({ matchInfo }) => {
     <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="bg-gray-50 dark:bg-gray-800/80 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
         <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-          <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-1.5 rounded-lg">
+          <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-1.5 rounded">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-4 w-4"

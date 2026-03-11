@@ -681,7 +681,7 @@ export default function BracketMergeTab({ onMergeComplete }) {
                             {t("bracket_merge.step_5_desc")}
                         </p>
 
-                        <div className="max-w-md mx-auto mb-8 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700 text-left">
+                        <div className="max-w-md mx-auto mb-8 bg-gray-50 dark:bg-gray-800/50 p-4 rounded border border-gray-200 dark:border-gray-700 text-left">
                             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                                 {t("bracket_merge.custom_sheet_name")}
                             </label>
@@ -729,7 +729,7 @@ export default function BracketMergeTab({ onMergeComplete }) {
             {/* Tree Modal overlay */}
             {treeModalOpen && selectedTreeSheet && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700">
+                    <div className="bg-white dark:bg-gray-800 rounded shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700">
                         <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
                             <h3 className="text-lg font-black text-blue-600 dark:text-blue-400">
                                 {t("bracket_merge.bracket_title")}: {selectedTreeSheet}

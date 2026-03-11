@@ -39,7 +39,7 @@ export default function NotFound() {
         </h2>
 
         {/* Description */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border-2 border-purple-200">
+        <div className="bg-white rounded shadow-xl p-8 mb-8 border-2 border-purple-200">
           <p className="text-gray-600 text-lg mb-4">
             {t("page_not_found_desc")}
           </p>
@@ -49,7 +49,7 @@ export default function NotFound() {
         </div>
 
         {/* Quick Links */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border-2 border-blue-200">
+        <div className="bg-white rounded shadow-xl p-6 mb-8 border-2 border-blue-200">
           <h3 className="text-lg font-bold text-gray-900 mb-4">
             {t("popular_pages")}
           </h3>
@@ -58,9 +58,9 @@ export default function NotFound() {
               onClick={() =>
                 navigate("/management/general-setting/competition-management")
               }
-              className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 rounded-xl transition-all duration-200 text-left group"
+              className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 rounded transition-all duration-200 text-left group"
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded flex items-center justify-center flex-shrink-0">
                 <span className="text-xl">🏆</span>
               </div>
               <div>
@@ -75,9 +75,9 @@ export default function NotFound() {
               onClick={() =>
                 navigate("/management/general-setting/config-system")
               }
-              className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 rounded-xl transition-all duration-200 text-left group"
+              className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 rounded transition-all duration-200 text-left group"
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded flex items-center justify-center flex-shrink-0">
                 <span className="text-xl">⚙️</span>
               </div>
               <div>
@@ -90,9 +90,9 @@ export default function NotFound() {
 
             {/* <button
               onClick={() => navigate('/scoreboard')}
-              className="flex items-center gap-3 p-3 bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 rounded-xl transition-all duration-200 text-left group"
+              className="flex items-center gap-3 p-3 bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 rounded transition-all duration-200 text-left group"
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded flex items-center justify-center flex-shrink-0">
                 <span className="text-xl"></span>
               </div>
               <div>
@@ -103,9 +103,9 @@ export default function NotFound() {
 
             <button
               onClick={() => navigate('/bang-diem/quyen')}
-              className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 rounded-xl transition-all duration-200 text-left group"
+              className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 rounded transition-all duration-200 text-left group"
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded flex items-center justify-center flex-shrink-0">
                 <span className="text-xl">✍️</span>
               </div>
               <div>
@@ -120,7 +120,7 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <button
             onClick={() => navigate("/")}
-            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-200 w-full sm:w-auto"
+            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-200 w-full sm:w-auto"
           >
             <div className="flex items-center justify-center gap-2">
               <svg
@@ -142,7 +142,7 @@ export default function NotFound() {
 
           <button
             onClick={() => navigate(-1)}
-            className="px-8 py-4 bg-white text-gray-900 font-bold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-200 border-2 border-gray-200 w-full sm:w-auto"
+            className="px-8 py-4 bg-white text-gray-900 font-bold rounded shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-200 border-2 border-gray-200 w-full sm:w-auto"
           >
             <div className="flex items-center justify-center gap-2">
               <svg

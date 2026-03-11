@@ -21,8 +21,8 @@ export default function CustomCombobox({
     query === ""
       ? data
       : data.filter((data) =>
-          data[keyShow].toLowerCase().includes(query.toLowerCase()),
-        );
+        data[keyShow].toLowerCase().includes(query.toLowerCase()),
+      );
 
   const handleClear = () => {
     setQuery("");
@@ -34,7 +34,7 @@ export default function CustomCombobox({
       <div className="relative select-none">
         <div className="relative w-full">
           <ComboboxInput
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-1 focus:ring-primary dark:focus:ring-blue-500 focus:border-primary dark:focus:border-blue-500 text-sm pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-1 focus:ring-primary dark:focus:ring-blue-500 focus:border-primary dark:focus:border-blue-500 text-sm pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             displayValue={(data) => (data ? data[keyShow] : "")}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={placeholder || "Vui lòng chọn"}
@@ -58,7 +58,7 @@ export default function CustomCombobox({
           </ComboboxButton>
         </div>
 
-        <ComboboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-800 py-1 text-sm shadow-lg ring-1 ring-black dark:ring-gray-700 ring-opacity-5 focus:outline-none">
+        <ComboboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded bg-white dark:bg-gray-800 py-1 text-sm shadow-lg ring-1 ring-black dark:ring-gray-700 ring-opacity-5 focus:outline-none">
           {data.length === 0 ? (
             <div className="cursor-default select-none px-4 py-2 text-gray-700 dark:text-gray-300">
               Không có dữ liệu

@@ -110,7 +110,7 @@ export default function DataTotal() {
               action?.key !== Constants.ACTION_INSERT && (
                 <Button
                   variant="none"
-                  className={`!rounded-md !p-1 w-20 ${action.color} hover:opacity-75`}
+                  className={`!rounded !p-1 w-20 ${action.color} hover:opacity-75`}
                   onClick={() => action.callback(row)}
                   key={action.key}
                 >
@@ -175,7 +175,7 @@ export default function DataTotal() {
           <select
             defaultValue={""}
             id="gender_commons_key"
-            className="form-select col-span-2 min-w-24 px-3 py-2 border rounded-md text-sm"
+            className="form-select col-span-2 min-w-24 px-3 py-2 border rounded text-sm"
             aria-placeholder="Vui lòng chọn loại"
           >
             <option value="">Nhóm thi</option>
@@ -190,7 +190,7 @@ export default function DataTotal() {
           <select
             defaultValue={""}
             id="gender_commons_key"
-            className="form-select col-span-2 min-w-24 px-3 py-2 border rounded-md text-sm"
+            className="form-select col-span-2 min-w-24 px-3 py-2 border rounded text-sm"
             aria-placeholder="Vui lòng chọn loại"
           >
             <option value="">Hình thức</option>
@@ -205,7 +205,7 @@ export default function DataTotal() {
           <select
             defaultValue={""}
             id="gender_commons_key"
-            className="form-select col-span-2 min-w-24 px-3 py-2 border rounded-md text-sm"
+            className="form-select col-span-2 min-w-24 px-3 py-2 border rounded text-sm"
             aria-placeholder="Vui lòng chọn loại"
           >
             <option value="">Giới tính</option>
@@ -215,7 +215,7 @@ export default function DataTotal() {
               </option>
             ))}
           </select>
-          <Input className="!rounded-md !border-black !p-2 !py-1.5" placeholder="Tìm kiếm" />
+          <Input className="!rounded !border-black !p-2 !py-1.5" placeholder="Tìm kiếm" />
           <Button
             onClick={() => {
               console.log("search:");

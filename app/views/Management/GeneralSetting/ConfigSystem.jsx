@@ -997,7 +997,7 @@ export default function ConfigSystem() {
           return (
             <div
               key={key}
-              className="p-4 bg-white dark:bg-gray-800 rounded-lg border-2 border-blue-200 dark:border-blue-600 shadow-sm"
+              className="p-4 bg-white dark:bg-gray-800 rounded border-2 border-blue-200 dark:border-blue-600 shadow-sm"
             >
               <h3 className="text-base font-bold text-blue-700 dark:text-blue-300 mb-4">
                 {label}
@@ -1185,7 +1185,7 @@ export default function ConfigSystem() {
                   onChange={(e) =>
                     setValue(`bg_${key}_opacity`, parseInt(e.target.value))
                   }
-                  className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded appearance-none cursor-pointer accent-blue-600"
                 />
               </div>
 
@@ -1297,7 +1297,7 @@ export default function ConfigSystem() {
                   {t("config_system.preview")}
                 </label>
                 <div
-                  className="w-full h-32 rounded-lg border-2 border-gray-300 dark:border-gray-600 overflow-hidden relative flex flex-col items-center justify-center gap-1"
+                  className="w-full h-32 rounded border-2 border-gray-300 dark:border-gray-600 overflow-hidden relative flex flex-col items-center justify-center gap-1"
                   style={{
                     backgroundColor: "#000000",
                     backgroundImage: bgType === 'image' && bgImage

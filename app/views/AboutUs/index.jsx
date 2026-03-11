@@ -44,7 +44,7 @@ export default function AboutUs() {
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Main Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 overflow-hidden">
           {/* Header Section */}
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-12 text-center">
             <div className="inline-flex items-center justify-center w-24 h-24 bg-white dark:bg-gray-800 rounded-full mb-6">
@@ -113,8 +113,8 @@ export default function AboutUs() {
               </h3>
               <div className="space-y-4">
                 {/* Email */}
-                <div className="flex items-start space-x-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
-                  <div className="flex-shrink-0 w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <div className="flex items-start space-x-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600">
+                  <div className="flex-shrink-0 w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded flex items-center justify-center">
                     <svg
                       className="w-5 h-5 text-blue-600 dark:text-blue-400"
                       fill="none"
@@ -143,8 +143,8 @@ export default function AboutUs() {
                 </div>
 
                 {/* Phone */}
-                <div className="flex items-start space-x-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
-                  <div className="flex-shrink-0 w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                <div className="flex items-start space-x-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600">
+                  <div className="flex-shrink-0 w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded flex items-center justify-center">
                     <svg
                       className="w-5 h-5 text-green-600 dark:text-green-400"
                       fill="none"
@@ -173,8 +173,8 @@ export default function AboutUs() {
                 </div>
 
                 {/* Website */}
-                <div className="flex items-start space-x-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
-                  <div className="flex-shrink-0 w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                <div className="flex items-start space-x-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600">
+                  <div className="flex-shrink-0 w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded flex items-center justify-center">
                     <svg
                       className="w-5 h-5 text-purple-600 dark:text-purple-400"
                       fill="none"
@@ -238,7 +238,7 @@ export default function AboutUs() {
                 {t("about_us.featured_features")}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/10 rounded border border-blue-200 dark:border-blue-800">
                   <svg
                     className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5"
                     fill="none"
@@ -262,7 +262,7 @@ export default function AboutUs() {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/10 rounded border border-blue-200 dark:border-blue-800">
                   <svg
                     className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5"
                     fill="none"
@@ -286,7 +286,7 @@ export default function AboutUs() {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/10 rounded border border-blue-200 dark:border-blue-800">
                   <svg
                     className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5"
                     fill="none"
@@ -310,7 +310,7 @@ export default function AboutUs() {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/10 rounded border border-blue-200 dark:border-blue-800">
                   <svg
                     className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5"
                     fill="none"

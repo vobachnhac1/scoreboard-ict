@@ -2176,7 +2176,8 @@
     "success_save_ref": "referees successfully!",
     "internal_unit": "Internal",
     "round_label": "Round",
-    "click_to_change": "Click to change"
+    "click_to_change": "Click to change",
+    "download_template": "Download Excel Template"
   },
   "competition_data_other": {
     "status_waiting": "Waiting",

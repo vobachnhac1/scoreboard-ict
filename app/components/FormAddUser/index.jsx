@@ -34,7 +34,7 @@ const FormAddUser = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="">
       {/* Player Information */}
-      <div className="bg-white border-dotted border-2 border-slate-400 p-5 rounded-md">
+      <div className="bg-white border-dotted border-2 border-slate-400 p-5 rounded">
         {/* Header */}
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-4xl">{t('user_info')}</h2>
@@ -59,7 +59,7 @@ const FormAddUser = () => {
       </div>
 
       {/* Player Additional Information */}
-      <div className="bg-white border-dotted border-2 border-slate-400 p-5 rounded-md mt-3">
+      <div className="bg-white border-dotted border-2 border-slate-400 p-5 rounded mt-3">
         {/* Header */}
         <div className="flex justify-between items-center">
           <h2 className="text-2xl">Additional Information</h2>

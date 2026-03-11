@@ -33,7 +33,7 @@ function ReportsHome() {
     <div className="p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             {t("reports.title")}
           </h1>
@@ -48,7 +48,7 @@ function ReportsHome() {
             <div
               key={index}
               onClick={() => navigate(card.href)}
-              className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-105 border border-gray-200 dark:border-gray-700"
+              className="group relative bg-white dark:bg-gray-800 rounded shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-105 border border-gray-200 dark:border-gray-700"
             >
               {/* Gradient overlay */}
               <div
@@ -58,7 +58,7 @@ function ReportsHome() {
               <div className="relative p-6">
                 {/* Icon */}
                 <div
-                  className={`w-16 h-16 bg-gradient-to-br ${card.gradient} rounded-xl flex items-center justify-center text-3xl mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                  className={`w-16 h-16 bg-gradient-to-br ${card.gradient} rounded flex items-center justify-center text-3xl mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
                 >
                   {card.icon}
                 </div>
@@ -107,7 +107,7 @@ function ReportsHome() {
         </div>
 
         {/* Instructions */}
-        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-6 mt-6">
+        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded p-6 mt-6">
           <div className="flex items-start">
             <svg
               className="w-6 h-6 text-blue-600 dark:text-blue-400 mt-0.5 mr-3"

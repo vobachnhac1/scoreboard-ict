@@ -17,12 +17,12 @@ const HistoryModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-7xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded shadow-2xl max-w-7xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header - Minimalist Design */}
         <div className="relative bg-white dark:bg-gray-800 px-8 py-6 border-b border-gray-100 dark:border-gray-700">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
-              <div className="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+              <div className="p-2.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-7 w-7"
@@ -47,7 +47,7 @@ const HistoryModal = ({
             </div>
             <button
               onClick={() => setShowHistoryModal(false)}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-gray-700 rounded transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -60,7 +60,7 @@ const HistoryModal = ({
         <div className="p-8 overflow-y-auto max-h-[calc(90vh-160px)] bg-gray-50/50 dark:bg-gray-900/50 flex-1">
           {actionHistory.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 h-full">
-              <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 max-w-sm w-full">
+              <div className="bg-white dark:bg-gray-800 p-8 rounded shadow-sm border border-gray-100 dark:border-gray-700 max-w-sm w-full">
                 <div className="bg-gray-50 dark:bg-gray-700/50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -86,7 +86,7 @@ const HistoryModal = ({
               </div>
             </div>
           ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm whitespace-nowrap">
                   <thead className="bg-gray-50 dark:bg-gray-800/80 sticky top-0 backdrop-blur-sm z-10 border-b border-gray-200 dark:border-gray-700">
@@ -131,10 +131,10 @@ const HistoryModal = ({
                       <tr
                         key={action.id}
                         className={`transition-colors duration-150 ${action.team === "red"
-                            ? "bg-red-50/50 hover:bg-red-50 dark:bg-red-900/10 dark:hover:bg-red-900/20"
-                            : action.team === "blue"
-                              ? "bg-blue-50/50 hover:bg-blue-50 dark:bg-blue-900/10 dark:hover:bg-blue-900/20"
-                              : "hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                          ? "bg-red-50/50 hover:bg-red-50 dark:bg-red-900/10 dark:hover:bg-red-900/20"
+                          : action.team === "blue"
+                            ? "bg-blue-50/50 hover:bg-blue-50 dark:bg-blue-900/10 dark:hover:bg-blue-900/20"
+                            : "hover:bg-gray-50 dark:hover:bg-gray-700/50"
                           }`}
                       >
                         {/* STT */}
@@ -157,7 +157,7 @@ const HistoryModal = ({
                         {/* Loại */}
                         <td className="px-5 py-4 text-center">
                           <span
-                            className={`inline-block px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase rounded-md shadow-sm border ${getActionTypeColorClass(action.actionType)}`}
+                            className={`inline-block px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase rounded shadow-sm border ${getActionTypeColorClass(action.actionType)}`}
                           >
                             {getActionTypeLabel(action.actionType)}
                           </span>
@@ -226,7 +226,7 @@ const HistoryModal = ({
                           {index === 0 && (
                             <button
                               onClick={undoLastAction}
-                              className="px-3 py-1.5 rounded-md text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-red-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-red-400 transition-colors flex items-center justify-center gap-1.5 w-full border border-gray-200 dark:border-gray-700"
+                              className="px-3 py-1.5 rounded text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-red-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-red-400 transition-colors flex items-center justify-center gap-1.5 w-full border border-gray-200 dark:border-gray-700"
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -248,7 +248,7 @@ const HistoryModal = ({
         <div className="bg-white dark:bg-gray-800 px-8 py-5 flex justify-end items-center border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={() => setShowHistoryModal(false)}
-            className="px-6 py-2.5 rounded-lg text-sm font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 transition-colors flex items-center gap-2 border border-transparent dark:border-gray-600"
+            className="px-6 py-2.5 rounded text-sm font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 transition-colors flex items-center gap-2 border border-transparent dark:border-gray-600"
           >
             {t("scoreboard.doikhang.history_close")}
           </button>

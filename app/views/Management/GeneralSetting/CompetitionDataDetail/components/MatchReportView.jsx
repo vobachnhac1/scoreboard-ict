@@ -172,11 +172,11 @@ export default function MatchReportView({ row, onClose }) {
                 <td className="p-3 border-r border-black">
                   <div className="flex flex-col gap-1.5 text-[8pt] font-bold uppercase tracking-tight text-gray-600">
                     <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 border border-black bg-black rounded-sm"></span>
+                      <span className="w-2.5 h-2.5 border border-black bg-black rounded"></span>
                       <span>{t("competition_detail.round_history.red")} / Red: <b className="text-black">{t("competition_detail.modals.fall")}: {round.red?.match?.fall || 0} | {t("competition_detail.modals.penalty_short")}: {round.red?.match?.penalty || 0}</b></span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 border border-black bg-gray-300 rounded-sm"></span>
+                      <span className="w-2.5 h-2.5 border border-black bg-gray-300 rounded"></span>
                       <span>{t("competition_detail.round_history.blue")} / Blue: <b className="text-black">{t("competition_detail.modals.fall")}: {round.blue?.match?.fall || 0} | {t("competition_detail.modals.penalty_short")}: {round.blue?.match?.penalty || 0}</b></span>
                     </div>
                   </div>

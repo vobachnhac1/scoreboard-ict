@@ -86,7 +86,7 @@ const SystemManagement = () => {
             <button
               type="button"
               onClick={() => setIsOpenModal(true)}
-              className="block rounded-md bg-sky-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="block rounded bg-sky-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
               {t('add_subject')}
             </button>
@@ -114,10 +114,10 @@ const SystemManagement = () => {
             ))}
 
             <div className="w-full flex justify-end gap-2 items-center">
-              <button type="button" className="px-6 py-3 text-lg bg-red-500 text-white rounded-lg">
+              <button type="button" className="px-6 py-3 text-lg bg-red-500 text-white rounded">
                 Hủy
               </button>
-              <button type="submit" className="px-6 py-3 text-lg bg-sky-500 text-white rounded-lg">
+              <button type="submit" className="px-6 py-3 text-lg bg-sky-500 text-white rounded">
                 Lưu
               </button>
             </div>

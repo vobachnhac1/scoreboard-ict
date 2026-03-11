@@ -27,9 +27,9 @@ const WinnerAnnouncementModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[100] p-4 transition-all duration-300">
-      <div className="relative bg-gray-900 rounded-2xl p-10 max-w-2xl w-full mx-4 shadow-[0_0_60px_rgba(234,179,8,0.4)] border border-yellow-500/30 transform transition-all">
+      <div className="relative bg-gray-900 rounded p-10 max-w-2xl w-full mx-4 shadow-[0_0_60px_rgba(234,179,8,0.4)] border border-yellow-500/30 transform transition-all">
         {/* Glow effect behind the modal */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-yellow-500 via-yellow-300 to-yellow-500 rounded-2xl blur opacity-20 animate-pulse"></div>
+        <div className="absolute -inset-1 bg-gradient-to-r from-yellow-500 via-yellow-300 to-yellow-500 rounded blur opacity-20 animate-pulse"></div>
 
         <div className="relative z-10">
           {/* Header với icon trophy */}
@@ -51,7 +51,7 @@ const WinnerAnnouncementModal = ({
 
           {/* Thông tin vận động viên */}
           <div
-            className={`p-8 rounded-2xl mb-8 border border-white/10 shadow-2xl ${announcedWinner.team === "red"
+            className={`p-8 rounded mb-8 border border-white/10 shadow-2xl ${announcedWinner.team === "red"
               ? "bg-gradient-to-br from-red-600/90 to-red-900/90 shadow-red-500/30"
               : "bg-gradient-to-br from-blue-600/90 to-blue-900/90 shadow-blue-500/30"
               }`}
@@ -73,7 +73,7 @@ const WinnerAnnouncementModal = ({
                   {t("scoreboard.doikhang.winner_announcement_team")}
                 </div>
                 <div
-                  className={`inline-block px-8 py-3 rounded-xl text-3xl font-bold text-white shadow-inner border border-white/20 uppercase ${announcedWinner.team === "red"
+                  className={`inline-block px-8 py-3 rounded text-3xl font-bold text-white shadow-inner border border-white/20 uppercase ${announcedWinner.team === "red"
                     ? "bg-red-500/50"
                     : "bg-blue-500/50"
                     }`}
@@ -93,9 +93,9 @@ const WinnerAnnouncementModal = ({
               {reasons.map((r) => (
                 <label
                   key={r.id}
-                  className={`cursor-pointer group relative px-4 py-3 rounded-xl font-bold text-center transition-all border ${winReason === r.id
-                      ? "bg-yellow-500/20 text-yellow-500 border-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.3)]"
-                      : "bg-gray-800/50 text-gray-400 border-white/10 hover:border-white/30 hover:bg-gray-800"
+                  className={`cursor-pointer group relative px-4 py-3 rounded font-bold text-center transition-all border ${winReason === r.id
+                    ? "bg-yellow-500/20 text-yellow-500 border-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.3)]"
+                    : "bg-gray-800/50 text-gray-400 border-white/10 hover:border-white/30 hover:bg-gray-800"
                     }`}
                 >
                   <input
@@ -116,7 +116,7 @@ const WinnerAnnouncementModal = ({
           <div className="grid grid-cols-2 gap-6 mt-10">
             <button
               onClick={btnReturnWinner}
-              className="group relative px-6 py-4 rounded-xl font-bold text-lg text-white bg-gray-700 hover:bg-gray-600 transition-all shadow-lg overflow-hidden border border-gray-500/50"
+              className="group relative px-6 py-4 rounded font-bold text-lg text-white bg-gray-700 hover:bg-gray-600 transition-all shadow-lg overflow-hidden border border-gray-500/50"
             >
               <div className="relative z-10 flex items-center justify-center gap-2">
                 <span>{t("scoreboard.doikhang.winner_announcement_back")}</span>
@@ -124,7 +124,7 @@ const WinnerAnnouncementModal = ({
             </button>
             <button
               onClick={() => btnConfirmWinner(winReason)}
-              className="group relative px-6 py-4 rounded-xl font-bold text-lg text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 transition-all shadow-lg shadow-green-500/30 overflow-hidden border border-green-400/50"
+              className="group relative px-6 py-4 rounded font-bold text-lg text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 transition-all shadow-lg shadow-green-500/30 overflow-hidden border border-green-400/50"
             >
               <div className="relative z-10 flex items-center justify-center gap-2">
                 <span>{t("scoreboard.doikhang.winner_announcement_confirm")}</span>

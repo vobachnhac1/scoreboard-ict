@@ -8,8 +8,8 @@ import React, { useState, useEffect } from "react";
  * @param {number} judgeCount - Số lượng giám định (3 hoặc 5)
  * @param {Array} receivedScores - Array of received judge scores [1, 2, 3, ...]
  */
-export default function ScoreWaitingOverlay({ 
-  show = false, 
+export default function ScoreWaitingOverlay({
+  show = false,
   message = "Đang chờ nhập điểm từ giám định",
   judgeCount = 5,
   receivedScores = []
@@ -19,7 +19,7 @@ export default function ScoreWaitingOverlay({
   // Animated dots
   useEffect(() => {
     if (!show) return;
-    
+
     const interval = setInterval(() => {
       setDots((prev) => (prev.length >= 3 ? "" : prev + "."));
     }, 500);
@@ -33,8 +33,8 @@ export default function ScoreWaitingOverlay({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
       <div className="relative max-w-2xl w-full mx-4">
         {/* Main Card */}
-        <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-2xl border-2 border-yellow-500/50 p-8">
-          
+        <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded shadow-2xl border-2 border-yellow-500/50 p-8">
+
           {/* Header */}
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-white mb-2">
@@ -55,9 +55,9 @@ export default function ScoreWaitingOverlay({
                 <div
                   key={judgeNum}
                   className={`
-                    relative p-4 rounded-xl border-2 transition-all duration-500
-                    ${hasScore 
-                      ? 'bg-green-500/20 border-green-500 scale-105' 
+                    relative p-4 rounded border-2 transition-all duration-500
+                    ${hasScore
+                      ? 'bg-green-500/20 border-green-500 scale-105'
                       : 'bg-gray-700/50 border-gray-600 animate-pulse'
                     }
                   `}
@@ -66,8 +66,8 @@ export default function ScoreWaitingOverlay({
                   <div className="text-center mb-2">
                     <div className={`
                       w-12 h-12 mx-auto rounded-full flex items-center justify-center text-2xl
-                      ${hasScore 
-                        ? 'bg-green-500 text-white' 
+                      ${hasScore
+                        ? 'bg-green-500 text-white'
                         : 'bg-gray-600 text-gray-400'
                       }
                     `}>
@@ -93,7 +93,7 @@ export default function ScoreWaitingOverlay({
 
                   {/* Pulse animation for waiting */}
                   {!hasScore && (
-                    <div className="absolute inset-0 rounded-xl border-2 border-yellow-400/30 animate-ping"></div>
+                    <div className="absolute inset-0 rounded border-2 border-yellow-400/30 animate-ping"></div>
                   )}
                 </div>
               );
@@ -107,7 +107,7 @@ export default function ScoreWaitingOverlay({
               <span>{receivedScores.length}/{judgeCount} giám định</span>
             </div>
             <div className="w-full h-3 bg-gray-700 rounded-full overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 transition-all duration-500 rounded-full"
                 style={{ width: `${(receivedScores.length / judgeCount) * 100}%` }}
               />

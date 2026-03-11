@@ -37,7 +37,7 @@ export default function Vovinam() {
               <p className="py-1">Đơn vị: abc</p>
             </div>
           </div>
-          <div className="bg-red-100 text-black  p-4 rounded-lg flex flex-col items-center mt-2">
+          <div className="bg-red-100 text-black  p-4 rounded flex flex-col items-center mt-2">
             <div className="text-[150px] font-bold">10</div>
           </div>
           {renderGDScores(gdData)}
@@ -79,7 +79,7 @@ export default function Vovinam() {
               <p className="py-1 text-right">Đơn vị: abc</p>
             </div>
           </div>
-          <div className="bg-blue-100 text-black  p-4 rounded-lg flex flex-col items-center mt-2">
+          <div className="bg-blue-100 text-black  p-4 rounded flex flex-col items-center mt-2">
             <div className="text-[150px] font-bold">10</div>
           </div>
           {renderGDScores(gdData)}

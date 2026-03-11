@@ -40,11 +40,11 @@ const UserInfo = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="">
       {/* Player Information */}
-      <div className="bg-white border-dotted border-2 border-slate-400 p-5 rounded-md">
+      <div className="bg-white border-dotted border-2 border-slate-400 p-5 rounded">
         {/* Header */}
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-2xl font-semibold">{t('user_info')}</h2>
-          <button className="p-3 border-2 rounded-md">{t('edit_info')}</button>
+          <button className="p-3 border-2 rounded">{t('edit_info')}</button>
         </div>
         {/* Avatar */}
         <div>
@@ -74,7 +74,7 @@ const UserInfo = () => {
       </div>
 
       {/* Player Additional Information */}
-      <div className="bg-white border-dotted border-2 border-slate-400 p-5 rounded-md mt-3">
+      <div className="bg-white border-dotted border-2 border-slate-400 p-5 rounded mt-3">
         <h2 className="text-2xl mb-2 font-semibold">{t('subjects_info')}</h2>
 
         <table className="min-w-full divide-y divide-gray-300">

@@ -82,7 +82,7 @@ export default function RefereeAllocationSection({
             <p className="text-gray-500 dark:text-gray-400 font-medium max-w-lg">{t('competition_data_other.referee_allocation_desc')}</p>
           </div>
 
-          <label className="flex items-center gap-4 p-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur rounded-3xl border border-blue-200/50 dark:border-blue-700/50 cursor-pointer hover:bg-white transition-all">
+          <label className="flex items-center gap-4 p-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur rounded border border-blue-200/50 dark:border-blue-700/50 cursor-pointer hover:bg-white transition-all">
             <input
               type="checkbox"
               checked={isSkipped}

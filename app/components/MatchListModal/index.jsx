@@ -93,7 +93,7 @@ const MatchListModal = ({
     const badge = badges[status] || badges.PENDING;
     return (
       <span
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold border ${badge.bg} ${badge.text}`}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-semibold border ${badge.bg} ${badge.text}`}
       >
         <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`}></span>
         {badge.label}
@@ -121,11 +121,11 @@ const MatchListModal = ({
 
   return (
     <div className="fixed inset-0 z-[105] flex items-center justify-center p-4 sm:p-6 bg-gray-900/60 transition-opacity">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-scale-in">
+      <div className="bg-white dark:bg-gray-800 rounded shadow-xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-scale-in">
         {/* Header - Professional Minimalist */}
         <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-700/80 bg-white dark:bg-gray-800 flex justify-between items-center z-10">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
+            <div className="p-2.5 rounded bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -147,7 +147,7 @@ const MatchListModal = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-gray-700/50 rounded-lg transition-colors border border-transparent focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 outline-none"
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-gray-700/50 rounded transition-colors border border-transparent focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 outline-none"
             aria-label="Close modal"
           >
             <svg
@@ -173,7 +173,7 @@ const MatchListModal = ({
                   placeholder={t("match_list.search_placeholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500/50 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 outline-none transition-shadow placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500/50 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 outline-none transition-shadow placeholder-gray-400 dark:placeholder-gray-500"
                 />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -189,7 +189,7 @@ const MatchListModal = ({
             </div>
 
             {/* Status Filter */}
-            <div className="flex items-center bg-gray-200/50 dark:bg-gray-800 p-1 rounded-lg">
+            <div className="flex items-center bg-gray-200/50 dark:bg-gray-800 p-1 rounded">
               {[
                 { key: "ALL", label: t("match_list.filter_all") },
                 { key: "PENDING", label: t("match_list.filter_pending") },
@@ -199,7 +199,7 @@ const MatchListModal = ({
                 <button
                   key={filter.key}
                   onClick={() => setFilterStatus(filter.key)}
-                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${filterStatus === filter.key
+                  className={`px-4 py-1.5 rounded text-sm font-medium transition-all ${filterStatus === filter.key
                     ? "bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-white"
                     : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50"
                     }`}
@@ -254,7 +254,7 @@ const MatchListModal = ({
         <div className="bg-white dark:bg-gray-800 px-6 py-4 flex justify-between items-center border-t border-gray-100 dark:border-gray-700/80">
           <div className="text-sm">
             {selectedMatch ? (
-              <span className="font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg border border-blue-100 dark:border-blue-800">
+              <span className="font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded border border-blue-100 dark:border-blue-800">
                 {t("match_list.selected_match", { number: selectedMatch.match_no })}
               </span>
             ) : (
@@ -265,7 +265,7 @@ const MatchListModal = ({
           </div>
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 outline-none"
+            className="px-5 py-2 rounded text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 outline-none"
           >
             {t("match_list.close")}
           </button>
@@ -311,7 +311,7 @@ const MatchCard = ({
     return (
       <div
         onClick={onSelect}
-        className={`group relative bg-white dark:bg-gray-800 rounded-xl border transition-all cursor-pointer ${isSelected
+        className={`group relative bg-white dark:bg-gray-800 rounded border transition-all cursor-pointer ${isSelected
           ? "border-blue-500 shadow-md ring-1 ring-blue-500/20"
           : isCurrent
             ? "border-emerald-500 shadow-md ring-1 ring-emerald-500/20 bg-emerald-50/10 dark:bg-emerald-900/10"
@@ -322,12 +322,12 @@ const MatchCard = ({
           <div className="flex items-center justify-between mb-3 border-b border-gray-100 dark:border-gray-700/50 pb-3">
             {/* Match Number & Status */}
             <div className="flex items-center flex-wrap gap-2">
-              <div className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md px-2.5 py-1 font-bold text-sm border border-gray-200 dark:border-gray-600">
+              <div className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded px-2.5 py-1 font-bold text-sm border border-gray-200 dark:border-gray-600">
                 {t("match_list.match_number", { number: match.match_no })}
               </div>
               {getStatusBadge(match.status)}
               {isCurrent && (
-                <span className="px-2 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-widest rounded-md border border-emerald-200 dark:border-emerald-800/50">
+                <span className="px-2 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-widest rounded border border-emerald-200 dark:border-emerald-800/50">
                   {t("match_list.status_ongoing")}
                 </span>
               )}
@@ -341,7 +341,7 @@ const MatchCard = ({
                     e.stopPropagation();
                     onStart();
                   }}
-                  className="px-3 py-1.5 bg-green-50 hover:bg-green-100 dark:bg-green-500/10 dark:hover:bg-green-500/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/30 rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-green-50 hover:bg-green-100 dark:bg-green-500/10 dark:hover:bg-green-500/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/30 rounded text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -364,7 +364,7 @@ const MatchCard = ({
                     e.stopPropagation();
                     onStart();
                   }}
-                  className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 rounded text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -404,7 +404,7 @@ const MatchCard = ({
 
           {/* Athletes List */}
           {match.athletes && match.athletes.length > 0 && (
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded p-3">
               <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">
                 {t("match_list.athletes_list", { count: match.athletes.length })}
               </div>
@@ -440,7 +440,7 @@ const MatchCard = ({
   return (
     <div
       onClick={onSelect}
-      className={`group relative bg-white dark:bg-gray-800 rounded-xl border transition-all cursor-pointer ${isSelected
+      className={`group relative bg-white dark:bg-gray-800 rounded border transition-all cursor-pointer ${isSelected
         ? "border-blue-500 shadow-md ring-1 ring-blue-500/20"
         : isCurrent
           ? "border-emerald-500 shadow-md ring-1 ring-emerald-500/20 bg-emerald-50/10 dark:bg-emerald-900/10"
@@ -451,12 +451,12 @@ const MatchCard = ({
         <div className="flex items-center justify-between mb-3 border-b border-gray-100 dark:border-gray-700/50 pb-3">
           {/* Match Number & Status */}
           <div className="flex items-center flex-wrap gap-2">
-            <div className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md px-2.5 py-1 font-bold text-sm border border-gray-200 dark:border-gray-600">
+            <div className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded px-2.5 py-1 font-bold text-sm border border-gray-200 dark:border-gray-600">
               Trận {match.match_no}
             </div>
             {getStatusBadge(match.status)}
             {isCurrent && (
-              <span className="px-2 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-widest rounded-md border border-emerald-200 dark:border-emerald-800/50">
+              <span className="px-2 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-widest rounded border border-emerald-200 dark:border-emerald-800/50">
                 Đang đấu
               </span>
             )}
@@ -470,7 +470,7 @@ const MatchCard = ({
                   e.stopPropagation();
                   onStart();
                 }}
-                className="px-3 py-1.5 bg-green-50 hover:bg-green-100 dark:bg-green-500/10 dark:hover:bg-green-500/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/30 rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
+                className="px-3 py-1.5 bg-green-50 hover:bg-green-100 dark:bg-green-500/10 dark:hover:bg-green-500/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/30 rounded text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -493,7 +493,7 @@ const MatchCard = ({
                   e.stopPropagation();
                   onStart();
                 }}
-                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
+                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 rounded text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -517,7 +517,7 @@ const MatchCard = ({
         {/* Match Info */}
         <div className="grid grid-cols-2 gap-4">
           {/* Red Corner */}
-          <div className="flex items-center gap-3 p-3 bg-red-50/50 dark:bg-red-900/10 rounded-lg border border-red-100 dark:border-red-900/30">
+          <div className="flex items-center gap-3 p-3 bg-red-50/50 dark:bg-red-900/10 rounded border border-red-100 dark:border-red-900/30">
             <img
               src={redFlag}
               alt={t("match_list.red_flag_alt")}
@@ -547,7 +547,7 @@ const MatchCard = ({
           </div>
 
           {/* Blue Corner */}
-          <div className="flex items-center gap-3 p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
+          <div className="flex items-center gap-3 p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded border border-blue-100 dark:border-blue-900/30">
             <img
               src={blueFlag}
               alt={t("match_list.blue_flag_alt")}

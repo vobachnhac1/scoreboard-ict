@@ -37,10 +37,10 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
     <li key={item.name}>
       {item.disabled ? (
         <div
-          className="flex items-center py-3 px-3 space-x-3 rounded-xl cursor-not-allowed opacity-50 bg-gray-100 relative group"
+          className="flex items-center py-3 px-3 space-x-3 rounded cursor-not-allowed opacity-50 bg-gray-100 relative group"
           title="Disabled"
         >
-          <div className="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded bg-gray-200 flex items-center justify-center flex-shrink-0">
             {item.icon && <item.icon className="h-5 w-5 text-gray-400" />}
           </div>
           {!collapsed && (
@@ -51,7 +51,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
 
           {/* Tooltip khi collapsed */}
           {collapsed && (
-            <div className="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
+            <div className="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
               {item.name.replace(/_/g, " ")}
             </div>
           )}
@@ -59,7 +59,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
       ) : (
         <Link
           to={item.href}
-          className={`group flex items-center py-3 px-3 space-x-3 rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden
+          className={`group flex items-center py-3 px-3 space-x-3 rounded cursor-pointer transition-all duration-200 relative overflow-hidden
           ${isActive(item.href)
               ? `bg-gradient-to-r ${getGradient(index)} text-white shadow-lg scale-105`
               : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-102"
@@ -73,7 +73,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
           )}
 
           <div
-            className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 relative z-10
+            className={`w-10 h-10 rounded flex items-center justify-center flex-shrink-0 transition-all duration-200 relative z-10
             ${isActive(item.href)
                 ? "bg-white/20 text-white"
                 : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 group-hover:bg-gray-200 dark:group-hover:bg-gray-600"
@@ -99,7 +99,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
 
           {/* Tooltip khi collapsed */}
           {collapsed && (
-            <div className="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
+            <div className="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
               {item.name.replace(/_/g, " ")}
             </div>
           )}
@@ -116,7 +116,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
       <div className="flex h-20 items-center justify-center border-b border-gray-200 dark:border-gray-700 mb-4 flex-shrink-0">
         <div className="text-center">
           <div className="flex items-center justify-center gap-3">
-            <div className="inline-flex items-start justify-start rounded-2xl flex-shrink-0">
+            <div className="inline-flex items-start justify-start rounded flex-shrink-0">
               <img
                 src={logoVoHienDai}
                 alt="Logo Võ Hiện Đại"
@@ -164,7 +164,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
                   <Fragment>
                     <DisclosureButton
                       disabled={collapsed}
-                      className={`group w-full flex items-center py-1 px-3 space-x-3 rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden
+                      className={`group w-full flex items-center py-1 px-3 space-x-3 rounded cursor-pointer transition-all duration-200 relative overflow-hidden
                         ${hasActiveChild
                           ? `bg-gradient-to-r ${gradient} text-white shadow-lg`
                           : "text-gray-700 hover:bg-gray-100"
@@ -180,7 +180,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
                       )}
 
                       <div
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 relative z-10
+                        className={`w-10 h-10 rounded flex items-center justify-center flex-shrink-0 transition-all duration-200 relative z-10
                         ${hasActiveChild
                             ? "bg-white/20 text-white"
                             : "bg-gray-100 text-gray-600 group-hover:bg-gray-200"
@@ -205,7 +205,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
 
                       {/* Tooltip khi collapsed */}
                       {collapsed && (
-                        <div className="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
+                        <div className="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
                           {item.name.replace(/_/g, " ")}
                         </div>
                       )}
@@ -221,7 +221,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
                           <li key={child.name}>
                             <Link
                               to={child.href}
-                              className={`group flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative overflow-hidden
+                              className={`group flex items-center space-x-3 px-3 py-2.5 rounded transition-all duration-200 relative overflow-hidden
                                 ${isActive(child.href)
                                   ? `bg-gradient-to-r ${gradient} text-white shadow-md`
                                   : "hover:bg-gray-100 text-gray-700"
@@ -235,7 +235,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
                               )}
 
                               <div
-                                className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 relative z-10
+                                className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 transition-all duration-200 relative z-10
                                 ${isActive(child.href)
                                     ? "bg-white/20 text-white"
                                     : "bg-gray-100 text-gray-600 group-hover:bg-gray-200"
@@ -275,7 +275,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
 
       {/* Footer Actions */}
       <div className="flex-shrink-0 py-4 border-t border-slate-200 dark:border-slate-700">
-        <div className={`flex flex-col gap-2 bg-slate-100/80 dark:bg-slate-800/80 p-2 rounded-2xl border border-slate-200/50 dark:border-slate-700/50`}>
+        <div className={`flex flex-col gap-2 bg-slate-100/80 dark:bg-slate-800/80 p-2 rounded border border-slate-200/50 dark:border-slate-700/50`}>
           <div className={`flex ${collapsed ? 'flex-col items-center gap-2' : 'justify-center items-center gap-2'}`}>
             <ThemeToggle compact={collapsed} className={collapsed ? '' : 'flex-1'} />
             <LanguageSwitcher compact={collapsed} />
@@ -288,7 +288,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
                 e.stopPropagation();
                 onToggle();
               }}
-              className={`group flex items-center justify-center p-2.5 w-full rounded-xl bg-white/50 dark:bg-slate-700/50 hover:bg-white dark:hover:bg-slate-600 text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400 transition-all shadow-sm relative`}
+              className={`group flex items-center justify-center p-2.5 w-full rounded bg-white/50 dark:bg-slate-700/50 hover:bg-white dark:hover:bg-slate-600 text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400 transition-all shadow-sm relative`}
               title={collapsed ? t("common.expand", "Mở rộng") : t("common.collapse", "Thu gọn")}
               type="button"
             >
@@ -309,7 +309,7 @@ const Sidebar = ({ navigation, collapsed = false, onToggle }) => {
               )}
 
               {collapsed && (
-                <div className="absolute left-full ml-4 px-3 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow-xl">
+                <div className="absolute left-full ml-4 px-3 py-2 bg-slate-800 text-white text-xs font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow-xl">
                   {t("common.expand", "Mở rộng")}
                 </div>
               )}

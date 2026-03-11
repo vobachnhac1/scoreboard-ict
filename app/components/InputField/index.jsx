@@ -20,7 +20,7 @@ export const InputField = ({
       readOnly={readOnly}
       {...register(id, { required: `${label} là bắt buộc` })}
       type="text"
-      className="form-input col-span-2 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+      className="form-input col-span-2 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
       placeholder={placeholder}
     />
     {errors[id] && (

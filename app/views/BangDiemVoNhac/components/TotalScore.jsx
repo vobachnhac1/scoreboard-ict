@@ -22,7 +22,7 @@ export default function TotalScore({ total, main, ...props }) {
         </div>
 
         {/* Glow effect on hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-300 -z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-red-600 rounded blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-300 -z-10"></div>
       </div>
     );
   }
@@ -51,7 +51,7 @@ export default function TotalScore({ total, main, ...props }) {
       </div>
 
       {/* Glow effect on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-300 -z-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-red-600 rounded blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-300 -z-10"></div>
     </div>
   );
 }

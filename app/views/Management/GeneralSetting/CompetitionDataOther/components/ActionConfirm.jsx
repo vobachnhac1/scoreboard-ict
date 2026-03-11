@@ -8,7 +8,7 @@ export default function ActionConfirm({ message, onConfirm, onCancel }) {
     <div className="flex flex-col items-center text-center space-y-8">
       {/* Icon */}
       <div className="relative group">
-        <div className="relative w-24 h-24 bg-blue-50 dark:bg-blue-950 rounded-3xl flex items-center justify-center border border-blue-100 dark:border-blue-800">
+        <div className="relative w-24 h-24 bg-blue-50 dark:bg-blue-950 rounded flex items-center justify-center border border-blue-100 dark:border-blue-800">
           <svg className="w-12 h-12 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -28,13 +28,13 @@ export default function ActionConfirm({ message, onConfirm, onCancel }) {
       <div className="flex items-center gap-4 w-full">
         <button
           onClick={onCancel}
-          className="flex-1 py-4 px-6 rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all active:scale-95 uppercase tracking-widest text-[11px]"
+          className="flex-1 py-4 px-6 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all active:scale-95 uppercase tracking-widest text-[11px]"
         >
           {t("competition_data_other.cancel")}
         </button>
         <button
           onClick={onConfirm}
-          className="flex-1 py-4 px-6 rounded-2xl bg-blue-600 text-white font-bold transition-all active:scale-95 uppercase tracking-widest text-[11px]"
+          className="flex-1 py-4 px-6 rounded bg-blue-600 text-white font-bold transition-all active:scale-95 uppercase tracking-widest text-[11px]"
         >
           {t("competition_data_other.continue")}
         </button>

@@ -256,7 +256,7 @@ const DataSync = () => {
       {/* ===== HEADER - Premium Design ===== */}
       <div className="mb-12 flex flex-col md:flex-row items-center justify-between gap-8 py-4 pb-12 border-b border-blue-100 dark:border-blue-900/30 min-h-[120px]">
         <div className="flex items-center gap-6">
-          <div className="w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center text-white shadow-2xl shadow-blue-500/20 rotate-3 transition-transform hover:rotate-0 flex-shrink-0">
+          <div className="w-16 h-16 bg-blue-600 rounded flex items-center justify-center text-white shadow-2xl shadow-blue-500/20 rotate-3 transition-transform hover:rotate-0 flex-shrink-0">
             <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
@@ -278,7 +278,7 @@ const DataSync = () => {
             disabled={isRefreshing}
             className="group flex items-center gap-4 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded border-0 shadow-lg shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-50"
           >
-            <div className={`p-1.5 rounded-xl bg-white/20 group-hover:rotate-180 transition-transform duration-700 ${isRefreshing ? "animate-spin" : ""}`}>
+            <div className={`p-1.5 rounded bg-white/20 group-hover:rotate-180 transition-transform duration-700 ${isRefreshing ? "animate-spin" : ""}`}>
               <svg className="w-5 h-5 text-white text-sm font-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
@@ -366,7 +366,7 @@ const DataSync = () => {
           {activeTab === "send" && viewMode === "table" && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
               <div className="flex items-center gap-4 mb-2">
-                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center text-blue-600">
+                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded flex items-center justify-center text-blue-600">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                 </div>
                 <h2 className="text-[11px] font-black text-blue-400 uppercase tracking-widest">{t("data_sync.system_database_category")}</h2>
@@ -393,7 +393,7 @@ const DataSync = () => {
 
                       <div className="relative z-10 space-y-3">
                         <div className="flex items-center gap-3">
-                          <div className={`p-2 rounded-xl border ${selectedTables.includes(table.name) ? "bg-white/10 border-white/20 text-white" : "bg-blue-50 dark:bg-blue-900/50 border-blue-100 dark:border-blue-800 text-blue-600"}`}>
+                          <div className={`p-2 rounded border ${selectedTables.includes(table.name) ? "bg-white/10 border-white/20 text-white" : "bg-blue-50 dark:bg-blue-900/50 border-blue-100 dark:border-blue-800 text-blue-600"}`}>
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" /></svg>
                           </div>
                           <span className={`text-sm font-black uppercase tracking-tight ${selectedTables.includes(table.name) ? "text-white" : "text-blue-950 dark:text-blue-100"}`}>
@@ -764,7 +764,7 @@ const DataSync = () => {
             <div className="px-10 py-6 border-t border-blue-50 dark:border-blue-900/30 bg-gray-50/30 dark:bg-gray-900 flex justify-end">
               <button
                 onClick={() => setStagingDetailRecord(null)}
-                className="px-8 py-3 bg-white dark:bg-gray-800 border-2 border-blue-50 dark:border-blue-900/30 hover:bg-blue-50 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-blue-500/5 active:scale-95 transition-all"
+                className="px-8 py-3 bg-white dark:bg-gray-800 border-2 border-blue-50 dark:border-blue-900/30 hover:bg-blue-50 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded text-[11px] font-black uppercase tracking-widest shadow-blue-500/5 active:scale-95 transition-all"
               >
                 {t("data_sync.close_details")}
               </button>

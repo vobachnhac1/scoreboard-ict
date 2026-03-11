@@ -1,9 +1,9 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-export default function JudgeScore({ judge, score, isHighest = false, isLowest = false  }) {
-    const { t } = useTranslation();
-  
+export default function JudgeScore({ judge, score, isHighest = false, isLowest = false }) {
+  const { t } = useTranslation();
+
   // Xác định màu sắc dựa trên điểm cao nhất/thấp nhất
   const isGrayed = isHighest || isLowest;
 
@@ -65,7 +65,7 @@ export default function JudgeScore({ judge, score, isHighest = false, isLowest =
       </div>
 
       {/* Glow effect on hover */}
-      <div className={`absolute inset-0 ${glowColor} rounded-2xl blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300 -z-10`}></div>
+      <div className={`absolute inset-0 ${glowColor} rounded blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300 -z-10`}></div>
     </div>
   );
 }

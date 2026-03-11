@@ -17,7 +17,7 @@ export default function ResultForm({ row, onCancel, soGiamDinh = 5, referrers = 
 
   return (
     <div className="space-y-4">
-      <div className="bg-white dark:bg-gray-900/40 p-4 rounded-2xl border border-gray-100 dark:border-gray-800">
+      <div className="bg-white dark:bg-gray-900/40 p-4 rounded border border-gray-100 dark:border-gray-800">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center md:text-left">
           <div className="md:col-span-1 space-y-1">
             <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{t('competition_data_other.match_code')}</p>
@@ -42,7 +42,7 @@ export default function ResultForm({ row, onCancel, soGiamDinh = 5, referrers = 
               }
 
               return (
-                <div key={i} className={`relative p-3 rounded-xl border-2 transition-all duration-300 ${isExcluded ? 'bg-gray-50 dark:bg-gray-800/20 border-gray-200/50 opacity-40 grayscale' : 'bg-white dark:bg-gray-900/40 border-gray-100 dark:border-gray-800'}`}>
+                <div key={i} className={`relative p-3 rounded border-2 transition-all duration-300 ${isExcluded ? 'bg-gray-50 dark:bg-gray-800/20 border-gray-200/50 opacity-40 grayscale' : 'bg-white dark:bg-gray-900/40 border-gray-100 dark:border-gray-800'}`}>
                   {isExcluded && (
                     <span className="absolute -top-1.5 -right-1.5 bg-gray-400 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-tighter">{t('competition_data_other.excluded')}</span>
                   )}
@@ -58,10 +58,10 @@ export default function ResultForm({ row, onCancel, soGiamDinh = 5, referrers = 
         </div>
 
         <div className="md:col-span-5">
-          <div className="bg-blue-600 p-5 rounded-2xl relative overflow-hidden group">
+          <div className="bg-blue-600 p-5 rounded relative overflow-hidden group">
             <div className="relative z-10 text-white space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-white/20 rounded flex items-center justify-center">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                 </div>
                 <div>
@@ -80,9 +80,9 @@ export default function ResultForm({ row, onCancel, soGiamDinh = 5, referrers = 
 
       {/* Referrers Section */}
       {referrers && referrers.length > 0 && (
-        <div className="bg-white dark:bg-gray-900/40 p-4 rounded-2xl border border-gray-100 dark:border-gray-800">
+        <div className="bg-white dark:bg-gray-900/40 p-4 rounded border border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center text-white">
+            <div className="w-8 h-8 bg-purple-600 rounded flex items-center justify-center text-white">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
@@ -108,9 +108,9 @@ export default function ResultForm({ row, onCancel, soGiamDinh = 5, referrers = 
               }
 
               return (
-                <div key={`ref-${idx}`} className="flex flex-col gap-1.5 p-2 bg-gray-50 dark:bg-gray-800/40 rounded-lg border border-gray-100 dark:border-gray-700">
+                <div key={`ref-${idx}`} className="flex flex-col gap-1.5 p-2 bg-gray-50 dark:bg-gray-800/40 rounded border border-gray-100 dark:border-gray-700">
                   <div className="flex items-center gap-1.5">
-                    <div className={`w-6 h-6 flex-shrink-0 ${iconColor} rounded-md flex items-center justify-center text-white font-black text-[9px]`}>
+                    <div className={`w-6 h-6 flex-shrink-0 ${iconColor} rounded flex items-center justify-center text-white font-black text-[9px]`}>
                       {ref.role.startsWith("r") ? ref.role.substring(1) : ref.role === "machine" ? "M" : "S"}
                     </div>
                     <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none">{roleLabel}</p>
@@ -126,7 +126,7 @@ export default function ResultForm({ row, onCancel, soGiamDinh = 5, referrers = 
       <div className="flex justify-end pt-3 mt-3 border-t border-gray-200 dark:border-gray-700">
         <button
           onClick={onCancel}
-          className="px-6 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all active:scale-95 uppercase tracking-widest text-xs"
+          className="px-6 py-2.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all active:scale-95 uppercase tracking-widest text-xs"
         >
           {t('competition_data_other.close_window')}
         </button>

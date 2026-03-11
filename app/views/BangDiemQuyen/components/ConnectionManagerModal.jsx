@@ -150,7 +150,7 @@ export default function ConnectionManagerModal({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - QR Code Section */}
             <div className="lg:col-span-1">
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border-2 border-blue-200 dark:border-blue-700 !rounded-lg p-6 sticky top-0">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border-2 border-blue-200 dark:border-blue-700 !rounded p-6 sticky top-0">
                 <div className="text-center mb-4">
                   <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 flex items-center justify-center gap-2">
                     <LinkIcon className="w-6 h-6 text-blue-600" />
@@ -164,7 +164,7 @@ export default function ConnectionManagerModal({
                 {/* QR Code Display */}
                 <div className="flex justify-center mb-4">
                   {isLoadingQR ? (
-                    <div className="w-64 h-64 bg-white dark:bg-gray-700 !rounded-lg border-4 border-blue-300 dark:border-blue-600 flex items-center justify-center">
+                    <div className="w-64 h-64 bg-white dark:bg-gray-700 !rounded border-4 border-blue-300 dark:border-blue-600 flex items-center justify-center">
                       <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-3"></div>
                         <p className="text-gray-600 dark:text-gray-300 text-sm">
@@ -173,7 +173,7 @@ export default function ConnectionManagerModal({
                       </div>
                     </div>
                   ) : qrCodeUrl ? (
-                    <div className="bg-white dark:bg-gray-700 p-3 !rounded-lg border-4 border-blue-300 dark:border-blue-600 shadow-lg hover:shadow-xl transition-shadow">
+                    <div className="bg-white dark:bg-gray-700 p-3 !rounded border-4 border-blue-300 dark:border-blue-600 shadow-lg hover:shadow-xl transition-shadow">
                       <img
                         src={qrCodeUrl}
                         alt="QR Code"
@@ -181,7 +181,7 @@ export default function ConnectionManagerModal({
                       />
                     </div>
                   ) : (
-                    <div className="w-64 h-64 bg-white dark:bg-gray-700 !rounded-lg border-4 border-gray-300 dark:border-gray-600 flex items-center justify-center">
+                    <div className="w-64 h-64 bg-white dark:bg-gray-700 !rounded border-4 border-gray-300 dark:border-gray-600 flex items-center justify-center">
                       <p className="text-gray-400 dark:text-gray-500 text-sm">
                         {t("scoreboard.connection_manager.no_qr")}
                       </p>
@@ -190,7 +190,7 @@ export default function ConnectionManagerModal({
                 </div>
 
                 {/* QR Instructions */}
-                <div className="bg-white dark:bg-gray-700 border border-blue-200 dark:border-blue-700 !rounded-lg p-4 mb-4">
+                <div className="bg-white dark:bg-gray-700 border border-blue-200 dark:border-blue-700 !rounded p-4 mb-4">
                   <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-3 flex items-center gap-2">
                     <PhoneIcon className="w-5 h-5" />
                     {t("scoreboard.connection_manager.instructions")}
@@ -207,7 +207,7 @@ export default function ConnectionManagerModal({
                 <button
                   onClick={handleGenerateQR}
                   disabled={isLoadingQR}
-                  className="w-full px-4 py-3 bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white !rounded-lg font-medium transition-all flex items-center justify-center gap-2"
+                  className="w-full px-4 py-3 bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white !rounded font-medium transition-all flex items-center justify-center gap-2"
                 >
                   {isLoadingQR ? (
                     <>
@@ -239,10 +239,10 @@ export default function ConnectionManagerModal({
 
             {/* Right Column - Devices Table */}
             <div className="lg:col-span-2">
-              <div className="bg-white dark:bg-gray-800 !rounded-lg">
+              <div className="bg-white dark:bg-gray-800 !rounded">
                 {/* Connection Status Summary */}
                 <div className="grid grid-cols-3 gap-3 mb-4">
-                  <div className="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 !rounded-lg p-3">
+                  <div className="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 !rounded p-3">
                     <div className="text-center">
                       <div className="text-3xl font-bold text-green-600 dark:text-green-400">
                         {connectedCount}
@@ -252,7 +252,7 @@ export default function ConnectionManagerModal({
                       </div>
                     </div>
                   </div>
-                  <div className="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 !rounded-lg p-3">
+                  <div className="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 !rounded p-3">
                     <div className="text-center">
                       <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
                         {setPermissionCount}
@@ -262,7 +262,7 @@ export default function ConnectionManagerModal({
                       </div>
                     </div>
                   </div>
-                  <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 !rounded-lg p-3">
+                  <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 !rounded p-3">
                     <div className="text-center">
                       <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                         {devices.length}
@@ -276,27 +276,27 @@ export default function ConnectionManagerModal({
 
                 {/* Action Buttons */}
                 <div className="flex justify-between items-center mb-4">
-                  <div className="flex gap-2 px-3 py-2 bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white !rounded-lg font-medium text-sm transition-all items-center ">
+                  <div className="flex gap-2 px-3 py-2 bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white !rounded font-medium text-sm transition-all items-center ">
                     {t("scoreboard.connection_manager.server")}: {serverIpHash?.display}
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={onInitSocket}
-                      className="px-3 py-2 bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white !rounded-lg font-medium text-sm transition-all flex items-center gap-2"
+                      className="px-3 py-2 bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white !rounded font-medium text-sm transition-all flex items-center gap-2"
                     >
                       <PowerIcon className="w-4 h-4" />
                       {t("scoreboard.connection_manager.reset")}
                     </button>
                     <button
                       onClick={handleRefresh}
-                      className="px-3 py-2 bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white !rounded-lg font-medium text-sm transition-all flex items-center gap-2"
+                      className="px-3 py-2 bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white !rounded font-medium text-sm transition-all flex items-center gap-2"
                     >
                       <RefreshIcon className="w-4 h-4" />
                       {t("scoreboard.connection_manager.refresh")}
                     </button>
                     <button
                       onClick={onClose}
-                      className="px-3 py-2 bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white !rounded-lg font-medium text-sm transition-all flex items-center gap-2"
+                      className="px-3 py-2 bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white !rounded font-medium text-sm transition-all flex items-center gap-2"
                     >
                       <CloseIcon className="w-4 h-4" />
                       {t("scoreboard.connection_manager.close_f1")}
@@ -305,7 +305,7 @@ export default function ConnectionManagerModal({
                 </div>
 
                 {/* Table */}
-                <div className="border border-gray-200 dark:border-gray-700 !rounded-lg overflow-hidden shadow-sm">
+                <div className="border border-gray-200 dark:border-gray-700 !rounded overflow-hidden shadow-sm">
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-b-2 border-gray-200 dark:border-gray-700">
@@ -369,7 +369,7 @@ export default function ConnectionManagerModal({
                               index,
                               device.device_name,
                             );
-                           
+
                             return (
                               <tr
                                 key={index}
@@ -406,7 +406,7 @@ export default function ConnectionManagerModal({
                                     </svg>
                                     {maskedIp.display}
                                   </span>
-                                </td>                  
+                                </td>
                                 <td className="px-3 py-3 text-center">
                                   {device.connected ? (
                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-medium">
@@ -462,13 +462,13 @@ export default function ConnectionManagerModal({
                                     {/* Reconnect Button */}
                                     {(!device.connected ||
                                       device.referrer == 0) && (
-                                      <button
-                                        onClick={() => handleReconnect(device)}
-                                        className="px-3 py-1.5 rounded-md text-xs font-medium bg-amber-100 dark:bg-amber-900 hover:bg-amber-200 dark:hover:bg-amber-800 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-600 transition-all"
-                                      >
-                                        {t("scoreboard.connection_manager.grant_permission")}
-                                      </button>
-                                    )}
+                                        <button
+                                          onClick={() => handleReconnect(device)}
+                                          className="px-3 py-1.5 rounded text-xs font-medium bg-amber-100 dark:bg-amber-900 hover:bg-amber-200 dark:hover:bg-amber-800 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-600 transition-all"
+                                        >
+                                          {t("scoreboard.connection_manager.grant_permission")}
+                                        </button>
+                                      )}
 
                                     {/* Disconnect Button */}
                                     {device.connected &&
@@ -477,7 +477,7 @@ export default function ConnectionManagerModal({
                                           onClick={() =>
                                             handleDisconnect(device)
                                           }
-                                          className="px-3 py-1.5 rounded-md text-xs font-medium bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600 transition-all"
+                                          className="px-3 py-1.5 rounded text-xs font-medium bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600 transition-all"
                                         >
                                           {t("scoreboard.connection_manager.revoke_permission")}
                                         </button>

@@ -560,7 +560,7 @@ export default function Dashboard() {
             onClick={() => setConfirmRevoke(false)}
           />
           {/* Dialog */}
-          <div className="relative z-10 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-slate-200 dark:border-gray-700 max-w-md w-full p-8">
+          <div className="relative z-10 bg-white dark:bg-gray-800 rounded shadow-2xl border border-slate-200 dark:border-gray-700 max-w-md w-full p-8">
             {/* Icon cảnh báo */}
             <div className="flex justify-center mb-5">
               <div className="w-16 h-16 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">

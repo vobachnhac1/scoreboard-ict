@@ -18,7 +18,7 @@ const SearchUser = () => {
           />
           <input
             id="search-field"
-            className="block p-4 pl-8 h-full w-full border border-gray-200 rounded-lg text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm "
+            className="block p-4 pl-8 h-full w-full border border-gray-200 rounded text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm "
             placeholder={t('search_subject')}
             type="search"
             name="search"
@@ -34,7 +34,7 @@ const SearchUser = () => {
           <select
             id="select_school"
             name="school"
-            className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            className="mt-2 block w-full rounded border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
             defaultValue="Canada"
           >
             <option>United States</option>
@@ -50,7 +50,7 @@ const SearchUser = () => {
           <select
             id="class_type"
             name="class_type"
-            className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            className="mt-2 block w-full rounded border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
             defaultValue="Canada"
           >
             <option>United States</option>

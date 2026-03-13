@@ -776,14 +776,14 @@ import * as XLSX from "xlsx";
 
 const dataDoiKhang = {
   config_system: {
-    ten_giai_dau: "GIẢI CÚP VÕ HIỆN ĐẠI NĂM 2026",
-    ten_mon_thi: "VÕ HIỆN ĐẠI",
+    ten_giai_dau: "GIẢI CÚP DigiSports NĂM 2026",
+    ten_mon_thi: "DigiSports",
     so_hiep: 3,
     so_giam_dinh: 5,
     he_diem: 10,
     tieu_de: "KẾT QUẢ THI ĐẤU",
   },
-  ten_giai_dau: "GIẢI CÚP VÕ HIỆN ĐẠI NĂM 2026",
+  ten_giai_dau: "GIẢI CÚP DigiSports NĂM 2026",
   ngay_thi: "17/01/2026",
   match_id: "Trận 1",
   match_level: "Nhóm 1", // Hạng cân:

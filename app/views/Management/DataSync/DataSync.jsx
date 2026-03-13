@@ -78,7 +78,7 @@ const DataSync = () => {
   };
 
   const handleCloudAuthorize = async () => {
-    if (!authCode.trim()) return showAlert("Vui lòng nhập mã xác thực từ Google");
+    if (!authCode.trim()) return showAlert(t("data_sync.enter_google_auth_code"));
     setIsLoadingCloud(true);
     try {
       const res = await fetch("http://localhost:6789/api/sync/cloud/authorize", {
@@ -88,15 +88,15 @@ const DataSync = () => {
       });
       const data = await res.json();
       if (data.success) {
-        showSuccess("Kết nối Google Drive thành công!");
+        showSuccess(t("data_sync.google_connect_success"));
         setIsCloudConnected(true);
         setAuthCode("");
         refreshCloudBackups();
       } else {
-        showError("Lỗi: " + data.message);
+        showError(t("common.error") + ": " + data.message);
       }
     } catch (err) {
-      showError("Lỗi xác thực: " + err.message);
+      showError(t("common.error") + " " + t("common.connection") + ": " + err.message);
     } finally {
       setIsLoadingCloud(false);
     }
@@ -121,27 +121,27 @@ const DataSync = () => {
   };
 
   const handleCloudBackup = async () => {
-    const confirm = await showConfirm("Bạn có muốn sao lưu dữ liệu hiện tại lên Google Drive?");
+    const confirm = await showConfirm(t("data_sync.confirm_google_backup"));
     if (!confirm) return;
     setIsLoadingCloud(true);
     try {
       const res = await fetch("http://localhost:6789/api/sync/cloud/backup", { method: "POST" });
       const data = await res.json();
       if (data.success) {
-        showSuccess("Sao lưu Cloud thành công!");
+        showSuccess(t("data_sync.google_backup_success"));
         refreshCloudBackups();
       } else {
-        showError("Lỗi: " + data.message);
+        showError(t("common.error") + ": " + data.message);
       }
     } catch (err) {
-      showError("Lỗi kết nối: " + err.message);
+      showError(t("data_sync.network_error") + ": " + err.message);
     } finally {
       setIsLoadingCloud(false);
     }
   };
 
   const handleCloudRestore = async (fileId) => {
-    const confirm = await showConfirm("CẢNH BÁO: Thao tác này sẽ GHI ĐÈ dữ liệu hiện tại từ bản sao lưu Cloud và KHỞI ĐỘNG LẠI phần mềm. Tiếp tục?");
+    const confirm = await showConfirm(t("data_sync.confirm_google_restore"));
     if (!confirm) return;
     setIsLoadingCloud(true);
     try {
@@ -152,13 +152,13 @@ const DataSync = () => {
       });
       const data = await res.json();
       if (data.success) {
-        showSuccess("Khôi phục thành công! Ứng dụng sẽ reload.");
+        showSuccess(t("data_sync.google_restore_success"));
         window.location.reload();
       } else {
-        showError("Lỗi: " + data.message);
+        showError(t("common.error") + ": " + data.message);
       }
     } catch (err) {
-      showError("Lỗi: " + err.message);
+      showError(t("common.error") + ": " + err.message);
     } finally {
       setIsLoadingCloud(false);
     }
@@ -231,12 +231,12 @@ const DataSync = () => {
       const res = await fetch("http://localhost:6789/api/sync/ftp/test", { method: "POST" });
       const data = await res.json();
       if (data.success) {
-        showSuccess("Kết nối FTP SUCCESS! \n\n" + data.message);
+        showSuccess(t("data_sync.ftp_test_success") + " \n\n" + data.message);
       } else {
-        showError("Kết nối FTP FAILED! \n\n" + data.message);
+        showError(t("data_sync.ftp_test_failed") + " \n\n" + data.message);
       }
     } catch (err) {
-      showError("Lỗi kiểm tra kết nối: " + err.message);
+      showError(t("data_sync.connection_test_error") + ": " + err.message);
     } finally {
       setIsLoadingFtp(false);
     }
@@ -275,16 +275,16 @@ const DataSync = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={handleRefreshAll}
-            disabled={isRefreshing}
-            className="group flex items-center gap-4 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded border-0 shadow-lg shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-50"
+            disabled={isRefreshing || isScanning}
+            className="group flex items-center gap-4 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded border-0 shadow-lg shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <div className={`p-1.5 rounded bg-white/20 group-hover:rotate-180 transition-transform duration-700 ${isRefreshing ? "animate-spin" : ""}`}>
+            <div className={`p-1.5 rounded bg-white/20 group-hover:rotate-180 transition-transform duration-700 ${(isRefreshing || isScanning) ? "animate-spin" : ""}`}>
               <svg className="w-5 h-5 text-white text-sm font-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
             </div>
             <span className="text-[11px] font-black uppercase tracking-[0.2em]">
-              {isRefreshing ? t("data_sync.processing") : t("data_sync.refresh_data")}
+              {(isRefreshing || isScanning) ? t("data_sync.scanning", { defaultValue: "ĐANG QUÉT MẠNG..." }) : t("data_sync.refresh_data")}
             </span>
           </button>
         </div>
@@ -707,7 +707,7 @@ const DataSync = () => {
                                 </div>
                               ) : key === 'referrers' && isObject ? (() => {
                                 const refData = Array.isArray(parsedValue) ? parsedValue : Object.values(parsedValue);
-                                if (refData.length === 0) return <div className="text-gray-400 italic">No referrers</div>;
+                                if (refData.length === 0) return <div className="text-gray-400 italic">{t("data_sync.no_data")}</div>;
                                 const cols = Object.keys(refData[0]).filter(c => c?.toUpperCase() !== 'REFEREE_ID');
                                 return (
                                   <div className="rounded border-2 border-blue-50 dark:border-blue-900/30 overflow-hidden shadow-lg shadow-blue-500/5">

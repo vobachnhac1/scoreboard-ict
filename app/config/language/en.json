@@ -1902,6 +1902,10 @@
     }
   },
   "config_system": {
+    "tab_general": "General Info",
+    "tab_rules": "Match Rules",
+    "tab_ui": "UI & Scoreboard",
+    "tab_media": "Media & Branding",
     "competition_info": "Competition Information",
     "competition_name": "Competition Name",
     "sport_type": "Sport Type",

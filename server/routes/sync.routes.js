@@ -30,9 +30,24 @@ router.get('/local-ip', async (req, res) => {
 // GET /api/sync/scan-network - Quét mạng tìm máy chủ khác
 router.get('/scan-network', async (req, res) => {
     try {
-        const localIP = await getIP();
+        const networkInterfaces = os.networkInterfaces();
+        const localIPs = [];
+        const subnets = new Set();
 
-        if (!localIP || localIP === 'Không xác định') {
+        // Thu thập tất cả IP và subnet từ các card mạng đang hoạt động
+        for (const [name, netInterface] of Object.entries(networkInterfaces)) {
+            for (const iface of netInterface) {
+                if (iface.family === 'IPv4' && !iface.internal) {
+                    localIPs.push(iface.address);
+                    const parts = iface.address.split('.');
+                    if (parts.length === 4) {
+                        subnets.add(`${parts[0]}.${parts[1]}.${parts[2]}`);
+                    }
+                }
+            }
+        }
+
+        if (localIPs.length === 0) {
             return res.json({
                 success: false,
                 message: 'Không thể xác định IP của máy hiện tại',
@@ -40,62 +55,72 @@ router.get('/scan-network', async (req, res) => {
             });
         }
 
-        // Lấy subnet từ IP (ví dụ: 192.168.1.100 -> 192.168.1)
-        const ipParts = localIP.split('.');
-        if (ipParts.length !== 4) {
-            return res.json({
-                success: false,
-                message: 'IP không hợp lệ',
-                data: { servers: [] }
-            });
+        // Heuristic: Quét rộng hơn cho dải 192.168.x.x (từ .0 đến .50) như yêu cầu của user
+        const has192 = Array.from(subnets).some(s => s.startsWith('192.168'));
+        if (has192) {
+            for (let i = 0; i <= 50; i++) {
+                subnets.add(`192.168.${i}`);
+            }
         }
 
-        const subnet = `${ipParts[0]}.${ipParts[1]}.${ipParts[2]}`;
-        const foundServers = [];
+        const subnetsToScan = Array.from(subnets);
+        const allTargetIPs = [];
 
-        console.log(`🔍 Bắt đầu quét subnet ${subnet}.0/24...`);
-
-        // Quét từ .1 đến .254
-        const promises = [];
-        for (let i = 1; i <= 254; i++) {
-            const targetIP = `${subnet}.${i}`;
-
-            // Bỏ qua IP của chính mình
-            if (targetIP === localIP) continue;
-
-            // Tạo promise để quét IP này
-            const promise = axios.get(`http://${targetIP}:6789/api/sync/local-ip`, {
-                timeout: 500 // 500ms timeout cho mỗi IP
-            })
-            .then(response => {
-                if (response.data && response.data.success) {
-                    console.log(` Tìm thấy server tại ${targetIP}`);
-                    foundServers.push({
-                        ip: targetIP,
-                        url: `http://${targetIP}:6789`,
-                        remoteIP: response.data.data.ip,
-                        status: 'online'
-                    });
+        // Thu thập tất cả IP mục tiêu
+        for (const subnet of subnetsToScan) {
+            for (let i = 0; i <= 254; i++) {
+                const targetIP = `${subnet}.${i}`;
+                if (!localIPs.includes(targetIP)) {
+                    allTargetIPs.push(targetIP);
                 }
-            })
-            .catch(() => {
-                // Không log lỗi để tránh spam console
-            });
-
-            promises.push(promise);
+            }
         }
 
-        // Chờ tất cả các requests hoàn thành
-        await Promise.all(promises);
+        console.log(`🔍 Bắt đầu quét tổng cộng ${allTargetIPs.length} IP trên ${subnetsToScan.length} subnet...`);
 
-        console.log(` Quét xong! Tìm thấy ${foundServers.length} server(s)`);
+        const foundServers = [];
+        const BATCH_SIZE = 200; // Quét 200 IP một lúc để tránh quá tải
+        const TIMEOUT = 450;
+
+        // Quét theo đợt (batch)
+        for (let i = 0; i < allTargetIPs.length; i += BATCH_SIZE) {
+            const batch = allTargetIPs.slice(i, i + BATCH_SIZE);
+
+            const batchPromises = batch.map(targetIP =>
+                axios.get(`http://${targetIP}:6789/api/sync/local-ip`, { timeout: TIMEOUT })
+                    .then(response => {
+                        if (response.data && response.data.success) {
+                            console.log(`\x1b[32m Found server at ${targetIP} \x1b[0m`);
+                            return {
+                                ip: targetIP,
+                                url: `http://${targetIP}:6789`,
+                                remoteIP: response.data.data.ip,
+                                status: 'online'
+                            };
+                        }
+                        return null;
+                    })
+                    .catch(() => null)
+            );
+
+            const batchResults = await Promise.all(batchPromises);
+            const onlineServers = batchResults.filter(s => s !== null);
+            foundServers.push(...onlineServers);
+
+            // Log tiến độ mỗi 1000 IP
+            if ((i + BATCH_SIZE) % 1000 === 0 || i + BATCH_SIZE >= allTargetIPs.length) {
+                console.log(`  Tiến độ: ${Math.min(i + BATCH_SIZE, allTargetIPs.length)}/${allTargetIPs.length} IP...`);
+            }
+        }
+
+        console.log(`\x1b[36m Quét xong! Tìm thấy ${foundServers.length} server(s) \x1b[0m`);
 
         return res.json({
             success: true,
             message: `Tìm thấy ${foundServers.length} server(s) trên mạng`,
             data: {
-                localIP: localIP,
-                subnet: subnet,
+                localIPs: localIPs,
+                subnetsScanned: subnetsToScan,
                 servers: foundServers
             }
         });

@@ -18,7 +18,9 @@ const NetworkConnection = ({
   handleManualDisconnect,
   handleScanNetwork,
   handleConnectScanned,
-  showAlert
+  handleQuickSyncAll,
+  showAlert,
+  syncing
 }) => {
   const { t } = useTranslation();
   return (
@@ -115,9 +117,9 @@ const NetworkConnection = ({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 )}
-                {t("data_sync.quick_sync_all", { defaultValue: "ĐỒNG BỘ NHANH (ALL)" })}
+                {syncing ? t("data_sync.processing") : t("data_sync.quick_sync_all")}
               </button>
-              
+
               <button
                 onClick={handleManualDisconnect}
                 className="px-8 py-3.5 bg-rose-50 hover:bg-rose-500 text-rose-600 hover:text-white border-2 border-rose-100 dark:border-rose-900/30 rounded text-[10px] font-black uppercase tracking-widest transition-all  active:scale-95"
@@ -126,25 +128,25 @@ const NetworkConnection = ({
               </button>
             </div>
           </div>
-          
+
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-4 bg-blue-50/50 dark:bg-blue-900/20 rounded border border-blue-100 dark:border-blue-800">
-               <div className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                 <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                 VAI TRÒ THIẾT BỊ NÀY
-               </div>
-               <p className="text-[11px] font-bold text-blue-900 dark:text-blue-200 uppercase tracking-tight">
-                 MÁY TRẠM (CLIENT) - Gửi dữ liệu đi
-               </p>
+              <div className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                {t("data_sync.this_device_role")}
+              </div>
+              <p className="text-[11px] font-bold text-blue-900 dark:text-blue-200 uppercase tracking-tight">
+                {t("data_sync.client_role_desc")}
+              </p>
             </div>
             <div className="p-4 bg-indigo-50/50 dark:bg-indigo-900/20 rounded border border-indigo-100 dark:border-indigo-800">
-               <div className="text-[9px] font-black text-indigo-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                 <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
-                 VAI TRÒ MÁY ĐỐI TÁC
-               </div>
-               <p className="text-[11px] font-bold text-indigo-900 dark:text-indigo-200 uppercase tracking-tight">
-                 MÁY CHỦ (SERVER) - Nhận & Duyệt dữ liệu
-               </p>
+              <div className="text-[9px] font-black text-indigo-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
+                {t("data_sync.partner_device_role")}
+              </div>
+              <p className="text-[11px] font-bold text-indigo-900 dark:text-indigo-200 uppercase tracking-tight">
+                {t("data_sync.server_role_desc")}
+              </p>
             </div>
           </div>
         </div>
@@ -232,7 +234,8 @@ const NetworkConnection = ({
                         </div>
                         <button
                           onClick={() => handleConnectScanned(server)}
-                          className="w-full py-2.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white rounded text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
+                          disabled={loading || isScanning}
+                          className="w-full py-2.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white disabled:bg-gray-100 disabled:text-gray-400 rounded text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 disabled:cursor-not-allowed"
                         >
                           {t("data_sync.connect_now")}
                         </button>

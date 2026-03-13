@@ -224,12 +224,22 @@ const getBackgroundScreens = (t) => [
   { key: "vonhac", label: t("config_system.screen_music") },
 ];
 
+// FLAG: Bật true để mở toàn bộ quyền cấu hình (Bỏ qua giới hạn License/Preset)
+const DEBUG_UNLOCK_ALL_CONFIG = true;
+
 export default function ConfigSystem() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   // @ts-ignore
   const { data, loading } = useAppSelector((state) => state.configSystem);
-  const { packageName, features, config_presets } = useAppSelector((state) => state.license);
+  const { packageName: originalPackageName, features: originalFeatures, config_presets } = useAppSelector((state) => state.license);
+
+  // Debug Override
+  const packageName = DEBUG_UNLOCK_ALL_CONFIG ? "enterprise" : originalPackageName;
+  const features = DEBUG_UNLOCK_ALL_CONFIG
+    ? { ...originalFeatures, forced_keyboard_mode: null, allowed_keyboard_modes: Object.keys(KEYBOARD_MODES) }
+    : originalFeatures;
+
   const {
     register,
     handleSubmit,
@@ -247,6 +257,7 @@ export default function ConfigSystem() {
   const textareaFields = getTextareaFields(t);
   const switchFields = getSwitchFields(t);
   const backgroundScreens = getBackgroundScreens(t);
+  const [activeTab, setActiveTab] = useState("general"); // general, rules, ui, media
 
   // State cho quản lý logos
   const [logos, setLogos] = useState([]);
@@ -331,13 +342,13 @@ export default function ConfigSystem() {
   const currentMergedConfig = getConfigPresetsByTier(packageName, selectedKeyboardMode || "vovinam", features);
 
   // Danh sách fields bị khoá theo chế độ hiện tại
-  const disabledFields = currentMergedConfig?.disabledFields || [];
+  const disabledFields = DEBUG_UNLOCK_ALL_CONFIG ? [] : (currentMergedConfig?.disabledFields || []);
   // Danh sách fields ẩn hoàn toàn theo chế độ hiện tại
-  const hiddenFields = currentMergedConfig?.hiddenFields || [];
+  const hiddenFields = DEBUG_UNLOCK_ALL_CONFIG ? [] : (currentMergedConfig?.hiddenFields || []);
   // Giá trị được phép hiển thị cho select fields theo chế độ hiện tại
-  const allowedOptions = currentMergedConfig?.allowedOptions || {};
+  const allowedOptions = DEBUG_UNLOCK_ALL_CONFIG ? {} : (currentMergedConfig?.allowedOptions || {});
   // Danh sách nhóm (group key) ẩn hoàn toàn hiện tại
-  const hiddenGroups = currentMergedConfig?.hiddenGroups || [];
+  const hiddenGroups = DEBUG_UNLOCK_ALL_CONFIG ? [] : (currentMergedConfig?.hiddenGroups || []);
 
   // Fetch logos từ API
   const fetchLogos = async () => {
@@ -636,12 +647,12 @@ export default function ConfigSystem() {
     handleUploadBackgroundImage(screenKey, file);
   };
 
-  const renderInputGroup = (title, fields, index) => (
+  const renderInputGroup = (title, fields, index, flexDirection = "column") => (
     <div
       key={index}
-      className="col-span-1 p-5 bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900 dark:to-blue-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded  transition-all duration-200"
+      className={`col-span-1 ${flexDirection === "row" ? "lg:col-span-2 xl:col-span-3 mb-6" : ""} p-6 bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900 dark:to-blue-900 border-2 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg rounded transition-all duration-200`}
     >
-      <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-blue-300 dark:border-blue-600">
+      <div className="flex items-center gap-2 mb-6 pb-3 border-b-2 border-blue-300 dark:border-blue-600">
         <svg
           className="w-5 h-5 text-blue-600 dark:text-blue-400"
           fill="none"
@@ -659,14 +670,14 @@ export default function ConfigSystem() {
           {title}
         </span>
       </div>
-      <div className="space-y-3">
+      <div className={`${flexDirection === "row" ? `grid grid-cols-1 md:grid-cols-${fields.filter(f => !hiddenFields.includes(f.name)).length} gap-8` : "space-y-4"}`}>
         {fields.filter(f => !hiddenFields.includes(f.name)).map(({ name, label, placeholder, type = "text" }, i) => {
           const isDisabled = disabledFields.includes(name);
           return (
-            <div key={i} className={`grid grid-cols-3 gap-2 items-center ${isDisabled ? 'opacity-60' : ''}`}>
+            <div key={i} className={`${flexDirection === "row" ? "w-full" : "grid grid-cols-3 gap-4 items-center"} ${isDisabled ? 'opacity-60' : ''}`}>
               <label
                 htmlFor={name}
-                className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1"
+                className={`${flexDirection === "row" ? "block mb-2 text-sm font-semibold" : "col-span-1 text-sm"} text-gray-700 dark:text-gray-300 flex items-center gap-1.5`}
               >
                 {label}
                 {isDisabled && (
@@ -675,17 +686,17 @@ export default function ConfigSystem() {
                   </svg>
                 )}
               </label>
-              <div className="col-span-2">
+              <div className={flexDirection === "row" ? "w-full" : "col-span-2"}>
                 <input
                   id={name}
                   readOnly={loading || isDisabled}
                   {...register(name, { required: `${label} ${t("config_system.required")}` })}
                   type={type}
                   placeholder={placeholder}
-                  className={`w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 rounded text-sm transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${isDisabled ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''}`}
+                  className={`w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/40 rounded text-sm transition-all duration-300 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isDisabled ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed border-gray-200' : 'hover:border-blue-400 shadow-sm'}`}
                 />
                 {errors[name] && (
-                  <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-medium">
+                  <p className="text-red-500 dark:text-red-400 text-[10px] mt-1.5 font-black">
                     {errors[name].message}
                   </p>
                 )}
@@ -1723,142 +1734,104 @@ export default function ConfigSystem() {
   );
 
   return (
-    <div className="p-6 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 shadow-lg rounded ">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Header with Action Buttons */}
-        <div className="bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-900 dark:to-blue-900 border-2 border-blue-200 dark:border-blue-700 rounded  p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded  flex items-center justify-center shadow-md">
-                <svg
-                  className="w-7 h-7 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-              </div>
+    <div className="flex flex-col h-full bg-white dark:bg-gray-900 rounded overflow-hidden border border-gray-200 dark:border-gray-800 shadow-xl">
+      {/* Tab Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 sticky top-0 z-30 backdrop-blur-md">
+        <div className="flex items-center gap-1 bg-blue-50/50 dark:bg-blue-900/10 p-1.5 rounded border border-blue-100 dark:border-blue-800/30">
+          {[
+            { id: "general", label: t("config_system.tab_general"), icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
+            { id: "rules", label: t("config_system.tab_rules"), icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg> },
+            { id: "ui", label: t("config_system.tab_ui"), icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg> },
+            { id: "media", label: t("config_system.tab_media"), icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg> }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 py-2.5 px-6 text-[11px] font-black uppercase tracking-widest rounded transition-all duration-300 ${activeTab === tab.id
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20 scale-[1.02]"
+                : "text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 hover:bg-white dark:hover:bg-blue-900/30"
+                }`}
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleReload}
+            className="p-2.5 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-all active:scale-95"
+            title={t("config_system.reload")}
+          >
+            <svg className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+          <button
+            type="submit"
+            onClick={handleSubmit(onSubmit)}
+            disabled={loading}
+            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white text-[10px] font-black uppercase tracking-widest rounded shadow-lg shadow-blue-600/20 transition-all active:scale-95 flex-shrink-0"
+          >
+            {loading ? (
+              <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            ) : (
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+              </svg>
+            )}
+            {t("config_system.save_config")}
+          </button>
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      <div className="flex-1 overflow-auto p-8 bg-gray-50/30 dark:bg-gray-900/30 pb-20">
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+          {activeTab === "general" && (
+            <div className="grid grid-cols-1  animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div>
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-                  {t("config_system.settings_management")}
-                </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  {t("config_system.settings_description")}
-                </p>
+                {Object.entries(inputFields)
+                  .filter(([title]) => title === t("config_system.competition_info"))
+                  .map(([title, fields], index) => renderInputGroup(title, fields, index, 'row'))}
+              </div>
+              {Object.entries(textareaFields).map(([title, fields], index) => renderTextareaGroup(title, fields, index))}
+            </div>
+          )}
+
+          {activeTab === "rules" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              {Object.entries(inputFields)
+                .filter(([title]) => title !== t("config_system.competition_info"))
+                .map(([title, fields], index) => renderInputGroup(title, fields, index))}
+              {Object.entries(selectFields).map(([title, fields], index) => renderSelectGroup(title, fields, index))}
+              {Object.entries(switchFields)
+                .filter(([title]) => title === t("config_system.application_mode"))
+                .map(([title, fields], index) => renderSwitchGroup(title, fields, index))}
+            </div>
+          )}
+
+          {activeTab === "ui" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              {Object.entries(switchFields)
+                .filter(([title]) => title !== t("config_system.application_mode"))
+                .map(([title, fields], index) => renderSwitchGroup(title, fields, index))}
+            </div>
+          )}
+
+          {activeTab === "media" && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {renderBackgroundSettings()}
+                {renderLogoManagement()}
               </div>
             </div>
-
-            <div className="flex items-center gap-3">
-              {/* Reload Button */}
-              <button
-                type="button"
-                onClick={handleReload}
-                disabled={loading}
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-500 to-gray-600 dark:from-gray-600 dark:to-gray-700 hover:from-gray-600 hover:to-gray-700 dark:hover:from-gray-700 dark:hover:to-gray-800 disabled:from-gray-300 disabled:to-gray-400 dark:disabled:from-gray-700 dark:disabled:to-gray-800 text-white rounded  font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
-              >
-                <svg
-                  className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
-                <span>{t("config_system.reload")}</span>
-              </button>
-
-              {/* Reset Button */}
-              {/* <button
-                type="button"
-                disabled
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 disabled:from-gray-300 disabled:to-gray-400 text-white rounded  font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-                  />
-                </svg>
-                <span>Đặt lại</span>
-              </button> */}
-
-              {/* Save Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 hover:from-green-600 hover:to-green-700 dark:hover:from-green-700 dark:hover:to-green-800 disabled:from-gray-300 disabled:to-gray-400 dark:disabled:from-gray-700 dark:disabled:to-gray-800 text-white rounded  font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-                  />
-                </svg>
-                <span>{loading ? t("config_system.saving") : t("config_system.save_config")}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-          {Object.entries(inputFields)
-            .filter(([groupTitle]) => !hiddenGroups.includes(groupTitle))
-            .map(([groupTitle, fields], index) =>
-              renderInputGroup(groupTitle, fields, index),
-            )}
-          {Object.entries(selectFields)
-            .filter(([groupTitle]) => !hiddenGroups.includes(groupTitle))
-            .map(([groupTitle, fields], index) =>
-              renderSelectGroup(groupTitle, fields, index),
-            )}
-          {Object.entries(textareaFields)
-            .filter(([groupTitle]) => !hiddenGroups.includes(groupTitle))
-            .map(([groupTitle, fields], index) =>
-              renderTextareaGroup(groupTitle, fields, index),
-            )}
-          {Object.entries(switchFields)
-            .filter(([groupTitle]) => !hiddenGroups.includes(groupTitle))
-            .map(([groupTitle, fields], index) =>
-              renderSwitchGroup(groupTitle, fields, index),
-            )}
-
-          {/* Background Settings Section */}
-          {renderBackgroundSettings()}
-
-          {/* Logo Management Section */}
-          {renderLogoManagement()}
-        </div>
-      </form>
+          )}
+        </form>
+      </div>
     </div>
   );
 }

@@ -207,6 +207,7 @@ export const useDataSync = () => {
         loadStagingSessions(),
         loadMetadata(),
         handleScanNetwork(),
+
       ]);
     } finally {
       setIsRefreshing(false);
@@ -441,15 +442,15 @@ export const useDataSync = () => {
       showAlert(t("data_sync.connect_before_sync"), { title: t("data_sync.not_connected") });
       return;
     }
-    
+
     // Select all available tables
     const allTableNames = availableTables.map(t => t.name);
     setSelectedTables(allTableNames);
-    
+
     // Start sending
     const confirm = await showConfirm(t("data_sync.confirm_sync_all_msg", { count: allTableNames.length }));
     if (!confirm) return;
-    
+
     try {
       setSyncing(true);
       const res = await axios.get(`${API}/export?tables=${allTableNames.join(",")}`);
@@ -459,27 +460,27 @@ export const useDataSync = () => {
       for (const table of allTableNames) {
         let tableData = exportData[table];
         if (!tableData || tableData.error) continue;
-        
+
         const chunkSize = 100;
         const chunks = [];
         for (let i = 0; i < tableData.length; i += chunkSize) chunks.push(tableData.slice(i, i + chunkSize));
-        
+
         for (let i = 0; i < chunks.length; i++) {
           const sessionId = `sync_full_${Date.now()}_${IpMasker.mask(localIP, "hash", 999, "sync")?.display}`;
-          await axios.post(`${manualServerInfo.url}/api/sync/import-staging`, { 
-            table, 
-            data: chunks[i], 
-            session_id: sessionId, 
-            source_ip: localIP 
+          await axios.post(`${manualServerInfo.url}/api/sync/import-staging`, {
+            table,
+            data: chunks[i],
+            session_id: sessionId,
+            source_ip: localIP
           }, { timeout: 30000 });
-          
-          setSyncProgress((prev) => ({ 
-            ...prev, 
-            [table]: { 
-              current: i + 1, 
-              total: chunks.length, 
-              percentage: Math.round(((i + 1) / chunks.length) * 100) 
-            } 
+
+          setSyncProgress((prev) => ({
+            ...prev,
+            [table]: {
+              current: i + 1,
+              total: chunks.length,
+              percentage: Math.round(((i + 1) / chunks.length) * 100)
+            }
           }));
           await new Promise((r) => setTimeout(r, 100));
         }
@@ -864,14 +865,14 @@ export const useDataSync = () => {
       const res = await axios.post(`${API}/delete-tables`, { tables: selectedTablesToDelete });
       if (res.data.success) {
         const { success, failed } = res.data.data;
-        let msg = `Đã xóa thành công ${success.length} bảng`;
-        if (failed.length > 0) msg += `\n\nKhông thể xóa ${failed.length}bảng:\n${failed.map((f) => `- ${f.table}: ${f.error}`).join("\n")}`;
-        showSuccess(msg, { title: "Xóa bảng thành công" });
+        let msg = t("data_sync.delete_table_success", { count: success.length });
+        if (failed.length > 0) msg += `\n\n` + t("data_sync.delete_table_failed_fmt", { count: failed.length, errors: failed.map((f) => `- ${f.table}: ${f.error}`).join("\n") });
+        showSuccess(msg, { title: t("data_sync.delete_table_success_title") });
         await loadAllDatabaseTables();
         setSelectedTablesToDelete([]);
       }
     } catch (e) {
-      showError("Lỗi khi xóa bảng: " + (e.response?.data?.message || e.message), { title: "Lỗi xóa bảng" });
+      showError(t("data_sync.delete_table_error_fmt", { error: (e.response?.data?.message || e.message) }), { title: t("data_sync.delete_table_error_title") });
     } finally {
       setLoadingCleanup(false);
     }
@@ -879,36 +880,36 @@ export const useDataSync = () => {
 
   const handleDeleteRecord = async (tableName, recordId) => {
     if (!tableName || !recordId) return;
-    const confirmed = await showConfirm(`Bạn có chắc chắn muốn xóa record ID ${recordId}?`, { title: "Xác nhận xóa record", confirmText: "Xóa", cancelText: "Hủy" });
+    const confirmed = await showConfirm(t("data_sync.confirm_delete_record", { id: recordId }), { title: t("data_sync.confirm_delete_record_title"), confirmText: t("common.delete"), cancelText: t("common.cancel") });
     if (!confirmed) return;
     try {
       const res = await axios.delete(`${API}/record/${tableName}/${recordId}`);
       if (res.data.success) {
-        await showSuccess("Đã xóa record thành công", { title: "Thành công" });
+        await showSuccess(t("data_sync.delete_record_success"), { title: t("common.success") });
         await loadTableRecords(tableName);
       }
     } catch (e) {
-      await showError("Lỗi khi xóa record: " + (e.response?.data?.message || e.message), { title: "Lỗi xóa record" });
+      await showError(t("data_sync.delete_record_error_fmt", { error: (e.response?.data?.message || e.message) }), { title: t("data_sync.delete_record_error_title") });
     }
   };
 
   const handleDeleteSelectedRecords = async () => {
     const recordIds = selectedRecords[selectedTableForRecords] || [];
-    if (recordIds.length === 0) { showAlert("Vui lòng chọn ít nhất 1 record để xóa", { title: "Chưa chọn record" }); return; }
-    const confirmed = await showConfirm(`Bạn có chắc chắn muốn xóa ${recordIds.length}records?\n\nKHÔNG THỂ HOÀN TÁC!`, { title: "Xác nhận xóa records", confirmText: "Xóa", cancelText: "Hủy" });
+    if (recordIds.length === 0) { showAlert(t("data_sync.select_at_least_one_record"), { title: t("data_sync.no_record_selected") }); return; }
+    const confirmed = await showConfirm(t("data_sync.confirm_delete_records_msg", { count: recordIds.length }), { title: t("data_sync.confirm_delete_records_title"), confirmText: t("common.delete"), cancelText: t("common.cancel") });
     if (!confirmed) return;
     try {
       const res = await axios.post(`${API}/delete-records`, { tableName: selectedTableForRecords, recordIds });
       if (res.data.success) {
         const { success, failed } = res.data.data;
-        let msg = `Đã xóa thành công ${success.length} records`;
-        if (failed.length > 0) msg += `\n\nKhông thể xóa ${failed.length} records:\n${failed.map((f) => `- ID ${f.recordId}: ${f.error}`).join("\n")}`;
-        showSuccess(msg, { title: "Xóa records thành công" });
+        let msg = t("data_sync.delete_records_success", { count: success.length });
+        if (failed.length > 0) msg += `\n\n` + t("data_sync.delete_records_failed_fmt", { count: failed.length, errors: failed.map((f) => `- ID ${f.recordId}: ${f.error}`).join("\n") });
+        showSuccess(msg, { title: t("data_sync.delete_records_success_title") });
         await loadTableRecords(selectedTableForRecords);
         setSelectedRecords((prev) => ({ ...prev, [selectedTableForRecords]: [] }));
       }
     } catch (e) {
-      showError("Lỗi khi xóa records: " + (e.response?.data?.message || e.message), { title: "Lỗi xóa records" });
+      showError(t("data_sync.delete_records_error_fmt", { error: (e.response?.data?.message || e.message) }), { title: t("data_sync.delete_records_error_title") });
     }
   };
 

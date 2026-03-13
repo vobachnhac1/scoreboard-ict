@@ -1197,7 +1197,7 @@ export default function BangDiemQuyen() {
       {/* Header Vovinam */}
       <Header
         title={matchDataRef.current.ten_giai_dau || "GIẢI VÔ ĐỊCH"}
-        desc={matchDataRef.current.ten_mon_thi || "VÕ HIỆN ĐẠI"}
+        desc={matchDataRef.current.ten_mon_thi || "DigiSports"}
         logos={lsLogo}
         config={{
           titleColor: configSystem.header_title_color_quyen,

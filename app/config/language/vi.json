@@ -238,13 +238,23 @@
         "task1": "Hơn 10 năm kinh nghiệm",
         "task2": "Phục vụ 100+ giải đấu",
         "task3": "Hệ sinh thái chấm điểm",
-        "task4": "digisports.com.vn/trang-chu"
+        "task4": "https://digisports.com.vn"
       },
       "digital_cert": {
         "title": "Chứng chỉ Số",
         "desc": "Hệ thống chứng nhận Vận động viên.",
         "task1": "QR Check-in",
         "task2": "Tự động tạo giấy chứng nhận"
+      },
+      "contact_app": {
+        "title": "LIÊN HỆ & ỨNG DỤNG",
+        "subtitle": "Kết nối trực tiếp với đội ngũ kỹ thuật và tải ứng dụng chấm điểm cho di động.",
+        "contact_zalo": "Liên hệ Zalo trực tiếp",
+        "zalo_desc": "Quét mã để hỗ trợ kỹ thuật hoặc tư vấn giải pháp nhanh chóng.",
+        "download_app": "Tải App Android",
+        "app_desc": "Phiên bản dành cho Giám định viên chấm điểm trên điện thoại.",
+        "product_homepage": "Trang chủ Sản phẩm",
+        "homepage_desc": "Truy cập website để cập nhật thông tin mới nhất và hướng dẫn sử dụng."
       }
     }
   },
@@ -643,7 +653,7 @@
       "referee_4": "Giám định 4",
       "referee_5": "Giám định 5",
       "average_score": "Điểm trung bình",
-      "final_score": "Điểm cuối cùng",
+      "final_score": "Tổng điểm",
       "total_score": "Tổng điểm",
       "referee_scores": "Điểm giám định",
       "show_referee_scores": "Hiển thị điểm giám định",

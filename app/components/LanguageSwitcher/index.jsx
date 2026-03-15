@@ -1,5 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import flagVN from '../../assets/flags/Vietnam.png';
+import flagEN from '../../assets/flags/England.png';
 
 const LanguageSwitcher = ({ className = '', compact = false }) => {
   const dispatch = useDispatch();
@@ -10,14 +12,14 @@ const LanguageSwitcher = ({ className = '', compact = false }) => {
       code: 'VI',
       label: 'Tiếng Việt',
       shortLabel: 'VI',
-      flag: '🇻🇳',
+      flag: flagVN,
       gradient: 'from-red-500 to-yellow-500'
     },
     {
       code: 'EN',
       label: 'English',
       shortLabel: 'EN',
-      flag: '🇬🇧',
+      flag: flagEN,
       gradient: 'from-blue-500 to-red-500'
     }
   ];
@@ -54,8 +56,8 @@ const LanguageSwitcher = ({ className = '', compact = false }) => {
               <div className={`absolute inset-0 bg-gradient-to-br ${lang.gradient} opacity-10 rounded`}></div>
             )}
 
-            <span className={`text-lg transition-transform duration-300 group-hover:scale-110 ${compact ? '' : 'mr-1.5'}`}>
-              {lang.flag}
+            <span className={`transition-transform duration-300 group-hover:scale-110 ${compact ? '' : 'mr-1.5'}`}>
+              <img src={lang.flag} alt={lang.code} className="w-6 h-4 object-cover rounded-sm shadow-sm" />
             </span>
 
             {/* Language code */}

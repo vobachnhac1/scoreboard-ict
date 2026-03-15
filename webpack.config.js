@@ -3,8 +3,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
-  watch: true, // Watch mode enabled
+  mode: 'production',
+  watch: false, // Watch mode enabled
   watchOptions: {
     ignored: /node_modules/,
     aggregateTimeout: 100, // Delay rebuild after first change (ms)

@@ -295,7 +295,7 @@ export default function CompetitionDataDetail() {
   const handleMatchStart = async () => {
     try {
       const row = openActions.row;
-      if (!configSystem.data.ap_dung_vonhac) { showError(t("competition_detail.messages.feature_locked")); return; }
+      if (!configSystem.data.ap_dung_doikhang) { showError(t("competition_detail.messages.feature_locked")); return; }
       if (!row.match_id) {
         const res = await axios.post("http://localhost:6789/api/competition-match", {
           competition_dk_id: id, match_no: row.data[0], row_index: row.rowIndex,

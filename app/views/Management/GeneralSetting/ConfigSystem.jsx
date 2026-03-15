@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import Button from "../../../components/Button";
 import { SwitchField } from "../../../components/SwitchField";
 import { useAppDispatch, useAppSelector } from "../../../config/redux/store";
 import {
@@ -77,62 +76,62 @@ const getInputFields = (t) => ({
   ],
 });
 
-const getSelectFields = (t, features = {}) => ({
-  [t("config_system.quantity_settings")]: [
-    // {
-    //   name: "keyboard_mode",
-    //   label: t("config_system.keyboard_mode"),
-    //   options: Object.entries(KEYBOARD_MODES)
-    //     .filter(([key]) => {
-    //       if (features?.allowed_keyboard_modes && Array.isArray(features.allowed_keyboard_modes)) {
-    //         return features.allowed_keyboard_modes.includes(key);
-    //       }
-    //       return true;
-    //     })
-    //     .map(([key, mode]) => ({
-    //       value: key,
-    //       label: `${mode.description}`,
-    //     })),
-    // },
-    {
-      name: "he_diem",
-      label: t("config_system.score_settings"),
-      options: [
-        { value: "1", label: t("config_system.score_settings") + " 1" },
-        { value: "2", label: t("config_system.score_settings") + " 2" },
-        { value: "3", label: t("config_system.score_settings") + " 3" },
-      ],
-    },
-    {
-      name: "so_giam_dinh",
-      label: t("config_system.referee_number"),
-      options: [
-        { value: "3", label: "3 " + t("config_system.referee_count") },
-        { value: "5", label: "5 " + t("config_system.referee_count") },
-        { value: "10", label: "10 " + t("config_system.referee_count") },
-      ],
-    },
-    {
-      name: "so_hiep",
-      label: t("config_system.round_number"),
-      options: [
-        { value: "1", label: t("config_system.round_1") },
-        { value: "2", label: t("config_system.round_2") },
-        { value: "3", label: t("config_system.round_3") },
-      ],
-    },
-    {
-      name: "so_hiep_phu",
-      label: t("config_system.extra_round_number"),
-      options: [
-        { value: "0", label: t("config_system.extra_round_0") },
-        { value: "1", label: t("config_system.extra_round_1") },
-        { value: "2", label: t("config_system.extra_round_2") },
-        { value: "3", label: t("config_system.extra_round_3") },
-      ],
-    },
-  ],
-});
+const getSelectFields = (t, features = {}, allowedOptions = {}) => {
+  const getDynamicOptions = (name, defaultOptions) => {
+    if (allowedOptions[name] && Array.isArray(allowedOptions[name])) {
+      return allowedOptions[name].map(val => ({
+        value: String(val),
+        label: name === 'he_diem' ? `${t("config_system.score_settings")} ${val}` :
+          name === 'so_giam_dinh' ? `${val} ${t("config_system.referee_count")}` :
+            name === 'so_hiep' ? `${t("config_system.round_number")} ${val}` :
+              name === 'so_hiep_phu' ? `${t("config_system.extra_round_number")} ${val}` : `${val}`
+      }));
+    }
+    return defaultOptions;
+  };
+
+  return {
+    [t("config_system.quantity_settings")]: [
+      {
+        name: "he_diem",
+        label: t("config_system.score_settings"),
+        options: getDynamicOptions("he_diem", [
+          { value: "1", label: t("config_system.score_settings") + " 1" },
+          { value: "2", label: t("config_system.score_settings") + " 2" },
+          { value: "3", label: t("config_system.score_settings") + " 3" },
+        ]),
+      },
+      {
+        name: "so_giam_dinh",
+        label: t("config_system.referee_number"),
+        options: getDynamicOptions("so_giam_dinh", [
+          { value: "3", label: "3 " + t("config_system.referee_count") },
+          { value: "5", label: "5 " + t("config_system.referee_count") },
+          { value: "10", label: "10 " + t("config_system.referee_count") },
+        ]),
+      },
+      {
+        name: "so_hiep",
+        label: t("config_system.round_number"),
+        options: getDynamicOptions("so_hiep", [
+          { value: "1", label: t("config_system.round_1") },
+          { value: "2", label: t("config_system.round_2") },
+          { value: "3", label: t("config_system.round_3") },
+        ]),
+      },
+      {
+        name: "so_hiep_phu",
+        label: t("config_system.extra_round_number"),
+        options: getDynamicOptions("so_hiep_phu", [
+          { value: "0", label: t("config_system.extra_round_0") },
+          { value: "1", label: t("config_system.extra_round_1") },
+          { value: "2", label: t("config_system.extra_round_2") },
+          { value: "3", label: t("config_system.extra_round_3") },
+        ]),
+      },
+    ],
+  };
+};
 
 const getTextareaFields = (t) => ({
   [t("config_system.competition_description")]: [
@@ -225,7 +224,7 @@ const getBackgroundScreens = (t) => [
 ];
 
 // FLAG: Bật true để mở toàn bộ quyền cấu hình (Bỏ qua giới hạn License/Preset)
-const DEBUG_UNLOCK_ALL_CONFIG = true;
+const DEBUG_UNLOCK_ALL_CONFIG = false;
 
 export default function ConfigSystem() {
   const { t } = useTranslation();
@@ -236,10 +235,16 @@ export default function ConfigSystem() {
 
   // Debug Override
   const packageName = DEBUG_UNLOCK_ALL_CONFIG ? "enterprise" : originalPackageName;
-  const features = DEBUG_UNLOCK_ALL_CONFIG
-    ? { ...originalFeatures, forced_keyboard_mode: null, allowed_keyboard_modes: Object.keys(KEYBOARD_MODES) }
-    : originalFeatures;
-
+  // Memoize features to prevent render loops
+  const features = useMemo(() => {
+    return {
+      ...(DEBUG_UNLOCK_ALL_CONFIG
+        ? { ...originalFeatures, forced_keyboard_mode: null, allowed_keyboard_modes: Object.keys(KEYBOARD_MODES) }
+        : originalFeatures),
+      config_presets,
+    };
+  }, [originalFeatures, config_presets]);
+  console.log("features", features);
   const {
     register,
     handleSubmit,
@@ -248,15 +253,11 @@ export default function ConfigSystem() {
     setValue,
     reset,
   } = useForm({
-    defaultValues: { keyboard_mode: "vovinam", ...data },
+    defaultValues: { keyboard_mode: "default", ...data },
   });
 
   // Get translated fields
-  const inputFields = getInputFields(t);
-  const selectFields = getSelectFields(t, features);
-  const textareaFields = getTextareaFields(t);
-  const switchFields = getSwitchFields(t);
-  const backgroundScreens = getBackgroundScreens(t);
+  console.log("data in component", data);
   const [activeTab, setActiveTab] = useState("general"); // general, rules, ui, media
 
   // State cho quản lý logos
@@ -286,8 +287,9 @@ export default function ConfigSystem() {
 
   useEffect(() => {
     if (data) {
+      console.log("data", data);
       // Nếu server không có keyboard_mode, mặc định vovinam
-      const mergedData = { keyboard_mode: "vovinam", ...data };
+      const mergedData = { keyboard_mode: "default", ...data };
 
       // Override keyboard_mode nếu Online Server ép cứng
       if (features?.forced_keyboard_mode) {
@@ -298,28 +300,24 @@ export default function ConfigSystem() {
 
       // Apply preset lần đầu nếu chưa apply
       if (!initialPresetApplied.current) {
-        const mode = mergedData.keyboard_mode;
-        if (mode) {
-          const preset = getConfigPresetsByTier(packageName, mode, {
-            ...features,
-            config_presets
-          });
-          Object.entries(preset).forEach(([key, value]) => {
-            if (key !== "disabledFields" && key !== "hiddenGroups" && key !== "hiddenFields") {
-              setValue(key, value);
-            }
-          });
-          console.log(`⚙️ Đã áp dụng preset cấu hình lần đầu: ${mode} (Tier: ${packageName})`);
-        }
+        const preset = getConfigPresetsByTier(packageName, "default", features);
+        Object.entries(preset).forEach(([key, value]) => {
+          if (key !== "disabledFields" && key !== "hiddenGroups" && key !== "hiddenFields") {
+            setValue(key, value);
+          }
+        });
+        console.log(`⚙️ Đã áp dụng preset cấu hình lần đầu: default (Tier: ${packageName})`);
         initialPresetApplied.current = true;
       }
     }
-  }, [data, reset]);
+  }, [data, reset, packageName, features]);
 
   // Watch keyboard_mode để auto-fill preset khi thay đổi chế độ
-  const selectedKeyboardMode = watch("keyboard_mode");
-  const prevKeyboardMode = useRef(selectedKeyboardMode);
+  // const selectedKeyboardMode = watch("keyboard_mode");
+  const selectedKeyboardMode = features?.allowed_keyboard_modes?.length > 0 ? features.allowed_keyboard_modes[0] : "default";
 
+  console.log("selectedKeyboardMode", selectedKeyboardMode);
+  const prevKeyboardMode = useRef(selectedKeyboardMode);
   useEffect(() => {
     // Chỉ apply khi user thực sự thay đổi chế độ (không phải lần đầu load)
     if (
@@ -327,6 +325,7 @@ export default function ConfigSystem() {
       prevKeyboardMode.current !== selectedKeyboardMode
     ) {
       const preset = getConfigPresetsByTier(packageName, selectedKeyboardMode, features);
+      console.log("preset", preset);
       Object.entries(preset).forEach(([key, value]) => {
         if (key !== "disabledFields" && key !== "hiddenGroups" && key !== "hiddenFields") {
           setValue(key, value);
@@ -339,16 +338,57 @@ export default function ConfigSystem() {
   }, [selectedKeyboardMode, packageName, features]);
 
   // Sinh rule dựa vào hàm getter theo tier mới
-  const currentMergedConfig = getConfigPresetsByTier(packageName, selectedKeyboardMode || "vovinam", features);
+  const currentMergedConfig = useMemo(() =>
+    getConfigPresetsByTier(packageName, "default", features),
+    [packageName, features]);
 
-  // Danh sách fields bị khoá theo chế độ hiện tại
-  const disabledFields = DEBUG_UNLOCK_ALL_CONFIG ? [] : (currentMergedConfig?.disabledFields || []);
-  // Danh sách fields ẩn hoàn toàn theo chế độ hiện tại
-  const hiddenFields = DEBUG_UNLOCK_ALL_CONFIG ? [] : (currentMergedConfig?.hiddenFields || []);
+  console.log("currentMergedConfig", currentMergedConfig);
+
+  // Helper to parse comma-separated string or return array
+  const parseStoreConfig = (value) => {
+    if (!value) return [];
+    if (Array.isArray(value)) return value;
+    if (typeof value === "string") return value.split(",").map((s) => s.trim()).filter(Boolean);
+    return [];
+  };
+
+  // Danh sách fields bị khoá theo chế độ hiện tại (Merge từ Preset và Store)
+  const disabledFields = DEBUG_UNLOCK_ALL_CONFIG ? [] : [
+    ...new Set([
+      ...(currentMergedConfig?.disabledFields || []),
+      ...parseStoreConfig(data?.disabledFields)
+    ])
+  ];
+
+  // Danh sách fields ẩn hoàn toàn theo chế độ hiện tại (Merge từ Preset và Store)
+  const hiddenFields = DEBUG_UNLOCK_ALL_CONFIG ? [] : [
+    ...new Set([
+      ...(currentMergedConfig?.hiddenFields || []),
+      ...parseStoreConfig(data?.hiddenFields)
+    ])
+  ];
+  console.log("Final merged hiddenFields", hiddenFields);
+
   // Giá trị được phép hiển thị cho select fields theo chế độ hiện tại
-  const allowedOptions = DEBUG_UNLOCK_ALL_CONFIG ? {} : (currentMergedConfig?.allowedOptions || {});
-  // Danh sách nhóm (group key) ẩn hoàn toàn hiện tại
-  const hiddenGroups = DEBUG_UNLOCK_ALL_CONFIG ? [] : (currentMergedConfig?.hiddenGroups || []);
+  const allowedOptions = DEBUG_UNLOCK_ALL_CONFIG ? {} : {
+    ...(currentMergedConfig?.allowedOptions || {}),
+    ...(typeof data?.allowedOptions === 'object' ? data.allowedOptions : {})
+  };
+
+  // Danh sách nhóm (group key) ẩn hoàn toàn hiện tại (Merge từ Preset và Store)
+  const hiddenGroups = DEBUG_UNLOCK_ALL_CONFIG ? [] : [
+    ...new Set([
+      ...(currentMergedConfig?.hiddenGroups || []),
+      ...parseStoreConfig(data?.hiddenGroups)
+    ])
+  ];
+
+  // Get translated fields (Dynamic context)
+  const inputFields = getInputFields(t);
+  const selectFields = getSelectFields(t, features, allowedOptions);
+  const textareaFields = getTextareaFields(t);
+  const switchFields = getSwitchFields(t);
+  const backgroundScreens = getBackgroundScreens(t);
 
   // Fetch logos từ API
   const fetchLogos = async () => {
@@ -859,6 +899,7 @@ export default function ConfigSystem() {
       </div>
       <div className="space-y-2">
         {fields.filter(f => !hiddenFields.includes(f.name)).map(({ name, label }, i) => {
+          // {fields.map(({ name, label }, i) => {
           const isDisabled = disabledFields.includes(name);
           return (
             <div key={i} className={isDisabled ? 'opacity-60' : ''}>

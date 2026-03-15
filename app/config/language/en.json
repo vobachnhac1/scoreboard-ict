@@ -230,13 +230,23 @@
         "task1": "Over 10 years experience",
         "task2": "Served 100+ tournaments",
         "task3": "Scoring Ecosystem",
-        "task4": "digisports.com.vn/trang-chu"
+        "task4": "https://digisports.com.vn"
       },
       "digital_cert": {
         "title": "Digital Certificates",
         "desc": "Digital certification system for athletes.",
         "task1": "QR Check-in",
         "task2": "Auto generate certificates"
+      },
+      "contact_app": {
+        "title": "CONTACT & MOBILE APP",
+        "subtitle": "Directly connect with the technical team and download the mobile scoring application.",
+        "contact_zalo": "Contact Zalo directly",
+        "zalo_desc": "Scan code for technical support or quick solution consulting.",
+        "download_app": "Download Android App",
+        "app_desc": "Version for Judges to score matches using Android phones.",
+        "product_homepage": "Product Homepage",
+        "homepage_desc": "Visit our website for the latest updates and user documentation."
       }
     }
   },

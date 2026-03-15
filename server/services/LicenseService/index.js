@@ -1,5 +1,5 @@
 const { BetterSQLiteWrapper } = require('../common/db_better_sqlite3');
-const {DB_SCHEME, TABLE} = require('../common/constant_sql')
+const { DB_SCHEME, TABLE } = require('../common/constant_sql')
 
 class LicenseService {
     constructor() {
@@ -16,7 +16,7 @@ class LicenseService {
                 )
             `);
         });
-        
+
     }
 
     //  Hàm tạo mã random 10 ký tự

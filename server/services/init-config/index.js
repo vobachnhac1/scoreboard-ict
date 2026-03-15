@@ -134,6 +134,11 @@ class InitConfigService {
                         // ===== CHẾ ĐỘ APP =====
                         ['system', 'che_do_app', '1'], // chế độ chỉ dùng Thi đối kháng đơn giản | Thi quyền đơn giản
 
+                        // ===== CHẾ ĐỘ MÔ ĐUN =====
+                        ['system', 'ap_dung_quyen', '1'],
+                        ['system', 'ap_dung_doikhang', '1'],
+                        ['system', 'ap_dung_vonhac', '1'],
+
                         // ===== COMPETITION (Legacy - Giữ lại để tương thích) =====
                         ['competition', 'ten_giai', 'GIẢI CÚP DigiSports NĂM 2026'],
                         ['competition', 'thoi_gian_bat_dau', '07-07-2025'],

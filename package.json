@@ -3,12 +3,12 @@
   "author": "NhacVB",
   "version": "1.0.0",
   "license": "DIGISPORTS-NHACVB",
-  "description": "PHẦN MỀN THI ĐẤU - DIGISPORTS",
+  "description": "PHẦN MỀM THI ĐẤU - DIGISPORTS",
   "main": "electron.js",
   "build": {
     "productName": "DigiSports",
     "appId": "com.dht.digisports",
-    "copyright": "Copyright (C) 2026 DigiSports",
+    "copyright": "Copyright © 2026 NhacVB - DigiSports Technology",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "files": [
       "**/*",
@@ -92,15 +92,27 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeader": "build/installerHeader.png",
+      "installerSidebar": "build/installerSidebar.png",
+      "uninstallerSidebar": "build/installerSidebar.png",
+      "installerHeaderIcon": "build/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "DigiSports",
-      "installerIcon": "build/icon.ico",
-      "uninstallerIcon": "build/icon.ico",
-      "installerHeaderIcon": "build/icon.ico",
-      "deleteAppDataOnUninstall": false,
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "uninstallDisplayName": "DigiSports (Remove)",
+      "license": "LICENSE",
       "runAfterFinish": true,
-      "license": "LICENSE"
+      "unicode": true,
+      "installerLanguages": [
+        "vi"
+      ],
+      "language": "1066",
+      "warningsAsErrors": false,
+      "include": "build/installer.nsh"
     },
     "portable": {
       "artifactName": "VHDScoreBoard-Portable.exe"

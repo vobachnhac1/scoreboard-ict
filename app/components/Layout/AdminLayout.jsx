@@ -58,12 +58,12 @@ const AdminLayout = ({ children }) => {
       href: "/user-guide",
       icon: BookOpenIcon,
     },
-    {
-      name: t("dashboard.update_manager"),
-      href: "/update-manager",
-      icon: ArrowUpCircleIcon,
-      hidden: !isActivated
-    },
+    // {
+    //   name: t("dashboard.update_manager"),
+    //   href: "/update-manager",
+    //   icon: ArrowUpCircleIcon,
+    //   hidden: !isActivated
+    // },
   ];
 
   // Filter out hidden items

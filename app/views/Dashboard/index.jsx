@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import logoDigiSports from "../../assets/logo_nhacvb_light.png";
+import qrZalo from "../../assets/zalo.png";
+import androidApp from "../../assets/android_app.png";
+import qrTrangChu from "../../assets/trangchu.png";
 import { activateLicense, clearErrors, revokeDeviceLicense } from "../../config/redux/controller/licenseSlice";
 import { usePackageAccess, PACKAGE_TIERS } from "../../components/FeatureLock";
 
@@ -299,7 +302,7 @@ export default function Dashboard() {
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
           {/* Header Section */}
           <div className="text-center mb-16">
-            <div className="inline-block p-4 bg-white dark:bg-gray-800 rounded shadow-2xl mb-8 border border-slate-100 dark:border-gray-700">
+            <div className="inline-block p-4 bg-white dark:bg-gray-800 rounded-full shadow-2xl mb-8 border border-slate-100 dark:border-gray-700">
               <img src={logoDigiSports} alt="Logo" className="w-24 h-auto" />
             </div>
             <h1 className="text-4xl font-black text-slate-900 dark:text-white uppercase tracking-tight mb-4">
@@ -524,6 +527,80 @@ export default function Dashboard() {
                 </div>
               );
             })}
+          </div>
+
+          {/* Contact & Mobile App Section */}
+          <div className="mt-20">
+            <div className="flex items-center gap-4 mb-8">
+              <h2 className="text-[14px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.3em] whitespace-nowrap pl-2">
+                {t("dashboard.features.contact_app.title")}
+              </h2>
+              <div className="h-px w-full bg-slate-200 dark:bg-slate-800"></div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Trang chủ Sản phẩm */}
+              <div className="bg-white dark:bg-gray-800/80 rounded-2xl p-8 shadow-sm border border-slate-200 dark:border-gray-700 flex flex-col items-center text-center hover:shadow-xl transition-all duration-300">
+                <div className="relative group mb-6">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                  <div className="relative bg-white p-2 rounded-lg">
+                    <img src={qrTrangChu} alt="Homepage QR" className="w-32 h-32 md:w-40 md:h-40 object-contain" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tight text-orange-600 dark:text-orange-400">
+                  {t("dashboard.features.contact_app.product_homepage")}
+                </h3>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed italic mb-4 max-w-[240px]">
+                  {t("dashboard.features.contact_app.homepage_desc")}
+                </p>
+                <a
+                  href="https://digisports.com.vn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-2 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-orange-100 dark:border-orange-800 hover:bg-orange-600 hover:text-white transition-all"
+                >
+                  digisports.com.vn
+                </a>
+              </div>
+
+              {/* Zalo Contact */}
+              <div className="bg-white dark:bg-gray-800/80 rounded-2xl p-8 shadow-sm border border-slate-200 dark:border-gray-700 flex flex-col items-center text-center hover:shadow-xl transition-all duration-300">
+                <div className="relative group mb-6">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                  <div className="relative bg-white p-2 rounded-lg">
+                    <img src={qrZalo} alt="Zalo QR" className="w-32 h-32 md:w-40 md:h-40 object-contain" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tight">
+                  {t("dashboard.features.contact_app.contact_zalo")}
+                </h3>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed italic mb-4 max-w-[240px]">
+                  {t("dashboard.features.contact_app.zalo_desc")}
+                </p>
+                <div className="inline-flex items-center gap-2 px-6 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-100 dark:border-blue-800">
+                  0815 192 759
+                </div>
+              </div>
+
+              {/* Android App Download */}
+              <div className="bg-white dark:bg-gray-800/80 rounded-2xl p-8 shadow-sm border border-slate-200 dark:border-gray-700 flex flex-col items-center text-center hover:shadow-xl transition-all duration-300">
+                <div className="relative group mb-6">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                  <div className="relative bg-white p-2 rounded-lg">
+                    <img src={androidApp} alt="Android App QR" className="w-32 h-32 md:w-40 md:h-40 object-contain" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tight text-emerald-600 dark:text-emerald-400">
+                  {t("dashboard.features.contact_app.download_app")}
+                </h3>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed italic mb-4 max-w-[240px]">
+                  {t("dashboard.features.contact_app.app_desc")}
+                </p>
+                <button className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 transition-all active:scale-95">
+                  Download .APK
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* System Health / Footer */}

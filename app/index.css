@@ -16,6 +16,7 @@
   outline: none;
   border-bottom: 1px solid #3182ce;
 }
+
 .custom_input {
   @apply px-2 block w-full rounded border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 read-only:cursor-default read-only:focus:ring-1 read-only:focus:ring-inset read-only:bg-gray-100 read-only:focus:ring-gray-300 read-only:focus:outline-0 read-only:focus:border-0;
 }
@@ -26,6 +27,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -36,15 +38,19 @@
   0% {
     background-position: -1000px 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -55,10 +61,50 @@
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
+}
+
+/* Custom AntD Message (Toast) Styling */
+.ant-message-notice-content {
+  @apply !rounded-xl !shadow-2xl !border !border-slate-100 !bg-white/90 !backdrop-blur-md !py-3 !px-6 !font-bold !text-sm !tracking-tight;
+}
+
+/* Dark mode overrides for Toast */
+.dark .ant-message-notice-content {
+  @apply !border-slate-700 !bg-slate-800/90;
+}
+
+.ant-message-custom-content.ant-message-success {
+  @apply !text-emerald-600;
+}
+
+.dark .ant-message-custom-content.ant-message-success {
+  @apply !text-emerald-400;
+}
+
+.ant-message-custom-content.ant-message-error {
+  @apply !text-red-600;
+}
+
+.dark .ant-message-custom-content.ant-message-error {
+  @apply !text-red-400;
+}
+
+.ant-message-custom-content.ant-message-warning {
+  @apply !text-amber-600;
+}
+
+.dark .ant-message-custom-content.ant-message-warning {
+  @apply !text-amber-400;
+}
+
+.ant-message-custom-content span[aria-label="check-circle"] {
+  @apply !text-emerald-500;
 }

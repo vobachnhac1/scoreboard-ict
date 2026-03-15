@@ -293,11 +293,11 @@ const CUSTOM_KEYMAP = {
 
 // ========== REGISTRY: Tất cả các chế độ ==========
 export const KEYBOARD_MODES = {
-    // default: {
-    //     label: "Mặc định",
-    //     description: "Đầy đủ chức năng",
-    //     keymap: DEFAULT_KEYMAP,
-    // },
+    default: {
+        label: "Mặc định",
+        description: "Đầy đủ chức năng",
+        keymap: DEFAULT_KEYMAP,
+    },
     vovinam: {
         label: "Vovinam",
         description: "Vovinam - Việt Võ Đạo",
@@ -317,55 +317,201 @@ export const KEYBOARD_MODES = {
 
 // ========== CẤU HÌNH MẶC ĐỊNH CONFIGSYSTEM THEO CHẾ ĐỘ ==========
 export const CONFIG_PRESETS = {
+    default: {
+        // Thông tin giải đấu
+        bo_mon: "Vovinam",
+
+        // Danh sách fields bị khoá (không cho thay đổi)
+        disabledFields: [
+            // "bo_mon",
+            // "keyboard_mode",
+            // "he_diem",
+            // "diem_bien_cong",
+            // "diem_bien_tru",
+            // "hien_thi_button_diem_3",
+            // "hien_thi_button_diem_5",
+            // "ap_dung_diem_bien_tru",
+            // "ap_dung_diem_bien_cong",
+            // "cau_hinh_doi_khang_diem_thap",
+            // "cau_hinh_quyen_tinh_tong",
+            // "cau_hinh_y_te",
+            // "cau_hinh_tinh_diem_tuyet_doi",
+            // "cau_hinh_xoa_nhac_nho",
+            // "cau_hinh_xoa_canh_cao",
+            // "cau_hinh_hinh_thuc_quyen",
+
+        ],
+
+        // Danh sách fields ẩn hoàn toàn (không hiển thị trên UI)
+        hiddenFields: [
+            // "hien_thi_button_diem_3",
+            // "hien_thi_button_diem_5",
+            // "hien_thi_button_diem_10",
+            // "hien_thi_button_bien",
+            // "hien_thi_button_bien",
+            // "hien_thi_button_nga",
+            // "diem_bien_cong",
+            // "ap_dung_diem_bien_cong",
+            // "ap_dung_diem_bien_tru",
+            // "cau_hinh_doi_khang_diem_thap",
+            // "cau_hinh_quyen_tinh_tong",
+            // "cau_hinh_y_te",
+            // "cau_hinh_tinh_diem_tuyet_doi",
+            // "cau_hinh_xoa_nhac_nho",
+            // "cau_hinh_xoa_canh_cao",
+            // "cau_hinh_hinh_thuc_quyen",
+
+        ],
+
+        // Danh sách nhóm (group key) ẩn hoàn toàn
+        hiddenGroups: [
+            // "Chế độ áp dụng",
+        ],
+        allowedOptions: {
+            // he_diem: ["2"],
+            // so_giam_dinh: ["3", "5"],
+            // so_hiep: ["2", "3"],
+            // so_hiep_phu: ["0", "1"],
+        },
+
+        // Cài đặt điểm số
+        diem_don_chan: 2,
+        diem_nga: 0,
+        diem_bien_tru: 1,
+        diem_bien_cong: 0,
+
+        // Cài đặt số lượng
+        he_diem: "2",
+        so_giam_dinh: "3",
+        so_hiep: "3",
+        so_hiep_phu: "1",
+
+        // Chế độ bàn phím
+        keyboard_mode: "default",
+
+        // Chế độ áp dụng
+        cau_hinh_doi_khang_diem_thap: 1,
+        cau_hinh_quyen_tinh_tong: 1,
+        cau_hinh_y_te: 1,
+        cau_hinh_tinh_diem_tuyet_doi: 1,
+        cau_hinh_xoa_nhac_nho: 1,
+        cau_hinh_xoa_canh_cao: 1,
+        cau_hinh_hinh_thuc_quyen: 1,
+
+        // Chế độ bảng điểm
+        ap_dung_doikhang: 1,
+        ap_dung_quyen: 1,
+        ap_dung_vonhac: 1,
+
+        // Điểm biên
+        ap_dung_diem_bien_tru: 1,
+        ap_dung_diem_bien_cong: 0,
+
+        // Âm thanh
+        bat_am_thanh: 1,
+
+        // Quyền hiển thị buttons - Điểm số
+        hien_thi_button_diem_1: 1,
+        hien_thi_button_diem_2: 1,
+        hien_thi_button_diem_3: 0,
+        hien_thi_button_diem_5: 0,
+        hien_thi_button_diem_10: 0,
+
+        // Quyền hiển thị buttons - Hành động
+        hien_thi_button_nhac_nho: 1,
+        hien_thi_button_canh_cao: 1,
+        hien_thi_button_don_chan: 1,
+        hien_thi_button_bien: 0,
+        hien_thi_button_nga: 0,
+        hien_thi_button_y_te: 1,
+        hien_thi_button_thang: 1,
+
+        // Quyền hiển thị buttons - Điều khiển
+        hien_thi_button_quay_lai: 1,
+        hien_thi_button_reset: 1,
+        hien_thi_button_lich_su: 1,
+        hien_thi_button_cau_hinh: 1,
+        hien_thi_button_ket_thuc: 1,
+        hien_thi_button_tran_tiep_theo: 1,
+        hien_thi_button_tran_truoc: 1,
+        hien_thi_button_hiep_phu: 1,
+
+        // Quyền hiển thị thông tin
+        hien_thi_thong_tin_nhac_nho: 1,
+        hien_thi_thong_tin_canh_cao: 1,
+        hien_thi_thong_tin_don_chan: 1,
+        hien_thi_thong_tin_y_te: 1,
+
+        // Cấu hình nền
+        bg_quyen_type: "color",
+        bg_quyen_image: "",
+        bg_quyen_opacity: 40,
+        bg_doikhang_type: "color",
+        bg_doikhang_image: "",
+        bg_doikhang_opacity: 40,
+        bg_vonhac_type: "color",
+        bg_vonhac_image: "",
+        bg_vonhac_opacity: 40,
+
+        // Cấu hình màu sắc header
+        header_title_color_quyen: "#FFFFFF",
+        header_desc_color_quyen: "#FFFFFF",
+        header_title_color_doikhang: "#FFFFFF",
+        header_desc_color_doikhang: "#FFFFFF",
+        header_title_color_vonhac: "#FFFFFF",
+        header_desc_color_vonhac: "#FFFFFF",
+    },
+
+
     vovinam: {
         // Thông tin giải đấu
         bo_mon: "Vovinam",
 
         // Danh sách fields bị khoá (không cho thay đổi)
         disabledFields: [
-            "bo_mon",
-            "keyboard_mode",
-            "he_diem",
-            "diem_bien_cong",
-            "diem_bien_tru",
-            "hien_thi_button_diem_3",
-            "hien_thi_button_diem_5",
-            "ap_dung_diem_bien_tru",
-            "ap_dung_diem_bien_cong",
-            "cau_hinh_doi_khang_diem_thap",
-            "cau_hinh_quyen_tinh_tong",
-            "cau_hinh_y_te",
-            "cau_hinh_tinh_diem_tuyet_doi",
-            "cau_hinh_xoa_nhac_nho",
-            "cau_hinh_xoa_canh_cao",
-            "cau_hinh_hinh_thuc_quyen",
+            // "bo_mon",
+            // "keyboard_mode",
+            // "he_diem",
+            // "diem_bien_cong",
+            // "diem_bien_tru",
+            // "hien_thi_button_diem_3",
+            // "hien_thi_button_diem_5",
+            // "ap_dung_diem_bien_tru",
+            // "ap_dung_diem_bien_cong",
+            // "cau_hinh_doi_khang_diem_thap",
+            // "cau_hinh_quyen_tinh_tong",
+            // "cau_hinh_y_te",
+            // "cau_hinh_tinh_diem_tuyet_doi",
+            // "cau_hinh_xoa_nhac_nho",
+            // "cau_hinh_xoa_canh_cao",
+            // "cau_hinh_hinh_thuc_quyen",
 
         ],
 
         // Danh sách fields ẩn hoàn toàn (không hiển thị trên UI)
         hiddenFields: [
-            "hien_thi_button_diem_3",
-            "hien_thi_button_diem_5",
-            "hien_thi_button_diem_10",
-            "hien_thi_button_bien",
-            "hien_thi_button_bien",
-            "hien_thi_button_nga",
-            "diem_bien_cong",
-            "ap_dung_diem_bien_cong",
-            "ap_dung_diem_bien_tru",
-            "cau_hinh_doi_khang_diem_thap",
-            "cau_hinh_quyen_tinh_tong",
-            "cau_hinh_y_te",
-            "cau_hinh_tinh_diem_tuyet_doi",
-            "cau_hinh_xoa_nhac_nho",
-            "cau_hinh_xoa_canh_cao",
-            "cau_hinh_hinh_thuc_quyen",
+            // "hien_thi_button_diem_3",
+            // "hien_thi_button_diem_5",
+            // "hien_thi_button_diem_10",
+            // "hien_thi_button_bien",
+            // "hien_thi_button_bien",
+            // "hien_thi_button_nga",
+            // "diem_bien_cong",
+            // "ap_dung_diem_bien_cong",
+            // "ap_dung_diem_bien_tru",
+            // "cau_hinh_doi_khang_diem_thap",
+            // "cau_hinh_quyen_tinh_tong",
+            // "cau_hinh_y_te",
+            // "cau_hinh_tinh_diem_tuyet_doi",
+            // "cau_hinh_xoa_nhac_nho",
+            // "cau_hinh_xoa_canh_cao",
+            // "cau_hinh_hinh_thuc_quyen",
 
         ],
 
         // Danh sách nhóm (group key) ẩn hoàn toàn
         hiddenGroups: [
-            "Chế độ áp dụng",
+            // "Chế độ áp dụng",
         ],
         allowedOptions: {
             he_diem: ["2"],
@@ -701,7 +847,8 @@ export const CONFIG_PRESETS = {
  * @param {Object} onlineFeatures - JSON features từ license server (`state.license.features`)
  * @returns {Object} Config Object hoàn chỉnh
  */
-export const getConfigPresetsByTier = (packageName, mode = "vovinam", onlineFeatures = {}) => {
+export const getConfigPresetsByTier = (packageName, mode = "default", onlineFeatures = {}) => {
+
     // 1. Lấy thông tin gói cước và config override tương ứng
     const currentTier = getPackageTier(packageName);
     const overrides = JSON.parse(JSON.stringify(PACKAGE_OVERRIDES[currentTier] || {}));
@@ -716,7 +863,6 @@ export const getConfigPresetsByTier = (packageName, mode = "vovinam", onlineFeat
 
     // 2. Clone preset gốc tránh mutate source
     const basePreset = JSON.parse(JSON.stringify(CONFIG_PRESETS[mode] || CONFIG_PRESETS.vovinam));
-
     // 3. Hoà trộn (merge) danh sách ẩn / khoá field
     if (overrides.disabledOptions) {
         Object.keys(overrides.disabledOptions).forEach(key => {
@@ -728,7 +874,6 @@ export const getConfigPresetsByTier = (packageName, mode = "vovinam", onlineFeat
             basePreset[key] = 0;
         });
     }
-
     if (overrides.hiddenGroups && overrides.hiddenGroups.length > 0) {
         basePreset.hiddenGroups = [...new Set([...basePreset.hiddenGroups, ...overrides.hiddenGroups])];
     }
@@ -752,7 +897,6 @@ export const getConfigPresetsByTier = (packageName, mode = "vovinam", onlineFeat
                 basePreset[key] = value;
             }
         });
-        console.log(`🌐 Đã áp dụng config_presets online cho mode "${mode}":`, onlinePresetOverride);
     }
 
     return basePreset;

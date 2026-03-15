@@ -67,6 +67,7 @@ class Admin {
             // Các trường đặc biệt cần parse JSON (mảng hoặc object)
             const jsonFields = [
                 'hiddenFields',
+                'disabledFields',
                 'hiddenGroups',
                 'allowedOptions'
             ];
@@ -79,7 +80,12 @@ class Admin {
                     try {
                         config[key] = JSON.parse(value);
                     } catch (e) {
-                        config[key] = value; // Fallback nếu không phải JSON
+                        // Nếu database bị nhiễm chuỗi "[object Object]" hoặc dữ liệu cũ không phải JSON
+                        if (value === '[object Object]') {
+                            config[key] = (key === 'allowedOptions') ? {} : [];
+                        } else {
+                            config[key] = value;
+                        }
                     }
                 } else if (stringFields.includes(key)) {
                     config[key] = value;
@@ -89,6 +95,11 @@ class Admin {
                     config[key] = isNaN(num) ? value : num;
                 }
             });
+
+            // Fallback cho các module mode nếu thiếu trong DB
+            if (config.ap_dung_quyen === undefined) config.ap_dung_quyen = 1;
+            if (config.ap_dung_doikhang === undefined) config.ap_dung_doikhang = 1;
+            if (config.ap_dung_vonhac === undefined) config.ap_dung_vonhac = 1;
 
             console.log('config: ', config);
             return config

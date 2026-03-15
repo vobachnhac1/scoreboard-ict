@@ -278,7 +278,7 @@ const DataSync = () => {
             disabled={isRefreshing || isScanning}
             className="group flex items-center gap-4 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded border-0 shadow-lg shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <div className={`p-1.5 rounded bg-white/20 group-hover:rotate-180 transition-transform duration-700 ${(isRefreshing || isScanning) ? "animate-spin" : ""}`}>
+            <div className={`p-1.5 rounded-full bg-white/20 group-hover:rotate-180 transition-transform duration-700 ${(isRefreshing || isScanning) ? "animate-spin" : ""}`}>
               <svg className="w-5 h-5 text-white text-sm font-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>

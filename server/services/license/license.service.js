@@ -1,7 +1,9 @@
 const axios = require('axios');
 const { BetterSQLiteWrapper } = require('../common/db_better_sqlite3');
 const { DB_SCHEME } = require('../common/constant_sql');
-const { getMacAddress, getUUID, getIP } = require('../../config/config')
+const { getMacAddress, getUUID, getIP, API_ENCRYPTION_ENABLED } = require('../../config/config')
+const encryption = require('../../config/encryption');
+const init_config_db = require('../init-config');
 
 /**
  * License Service
@@ -17,12 +19,66 @@ const { getMacAddress, getUUID, getIP } = require('../../config/config')
 class LicenseService {
     constructor() {
         this.db = new BetterSQLiteWrapper(DB_SCHEME);
-        // this.apiUrl = 'https://digisports.com.vn/api/v1/device-activations/activate';
-        this.apiUrl = 'http://localhost:3000/api/v1/device-activations/activate';
+        this.apiUrl = 'https://digisports.com.vn/api/v1/device-activations/activate';
+        // this.apiUrl = 'http://localhost:3000/api/v1/device-activations/activate';
         // URL cho việc huỷ key (revoke)
-        // this.revokeBaseUrl = 'https://license.digisports.com.vn/api/v1/device-activations/device';
-        this.revokeBaseUrl = 'http://localhost:3000/api/v1/device-activations/device';
+        this.revokeBaseUrl = 'https://digisports.com.vn/api/v1/device-activations/client/deactivate';
+        // this.revokeBaseUrl = 'http://localhost:3000/api/v1/device-activations/client/deactivate';
         this.initDatabase();
+    }
+
+    /**
+     * Chuyển đổi lỗi kỹ thuật thành thông báo thân thiện cho người dùng
+     * @param {Error|Object} error - Đối tượng lỗi từ axios hoặc Error
+     * @returns {string} - Thông báo lỗi thân thiện kèm mã tracking
+     */
+    _getFriendlyErrorMessage(error) {
+        let code = 'ERROR';
+        let message = 'Đã xảy ra lỗi không xác định.';
+
+        if (error.response) {
+            // Lỗi từ máy chủ (Axios response error)
+            const status = error.response.status;
+            code = status;
+
+            // Lấy message từ server nếu có
+            let serverMsg = error.response.data?.message || error.response.data?.error;
+            if (Array.isArray(serverMsg)) serverMsg = serverMsg.join(' ');
+
+            switch (status) {
+                case 400:
+                    message = serverMsg || 'Dữ liệu không hợp lệ hoặc mã kích hoạt không đúng.';
+                    break;
+                case 401:
+                    message = 'Phiên làm việc hết hạn hoặc không có quyền truy cập.';
+                    break;
+                case 403:
+                    message = 'Truy cập bị từ chối. Bản quyền có thể đã bị thu hồi hoặc không hợp lệ.';
+                    break;
+                case 404:
+                    message = 'Không tìm thấy thông tin yêu cầu trên hệ thống.';
+                    break;
+                case 429:
+                    message = 'Hệ thống đang bận do có quá nhiều yêu cầu. Vui lòng thử lại sau.';
+                    break;
+                default:
+                    if (status >= 500) {
+                        message = 'Hệ thống máy chủ đang gặp sự cố tạm thời.';
+                    } else {
+                        message = serverMsg || 'Lỗi kết nối tới máy chủ bản quyền.';
+                    }
+            }
+        } else if (error.request) {
+            // Không kết nối được tới server
+            code = 'NETWORK_ERROR';
+            message = 'Không thể kết nối tới máy chủ bản quyền. Vui lòng kiểm tra kết nối internet.';
+        } else {
+            // Các lỗi khác
+            code = error.code || 'APP_ERROR';
+            message = error.message || 'Đã xảy ra lỗi trong quá trình xử lý.';
+        }
+
+        return `${message} (Mã lỗi: ${code})`;
     }
 
     /**
@@ -79,17 +135,33 @@ class LicenseService {
             }
             // Gọi API kích hoạt
             console.log('API URL:', this.apiUrl);
-            console.log('API Config:', JSON.stringify(config, null, 2));
-            const response = await axios.post(this.apiUrl, config, {
+
+            let requestData = config;
+            let headers = {
+                'Content-Type': 'application/json'
+            };
+
+            if (API_ENCRYPTION_ENABLED) {
+                console.log('🔐 Request Encryption enabled');
+                requestData = encryption.encryptPayload(config);
+                headers['x-encrypted'] = 'true';
+            }
+
+            console.log('API Config:', JSON.stringify(requestData, null, 2));
+            const response = await axios.post(this.apiUrl, requestData, {
                 timeout: 10000,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: headers
             });
 
             if (response.data && response.status == 201) {
-                console.log(' API Response:', JSON.stringify(response.data, null, 2));
-                const resultCheck = response.data;
+                let responseData = response.data;
+                if (API_ENCRYPTION_ENABLED && response.headers['x-encrypted'] === 'true') {
+                    console.log('🔓 Response Decryption enabled');
+                    responseData = encryption.decryptPayload(responseData);
+                }
+
+                console.log(' API Response:', JSON.stringify(responseData, null, 2));
+                const resultCheck = responseData;
 
                 // Parse response từ API
                 const licenseData = {
@@ -106,6 +178,7 @@ class LicenseService {
                 }
 
                 // Lưu vào database với đầy đủ thông tin từ API
+                // cập nhật lại config_presets vào database
                 await this.saveLicenseToDatabase({
                     license_key: license_key,
                     device_uuid: uuid_desktop,
@@ -117,13 +190,27 @@ class LicenseService {
                     max_devices: licenseData.max_devices,
                     features: JSON.stringify({
                         ...licenseData.features,
+                        allowed_keyboard_modes: licenseData.features.allowed_keyboard_modes,
+                        hiddenConfigs: licenseData.features.hidden_configs,
+                        disabledConfigs: licenseData.features.disabled_configs,
+                        module_overrides: licenseData.features.module_overrides,
+                        custom_event_name: licenseData.features.custom_event_name,
+                        forced_keyboard_mode: licenseData.features.forced_keyboard_mode,
+                        hiddenGroups: licenseData.features.hidden_groups,
+                        allowedOptions: licenseData.features.default_values.allowed_options,
                         config_presets: licenseData.config_presets
                     }),
                     api_response: JSON.stringify(response.data),
                     last_check_date: new Date().toISOString()
                 });
 
-                console.log(' License activated successfully');
+                // Đồng bộ dữ liệu license vào bảng config_values (init_config_db)
+                const featuresToSync = {
+                    ...licenseData.features,
+                    allowedOptions: licenseData.features?.default_values?.allowed_options,
+                };
+                await this._syncLicenseFeaturesToSystemConfig(featuresToSync);
+
 
                 // Tính số ngày còn lại
                 const now = new Date();
@@ -141,8 +228,11 @@ class LicenseService {
                         packageName: licenseData.package_name,
                         licenseKey: license_key,
                         licenseKeyId: licenseData.licenseKeyId,
-                        features: licenseData.features,
-                        config_presets: licenseData.config_presets,
+                        features: {
+                            ...licenseData.features,
+                            config_presets: licenseData.config_presets
+                        },
+                        config_presets: licenseData.config_presets || {},
                         status: licenseData.is_active ? 'active' : 'inactive',
                         requireActivation: false,
                         deviceInfo: licenseData.deviceInfo
@@ -155,65 +245,35 @@ class LicenseService {
         } catch (error) {
             console.error(' License activation error:', error.message);
 
-            // Xử lý các loại lỗi khác nhau
-            if (error.response) {
-                // API trả về lỗi
-                const status = error.response.status;
-                let errorMessage = error.response.data?.message || 'Invalid license key';
+            const friendlyError = this._getFriendlyErrorMessage(error);
+            const status = error.response?.status || 500;
 
-                // Xử lý lỗi 400 hoặc 403
-                if (status === 400 || status === 403) {
-                    // Lấy error message (có thể là string hoặc array)
-                    if (Array.isArray(errorMessage)) {
-                        errorMessage = errorMessage.join(' ');
-                    }
+            // Xử lý logic đặc biệt cho revoked license (403 hoặc thông báo revoke)
+            if (status === 403 ||
+                (error.response?.data?.message &&
+                    (error.response.data.message.toLowerCase().includes('revoked') ||
+                        error.response.data.message.toLowerCase().includes('thu hồi')))) {
 
-                    console.log(`  API returned ${status}. Error: ${errorMessage}`);
-
-                    // Kiểm tra nếu license bị revoked hoặc trả về 403 (Forbidden/Invalid access)
-                    if (status === 403 ||
-                        errorMessage.toLowerCase().includes('revoked') ||
-                        errorMessage.toLowerCase().includes('thu hồi') ||
-                        errorMessage.toLowerCase().includes('đã bị thu hồi')) {
-                        console.log('  Access forbidden or License revoked. Deleting ALL licenses from database...');
-
-                        // Xóa TẤT CẢ license khỏi database (không chỉ license key hiện tại)
-                        try {
-                            await this.deleteAllLicenses();
-                            console.log(' All licenses deleted from database');
-                        } catch (deleteError) {
-                            console.error(' Failed to delete licenses:', deleteError.message);
-                        }
-
-                        return {
-                            success: false,
-                            error: status === 403 ? 'Access forbidden by license server' : 'License has been revoked',
-                            code: status,
-                            revoked: true
-                        };
-                    }
+                console.log('  License revoked or Access Forbidden. Clearing local database...');
+                try {
+                    await this.deleteAllLicenses();
+                } catch (e) {
+                    console.error('  Failed to clear database:', e.message);
                 }
 
                 return {
                     success: false,
-                    error: errorMessage,
-                    code: status
-                };
-            } else if (error.request) {
-                // Không kết nối được API
-                return {
-                    success: false,
-                    error: 'Cannot connect to license server. Please check your internet connection.',
-                    code: 'NETWORK_ERROR'
-                };
-            } else {
-                // Lỗi khác
-                return {
-                    success: false,
-                    error: error.message,
-                    code: 'UNKNOWN_ERROR'
+                    error: friendlyError,
+                    code: status,
+                    revoked: true
                 };
             }
+
+            return {
+                success: false,
+                error: friendlyError,
+                code: status === 500 ? 'INTERNAL_ERROR' : status
+            };
         }
     }
 
@@ -354,7 +414,7 @@ class LicenseService {
         try {
             console.log(' Checking license online...');
 
-            const response = await axios.post(this.apiUrl, {
+            const config = {
                 licenseKey: license_key,
                 deviceType: 'COMPUTER',
                 deviceId: device_uuid,
@@ -364,15 +424,29 @@ class LicenseService {
                     app_version: require('../../../package.json').version,
                     platform: process.platform
                 }
-            }, {
+            };
+
+            let requestData = config;
+            let headers = {
+                'Content-Type': 'application/json'
+            };
+
+            if (API_ENCRYPTION_ENABLED) {
+                requestData = encryption.encryptPayload(config);
+                headers['x-encrypted'] = 'true';
+            }
+
+            const response = await axios.post(this.apiUrl, requestData, {
                 timeout: 10000,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: headers
             });
 
             if (response.status === 201 && response.data) {
-                const resultCheck = response.data;
+                let responseData = response.data;
+                if (API_ENCRYPTION_ENABLED && response.headers['x-encrypted'] === 'true') {
+                    responseData = encryption.decryptPayload(responseData);
+                }
+                const resultCheck = responseData;
 
                 // Update database với thông tin mới nhất từ server
                 await this.saveLicenseToDatabase({
@@ -384,10 +458,21 @@ class LicenseService {
                     status: resultCheck.isActive ? 'active' : 'inactive',
                     package_name: resultCheck.packageName || null,
                     max_devices: resultCheck.maxDevices || 1,
-                    features: JSON.stringify(resultCheck.features || {}),
+                    features: JSON.stringify({
+                        ...(resultCheck.features || {}),
+                        allowedOptions: resultCheck.features?.default_values?.allowed_options,
+                        config_presets: resultCheck.config_presets
+                    }),
                     api_response: JSON.stringify(response.data),
                     last_check_date: new Date().toISOString()
                 });
+
+                // Đồng bộ dữ liệu license vào bảng config_values (init_config_db)
+                const featuresToSync = {
+                    ...(resultCheck.features || {}),
+                    allowedOptions: resultCheck.features?.default_values?.allowed_options,
+                };
+                await this._syncLicenseFeaturesToSystemConfig(featuresToSync);
 
                 const now = new Date();
                 const expirationDate = new Date(resultCheck.expiredDate);
@@ -401,7 +486,11 @@ class LicenseService {
                     expirationDate: resultCheck.expiredDate,
                     activationDate: resultCheck.activatedAt,
                     packageName: resultCheck.packageName || null,
-                    features: resultCheck.features || {},
+                    features: {
+                        ...(resultCheck.features || {}),
+                        config_presets: resultCheck.config_presets
+                    },
+                    config_presets: resultCheck.config_presets || {},
                     status: resultCheck.isActive ? 'active' : 'inactive',
                     licenseKey: license_key,
                     requireActivation: false
@@ -415,10 +504,11 @@ class LicenseService {
             };
 
         } catch (error) {
+            const status = error.response?.status;
+            const friendlyError = this._getFriendlyErrorMessage(error);
+
             // Xử lý lỗi 400 hoặc 403
-            if (error.response && (error.response.status === 400 || error.response.status === 403)) {
-                const status = error.response.status;
-                // Lấy error message (có thể là string hoặc array)
+            if (status === 400 || status === 403) {
                 let errorMessage = '';
                 if (Array.isArray(error.response.data?.message)) {
                     errorMessage = error.response.data.message.join(' ');
@@ -426,37 +516,30 @@ class LicenseService {
                     errorMessage = error.response.data?.message || error.response.data?.error || '';
                 }
 
-                console.log(`  API returned ${status}: ${errorMessage}`);
-
                 // Kiểm tra nếu license bị revoked hoặc trả về 403 (Forbidden)
                 if (status === 403 ||
                     errorMessage.toLowerCase().includes('revoked') ||
-                    errorMessage.toLowerCase().includes('thu hồi') ||
-                    errorMessage.toLowerCase().includes('đã bị thu hồi')) {
-                    console.log(`  Access forbidden (${status}) or License revoked. Deleting ALL licenses from database...`);
+                    errorMessage.toLowerCase().includes('thu hồi')) {
+                    console.log(`  Access forbidden (${status}) or License revoked during check. Deleting ALL licenses...`);
 
-                    // Xóa TẤT CẢ license khỏi database
                     await this.deleteAllLicenses();
 
                     return {
                         success: false,
                         online: true,
                         revoked: true,
-                        error: status === 403 ? 'Access forbidden by license server' : 'License has been revoked',
+                        error: friendlyError,
                         requireActivation: true
                     };
                 }
 
-                // Nếu là lỗi 400 khác (validation error, etc.) - Có thể xóa database tùy yêu cầu, 
-                // nhưng ở đây y/c là khi gọi apiUrl mà lỗi 403 thì huỷ key.
-                // Do đó 400 ta giữ logic cũ là fallback hoặc xóa tùy thông báo.
                 if (status === 400) {
                     await this.deleteAllLicenses();
-                    console.log('  API validation error (400), database cleared.');
+                    console.log('  API validation error (400) during check, database cleared.');
                     return {
                         success: false,
-                        online: false,
-                        error: `API Error: ${errorMessage}`,
+                        online: true,
+                        error: friendlyError,
                         requireActivation: true
                     };
                 }
@@ -467,7 +550,8 @@ class LicenseService {
             return {
                 success: false,
                 online: false,
-                error: error.message
+                error: friendlyError,
+                code: status || 'CHECK_ERROR'
             };
         }
     }
@@ -523,6 +607,7 @@ class LicenseService {
                         activationDate: row.activation_date,
                         packageName: row.package_name,
                         features: row.features ? JSON.parse(row.features) : {},
+                        config_presets: row.features ? (JSON.parse(row.features).config_presets || {}) : {},
                         status: row.status,
                         licenseKey: row.license_key,
                         requireActivation: !isValid
@@ -576,6 +661,7 @@ class LicenseService {
                         activationDate: row.activation_date,
                         packageName: row.package_name,
                         features: row.features ? JSON.parse(row.features) : {},
+                        config_presets: row.features ? (JSON.parse(row.features).config_presets || {}) : {},
                         status: row.status,
                         licenseKey: row.license_key
                     });
@@ -647,7 +733,7 @@ class LicenseService {
                 success: false,
                 valid: false,
                 requireActivation: true,
-                error: error.message
+                error: this._getFriendlyErrorMessage(error)
             };
         }
     }
@@ -688,7 +774,7 @@ class LicenseService {
                 success: false,
                 valid: false,
                 requireActivation: true,
-                error: error.message
+                error: this._getFriendlyErrorMessage(error)
             };
         }
     }
@@ -730,15 +816,41 @@ class LicenseService {
             let onlineError = null;
 
             try {
-                const response = await axios.delete(revokeUrl, {
-                    timeout: 10000,
-                    headers: { 'Content-Type': 'application/json' }
-                });
+                // Lấy license hiện tại để huỷ nếu có thể
+                const currentLicense = await this.getCurrentLicenseFromDB();
+                const licenseKey = currentLicense ? currentLicense.license_key : null;
+
+                let response;
+                let headers = { 'Content-Type': 'application/json' };
+
+                if (API_ENCRYPTION_ENABLED && licenseKey) {
+                    const payload = {
+                        licenseKey: licenseKey,
+                        deviceId: identifier
+                    };
+                    const encryptedData = encryption.encryptPayload(payload);
+                    headers['x-encrypted'] = 'true';
+
+                    // Với encryption, ta dùng POST cho client/deactivate theo chuẩn server mới
+                    response = await axios.post(this.revokeBaseUrl, encryptedData, {
+                        timeout: 10000,
+                        headers: headers
+                    });
+                } else {
+                    // Fallback hoặc không encryption
+                    const revokeUrl = `${this.revokeBaseUrl}/${identifier}`;
+                    console.log('Revoke URL:', revokeUrl);
+                    response = await axios.delete(revokeUrl, {
+                        timeout: 10000,
+                        headers: headers
+                    });
+                }
+
                 console.log('✅ Online revoke response status:', response.status);
                 onlineRevoked = true;
             } catch (apiError) {
                 console.warn('⚠️  Online revoke failed (will still clear local):', apiError.message);
-                onlineError = apiError.response?.data?.message || apiError.message;
+                onlineError = 'Thông báo: Không thể huỷ kích hoạt license online. Vui lòng huỷ kích hoạt license online thủ công.' // apiError.response?.data?.message || apiError.message;
             }
 
             // Dù API thành công hay không, luôn xóa local database
@@ -749,9 +861,10 @@ class LicenseService {
                 success: true,
                 onlineRevoked,
                 onlineError,
-                message: onlineRevoked
-                    ? 'License revoked from server and removed from device'
-                    : `Local license removed. Server revoke failed: ${onlineError}`
+                message: onlineError || 'License revoked from server and removed from device',
+                // message: onlineRevoked
+                //     ? 'License revoked from server and removed from device'
+                //     : `Local license removed. Server revoke failed: ${onlineError}`
             };
         } catch (error) {
             console.error('❌ revokeDeviceKey error:', error.message);
@@ -759,8 +872,77 @@ class LicenseService {
             try { await this.deleteAllLicenses(); } catch (e) { /* ignore */ }
             return {
                 success: false,
-                error: error.message
+                error: this._getFriendlyErrorMessage(error),
+                code: error.response?.status || 'REVOKE_ERROR'
             };
+        }
+    }
+
+    /**
+     * Đồng bộ các thông tin từ features của License vào bảng config_values (system)
+     * @param {Object} features - Đối tượng features từ License Server
+     */
+    async _syncLicenseFeaturesToSystemConfig(features) {
+        if (!features) return;
+
+        try {
+            console.log('🔄 Syncing license features to system config...');
+
+            // Map từ Online License Features sang Local Config Child Keys
+            const syncMap = {
+                'hidden_configs': 'hiddenFields',
+                'disabled_configs': 'disabledFields',
+                'hidden_groups': 'hiddenGroups',
+                'allowed_options': 'allowedOptions',
+                'allowedOptions': 'allowedOptions',
+                // Module overrides (áp dụng cho VO NHAC/QUYEN/DOI KHANG)
+                '/bang-diem/quyen': 'ap_dung_quyen',
+                '/bang-diem/vo-nhac': 'ap_dung_vonhac',
+                '/bang-diem/doi-khang': 'ap_dung_doikhang'
+            };
+
+            const lsDB = await init_config_db.getAllKeyValueByKey('system');
+
+            // Hỗ trợ lookup cả trong object features root và features.default_values + module_overrides
+            const flattenedFeatures = {
+                ...features,
+                ...(features.default_values || {}),
+                ...(features.module_overrides || {})
+            };
+
+            for (const [onlineKey, localKey] of Object.entries(syncMap)) {
+                if (flattenedFeatures[onlineKey] !== undefined) {
+                    const value = flattenedFeatures[onlineKey];
+                    let finalValue = value;
+
+                    // Chuyển đổi Boolean (từ module_overrides) sang '1'/'0' để lưu DB
+                    if (typeof value === 'boolean') {
+                        finalValue = value ? '1' : '0';
+                    } else if (typeof value === 'object' && value !== null) {
+                        // Nếu là object hoặc array thì stringify trước khi lưu
+                        finalValue = JSON.stringify(value);
+                    } else {
+                        finalValue = String(value);
+                    }
+
+                    const existingItem = lsDB.find(ele => ele.child_key === localKey);
+
+                    if (existingItem) {
+                        console.log(`  Updating ${localKey}:`, finalValue);
+                        await init_config_db.updateKeyValueByKey(existingItem.id, {
+                            ...existingItem,
+                            value: finalValue
+                        });
+                    } else {
+                        console.log(`  Inserting ${localKey}:`, finalValue);
+                        await init_config_db.insertKeyValue('system', localKey, finalValue);
+                    }
+                }
+            }
+
+            console.log('✅ License features synced to system config');
+        } catch (error) {
+            console.error('❌ Error syncing license features to system config:', error.message);
         }
     }
 }

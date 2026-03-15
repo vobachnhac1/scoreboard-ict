@@ -53,7 +53,7 @@ exports.activateLicense = async (req, res) => {
         if (!license_key) {
             return res.status(400).json({
                 success: false,
-                error: 'License key is required'
+                error: 'Vui lòng nhập mã kích hoạt. (Mã lỗi: 400)'
             });
         }
 
@@ -87,7 +87,7 @@ exports.activateLicense = async (req, res) => {
         console.error(' Activate license error:', error);
         return res.status(500).json({
             success: false,
-            error: 'Internal server error',
+            error: 'Đã xảy ra lỗi hệ thống khi kích hoạt. Vui lòng thử lại sau. (Mã lỗi: 500)',
             message: error.message
         });
     }
@@ -109,7 +109,7 @@ exports.getLicenseStatus = async (req, res) => {
         console.error(' Get license status error:', error);
         return res.status(500).json({
             success: false,
-            error: 'Internal server error',
+            error: 'Không thể kiểm tra trạng thái bản quyền. (Mã lỗi: 500)',
             message: error.message
         });
     }
@@ -126,7 +126,7 @@ exports.checkLicense = async (req, res) => {
         if (!license_key) {
             return res.status(400).json({
                 success: false,
-                error: 'License key is required'
+                error: 'Thiếu mã kích hoạt để kiểm tra. (Mã lỗi: 400)'
             });
         }
 
@@ -140,7 +140,7 @@ exports.checkLicense = async (req, res) => {
         console.error(' Check license error:', error);
         return res.status(500).json({
             success: false,
-            error: 'Internal server error',
+            error: 'Lỗi hệ thống khi kiểm tra bản quyền. (Mã lỗi: 500)',
             message: error.message
         });
     }
@@ -157,7 +157,7 @@ exports.deactivateLicense = async (req, res) => {
         if (!license_key) {
             return res.status(400).json({
                 success: false,
-                error: 'License key is required'
+                error: 'Mã kích hoạt không khả dụng để hủy. (Mã lỗi: 400)'
             });
         }
 
@@ -172,7 +172,7 @@ exports.deactivateLicense = async (req, res) => {
         console.error(' Deactivate license error:', error);
         return res.status(500).json({
             success: false,
-            error: 'Internal server error',
+            error: 'Lỗi hệ thống khi hủy kích hoạt. (Mã lỗi: 500)',
             message: error.message
         });
     }
@@ -190,12 +190,12 @@ exports.revokeDeviceKey = async (req, res) => {
         const uuid_desktop = await getUUID();
 
         // Ư u tiên dùng MAC address (deviceId), fallback sang UUID
-        const identifier = mac_address || uuid_desktop;
+        const identifier = uuid_desktop || mac_address;
 
         if (!identifier) {
             return res.status(400).json({
                 success: false,
-                error: 'Cannot determine device identifier'
+                error: 'Không xác định được danh tính thiết bị. (Mã lỗi: 400)'
             });
         }
 
@@ -212,7 +212,7 @@ exports.revokeDeviceKey = async (req, res) => {
         console.error('❌ Revoke device key error:', error);
         return res.status(500).json({
             success: false,
-            error: 'Internal server error',
+            error: 'Lỗi hệ thống khi thu hồi bản quyền. (Mã lỗi: 500)',
             message: error.message
         });
     }

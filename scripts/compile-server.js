@@ -10,31 +10,21 @@ const JavaScriptObfuscator = require('javascript-obfuscator');
 // Cấu hình obfuscator
 const obfuscatorConfig = {
   compact: true,
-  controlFlowFlattening: true,
-  controlFlowFlatteningThreshold: 0.75,
-  deadCodeInjection: true,
-  deadCodeInjectionThreshold: 0.4,
+  controlFlowFlattening: false, // Tắt để tránh lỗi logic phức tạp trên Node.js
+  deadCodeInjection: false,     // Tắt để giảm dung lượng và tăng độ ổn định
   debugProtection: false,
-  debugProtectionInterval: 0,
   disableConsoleOutput: false,
   identifierNamesGenerator: 'hexadecimal',
   log: false,
   numbersToExpressions: true,
   renameGlobals: false,
-  selfDefending: true,
+  selfDefending: false,         // QUAN TRỌNG: Tắt để tránh lỗi khi đóng gói ASAR
   simplify: true,
   splitStrings: true,
-  splitStringsChunkLength: 10,
+  splitStringsChunkLength: 5,
   stringArray: true,
   stringArrayCallsTransform: true,
   stringArrayEncoding: ['base64'],
-  stringArrayIndexShift: true,
-  stringArrayRotate: true,
-  stringArrayShuffle: true,
-  stringArrayWrappersCount: 2,
-  stringArrayWrappersChainedCalls: true,
-  stringArrayWrappersParametersMaxCount: 4,
-  stringArrayWrappersType: 'function',
   stringArrayThreshold: 0.75,
   transformObjectKeys: true,
   unicodeEscapeSequence: false
@@ -64,14 +54,14 @@ function obfuscateFile(filePath) {
   try {
     const code = fs.readFileSync(filePath, 'utf8');
     const obfuscatedCode = JavaScriptObfuscator.obfuscate(code, obfuscatorConfig).getObfuscatedCode();
-    
+
     // Tạo backup
     const backupPath = filePath + '.backup';
     fs.copyFileSync(filePath, backupPath);
-    
+
     // Ghi file đã obfuscate
     fs.writeFileSync(filePath, obfuscatedCode, 'utf8');
-    
+
     console.log(` Obfuscated: ${filePath}`);
     return true;
   } catch (error) {
@@ -90,16 +80,16 @@ function obfuscateDirectory(dirPath) {
   }
 
   const files = fs.readdirSync(dirPath);
-  
+
   files.forEach(file => {
     const filePath = path.join(dirPath, file);
     const stat = fs.statSync(filePath);
-    
+
     // Skip excluded files/dirs
     if (excludeFiles.some(exclude => filePath.includes(exclude))) {
       return;
     }
-    
+
     if (stat.isDirectory()) {
       obfuscateDirectory(filePath);
     } else if (file.endsWith('.js') && !file.endsWith('.backup')) {
@@ -154,13 +144,13 @@ function restoreBackups() {
 
 function restoreBackupsInDir(dirPath) {
   if (!fs.existsSync(dirPath)) return;
-  
+
   const files = fs.readdirSync(dirPath);
-  
+
   files.forEach(file => {
     const filePath = path.join(dirPath, file);
     const stat = fs.statSync(filePath);
-    
+
     if (stat.isDirectory()) {
       restoreBackupsInDir(filePath);
     } else if (file.endsWith('.backup')) {

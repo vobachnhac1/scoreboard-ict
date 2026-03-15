@@ -9,17 +9,17 @@ InitProject = () => {
         const networkInterfaces = os.networkInterfaces();
         let macAddress = null;
         for (const name of Object.keys(networkInterfaces)) {
-            if(macAddress) break;
+            if (macAddress) break;
             const netInterface = networkInterfaces[name];
             if (netInterface) {
-            for (const iface of netInterface) {
-            if(macAddress) break;
-                if (!iface.internal && iface.mac !== '00:00:00:00:00:00') {
-                macAddress = iface.mac
+                for (const iface of netInterface) {
+                    if (macAddress) break;
+                    if (!iface.internal && iface.mac !== '00:00:00:00:00:00') {
+                        macAddress = iface.mac
+                    }
                 }
             }
-            }
-        }  
+        }
         return macAddress;
     } catch (error) {
         return null;
@@ -32,24 +32,24 @@ getMacAddress = () => {
         const networkInterfaces = os.networkInterfaces();
         let macAddress = null;
         for (const name of Object.keys(networkInterfaces)) {
-            if(macAddress) break;
+            if (macAddress) break;
             const netInterface = networkInterfaces[name];
             if (netInterface) {
-            for (const iface of netInterface) {
-            if(macAddress) break;
-                if (!iface.internal && iface.mac !== '00:00:00:00:00:00') {
-                macAddress = iface.mac
+                for (const iface of netInterface) {
+                    if (macAddress) break;
+                    if (!iface.internal && iface.mac !== '00:00:00:00:00:00') {
+                        macAddress = iface.mac
+                    }
                 }
             }
-            }
-        }  
+        }
         return macAddress;
     } catch (error) {
         return null;
     }
 };
 
-getUUID = async ()=>{
+getUUID = async () => {
     try {
         const data = await si.uuid()
         return data.hardware
@@ -58,17 +58,17 @@ getUUID = async ()=>{
     }
 }
 
-getIP = async ()=>{
+getIP = async () => {
     try {
         const networkInterfaces = os.networkInterfaces();
         let ip = null
         for (const iface of Object.values(networkInterfaces)) {
             for (const info of iface) {
-              if (info.family === 'IPv4' && !info.internal) {
-                ip = info.address
-              }
+                if (info.family === 'IPv4' && !info.internal) {
+                    ip = info.address
+                }
             }
-          }
+        }
         return ip;
     } catch (error) {
         return null
@@ -80,4 +80,6 @@ module.exports = {
     getUUID: getUUID,
     InitProject: InitProject,
     getMacAddress: getMacAddress,
+    API_ENCRYPTION_ENABLED: true,
+    API_ENCRYPTION_KEY: 'vohiendai_secret_key_encryption_32',
 };

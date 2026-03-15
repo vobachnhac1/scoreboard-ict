@@ -48,7 +48,7 @@ class SyncController {
      */
     restartApp() {
         console.log('[SyncController] Initiating application restart...');
-        
+
         // Try to close the main database connection
         try {
             if (SyncService && SyncService.db && typeof SyncService.db.close === 'function') {
@@ -68,11 +68,11 @@ class SyncController {
                 const { app } = require('electron');
                 if (app && typeof app.relaunch === 'function') {
                     console.log('[SyncController] Relaunching Electron app...');
-                    
+
                     // In some environments, we might need to be explicit about the relaunch
                     // app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) });
                     app.relaunch();
-                    
+
                     console.log('[SyncController] Exiting current instance...');
                     // Use exit(0) to bypass "window-all-closed" handlers and other quit-blocking logic
                     app.exit(0);
@@ -92,7 +92,7 @@ class SyncController {
             process.exit(0);
         }
     }
-    
+
     /**
      * GET /api/sync/export
      * Export dữ liệu từ các bảng được chọn
@@ -101,17 +101,17 @@ class SyncController {
     async exportData(req, res) {
         try {
             const { tables } = req.query;
-            
+
             if (!tables) {
                 return res.status(400).json({
                     success: false,
                     message: 'Thiếu tham số tables'
                 });
             }
-            
+
             const tableList = tables.split(',').map(t => t.trim());
             const result = await SyncService.exportData(tableList);
-            
+
             return res.json({
                 success: true,
                 message: 'Export dữ liệu thành công',
@@ -126,7 +126,7 @@ class SyncController {
             });
         }
     }
-    
+
     /**
      * POST /api/sync/import
      * Import dữ liệu vào database
@@ -135,7 +135,7 @@ class SyncController {
     async importData(req, res) {
         try {
             const { table, data, strategy } = req.body;
-            
+
             if (!table || !data) {
                 return res.status(400).json({
                     success: false,
@@ -145,7 +145,7 @@ class SyncController {
             // Thực hiện kiểm tra dữ liệu:
             console.log('table, data, strategy: ', table, data, strategy);
             const result = await SyncService.importData(table, data, strategy || 'overwrite');
-            
+
             return res.json({
                 success: true,
                 message: 'Import dữ liệu thành công',
@@ -160,7 +160,7 @@ class SyncController {
             });
         }
     }
-    
+
     /**
      * GET /api/sync/metadata
      * Lấy metadata của các bảng (số lượng records, size, etc.)
@@ -186,7 +186,7 @@ class SyncController {
             });
         }
     }
-    
+
     /**
      * GET /api/sync/tables
      * Lấy danh sách các bảng có thể đồng bộ
@@ -423,7 +423,7 @@ class SyncController {
                 message: `Đã lưu ${result.saved} records vào staging`,
                 data: result
             });
-        }catch (error) {
+        } catch (error) {
             console.log('Error importToStaging:', error);
             return res.status(500).json({
                 success: false,
@@ -462,8 +462,8 @@ class SyncController {
      */
     async getStagingData(req, res) {
         try {
-            const { sessionId }= req.params;
-            const { table }= req.query;
+            const { sessionId } = req.params;
+            const { table } = req.query;
 
             const result = await SyncService.getStagingData(sessionId, table || null);
             return res.json({
@@ -603,7 +603,7 @@ class SyncController {
             }
 
             const uploadedFile = req.file.path;
-            
+
             // Đảm bảo đóng kết nối trước khi ghi đè
             if (SyncService && SyncService.db) {
                 SyncService.db.close();
@@ -613,13 +613,13 @@ class SyncController {
             // Xóa file SHM và WAL để tránh corrupt db sau khi copy
             if (fs.existsSync(`${DB_SCHEME}-shm`)) fs.unlinkSync(`${DB_SCHEME}-shm`);
             if (fs.existsSync(`${DB_SCHEME}-wal`)) fs.unlinkSync(`${DB_SCHEME}-wal`);
-            
+
             // Ghi đè file chính
             fs.copyFileSync(uploadedFile, DB_SCHEME);
             fs.unlinkSync(uploadedFile);
 
             res.json({ success: true, message: 'Khôi phục CSDL thành công. Ứng dụng sẽ tự động khởi động lại.' });
-            
+
             // Restart process to clear all memory sqlite connections
             setTimeout(() => {
                 this.restartApp();
@@ -701,7 +701,7 @@ class SyncController {
             console.log('[SyncController] Local backup created. Resolving Drive folders...');
             // Tìm/Tạo thư mục thiết bị
             const folderId = await GoogleDriveService.findOrCreateFolder(uuid);
-            
+
             console.log('[SyncController] Uploading to Google Drive...');
             // Upload lên Drive
             const result = await GoogleDriveService.uploadFile(tempPath, fileName, folderId);
@@ -738,7 +738,7 @@ class SyncController {
 
             console.log(`[SyncController] Downloading file ${fileId} from Drive...`);
             const tempPath = path.join(os.tmpdir(), `restore_${Date.now()}.sqlite`);
-            
+
             // Download từ Drive
             await GoogleDriveService.downloadFile(fileId, tempPath);
             console.log('[SyncController] Download complete. Restoring database...');
@@ -752,7 +752,7 @@ class SyncController {
             // Áp dụng logic restore giống restoreDatabase
             if (fs.existsSync(`${DB_SCHEME}-shm`)) fs.unlinkSync(`${DB_SCHEME}-shm`);
             if (fs.existsSync(`${DB_SCHEME}-wal`)) fs.unlinkSync(`${DB_SCHEME}-wal`);
-            
+
             fs.copyFileSync(tempPath, DB_SCHEME);
             fs.unlinkSync(tempPath);
 
@@ -838,9 +838,9 @@ class SyncController {
 
             console.log(`[SyncController] Downloading ${filePath} from FTP...`);
             const tempPath = path.join(os.tmpdir(), `restore_ftp_${Date.now()}.sqlite`);
-            
+
             await FtpService.downloadFile(filePath, tempPath);
-            
+
             console.log('[SyncController] Download complete. Restoring database...');
 
             // Đảm bảo đóng kết nối trước khi ghi đè
@@ -851,7 +851,7 @@ class SyncController {
 
             if (fs.existsSync(`${DB_SCHEME}-shm`)) fs.unlinkSync(`${DB_SCHEME}-shm`);
             if (fs.existsSync(`${DB_SCHEME}-wal`)) fs.unlinkSync(`${DB_SCHEME}-wal`);
-            
+
             fs.copyFileSync(tempPath, DB_SCHEME);
             fs.unlinkSync(tempPath);
 
@@ -879,10 +879,10 @@ class SyncController {
 
             const fileName = path.basename(filePath);
             const tempPath = path.join(os.tmpdir(), fileName);
-            
+
             console.log(`[SyncController] Downloading ${filePath} from FTP to temporary storage...`);
             await FtpService.downloadFile(filePath, tempPath);
-            
+
             console.log(`[SyncController] Sending file ${fileName} to browser.`);
             res.download(tempPath, fileName, (err) => {
                 if (err) {
@@ -891,7 +891,7 @@ class SyncController {
                 // Cleanup
                 try {
                     if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
-                } catch (e) {}
+                } catch (e) { }
             });
         } catch (error) {
             console.error('[SyncController] Error downloadFtpBackup:', error);

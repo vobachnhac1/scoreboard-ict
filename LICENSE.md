@@ -1,7 +1,7 @@
 GIẤY PHÉP SỬ DỤNG PHẦN MỀM
 PHẦN MỀM THI ĐẤU - DIGISPORTS
 
-Bản quyền © 2026 Liên Đoàn Võ Hiện Đại JSC
+Bản quyền © 2026 DigiSports
 Mọi quyền được bảo lưu.
 
 ================================================================================
@@ -9,10 +9,10 @@ Mọi quyền được bảo lưu.
 1. QUYỀN SỞ HỮU TRÍ TUỆ
 
 Phần mềm "PHẦN MỀM THI ĐẤU - DIGISPORTS" (sau đây gọi là "Phần mềm")
-là tài sản trí tuệ độc quyền của Liên Đoàn Võ Hiện Đại JSC.
+là tài sản trí tuệ độc quyền của DigiSports.
 
 Tất cả mã nguồn, thiết kế, giao diện, logo, tài liệu và các thành phần khác
-của Phần mềm đều thuộc quyền sở hữu của Liên Đoàn Võ Hiện Đại JSC.
+của Phần mềm đều thuộc quyền sở hữu của DigiSports.
 
 2. GIẤY PHÉP SỬ DỤNG
 
@@ -29,7 +29,7 @@ b) Hạn chế:
 
 - NGHIÊM CẤM sao chép, phân phối, hoặc tái sản xuất Phần mềm
   dưới bất kỳ hình thức nào mà không có sự cho phép bằng văn bản
-  từ Liên Đoàn Võ Hiện Đại JSC.
+  từ DigiSports.
 - NGHIÊM CẤM dịch ngược (reverse engineering), tháo rời
   (disassemble), hoặc giải mã (decompile) Phần mềm.
 - NGHIÊM CẤM chỉnh sửa, thay đổi hoặc tạo ra các phiên bản
@@ -43,8 +43,8 @@ Người dùng cam kết:
 
 - Bảo mật thông tin đăng nhập và mã kích hoạt Phần mềm.
 - Không chia sẻ tài khoản hoặc quyền truy cập cho bên thứ ba
-  mà không có sự đồng ý của Liên Đoàn Võ Hiện Đại JSC.
-- Thông báo ngay cho Liên Đoàn Võ Hiện Đại JSC nếu phát hiện
+  mà không có sự đồng ý của DigiSports.
+- Thông báo ngay cho DigiSports nếu phát hiện
   bất kỳ vi phạm bảo mật nào.
 
 4. GIỚI HẠN TRÁCH NHIỆM
@@ -52,7 +52,7 @@ Người dùng cam kết:
 Phần mềm được cung cấp "NGUYÊN TRẠNG" (AS IS), không có bất kỳ bảo đảm
 nào, dù rõ ràng hay ngụ ý.
 
-Liên Đoàn Võ Hiện Đại JSC không chịu trách nhiệm về:
+DigiSports không chịu trách nhiệm về:
 
 - Bất kỳ thiệt hại trực tiếp, gián tiếp, ngẫu nhiên, đặc biệt
   hoặc hậu quả nào phát sinh từ việc sử dụng hoặc không thể
@@ -63,7 +63,7 @@ Liên Đoàn Võ Hiện Đại JSC không chịu trách nhiệm về:
 5. HỖ TRỢ VÀ BẢO TRÌ
    - Hỗ trợ kỹ thuật và cập nhật Phần mềm chỉ được cung cấp cho
      người dùng có giấy phép hợp lệ.
-   - Liên Đoàn Võ Hiện Đại JSC có quyền thay đổi, cập nhật hoặc
+   - DigiSports có quyền thay đổi, cập nhật hoặc
      ngừng cung cấp Phần mềm bất kỳ lúc nào.
 
 6. CHẤM DỨT GIẤY PHÉP
@@ -72,7 +72,7 @@ Giấy phép sẽ tự động chấm dứt nếu:
 
 - Người dùng vi phạm bất kỳ điều khoản nào trong giấy phép này.
 - Thời hạn sử dụng trong giấy phép kích hoạt hết hạn.
-- Liên Đoàn Võ Hiện Đại JSC quyết định chấm dứt giấy phép
+- DigiSports quyết định chấm dứt giấy phép
   vì lý do chính đáng.
 
 Khi giấy phép chấm dứt, người dùng phải:
@@ -89,7 +89,7 @@ giải quyết tại Tòa án có thẩm quyền tại Việt Nam.
 
 8. THÔNG TIN LIÊN HỆ
 
-Liên Đoàn Võ Hiện Đại JSC
+DigiSports
 Email: vonhac.20394@gmail.com
 Website: vohiendai.com
 

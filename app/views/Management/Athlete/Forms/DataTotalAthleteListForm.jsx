@@ -39,7 +39,7 @@ export default function DataForm({ type, data = null, onAgree, onGoBack }) {
             id="fullName"
             {...register("fullName", { required: "Họ tên là bắt buộc" })}
             type="text"
-            className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
+            className="form-input col-span-2 w-full px-3 py-2 border rounded text-sm"
             placeholder="Nhập họ tên"
           />
           {errors.fullName && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.fullName.message)}</p>}
@@ -55,7 +55,7 @@ export default function DataForm({ type, data = null, onAgree, onGoBack }) {
             id="year"
             {...register("year", { required: "Năm sinh là bắt buộc" })}
             type="text"
-            className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
+            className="form-input col-span-2 w-full px-3 py-2 border rounded text-sm"
             placeholder="Nhập năm sinh"
           />
           {errors.year && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.year.message)}</p>}

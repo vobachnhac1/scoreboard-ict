@@ -1,0 +1,11 @@
+{
+  "servers": {
+    "auggie": {
+      "type": "http",
+      "url": "https://api.augmentcode.com/mcp",
+      "headers": {
+        "Authorization": "Bearer a3c77fd256078a32f374119232ad3f4dcac920b79eb11302ee9118fe0095d9b9"
+      }
+    }
+  }
+}

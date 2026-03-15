@@ -1,6 +1,6 @@
 const { BetterSQLiteWrapper } = require('../common/db_better_sqlite3');
 const fs = require('fs');
-const {DB_SCHEME, TABLE} = require('../common/constant_sql')
+const { DB_SCHEME, TABLE } = require('../common/constant_sql')
 
 // Thực hiện khi nào
 // Tạo mới 1 record khi chưa có 1 dữ liệu nào
@@ -25,7 +25,7 @@ class InitConfigService {
                     promotion_code TEXT,
                     room_code TEXT
                 )
-            `);  
+            `);
 
             // table config_values  => màn hình Quản lý cài đặt
             this.db.run(`
@@ -35,7 +35,7 @@ class InitConfigService {
                     child_key TEXT,
                     value TEXT
                 )
-            `); 
+            `);
 
             // table license_child
             this.db.run(`
@@ -59,7 +59,7 @@ class InitConfigService {
                 )
             `);
 
-            
+
             /**
              * 
              * const common = [
@@ -75,16 +75,16 @@ class InitConfigService {
              *  ['qu_type','OTH','Khác'], 
              * ]
              * 
-             *  */ 
+             *  */
 
-            this.getAllKeyValue().then(data=>{
-                if(data.length == 0){
+            this.getAllKeyValue().then(data => {
+                if (data.length == 0) {
                     // insert lần đầu
                     const stmt = this.db.prepare("INSERT INTO config_values (key, child_key, value) VALUES (?, ?, ?)");
                     const data = [
                         // ===== THÔNG TIN GIẢI ĐẤU =====
-                        ['system', 'ten_giai_dau', 'GIẢI CÚP VÕ HIỆN ĐẠI NĂM 2026'],
-                        ['system', 'bo_mon', 'VÕ HIỆN ĐẠI'],
+                        ['system', 'ten_giai_dau', 'GIẢI CÚP DigiSports NĂM 2026'],
+                        ['system', 'bo_mon', 'DigiSports'],
                         ['system', 'thoi_gian_bat_dau', '2026-01-17'],
                         ['system', 'thoi_gian_ket_thuc', '2026-01-18'],
                         ['system', 'mo_ta_giai_dau', 'Giải đấu quy tụ các võ sĩ xuất sắc nhất cả nước'],
@@ -134,8 +134,13 @@ class InitConfigService {
                         // ===== CHẾ ĐỘ APP =====
                         ['system', 'che_do_app', '1'], // chế độ chỉ dùng Thi đối kháng đơn giản | Thi quyền đơn giản
 
+                        // ===== CHẾ ĐỘ MÔ ĐUN =====
+                        ['system', 'ap_dung_quyen', '1'],
+                        ['system', 'ap_dung_doikhang', '1'],
+                        ['system', 'ap_dung_vonhac', '1'],
+
                         // ===== COMPETITION (Legacy - Giữ lại để tương thích) =====
-                        ['competition', 'ten_giai', 'GIẢI CÚP VÕ HIỆN ĐẠI NĂM 2026'],
+                        ['competition', 'ten_giai', 'GIẢI CÚP DigiSports NĂM 2026'],
                         ['competition', 'thoi_gian_bat_dau', '07-07-2025'],
                         ['competition', 'thoi_gian_ket_thuc', '10-07-2025'],
                         ['competition', 'dia_diem', 'QUẬN BÌNH TÂN, HỒ CHÍ MINH'],
@@ -154,41 +159,41 @@ class InitConfigService {
                     // ('license', 'expired_date', '2025-12-31'),
                     // ('license', 'active_date', '2025-01-01'),
                     // ('license', 'promotion_code', 'PROMO50'),
-    
+
                 }
-            }).catch(err=>console.log(err));
-            
+            }).catch(err => console.log(err));
+
         });
 
         this.backup()
 
     }
     // Backup JSON 
-    backup(){
+    backup() {
         this.db.serialize(() => {
             this.db.all("SELECT name FROM sqlite_master WHERE type='table'", (err, tables) => {
                 if (err) throw err;
-            
+
                 const exportData = {};
                 let completed = 0;
-            
-                tables.forEach( (table) => {
+
+                tables.forEach((table) => {
                     const tableName = table.name;
                     this.db.all(`SELECT * FROM ${tableName}`, async (err, rows) => {
                         if (err) throw err;
                         exportData[tableName] = rows;
                         completed++;
-                
-                        if (completed === tables.length) {
-                        await fs.writeFileSync('./backup/backup.json', JSON.stringify(exportData, null, 2));
-                        console.log('✅ Exported to backup.json');
-                        }
+
+                        // if (completed === tables.length) {
+                        // await fs.writeFileSync('./backup/backup.json', JSON.stringify(exportData, null, 2));
+                        // console.log(' Exported to backup.json');
+                        // }
                     });
                 });
             });
         });
     }
-  
+
     getAllConfig() {
         return new Promise((resolve, reject) => {
             this.db.all("SELECT * FROM initconfig", [], (err, rows) => {
@@ -238,7 +243,7 @@ class InitConfigService {
     };
 
     // thêm mới 
-    // ✅ Hàm tạo mã random 10 ký tự
+    //  Hàm tạo mã random 10 ký tự
     randomCode(length = 10) {
         return [...Array(length)].map(() =>
             Math.floor(Math.random() * 36).toString(36)
@@ -247,14 +252,14 @@ class InitConfigService {
 
     insertConfig(data) {
         const room_code = this.randomCode(10)
-        const {uuid_desktop, mac_address, key_license, total_device_desktop, total_device_app, use_desktop, use_app, expired_date, active_date, promotion_code} = data
+        const { uuid_desktop, mac_address, key_license, total_device_desktop, total_device_app, use_desktop, use_app, expired_date, active_date, promotion_code } = data
         return new Promise((resolve, reject) => {
             this.db.run(`INSERT INTO initconfig 
                         (uuid_desktop, mac_address, key_license, total_device_desktop, total_device_app, use_desktop, use_app, expired_date, active_date, promotion_code, room_code) 
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 // [data.mac_address, null, 0,0,0,0, '20251231', '20250101', 'FREE'], 
-                [uuid_desktop, mac_address, key_license, total_device_desktop, total_device_app, use_desktop, use_app, expired_date, active_date, promotion_code, room_code], 
-                function(err) {
+                [uuid_desktop, mac_address, key_license, total_device_desktop, total_device_app, use_desktop, use_app, expired_date, active_date, promotion_code, room_code],
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -282,9 +287,9 @@ class InitConfigService {
                                 room_code = ?
                             WHERE uuid_desktop = ?
                         `,
-                [data.key_license, data.uuid_desktop, data.total_device_desktop ?? 0, data.total_device_app ?? 0, data.use_desktop ?? 0, data.use_app ?? 0, 
-                    data.expired_date, data.active_date, data.promotion_code, data.mac_address, room_code, id ], 
-                function(err) {
+                [data.key_license, data.uuid_desktop, data.total_device_desktop ?? 0, data.total_device_app ?? 0, data.use_desktop ?? 0, data.use_app ?? 0,
+                data.expired_date, data.active_date, data.promotion_code, data.mac_address, room_code, id],
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -297,8 +302,8 @@ class InitConfigService {
     // xoá  
     deleteConfig(data) {
         return new Promise((resolve, reject) => {
-            this.db.run("DELETE FROM initconfig WHERE uuid_desktop = ?", [id], 
-                function(err) {
+            this.db.run("DELETE FROM initconfig WHERE uuid_desktop = ?", [id],
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -335,11 +340,11 @@ class InitConfigService {
 
     // thêm mới (legacy - có typo)
     inserteKeyValue(data) {
-        const {key, child_key, value} = data
+        const { key, child_key, value } = data
         return new Promise((resolve, reject) => {
             this.db.run(`INSERT INTO config_values (key, child_key, value) VALUES (?, ?, ?)`,
                 [key, child_key, value],
-                function(err) {
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -354,7 +359,7 @@ class InitConfigService {
         return new Promise((resolve, reject) => {
             this.db.run(`INSERT INTO config_values (key, child_key, value) VALUES (?, ?, ?)`,
                 [key, child_key, value],
-                function(err) {
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -364,7 +369,7 @@ class InitConfigService {
         });
     }
 
-    updateKeyValueByKey(id, data){
+    updateKeyValueByKey(id, data) {
         return new Promise((resolve, reject) => {
             this.db.run(`   UPDATE config_values SET 
                                 key = ?,
@@ -372,8 +377,8 @@ class InitConfigService {
                                 value = ?
                             WHERE id = ?
                         `,
-                [data.key, data.child_key, data.value, data.id], 
-                function(err) {
+                [data.key, data.child_key, data.value, data.id],
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -383,10 +388,10 @@ class InitConfigService {
         });
     }
 
-    deleteKeyValueByKey(id, data){
+    deleteKeyValueByKey(id, data) {
         return new Promise((resolve, reject) => {
-            this.db.run("DELETE FROM config_values WHERE id = ?", [id], 
-                function(err) {
+            this.db.run("DELETE FROM config_values WHERE id = ?", [id],
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -425,15 +430,15 @@ class InitConfigService {
                 }
             });
         });
-    }; 
+    };
 
     // thêm mới 
     insertLicenseChild(data) {
-        const {key_license, uuid_desktop, device_id, expired_date} = data
+        const { key_license, uuid_desktop, device_id, expired_date } = data
         return new Promise((resolve, reject) => {
             this.db.run(`INSERT INTO license_child (key_license, uuid_desktop, device_id, expired_date) VALUES (?, ?, ?, ?)`,
-                [key_license, uuid_desktop, device_id, expired_date], 
-                function(err) {
+                [key_license, uuid_desktop, device_id, expired_date],
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -444,9 +449,9 @@ class InitConfigService {
     }
 
     // cập nhật
-    updateLicenseChild(id, data){
+    updateLicenseChild(id, data) {
         return new Promise((resolve, reject) => {
-            const {key_license, uuid_desktop, device_id, expired_date} = data
+            const { key_license, uuid_desktop, device_id, expired_date } = data
             this.db.run(`   UPDATE license_child SET 
                                 key_license = ?,
                                 uuid_desktop = ?,
@@ -454,8 +459,8 @@ class InitConfigService {
                                 expired_date = ?
                             WHERE id = ?
                         `,
-                [key_license, uuid_desktop, device_id, expired_date, id], 
-                function(err) {
+                [key_license, uuid_desktop, device_id, expired_date, id],
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -466,10 +471,10 @@ class InitConfigService {
     }
 
     // Xoá
-    deleteLicenseChild(id, data){
+    deleteLicenseChild(id, data) {
         return new Promise((resolve, reject) => {
-            this.db.run("DELETE FROM license_child WHERE id = ?", [id], 
-                function(err) {
+            this.db.run("DELETE FROM license_child WHERE id = ?", [id],
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -480,7 +485,7 @@ class InitConfigService {
     }
     // tìm kiểm  key_license, uuid_desktop, device_id
     getLicenseChildByConndition(data) {
-        const {key_license, uuid_desktop, device_id} = data
+        const { key_license, uuid_desktop, device_id } = data
         return new Promise((resolve, reject) => {
             this.db.all("SELECT * FROM license_child where key_license = ? and uuid_desktop = ? and device_id = ?", [key_license, uuid_desktop, device_id], (err, rows) => {
                 if (err) {
@@ -514,7 +519,7 @@ class InitConfigService {
             this.db.run(
                 "INSERT INTO logos (url, position) VALUES (?, ?)",
                 [url, position || 0],
-                function(err) {
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -547,7 +552,7 @@ class InitConfigService {
             this.db.run(
                 `UPDATE logos SET ${updates.join(", ")} WHERE id = ?`,
                 values,
-                function(err) {
+                function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -561,7 +566,7 @@ class InitConfigService {
     // Xóa logo
     deleteLogo(id) {
         return new Promise((resolve, reject) => {
-            this.db.run("DELETE FROM logos WHERE id = ?", [id], function(err) {
+            this.db.run("DELETE FROM logos WHERE id = ?", [id], function (err) {
                 if (err) {
                     reject(err);
                 } else {

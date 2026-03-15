@@ -11,6 +11,7 @@ import championCategoryReducer from '../controller/championCategorySlice';
 import championEventReducer from '../controller/championEventSlice';
 import championEventGroupsReducer from '../controller/championEventGroupSlice';
 import configSystemReducer from '../controller/configSystemSlice';
+import licenseReducer from '../controller/licenseSlice';
 
 // persist config cho auth
 const authPersistConfig = {
@@ -25,10 +26,17 @@ const settingsPersistConfig = {
   storage: storage,
 };
 
+// persist config cho license
+const licensePersistConfig = {
+  key: 'license',
+  storage: storage,
+};
+
 const rootReducer = combineReducers({
   socket: persistReducer(authPersistConfig, socketReducer),
   language: persistReducer(settingsPersistConfig, languageReducer),
   config: persistReducer(settingsPersistConfig, configReducer),
+  license: persistReducer(licensePersistConfig, licenseReducer),
 
   champions: championReducer,
   championGroups: championGroupReducer,

@@ -1,10 +1,14 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { message } from 'antd';
 
 /**
  * Custom hook để sử dụng ConfirmModal
  * @returns {Object} { modalProps, showConfirm, showAlert, showWarning, showError, showSuccess }
  */
 const useConfirmModal = () => {
+  const { t } = useTranslation();
+
   const [modalState, setModalState] = useState({
     isOpen: false,
     title: '',
@@ -13,8 +17,8 @@ const useConfirmModal = () => {
     confirmText: 'OK',
     cancelText: 'Hủy',
     showCancel: true,
-    onConfirm: () => {},
-    onCancel: () => {}
+    onConfirm: () => { },
+    onCancel: () => { }
   });
 
   /**
@@ -34,11 +38,11 @@ const useConfirmModal = () => {
     return new Promise((resolve) => {
       setModalState({
         isOpen: true,
-        title: options.title || 'Xác nhận',
+        title: options.title || t('common.confirm'),
         message,
         type: 'confirm',
-        confirmText: options.confirmText || 'OK',
-        cancelText: options.cancelText || 'Hủy',
+        confirmText: options.confirmText || t('common.ok'),
+        cancelText: options.cancelText || t('common.cancel'),
         showCancel: true,
         onConfirm: () => {
           closeModal();
@@ -62,10 +66,10 @@ const useConfirmModal = () => {
     return new Promise((resolve) => {
       setModalState({
         isOpen: true,
-        title: options.title || 'Thông báo',
+        title: options.title || t('common.notification'),
         message,
         type: 'alert',
-        confirmText: options.confirmText || 'OK',
+        confirmText: options.confirmText || t('common.ok'),
         cancelText: '',
         showCancel: false,
         onConfirm: () => {
@@ -86,25 +90,13 @@ const useConfirmModal = () => {
    * @param {Object} options - Tùy chọn
    * @returns {Promise<boolean>}
    */
-  const showWarning = (message, options = {}) => {
+  const showWarning = (msg, options = {}) => {
     return new Promise((resolve) => {
-      setModalState({
-        isOpen: true,
-        title: options.title || '⚠️ Cảnh báo',
-        message,
-        type: 'warning',
-        confirmText: options.confirmText || 'Tiếp tục',
-        cancelText: options.cancelText || 'Hủy',
-        showCancel: options.showCancel !== false,
-        onConfirm: () => {
-          closeModal();
-          resolve(true);
-        },
-        onCancel: () => {
-          closeModal();
-          resolve(false);
-        }
+      message.warning({
+        content: msg,
+        duration: options.duration || 4,
       });
+      resolve(true); // Always resolve to true since there's no "Cancel" button in a toast
     });
   };
 
@@ -114,25 +106,13 @@ const useConfirmModal = () => {
    * @param {Object} options - Tùy chọn
    * @returns {Promise<void>}
    */
-  const showError = (message, options = {}) => {
+  const showError = (msg, options = {}) => {
     return new Promise((resolve) => {
-      setModalState({
-        isOpen: true,
-        title: options.title || '❌ Lỗi',
-        message,
-        type: 'error',
-        confirmText: options.confirmText || 'Đóng',
-        cancelText: '',
-        showCancel: false,
-        onConfirm: () => {
-          closeModal();
-          resolve();
-        },
-        onCancel: () => {
-          closeModal();
-          resolve();
-        }
+      message.error({
+        content: msg,
+        duration: options.duration || 5,
       });
+      resolve();
     });
   };
 
@@ -142,25 +122,14 @@ const useConfirmModal = () => {
    * @param {Object} options - Tùy chọn
    * @returns {Promise<void>}
    */
-  const showSuccess = (message, options = {}) => {
+  const showSuccess = (msg, options = {}) => {
     return new Promise((resolve) => {
-      setModalState({
-        isOpen: true,
-        title: options.title || '✅ Thành công',
-        message,
-        type: 'success',
-        confirmText: options.confirmText || 'OK',
-        cancelText: '',
-        showCancel: false,
-        onConfirm: () => {
-          closeModal();
-          resolve();
-        },
-        onCancel: () => {
-          closeModal();
-          resolve();
-        }
+      message.success({
+        content: msg,
+        duration: options.duration || 3,
+        className: 'custom-toast-success'
       });
+      resolve();
     });
   };
 

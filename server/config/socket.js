@@ -1,6 +1,7 @@
 const { CONSTANT, RES_TYPE, STATE_SOCKET, STATE_REG_CONN } = require('../constants');
 const crypto = require('crypto');
 const init_config_db = require('../services/init-config');
+const { getIP } = require('./config');
 
 // Wrapper function để bọc socket handlers với try/catch
 const safeSocketHandler = (handlerName, handler) => {
@@ -8,7 +9,7 @@ const safeSocketHandler = (handlerName, handler) => {
         try {
             await handler.apply(this, args);
         } catch (error) {
-            console.error(`❌ Error in socket handler [${handlerName}]:`, {
+            console.error(` Error in socket handler [${handlerName}]:`, {
                 error: error.message,
                 stack: error.stack,
                 timestamp: new Date().toISOString()
@@ -25,7 +26,7 @@ const safeSocketHandler = (handlerName, handler) => {
                     });
                 }
             } catch (emitError) {
-                console.error(`❌ Error khi emit error message:`, emitError);
+                console.error(` Error khi emit error message:`, emitError);
             }
         }
     };
@@ -153,17 +154,45 @@ InitSocket = async (io) => {
             message: 'Kết nối thành công',
             data: init
         })
+        // GET_INFO_DEVICE: nhận thông tin thiết bị gửi về cập nhât vào mapConn
+        socket.on(CONSTANT.GET_INFO_DEVICE, safeSocketHandler('GET_INFO_DEVICE', (input) => {
+            console.log('GET_INFO_DEVICE: ', input);
+            const {device_id, device_name} = input;
+            const client = MapConn[`${socket.id}`];
+            if(!client){
+                return;
+            }
+            MapConn[`${socket.id}`] = {
+                ...client,
+                device_id: device_id,
+                device_name: device_name
+            }
+
+            // gửi thông tin thiết bị về cho admin
+            io.to(client?.room_id).emit('RES_ROOM_ADMIN', {
+                status: 200,
+                message: 'Thực hiện thành công',
+                path:  "ADMIN_FETCH_CONN",
+                data: {
+                    ls_conn: MapConn
+                }
+            });
+        }))
 
         // 1. Admin tạo một phòng để kết nối
-        socket.on(CONSTANT.REGISTER_ROOM_ADMIN, safeSocketHandler('REGISTER_ROOM_ADMIN', (input) => {
+        socket.on(CONSTANT.REGISTER_ROOM_ADMIN, safeSocketHandler('REGISTER_ROOM_ADMIN', async (input) => {
             console.log('|------ INPUT REGISTER_ROOM_ADMIN: ', input);
             if(input?.room_id){
                 socket.join(input?.room_id);
                 console.log(`${socket.id}(Admin) đã tham gia phòng ${input?.room_id}`);
                 // cập nhật dữ liệu
                 const admin = MapConn[`${socket.id}`];
+                // IP admin
+                const ip = await getIP();
+
                 MapConn[`${socket.id}`] = {
                     ...admin,
+                    admin_ip: ip,
                     connect_status_code: getConnectStatusCode('active'),
                     connect_status_name: getConnectStatusName('active'),
                     register_status_code: 'ADMIN',
@@ -218,6 +247,7 @@ InitSocket = async (io) => {
                 room_id: input.room_id,
                 referrer: input.referrer,
                 device_id: input.device_id,
+                device_name: input.device_name,
                 socket_id: socket.id,
                 permission: 1,
                 connect_status_code: getConnectStatusCode('active'), 
@@ -446,34 +476,34 @@ InitSocket = async (io) => {
                         // Xanh cộng 1
                         if(socketSetXanh1.size >= 2 ){
                             config.vdv_xanh.diem_cong += 1;
-                            console.log(`✅ Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                            console.log(` Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                         }
 
                         // Xanh cộng 2
                         if(socketSetXanh2.size >= 2 ){
                             config.vdv_xanh.diem_cong += 2;
-                            console.log(`✅ Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                            console.log(` Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                         }
 
                         // Xanh cộng 3
                         if(socketSetXanh3.size >= 2 ){
                             config.vdv_xanh.diem_cong += 3;
-                            console.log(`✅ Xanh được +3 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                            console.log(` Xanh được +3 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                         }
                         // Đỏ cộng 1
                         if(socketSetDo1.size >= 2 ){
                             config.vdv_do.diem_cong += 1;
-                            console.log(`✅ Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                            console.log(` Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                         }
                         // Đỏ cộng 2
                         if(socketSetDo2.size >= 2 ){
                             config.vdv_do.diem_cong += 2;
-                            console.log(`✅ Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                            console.log(` Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                         }
                         // Đỏ cộng 3
                         if(socketSetDo3.size >= 2 ){
                             config.vdv_do.diem_cong += 3;
-                            console.log(`✅ Đỏ được +3 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                            console.log(` Đỏ được +3 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                         }
 
                         // thực hiện điểm thấp
@@ -482,26 +512,26 @@ InitSocket = async (io) => {
                             if((socketSetXanh1.size == 1 && socketSetXanh2.size == 1 && socketSetXanh3.size == 0) 
                                 || (socketSetXanh1.size == 1 && socketSetXanh2.size == 1 && socketSetXanh3.size == 1) ){
                                 config.vdv_xanh.diem_cong += 1;
-                                console.log(`✅ Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                                console.log(` Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                             }
 
                             // Xanh cộng 2
                             if(socketSetXanh1.size == 0 && socketSetXanh2.size == 1 && socketSetXanh3.size == 1 ){
                                 config.vdv_xanh.diem_cong += 2;
-                                console.log(`✅ Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                                console.log(` Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                             }
 
                             // Đỏ cộng 1
                             if((socketSetDo1.size == 1 && socketSetDo2.size == 1 && socketSetDo3.size == 0) 
                                 || (socketSetDo1.size == 1 && socketSetDo2.size == 1 && socketSetDo3.size == 1) ){
                                 config.vdv_do.diem_cong += 1;
-                                console.log(`✅ Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                                console.log(` Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                             }
 
                             // Đỏ cộng 2
                             if(socketSetDo1.size == 0 && socketSetDo2.size == 1 && socketSetDo3.size == 1 ){
                                 config.vdv_do.diem_cong += 2;
-                                console.log(`✅ Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                                console.log(` Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                             }
                         }
                     }else if(config.so_giam_dinh == 5){
@@ -509,34 +539,34 @@ InitSocket = async (io) => {
                         // Xanh cộng 1
                         if(socketSetXanh1.size >= 3 ){
                             config.vdv_xanh.diem_cong += 1;
-                            console.log(`✅ Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                            console.log(` Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                         }
 
                         // Xanh cộng 2
                         if(socketSetXanh2.size >= 3 ){
                             config.vdv_xanh.diem_cong += 2;
-                            console.log(`✅ Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                            console.log(` Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                         }
 
                         // Xanh cộng 3
                         if(socketSetXanh3.size >= 3 ){
                             config.vdv_xanh.diem_cong += 3;
-                            console.log(`✅ Xanh được +3 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                            console.log(` Xanh được +3 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                         }
                         // Đỏ cộng 1
                         if(socketSetDo1.size >= 3 ){
                             config.vdv_do.diem_cong += 1;
-                            console.log(`✅ Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                            console.log(` Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                         }
                         // Đỏ cộng 2
                         if(socketSetDo2.size >= 3 ){
                             config.vdv_do.diem_cong += 2;
-                            console.log(`✅ Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                            console.log(` Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                         }
                         // Đỏ cộng 3
                         if(socketSetDo3.size >= 3 ){
                             config.vdv_do.diem_cong += 3;
-                            console.log(`✅ Đỏ được +3 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                            console.log(` Đỏ được +3 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                         }
                         // thực hiện điểm thấp
                         if(config.cau_hinh_lay_diem_thap){
@@ -545,7 +575,7 @@ InitSocket = async (io) => {
                                 || (socketSetXanh1.size == 1 && socketSetXanh2.size == 1 && socketSetXanh3.size == 1)
                                 ){
                                 config.vdv_xanh.diem_cong += 1;
-                                console.log(`✅ Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                                console.log(` Xanh được +1 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                             }
 
                             // Xanh cộng 2
@@ -554,7 +584,7 @@ InitSocket = async (io) => {
                                 || (socketSetXanh1.size == 1 && socketSetXanh2.size == 1 && socketSetXanh3.size == 2) 
                             ){
                                 config.vdv_xanh.diem_cong += 2;
-                                console.log(`✅ Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
+                                console.log(` Xanh được +2 điểm! Tổng điểm: ${config.vdv_xanh.diem_cong}`);
                             }
 
                             // Đỏ cộng 1
@@ -562,7 +592,7 @@ InitSocket = async (io) => {
                                 || (socketSetDo1.size == 1 && socketSetDo2.size == 1 && socketSetDo3.size == 1)
                                 ){
                                 config.vdv_do.diem_cong += 1;
-                                console.log(`✅ Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                                console.log(` Đỏ được +1 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                             }
 
                             // Đỏ cộng 2
@@ -571,7 +601,7 @@ InitSocket = async (io) => {
                                 || (socketSetDo1.size == 1 && socketSetDo2.size == 1 && socketSetDo3.size == 2) 
                             ){
                                 config.vdv_do.diem_cong += 2;
-                                console.log(`✅ Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
+                                console.log(` Đỏ được +2 điểm! Tổng điểm: ${config.vdv_do.diem_cong}`);
                             }
                         }
                     }
@@ -679,28 +709,28 @@ InitSocket = async (io) => {
             const size3 = scoreSets[3].size; // điểm hệ 3
             const totalReferees = size1 + size2 + size3;
 
-            console.log(`📊 Tính điểm: size1=${size1}, size2=${size2}, size3=${size3}, soGiamDinh=${soGiamDinh}, totalReferees=${totalReferees}`);
+            console.log(` Tính điểm: size1=${size1}, size2=${size2}, size3=${size3}, soGiamDinh=${soGiamDinh}, totalReferees=${totalReferees}`);
 
             if (soGiamDinh == 3) {
                 // Logic cơ bản: >= 2 giám định đồng ý
                 if (size1 >= 2) {
                     finalScore = 1;
                     finalRowIndex = 0; // vàng
-                    console.log(`✅ Đạt đa số: +1 điểm (row vàng)`);
+                    console.log(` Đạt đa số: +1 điểm (row vàng)`);
                 } else if (size2 >= 2) {
                     finalScore = 2;
                     finalRowIndex = 1; // xanh lá
-                    console.log(`✅ Đạt đa số: +2 điểm (row xanh lá)`);
+                    console.log(` Đạt đa số: +2 điểm (row xanh lá)`);
                 } else if (size3 >= 2) {
                     finalScore = 3;
                     finalRowIndex = 2; // đỏ
-                    console.log(`✅ Đạt đa số: +3 điểm (row đỏ)`);
+                    console.log(` Đạt đa số: +3 điểm (row đỏ)`);
                 }
                 // Logic điểm thấp: Chỉ áp dụng khi size1 = 1 VÀ size2 = 1
                 if (cauHinhLayDiemThap && finalScore === 0) {
                     // 1 GĐ cho điểm hệ 1 + 1 GĐ cho điểm hệ 2 → lấy điểm hệ 1 (điểm thấp)
                     if (size1 == 1 && size2 == 1) {
-                        // ⚠️ KIỂM TRA: scoreSets[1] và scoreSets[2] phải có socket_id KHÁC NHAU
+                        //  KIỂM TRA: scoreSets[1] và scoreSets[2] phải có socket_id KHÁC NHAU
                         const socket1 = Array.from(scoreSets[1])[0]; // socket_id của điểm hệ 1
                         const socket2 = Array.from(scoreSets[2])[0]; // socket_id của điểm hệ 2
 
@@ -708,10 +738,10 @@ InitSocket = async (io) => {
                             // 2 socket_id khác nhau → OK, tính điểm thấp
                             finalScore = 1;
                             finalRowIndex = 0; // vàng
-                            console.log(`✅ Điểm thấp: +1 điểm (row vàng) - size1=1, size2=1, socket khác nhau`);
+                            console.log(` Điểm thấp: +1 điểm (row vàng) - size1=1, size2=1, socket khác nhau`);
                         } else {
                             // Cùng socket_id → KHÔNG tính điểm
-                            console.log(`❌ Điểm thấp: Không tính - scoreSets[1] và scoreSets[2] có cùng socket_id`);
+                            console.log(` Điểm thấp: Không tính - scoreSets[1] và scoreSets[2] có cùng socket_id`);
                         }
                     }
                 }
@@ -720,23 +750,23 @@ InitSocket = async (io) => {
                 if (size1 >= 3) {
                     finalScore = 1;
                     finalRowIndex = 0; // vàng
-                    console.log(`✅ Đạt đa số: +1 điểm (row vàng)`);
+                    console.log(` Đạt đa số: +1 điểm (row vàng)`);
                 } else if (size2 >= 3) {
                     finalScore = 2;
                     finalRowIndex = 1; // xanh lá
-                    console.log(`✅ Đạt đa số: +2 điểm (row xanh lá)`);
+                    console.log(` Đạt đa số: +2 điểm (row xanh lá)`);
                 } else if (size3 >= 3) {
                     finalScore = 3;
                     finalRowIndex = 2; // đỏ
-                    console.log(`✅ Đạt đa số: +3 điểm (row đỏ)`);
+                    console.log(` Đạt đa số: +3 điểm (row đỏ)`);
                 }
                 // Logic điểm thấp: Chỉ áp dụng khi size1 = 1 VÀ size2 = 1 VÀ totalReferees >= 3
                 if (cauHinhLayDiemThap && finalScore === 0) {
-                    // ⚠️ KIỂM TRA: Với 5 GĐ, cần ít nhất 3 GĐ gửi điểm
+                    //  KIỂM TRA: Với 5 GĐ, cần ít nhất 3 GĐ gửi điểm
                     if (totalReferees < 3) {
-                        console.log(`❌ Điểm thấp (5 GĐ): Không đủ giám định - totalReferees=${totalReferees} < 3`);
+                        console.log(` Điểm thấp (5 GĐ): Không đủ giám định - totalReferees=${totalReferees} < 3`);
                     } else if (size1 >= 1 && size2 >= 1) {
-                        // ⚠️ KIỂM TRA: Loại bỏ socket trùng lặp giữa scoreSets[1] và scoreSets[2]
+                        //  KIỂM TRA: Loại bỏ socket trùng lặp giữa scoreSets[1] và scoreSets[2]
                         const socket1 = Array.from(scoreSets[1]); // array socket_id của điểm hệ 1
                         const socket2 = Array.from(scoreSets[2]); // array socket_id của điểm hệ 2
 
@@ -749,9 +779,9 @@ InitSocket = async (io) => {
                         if (totalUniqueReferees >= 3) {
                             finalScore = 1;
                             finalRowIndex = 0; // vàng
-                            console.log(`✅ Điểm thấp (5 GĐ): +1 điểm - socket1=${socket1.length}, socket2_filtered=${socket2Filtered.length}, total_unique=${totalUniqueReferees} >= 3`);
+                            console.log(` Điểm thấp (5 GĐ): +1 điểm - socket1=${socket1.length}, socket2_filtered=${socket2Filtered.length}, total_unique=${totalUniqueReferees} >= 3`);
                         } else {
-                            console.log(`❌ Điểm thấp (5 GĐ): Không đủ socket unique - total_unique=${totalUniqueReferees} < 3`);
+                            console.log(` Điểm thấp (5 GĐ): Không đủ socket unique - total_unique=${totalUniqueReferees} < 3`);
                         }
                     }
                 }
@@ -764,7 +794,7 @@ InitSocket = async (io) => {
             console.log('🔴 Điểm đỏ nhận được: ', input);
             const client = MapConn[`${socket.id}`];
             if (!client || !client.token) {
-                console.log('❌ Client chưa được xác thực');
+                console.log(' Client chưa được xác thực');
                 return;
             }
             const { score } = input; // score: 1, 2, hoặc 3
@@ -794,7 +824,7 @@ InitSocket = async (io) => {
                 console.log(`⏱️ Bắt đầu đếm ĐỎ trong ${config.thoi_gian_tinh_diem}ms`);
 
                 setTimeout(() => {
-                    console.log(`\n📊 Kết thúc đếm ĐỎ:`);
+                    console.log(`\n Kết thúc đếm ĐỎ:`);
                     console.log(`   - Điểm 1 (vàng): ${redScoreSets[1].size} GĐ`);
                     console.log(`   - Điểm 2 (xanh lá): ${redScoreSets[2].size} GĐ`);
                     console.log(`   - Điểm 3 (đỏ): ${redScoreSets[3].size} GĐ`);
@@ -827,9 +857,9 @@ InitSocket = async (io) => {
                             }
                         });
 
-                        console.log(`✅ ĐỎ: +${result.point} điểm`);
+                        console.log(` ĐỎ: +${result.point} điểm`);
                     } else {
-                        console.log(`❌ ĐỎ: Không đủ điều kiện cộng điểm`);
+                        console.log(` ĐỎ: Không đủ điều kiện cộng điểm`);
                     }
 
                     // Reset
@@ -850,7 +880,7 @@ InitSocket = async (io) => {
 
             const client = MapConn[`${socket.id}`];
             if (!client || !client.token) {
-                console.log('❌ Client chưa được xác thực');
+                console.log(' Client chưa được xác thực');
                 return;
             }
 
@@ -883,7 +913,7 @@ InitSocket = async (io) => {
                 console.log(`⏱️ Bắt đầu đếm XANH trong ${config.thoi_gian_tinh_diem}ms`);
 
                 setTimeout(() => {
-                    console.log(`\n📊 Kết thúc đếm XANH:`);
+                    console.log(`\n Kết thúc đếm XANH:`);
                     console.log(`   - Điểm 1 (vàng): ${blueScoreSets[1].size} GĐ`);
                     console.log(`   - Điểm 2 (xanh lá): ${blueScoreSets[2].size} GĐ`);
                     console.log(`   - Điểm 3 (đỏ): ${blueScoreSets[3].size} GĐ`);
@@ -914,9 +944,9 @@ InitSocket = async (io) => {
                                 }
                             }
                         });
-                        console.log(`✅ XANH: +${result.point} điểm.`);
+                        console.log(` XANH: +${result.point} điểm.`);
                     } else {
-                        console.log(`❌ XANH: Không đủ điều kiện cộng điểm`);
+                        console.log(` XANH: Không đủ điều kiện cộng điểm`);
                     }
 
                     // Reset
@@ -1105,6 +1135,164 @@ InitSocket = async (io) => {
                 }
             });
         }))
+
+        // ==================== DATA SYNC EVENTS ====================
+
+        // 17. SYNC_REQUEST - Yêu cầu đồng bộ dữ liệu
+        socket.on('SYNC_REQUEST', safeSocketHandler('SYNC_REQUEST', (input) => {
+            console.log('|------ SYNC_REQUEST:', input);
+            const { room_id, source_device, tables, metadata, target_socket_id } = input;
+
+            // Broadcast đến máy đích trong room
+            if (target_socket_id) {
+                io.to(target_socket_id).emit('SYNC_OFFER', {
+                    status: 200,
+                    message: 'Có yêu cầu đồng bộ dữ liệu',
+                    data: {
+                        source_socket_id: socket.id,
+                        source_device,
+                        tables,
+                        metadata
+                    }
+                });
+            } else {
+                // Broadcast đến tất cả admin trong room (trừ người gửi)
+                socket.to(room_id).emit('SYNC_OFFER', {
+                    status: 200,
+                    message: 'Có yêu cầu đồng bộ dữ liệu',
+                    data: {
+                        source_socket_id: socket.id,
+                        source_device,
+                        tables,
+                        metadata
+                    }
+                });
+            }
+        }));
+
+        // 18. SYNC_ACCEPT - Chấp nhận đồng bộ
+        socket.on('SYNC_ACCEPT', safeSocketHandler('SYNC_ACCEPT', (input) => {
+            console.log('|------ SYNC_ACCEPT:', input);
+            const { source_socket_id, target_device } = input;
+
+            // Thông báo cho máy nguồn rằng đã được chấp nhận
+            io.to(source_socket_id).emit('SYNC_READY', {
+                status: 200,
+                message: 'Máy đích đã chấp nhận đồng bộ',
+                data: {
+                    target_socket_id: socket.id,
+                    target_device
+                }
+            });
+        }));
+
+        // 19. SYNC_REJECT - Từ chối đồng bộ
+        socket.on('SYNC_REJECT', safeSocketHandler('SYNC_REJECT', (input) => {
+            console.log('|------ SYNC_REJECT:', input);
+            const { source_socket_id, target_device, reason } = input;
+
+            // Thông báo cho máy nguồn rằng bị từ chối
+            io.to(source_socket_id).emit('SYNC_REJECTED', {
+                status: 400,
+                message: 'Máy đích đã từ chối đồng bộ',
+                data: {
+                    target_device,
+                    reason: reason || 'Người dùng từ chối'
+                }
+            });
+        }));
+
+        // 20. SYNC_DATA - Gửi dữ liệu (chunks)
+        socket.on('SYNC_DATA', safeSocketHandler('SYNC_DATA', (input) => {
+            console.log('|------ SYNC_DATA:', {
+                table: input.table,
+                chunk: `${input.chunk_index + 1}/${input.total_chunks}`,
+                records: input.data?.length || 0
+            });
+            const { target_socket_id, table, chunk_index, total_chunks, data } = input;
+
+            // Forward dữ liệu đến máy đích
+            io.to(target_socket_id).emit('SYNC_DATA', {
+                status: 200,
+                message: 'Nhận dữ liệu đồng bộ',
+                data: {
+                    table,
+                    chunk_index,
+                    total_chunks,
+                    data
+                }
+            });
+        }));
+
+        // 21. SYNC_PROGRESS - Cập nhật tiến trình
+        socket.on('SYNC_PROGRESS', safeSocketHandler('SYNC_PROGRESS', (input) => {
+            const { target_socket_id, table, progress, imported_records } = input;
+
+            // Gửi progress về máy nguồn
+            io.to(target_socket_id).emit('SYNC_PROGRESS', {
+                status: 200,
+                data: {
+                    table,
+                    progress,
+                    imported_records
+                }
+            });
+        }));
+
+        // 22. SYNC_COMPLETE - Hoàn thành đồng bộ
+        socket.on('SYNC_COMPLETE', safeSocketHandler('SYNC_COMPLETE', (input) => {
+            console.log('|------ SYNC_COMPLETE:', input);
+            const { target_socket_id, source_socket_id, success, imported_records, errors } = input;
+
+            // Thông báo cho cả 2 máy
+            if (target_socket_id) {
+                io.to(target_socket_id).emit('SYNC_COMPLETE', {
+                    status: success ? 200 : 400,
+                    message: success ? 'Đồng bộ dữ liệu thành công' : 'Đồng bộ dữ liệu thất bại',
+                    data: {
+                        success,
+                        imported_records,
+                        errors
+                    }
+                });
+            }
+
+            if (source_socket_id) {
+                io.to(source_socket_id).emit('SYNC_COMPLETE', {
+                    status: success ? 200 : 400,
+                    message: success ? 'Đồng bộ dữ liệu thành công' : 'Đồng bộ dữ liệu thất bại',
+                    data: {
+                        success,
+                        imported_records,
+                        errors
+                    }
+                });
+            }
+        }));
+
+        // 23. SYNC_ERROR - Lỗi trong quá trình đồng bộ
+        socket.on('SYNC_ERROR', safeSocketHandler('SYNC_ERROR', (input) => {
+            console.error('|------ SYNC_ERROR:', input);
+            const { target_socket_id, source_socket_id, error, table } = input;
+
+            // Thông báo lỗi cho cả 2 máy
+            const errorData = {
+                status: 500,
+                message: 'Lỗi trong quá trình đồng bộ',
+                data: {
+                    error,
+                    table
+                }
+            };
+
+            if (target_socket_id) {
+                io.to(target_socket_id).emit('SYNC_ERROR', errorData);
+            }
+
+            if (source_socket_id) {
+                io.to(source_socket_id).emit('SYNC_ERROR', errorData);
+            }
+        }));
 
 
         // 6. Khi client ngắt kết nối

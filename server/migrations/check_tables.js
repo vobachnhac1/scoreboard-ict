@@ -10,20 +10,20 @@
 // const DB_PATH = path.join(__dirname, '../../database.sqlite');
 
 // console.log('🔍 Checking database...');
-// console.log('📁 Database path:', DB_PATH);
+// console.log(' Database path:', DB_PATH);
 
 // const db = new sqlite3.Database(DB_PATH, (err) => {
 //     if (err) {
-//         console.error('❌ Error opening database:', err);
+//         console.error(' Error opening database:', err);
 //         process.exit(1);
 //     }
-//     console.log('✅ Connected to database\n');
+//     console.log(' Connected to database\n');
 // });
 
 // // List all tables
 // db.all("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name", (err, tables) => {
 //     if (err) {
-//         console.error('❌ Error listing tables:', err);
+//         console.error(' Error listing tables:', err);
 //         db.close();
 //         process.exit(1);
 //     }
@@ -44,9 +44,9 @@
 //     tables.forEach(table => {
 //         db.all(`PRAGMA table_info(${table.name})`, (err, columns) => {
 //             if (err) {
-//                 console.error(`❌ Error checking ${table.name}:`, err);
+//                 console.error(` Error checking ${table.name}:`, err);
 //             } else {
-//                 console.log(`📊 Table: ${table.name}`);
+//                 console.log(` Table: ${table.name}`);
 //                 console.log('-'.repeat(80));
 //                 columns.forEach(col => {
 //                     const pk = col.pk ? ' [PRIMARY KEY]' : '';
@@ -61,7 +61,7 @@
 //             if (processed === tables.length) {
 //                 db.close((err) => {
 //                     if (err) {
-//                         console.error('❌ Error closing database:', err);
+//                         console.error(' Error closing database:', err);
 //                         process.exit(1);
 //                     }
 //                     console.log('👋 Database connection closed');
@@ -75,7 +75,7 @@
 //     if (tables.length === 0) {
 //         db.close((err) => {
 //             if (err) {
-//                 console.error('❌ Error closing database:', err);
+//                 console.error(' Error closing database:', err);
 //                 process.exit(1);
 //             }
 //             console.log('👋 Database connection closed');

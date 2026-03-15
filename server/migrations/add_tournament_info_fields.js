@@ -15,10 +15,10 @@
 
 // const db = new sqlite3.Database(DB_PATH, (err) => {
 //     if (err) {
-//         console.error('❌ Lỗi kết nối database:', err.message);
+//         console.error(' Lỗi kết nối database:', err.message);
 //         process.exit(1);
 //     }
-//     console.log('✅ Đã kết nối database:', DB_PATH);
+//     console.log(' Đã kết nối database:', DB_PATH);
 // });
 
 // // Các trường mới cần thêm
@@ -81,15 +81,15 @@
 //                 skippedCount++;
 //             } else {
 //                 await insertField(field);
-//                 console.log(`✅ Đã thêm: ${field.child_key} = "${field.value}"`);
+//                 console.log(` Đã thêm: ${field.child_key} = "${field.value}"`);
 //                 addedCount++;
 //             }
 //         } catch (error) {
-//             console.error(`❌ Lỗi khi xử lý ${field.child_key}:`, error.message);
+//             console.error(` Lỗi khi xử lý ${field.child_key}:`, error.message);
 //         }
 //     }
     
-//     console.log('\n📊 Kết quả migration:');
+//     console.log('\n Kết quả migration:');
 //     console.log(`   - Đã thêm mới: ${addedCount} fields`);
 //     console.log(`   - Đã bỏ qua: ${skippedCount} fields`);
 //     console.log('\n✨ Migration hoàn tất!\n');
@@ -97,16 +97,16 @@
 //     // Đóng database connection
 //     db.close((err) => {
 //         if (err) {
-//             console.error('❌ Lỗi khi đóng database:', err.message);
+//             console.error(' Lỗi khi đóng database:', err.message);
 //         } else {
-//             console.log('✅ Đã đóng kết nối database\n');
+//             console.log(' Đã đóng kết nối database\n');
 //         }
 //     });
 // }
 
 // // Chạy migration
 // migrate().catch(err => {
-//     console.error('❌ Migration thất bại:', err);
+//     console.error(' Migration thất bại:', err);
 //     process.exit(1);
 // });
 

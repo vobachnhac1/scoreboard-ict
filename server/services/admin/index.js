@@ -1,42 +1,39 @@
-const {getMacAddress, getUUID, getIP} = require('../../config/config')
+const { getMacAddress, getUUID, getIP } = require('../../config/config')
 const init_config_db = require('../init-config')
+const licenseService = require('../license/license.service')
 const encryption = require('../../config/encryption')
 const moment = require('moment')
 const _ = require('lodash')
 class Admin {
 
     // 1. API lấy thông tin thiết bị  | đã tích hợp
-    get_information_device = async ()=>{
+    get_information_device = async () => {
         try {
-            const uuid_desktop = await getUUID();
-            const license_info = await init_config_db.getConfigByUUID(uuid_desktop);
-            return {...license_info, active: moment(license_info?.expired_date,'YYYYMMDD').isAfter(moment())}
+            // Sử dụng licenseService (bảng license_activation mới) để đồng bộ
+            const licenseInfo = await licenseService.getCurrentLicense();
+            return licenseInfo;
         } catch (error) {
             console.log('[get_information_device] error: ', error);
-            return {active: false}
+            return { active: false, valid: false, requireActivation: true }
         }
     }
 
     // 2. API Kiểm tra Thời gian hiện lực
-    check_expired_license = async()=>{
+    check_expired_license = async () => {
         try {
-            const uuid_desktop = await getUUID();
-            const license_info = await init_config_db.getConfigByUUID(uuid_desktop);
-            if(license_info){
-                return {active: moment(license_info?.expired_date,'YYYYMMDD').isAfter(moment())}
-            }else{
-                return {active: false}
-            }
+            // Sử dụng licenseService (bảng license_activation mới) để đồng bộ
+            const result = await licenseService.getCurrentLicense();
+            return { active: result.valid === true };
         } catch (error) {
-            console.log('error: ', error);
-            return {active: false}
+            console.log('[check_expired_license] error: ', error);
+            return { active: false }
         }
     }
 
     // 3. RES_ROOM_ADMIN thông tin Quản lý cài đặt
-    get_information_system = async () =>{
+    get_information_system = async () => {
         try {
-            const res_config  = await init_config_db.getAllKeyValueByKey('system');
+            const res_config = await init_config_db.getAllKeyValueByKey('system');
             let config = {};
 
             // Danh sách các trường là string (không convert sang number)
@@ -46,17 +43,63 @@ class Admin {
                 'thoi_gian_bat_dau',
                 'thoi_gian_ket_thuc',
                 'mo_ta_giai_dau',
-                'mon_thi'
+                'mon_thi',
+                'keyboard_mode',
+                // Background fields
+                'bg_quyen_type',
+                'bg_quyen_color',
+                'bg_quyen_image',
+                'bg_doikhang_type',
+                'bg_doikhang_color',
+                'bg_doikhang_image',
+                'bg_vonhac_type',
+                'bg_vonhac_color',
+                'bg_vonhac_image',
+                // Header colors
+                'header_title_color_quyen',
+                'header_desc_color_quyen',
+                'header_title_color_doikhang',
+                'header_desc_color_doikhang',
+                'header_title_color_vonhac',
+                'header_desc_color_vonhac'
+            ];
+
+            // Các trường đặc biệt cần parse JSON (mảng hoặc object)
+            const jsonFields = [
+                'hiddenFields',
+                'disabledFields',
+                'hiddenGroups',
+                'allowedOptions'
             ];
 
             res_config.forEach(element => {
-                // Nếu là string field thì giữ nguyên, còn lại convert sang number
-                if (stringFields.includes(element.child_key)) {
-                    config[`${element.child_key}`] = element.value;
+                const key = element.child_key;
+                const value = element.value;
+
+                if (jsonFields.includes(key)) {
+                    try {
+                        config[key] = JSON.parse(value);
+                    } catch (e) {
+                        // Nếu database bị nhiễm chuỗi "[object Object]" hoặc dữ liệu cũ không phải JSON
+                        if (value === '[object Object]') {
+                            config[key] = (key === 'allowedOptions') ? {} : [];
+                        } else {
+                            config[key] = value;
+                        }
+                    }
+                } else if (stringFields.includes(key)) {
+                    config[key] = value;
                 } else {
-                    config[`${element.child_key}`] = Number(element.value);
+                    // Mặc định convert sang number, fallback về string nế NaN
+                    const num = Number(value);
+                    config[key] = isNaN(num) ? value : num;
                 }
             });
+
+            // Fallback cho các module mode nếu thiếu trong DB
+            if (config.ap_dung_quyen === undefined) config.ap_dung_quyen = 1;
+            if (config.ap_dung_doikhang === undefined) config.ap_dung_doikhang = 1;
+            if (config.ap_dung_vonhac === undefined) config.ap_dung_vonhac = 1;
 
             console.log('config: ', config);
             return config
@@ -67,28 +110,33 @@ class Admin {
     }
 
     // 4. Cập nhật thông tin Quản lý cài đặt
-    update_information_system = async (body) =>{
+    update_information_system = async (body) => {
         try {
-            if(!body) return false
+            if (!body) return false
 
-            const lsInput = Object.entries(body).map(([key, value]) => ({
-                key,
-                value: String(value) // Convert to string để lưu vào database
-            }));
+            const lsInput = Object.entries(body).map(([key, value]) => {
+                let finalValue = value;
+                // Nếu là object hoặc array thì stringify trước khi lưu
+                if (typeof value === 'object' && value !== null) {
+                    finalValue = JSON.stringify(value);
+                }
+                return {
+                    key,
+                    value: String(finalValue)
+                };
+            });
 
             const lsDB = await init_config_db.getAllKeyValueByKey('system');
 
-            for(let i = 0 ; i < lsInput.length; i++){
-                const item = lsDB.find(ele=> ele.child_key == lsInput[i].key)
+            for (let i = 0; i < lsInput.length; i++) {
+                const item = lsDB.find(ele => ele.child_key == lsInput[i].key)
 
-                if(item){
-                    // Cập nhật nếu đã tồn tại
+                if (item) {
                     await init_config_db.updateKeyValueByKey(item.id, {
                         ...item,
                         value: lsInput[i].value
                     })
                 } else {
-                    // Thêm mới nếu chưa tồn tại
                     console.log(`[update_information_system] Thêm mới field: ${lsInput[i].key}`);
                     await init_config_db.insertKeyValue('system', lsInput[i].key, lsInput[i].value);
                 }
@@ -101,21 +149,80 @@ class Admin {
         }
     }
 
+    // 4.5. Tự tạo initconfig mặc định nếu chưa có (dùng cho QR generation)
+    ensureInitConfig = async () => {
+        try {
+            const uuid_desktop = await getUUID();
+            const mac = getMacAddress() || ('LOCAL-' + uuid_desktop);
+
+            let license_info = await init_config_db.getConfigByUUID(uuid_desktop);
+
+            // Lấy key_license từ bảng license_activation mới nếu có
+            let key_license = 'FREE-' + uuid_desktop;
+            try {
+                const activatedLicense = await licenseService.getCurrentLicenseFromDB();
+                if (activatedLicense?.license_key) {
+                    key_license = activatedLicense.license_key;
+                    console.log('[ensureInitConfig] Dùng license_key từ license_activation:', key_license);
+                }
+            } catch (e) { /* bỏ qua - dùng FREE */ }
+
+            if (!license_info) {
+                console.log('[ensureInitConfig] Chưa có initconfig, tự động tạo mặc định cho uuid:', uuid_desktop);
+                const expired_date = moment().add(30, 'days').format('YYYYMMDD');
+                const active_date = moment().format('YYYYMMDD');
+
+                await init_config_db.insertConfig({
+                    uuid_desktop,
+                    mac_address: mac,
+                    key_license,
+                    total_device_desktop: 1,
+                    total_device_app: 5,
+                    use_desktop: 0,
+                    use_app: 0,
+                    expired_date,
+                    active_date,
+                    promotion_code: 'FREE',
+                });
+                license_info = await init_config_db.getConfigByUUID(uuid_desktop);
+                console.log('[ensureInitConfig] Đã tạo initconfig mặc định:', license_info);
+            } else if (license_info.key_license !== key_license && !key_license.startsWith('FREE-')) {
+                // Cập nhật key_license nếu mới khác với trong initconfig
+                console.log('[ensureInitConfig] Cập nhật key_license mới:', key_license);
+                await init_config_db.updateConfig(uuid_desktop, { ...license_info, key_license });
+                license_info = await init_config_db.getConfigByUUID(uuid_desktop);
+            }
+
+            return license_info;
+        } catch (error) {
+            console.log('[ensureInitConfig] error: ', error);
+            return null;
+        }
+    }
+
     // 5. Tạo QR kích hoạt + kết nối 
-    connect_active_device = async (room_id)=>{
+    connect_active_device = async (room_id) => {
         try {
             const uuid_desktop = await getUUID()
             const ip = await getIP()
-            const license_info = await init_config_db.getConfigByUUID(uuid_desktop);
-            const datetime =  moment().add(300, 'seconds').format('YYYYMMDDHHmmss')
+
+            // Tự động tạo initconfig nếu chưa có
+            const license_info = await this.ensureInitConfig();
+
+            if (!license_info) {
+                console.warn('[connect_active_device] Không thể lấy hoặc tạo license info.');
+                return null;
+            }
+
+            const datetime = moment().add(300, 'seconds').format('YYYYMMDDHHmmss')
             const data = {
                 expired_datetime: datetime,
                 register_connect: false,
                 domain: ip,
                 port: 6789,
                 room_id: room_id,
-                uuid_desktop: license_info.uuid_desktop, 
-                key_license: license_info.key_license, 
+                uuid_desktop: license_info.uuid_desktop,
+                key_license: license_info.key_license,
             };
             console.log('[connect_active_device] data: ', data);
             const base64QR = await encryption.generateQR(data)
@@ -128,14 +235,22 @@ class Admin {
             return null
         }
     }
-    
+
     // 6. Tạo QR đăng ký Giám định + kết nối 
-    connect_register_device = async (room_id)=>{
+    connect_register_device = async (room_id) => {
         try {
             const uuid_desktop = await getUUID()
             const ip = await getIP()
-            const license_info = await init_config_db.getConfigByUUID(uuid_desktop);
-            const datetime =  moment().add(300, 'seconds').format('YYYYMMDDHHmmss')
+
+            // Tự động tạo initconfig nếu chưa có
+            const license_info = await this.ensureInitConfig();
+
+            if (!license_info) {
+                console.warn('[connect_register_device] Không thể lấy hoặc tạo license info.');
+                return null;
+            }
+
+            const datetime = moment().add(300, 'seconds').format('YYYYMMDDHHmmss')
             const data = {
                 expired_datetime: datetime,
                 register_connect: true,
@@ -143,8 +258,8 @@ class Admin {
                 domain: ip,
                 port: 6789,
                 room_id: room_id,
-                uuid_desktop: license_info.uuid_desktop, 
-                key_license: license_info.key_license, 
+                uuid_desktop: license_info.uuid_desktop,
+                key_license: license_info.key_license,
             };
             console.log('[connect_register_device] data: ', data);
             const base64QR = await encryption.generateQR(data)
@@ -227,13 +342,13 @@ class Admin {
     //     return base64QR
     // }
 
-    // // ✅ Hàm tạo mã random 10 ký tự
+    // //  Hàm tạo mã random 10 ký tự
     // randomCode(length = 10) {
     //     return [...Array(length)].map(() =>
     //         Math.floor(Math.random() * 36).toString(36)
     //     ).join('').toUpperCase();
     // }
-    
+
 
 }
 

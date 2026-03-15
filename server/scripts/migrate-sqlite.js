@@ -4,15 +4,15 @@
 // // Đường dẫn đến database SQLite (root folder)
 // const DB_PATH = path.join(__dirname, '../../database.sqlite');
 
-// console.log('📍 Database path:', DB_PATH);
+// console.log('Database path:', DB_PATH);
 
 // // Kết nối database
 // const db = new sqlite3.Database(DB_PATH, (err) => {
 //     if (err) {
-//         console.error('❌ Lỗi kết nối database:', err.message);
+//         console.error(' Lỗi kết nối database:', err.message);
 //         process.exit(1);
 //     }
-//     console.log('✅ Đã kết nối database SQLite');
+//     console.log(' Đã kết nối database SQLite');
 // });
 
 // // Hàm kiểm tra cột có tồn tại không
@@ -70,7 +70,7 @@
 //             } else {
 //                 console.log(`➕ Thêm cột '${column.name}' vào bảng '${table1}'...`);
 //                 await addColumn(table1, column.name, column.type, column.default);
-//                 console.log(`✅ Đã thêm cột '${column.name}' thành công!`);
+//                 console.log(` Đã thêm cột '${column.name}' thành công!`);
 //             }
 //         }
 
@@ -90,15 +90,15 @@
 //             } else {
 //                 console.log(`➕ Thêm cột '${column.name}' vào bảng '${table2}'...`);
 //                 await addColumn(table2, column.name, column.type, column.default);
-//                 console.log(`✅ Đã thêm cột '${column.name}' thành công!`);
+//                 console.log(` Đã thêm cột '${column.name}' thành công!`);
 //             }
 //         }
 
 //         // Hiển thị cấu trúc các bảng sau khi migration
-//         console.log(`\n📊 Cấu trúc bảng '${table1}' sau migration:`);
+//         console.log(`\n Cấu trúc bảng '${table1}' sau migration:`);
 //         db.all(`PRAGMA table_info(${table1})`, (err, rows) => {
 //             if (err) {
-//                 console.error('❌ Lỗi khi lấy thông tin bảng:', err.message);
+//                 console.error(' Lỗi khi lấy thông tin bảng:', err.message);
 //             } else {
 //                 console.table(rows.map(row => ({
 //                     ID: row.cid,
@@ -109,10 +109,10 @@
 //                 })));
 //             }
 
-//             console.log(`\n📊 Cấu trúc bảng '${table2}' sau migration:`);
+//             console.log(`\n Cấu trúc bảng '${table2}' sau migration:`);
 //             db.all(`PRAGMA table_info(${table2})`, (err, rows) => {
 //                 if (err) {
-//                     console.error('❌ Lỗi khi lấy thông tin bảng:', err.message);
+//                     console.error(' Lỗi khi lấy thông tin bảng:', err.message);
 //                 } else {
 //                     console.table(rows.map(row => ({
 //                         ID: row.cid,
@@ -126,17 +126,17 @@
 //                 // Đóng kết nối
 //                 db.close((err) => {
 //                     if (err) {
-//                         console.error('❌ Lỗi khi đóng database:', err.message);
+//                         console.error(' Lỗi khi đóng database:', err.message);
 //                     } else {
 //                         console.log('\n👋 Đã đóng kết nối database');
-//                         console.log('✅ Migration hoàn tất!\n');
+//                         console.log(' Migration hoàn tất!\n');
 //                     }
 //                 });
 //             });
 //         });
 
 //     } catch (error) {
-//         console.error('❌ Migration thất bại:', error.message);
+//         console.error(' Migration thất bại:', error.message);
 //         db.close();
 //         process.exit(1);
 //     }

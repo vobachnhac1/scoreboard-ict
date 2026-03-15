@@ -1,11 +1,28 @@
 import React, { useState } from "react";
-import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions, ComboboxButton } from "@headlessui/react";
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxOption,
+  ComboboxOptions,
+  ComboboxButton,
+} from "@headlessui/react";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-export default function CustomCombobox({ data, selectedData, onChange, placeholder, keyShow }) {
+export default function CustomCombobox({
+  data,
+  selectedData,
+  onChange,
+  placeholder,
+  keyShow,
+}) {
   const [query, setQuery] = useState("");
 
-  const filteredDatas = query === "" ? data : data.filter((data) => data[keyShow].toLowerCase().includes(query.toLowerCase()));
+  const filteredDatas =
+    query === ""
+      ? data
+      : data.filter((data) =>
+        data[keyShow].toLowerCase().includes(query.toLowerCase()),
+      );
 
   const handleClear = () => {
     setQuery("");
@@ -17,33 +34,46 @@ export default function CustomCombobox({ data, selectedData, onChange, placehold
       <div className="relative select-none">
         <div className="relative w-full">
           <ComboboxInput
-            className="w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm pr-10"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-1 focus:ring-primary dark:focus:ring-blue-500 focus:border-primary dark:focus:border-blue-500 text-sm pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             displayValue={(data) => (data ? data[keyShow] : "")}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={placeholder || "Vui lòng chọn"}
           />
 
           {selectedData && (
-            <button onClick={handleClear} type="button" className="absolute inset-y-0 right-6 flex items-center pr-2 text-gray-400 hover:text-red-500">
+            <button
+              onClick={handleClear}
+              type="button"
+              className="absolute inset-y-0 right-6 flex items-center pr-2 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400"
+            >
               <XMarkIcon className="h-5 w-5" aria-hidden="true" />
             </button>
           )}
 
           <ComboboxButton className="absolute inset-y-0 right-0 flex items-center pr-2">
-            <ChevronDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+            <ChevronDownIcon
+              className="h-5 w-5 text-gray-400 dark:text-gray-500"
+              aria-hidden="true"
+            />
           </ComboboxButton>
         </div>
 
-        <ComboboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <ComboboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded bg-white dark:bg-gray-800 py-1 text-sm shadow-lg ring-1 ring-black dark:ring-gray-700 ring-opacity-5 focus:outline-none">
           {data.length === 0 ? (
-            <div className="cursor-default select-none px-4 py-2 text-gray-700">Không có dữ liệu</div>
+            <div className="cursor-default select-none px-4 py-2 text-gray-700 dark:text-gray-300">
+              Không có dữ liệu
+            </div>
           ) : filteredDatas.length === 0 && query !== "" ? (
-            <div className="cursor-default select-none px-4 py-2 text-gray-700">Không tìm thấy</div>
+            <div className="cursor-default select-none px-4 py-2 text-gray-700 dark:text-gray-300">
+              Không tìm thấy
+            </div>
           ) : (
             filteredDatas.map((data) => (
               <ComboboxOption
                 key={data.id}
-                className={({ active }) => `relative cursor-pointer select-none px-4 py-2 ${active ? "bg-primary/10 text-primary" : "text-gray-900"}`}
+                className={({ active }) =>
+                  `relative cursor-pointer select-none px-4 py-2 ${active ? "bg-primary/10 dark:bg-blue-500/20 text-primary dark:text-blue-400" : "text-gray-900 dark:text-gray-100"}`
+                }
                 value={data}
               >
                 {data[keyShow]}

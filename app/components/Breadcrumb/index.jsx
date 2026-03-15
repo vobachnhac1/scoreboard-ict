@@ -1,7 +1,9 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Breadcrumb = ({ navigation }) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const pathSegments = location.pathname.split("/").filter(Boolean);
 
@@ -37,20 +39,31 @@ const Breadcrumb = ({ navigation }) => {
   const breadcrumbs = buildBreadcrumbs();
 
   return (
-    <nav className="text-sm text-gray-600 mb-4" aria-label="Breadcrumb">
+    <nav
+      className="text-sm text-gray-600 dark:text-gray-400 mb-4"
+      aria-label="Breadcrumb"
+    >
       <ol className="list-reset flex">
         <li>
-          <Link to="/" className="text-primary hover:underline hover:text-primary/90">
-            Trang chủ
+          <Link
+            to="/"
+            className="text-primary dark:text-blue-400 hover:underline hover:text-primary/90 dark:hover:text-blue-300"
+          >
+            {t("dashboard.title")}
           </Link>
         </li>
         {breadcrumbs.map((crumb, index) => (
           <li key={index} className="flex items-center">
-            <span className="mx-2">/</span>
+            <span className="mx-2 dark:text-gray-500">/</span>
             {index === breadcrumbs.length - 1 ? (
-              <span className="text-gray-500 cursor-not-allowed">{crumb.name}</span>
+              <span className="text-gray-500 dark:text-gray-400 cursor-not-allowed">
+                {crumb.name}
+              </span>
             ) : (
-              <Link to={crumb.href} className="text-primary hover:underline hover:text-primary/90">
+              <Link
+                to={crumb.href}
+                className="text-primary dark:text-blue-400 hover:underline hover:text-primary/90 dark:hover:text-blue-300"
+              >
                 {crumb.name}
               </Link>
             )}

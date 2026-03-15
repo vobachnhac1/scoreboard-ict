@@ -140,7 +140,7 @@ export default function index() {
               .map((action) => (
                 <Button
                   variant="none"
-                  className={`!rounded-md !p-1 w-20 ${action.color} hover:opacity-75`}
+                  className={`!rounded !p-1 w-20 ${action.color} hover:opacity-75`}
                   onClick={() => action.callback(row)}
                   key={action.key}
                 >
@@ -222,10 +222,10 @@ export default function index() {
         loading={loading}
         page={page}
         onPageChange={setPage}
-        // onRowDoubleClick={(row) => {
-        //   console.log("Double clicked row:", row);
-        //   setOpenActions({ isOpen: true, key: Constants.ACTION_ATHLETE_ADJUST, row: row });
-        // }}
+      // onRowDoubleClick={(row) => {
+      //   console.log("Double clicked row:", row);
+      //   setOpenActions({ isOpen: true, key: Constants.ACTION_ATHLETE_ADJUST, row: row });
+      // }}
       />
       <Modal
         isOpen={openActions?.isOpen || false}

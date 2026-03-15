@@ -74,7 +74,7 @@ class BetterSQLiteWrapper {
             // Không có callback, return trực tiếp
             return result;
         } catch (error) {
-            console.error('❌ Error in run():', error.message);
+            console.error(' Error in run():', error.message);
             console.error('   SQL:', sql);
             console.error('   Params:', params);
 
@@ -116,7 +116,7 @@ class BetterSQLiteWrapper {
             // Không có callback, return trực tiếp
             return row;
         } catch (error) {
-            console.error('❌ Error in get():', error.message);
+            console.error(' Error in get():', error.message);
             console.error('   SQL:', sql);
             console.error('   Params:', params);
 
@@ -159,7 +159,7 @@ class BetterSQLiteWrapper {
             // Không có callback, return trực tiếp (better-sqlite3 style)
             return rows;
         } catch (error) {
-            console.error('❌ Error in all():', error.message);
+            console.error(' Error in all():', error.message);
             console.error('   SQL:', sql);
             console.error('   Params:', params);
 

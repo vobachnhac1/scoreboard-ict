@@ -22,12 +22,30 @@ class DBCompetitionMatchTeamService {
                     team_name TEXT,
                     match_type TEXT NOT NULL,
                     match_status TEXT DEFAULT 'WAI',
+                    scores TEXT,
                     config_system TEXT,
+                    referrers TEXT,
                     created_at TEXT DEFAULT (datetime('now')),
                     updated_at TEXT DEFAULT (datetime('now')),
                     FOREIGN KEY (competition_dk_id) REFERENCES competition_dk(id) ON DELETE CASCADE
                 )
             `);
+
+            // Migration: Thêm cột scores nếu chưa có
+            try {
+                // Sử dụng getRawDB để gọi sync pragma/all chính xác
+                const cols = this.db.getRawDB().pragma("table_info(competition_match_team)");
+                if (cols && !cols.some((c) => c.name === "scores")) {
+                    this.db.getRawDB().exec("ALTER TABLE competition_match_team ADD COLUMN scores TEXT");
+                    console.log(" MIGRATION: Đã thêm cột 'scores' vào bảng 'competition_match_team'");
+                }
+                if (cols && !cols.some((c) => c.name === "referrers")) {
+                    this.db.getRawDB().exec("ALTER TABLE competition_match_team ADD COLUMN referrers TEXT");
+                    console.log(" MIGRATION: Đã thêm cột 'referrers' vào bảng 'competition_match_team'");
+                }
+            } catch (err) {
+                console.error(" MIGRATION ERROR:", err.message);
+            }
 
             // Bảng competition_match_team_athlete - Thông tin VĐV trong team
             this.db.run(`
@@ -64,12 +82,11 @@ class DBCompetitionMatchTeamService {
     // Tạo team với athletes
     createTeam(body) {
         return new Promise((resolve, reject) => {
-            const { competition_dk_id, match_no, row_index, match_name, team_name, match_type, config_system, athletes } = body;
+            const { competition_dk_id, match_no, row_index, match_name, team_name, match_type, config_system, athletes, referrers } = body;
             const db = this.db; // Lưu reference
-
             const query = `
-                INSERT INTO competition_match_team (competition_dk_id, match_no, row_index, match_name, team_name, match_type, config_system)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO competition_match_team (competition_dk_id, match_no, row_index, match_name, team_name, match_type, config_system, referrers)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
             db.run(query, [
@@ -79,7 +96,8 @@ class DBCompetitionMatchTeamService {
                 match_name,
                 team_name,
                 match_type,
-                JSON.stringify(config_system || {})
+                JSON.stringify(config_system || {}),
+                JSON.stringify(referrers || [])
             ], function (err) {
                 if (err) {
                     console.error('Error creating team:', err);
@@ -168,6 +186,12 @@ class DBCompetitionMatchTeamService {
                     team.config_system = JSON.parse(team.config_system);
                 }
                 team.scores = team.scores ? JSON.parse(team.scores) : {};
+                team.referrers = team.referrers ? JSON.parse(team.referrers) : [];
+
+                // Convert match_no to number
+                if (team.match_no !== null && team.match_no !== undefined) {
+                    team.match_no = Number(team.match_no);
+                }
 
                 // Lấy athletes
                 const athleteQuery = `SELECT * FROM competition_match_team_athlete WHERE team_id = ? ORDER BY athlete_order`;
@@ -198,6 +222,12 @@ class DBCompetitionMatchTeamService {
                         team.config_system = JSON.parse(team.config_system);
                     }
                     team.scores = team.scores ? JSON.parse(team.scores) : {};
+                    team.referrers = team.referrers ? JSON.parse(team.referrers) : [];
+
+                    // Convert match_no to number
+                    if (team.match_no !== null && team.match_no !== undefined) {
+                        team.match_no = Number(team.match_no);
+                    }
 
                     const athleteQuery = `SELECT * FROM competition_match_team_athlete WHERE team_id = ? ORDER BY athlete_order`;
                     this.db.all(athleteQuery, [team.id], (err, athletes) => {
@@ -296,12 +326,32 @@ class DBCompetitionMatchTeamService {
             });
         });
     }
-    // thực hiện lưu kết quả thi đấu 
-    saveResultTeam(match_id, scores, config_system) {
+    // Cập nhật điểm tay không đổi các giá trị khác
+    updateScores(id, scores) {
+        return new Promise((resolve, reject) => {
+            const query = `
+                UPDATE competition_match_team
+                SET scores = ?, updated_at = datetime('now')
+                WHERE id = ?
+            `;
+            this.db.run(query, [JSON.stringify(scores), id], function (err) {
+                if (err) return reject(err);
+                resolve({ changes: this.changes });
+            });
+        });
+    }
+
+    // thực hiện lưu kết quả thi đấu  
+    saveResultTeam(match_id, scores, config_system, referrers) {
         // scores là một object
         return new Promise((resolve, reject) => {
-            const query = `UPDATE competition_match_team SET scores = ?, match_status = 'FIN', config_system = ? , updated_at = datetime('now') WHERE id = ?`;
-            this.db.run(query, [JSON.stringify(scores),  JSON.stringify(config_system), match_id], function (err) {
+            const query = `UPDATE competition_match_team SET scores = ?, match_status = 'FIN', config_system = ?, referrers = ?, updated_at = datetime('now') WHERE id = ?`;
+            this.db.run(query, [
+                JSON.stringify(scores),
+                JSON.stringify(config_system),
+                JSON.stringify(referrers || []),
+                match_id
+            ], function (err) {
                 if (err) return reject(err);
                 resolve(this.changes);
             });

@@ -3,7 +3,7 @@
 # Script để rebuild native dependencies cho Electron
 # Sử dụng khi gặp lỗi "cannot build native dependency"
 
-echo "🔧 Rebuilding native dependencies cho Electron..."
+echo " Rebuilding native dependencies cho Electron..."
 
 # Lấy version Electron từ package.json
 ELECTRON_VERSION=$(node -p "require('./package.json').devDependencies.electron.replace('^', '')")
@@ -27,7 +27,7 @@ if [[ "$1" == "--universal" ]]; then
     npm rebuild sqlite3 --build-from-source --runtime=electron --target=$ELECTRON_VERSION --dist-url=https://electronjs.org/headers --arch=arm64
 fi
 
-echo "✅ Rebuild hoàn tất!"
+echo " Rebuild hoàn tất!"
 echo ""
 echo "Bây giờ bạn có thể chạy:"
 echo "  npm run dist:mac      (cho kiến trúc hiện tại)"

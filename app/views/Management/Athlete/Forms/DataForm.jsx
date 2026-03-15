@@ -39,7 +39,7 @@ export default function DataForm({ type, data = null, onAgree, onGoBack }) {
             id="tournament_name"
             {...register("tournament_name", { required: "Tên giải là bắt buộc" })}
             type="text"
-            className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
+            className="form-input col-span-2 w-full px-3 py-2 border rounded text-sm"
             placeholder="Nhập tên giải"
           />
           {errors.tournament_name && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.tournament_name.message)}</p>}
@@ -55,7 +55,7 @@ export default function DataForm({ type, data = null, onAgree, onGoBack }) {
             id="group_name"
             {...register("group_name", { required: "Nhóm thi là bắt buộc" })}
             type="text"
-            className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
+            className="form-input col-span-2 w-full px-3 py-2 border rounded text-sm"
             placeholder="Nhập nhóm thi"
           />
           {errors.group_name && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.group_name.message)}</p>}
@@ -71,7 +71,7 @@ export default function DataForm({ type, data = null, onAgree, onGoBack }) {
             id="format"
             {...register("format", { required: "Hình thức là bắt buộc" })}
             type="text"
-            className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
+            className="form-input col-span-2 w-full px-3 py-2 border rounded text-sm"
             placeholder="Nhập hình thức"
           />
           {errors.format && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.format.message)}</p>}
@@ -87,7 +87,7 @@ export default function DataForm({ type, data = null, onAgree, onGoBack }) {
             id="content"
             {...register("content", { required: "Nội dung là bắt buộc" })}
             type="text"
-            className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
+            className="form-input col-span-2 w-full px-3 py-2 border rounded text-sm"
             placeholder="Nhập nội dung"
           />
           {errors.content && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.content.message)}</p>}
@@ -103,7 +103,7 @@ export default function DataForm({ type, data = null, onAgree, onGoBack }) {
             id="organization"
             {...register("organization", { required: "Đơn vị là bắt buộc" })}
             type="text"
-            className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
+            className="form-input col-span-2 w-full px-3 py-2 border rounded text-sm"
             placeholder="Nhập đơn vị"
           />
           {errors.organization && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.organization.message)}</p>}
@@ -119,7 +119,7 @@ export default function DataForm({ type, data = null, onAgree, onGoBack }) {
             id="position"
             {...register("position", { required: "Vị trí là bắt buộc" })}
             type="text"
-            className="form-input col-span-2 w-full px-3 py-2 border rounded-md text-sm"
+            className="form-input col-span-2 w-full px-3 py-2 border rounded text-sm"
             placeholder="Nhập vị trí"
           />
           {errors.position && <p className="text-red-500 text-sm col-span-2 col-start-2">{String(errors.position.message)}</p>}

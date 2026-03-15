@@ -147,9 +147,9 @@
 # echo ""
 # echo ""
 
-# echo "✅ All tests completed!"
+# echo " All tests completed!"
 # echo ""
-# echo "📊 To verify in database, run:"
+# echo " To verify in database, run:"
 # echo "   SELECT * FROM v_match_results;"
 # echo "   SELECT * FROM round_results WHERE match_id = 'TEST001';"
 

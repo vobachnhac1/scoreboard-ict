@@ -4,12 +4,12 @@
 
 **ManagementConnectionSocket** là component quản lý kết nối Socket.IO giữa Admin (Desktop) và các thiết bị Mobile (Giám định viên). Component này cho phép:
 
-- ✅ Xem danh sách thiết bị đã kết nối
-- ✅ Phê duyệt/Từ chối kết nối thiết bị
-- ✅ Gán quyền giám định cho thiết bị
-- ✅ Ngắt kết nối thiết bị
-- ✅ Gửi thông báo đến thiết bị
-- ✅ Cập nhật thông tin thiết bị
+- Xem danh sách thiết bị đã kết nối
+- Phê duyệt/Từ chối kết nối thiết bị
+- Gán quyền giám định cho thiết bị
+- Ngắt kết nối thiết bị
+- Gửi thông báo đến thiết bị
+- Cập nhật thông tin thiết bị
 
 ---
 
@@ -24,11 +24,11 @@ class SocketClient {
     this.socket = null;
   }
 
-  init(role = 'guest') {
+  init(role = "guest") {
     if (!this.socket) {
-      this.socket = io('http://localhost:6789', {
+      this.socket = io("http://localhost:6789", {
         autoConnect: true,
-        transports: ['websocket'],
+        transports: ["websocket"],
         query: { role },
       });
     }
@@ -50,10 +50,11 @@ class SocketClient {
 ```
 
 **Tính năng:**
-- ✅ **Singleton pattern** - Chỉ có 1 instance duy nhất
-- ✅ **Auto connect** - Tự động kết nối khi init
-- ✅ **WebSocket transport** - Sử dụng WebSocket protocol
-- ✅ **Role-based** - Gửi role khi connect (guest, admin, judge)
+
+- **Singleton pattern** - Chỉ có 1 instance duy nhất
+- **Auto connect** - Tự động kết nối khi init
+- **WebSocket transport** - Sử dụng WebSocket protocol
+- **Role-based** - Gửi role khi connect (guest, admin, judge)
 
 ---
 
@@ -79,9 +80,10 @@ export function emitSocketEvent(event, data) {
 ```
 
 **Tính năng:**
-- ✅ **useSocketEvent** - Hook lắng nghe event, auto cleanup khi unmount
-- ✅ **emitSocketEvent** - Function gửi event đến server
-- ✅ **Type-safe** - Có thể thêm TypeScript types
+
+- **useSocketEvent** - Hook lắng nghe event, auto cleanup khi unmount
+- **emitSocketEvent** - Function gửi event đến server
+- **Type-safe** - Có thể thêm TypeScript types
 
 ---
 
@@ -141,25 +143,25 @@ export function emitSocketEvent(event, data) {
 
 ### **1. Admin → Server Events**
 
-| Event | Payload | Mô tả |
-|-------|---------|-------|
+| Event                 | Payload                               | Mô tả                  |
+| --------------------- | ------------------------------------- | ---------------------- |
 | `REGISTER_ROOM_ADMIN` | `{room_id, uuid_desktop, permission}` | Đăng ký admin vào room |
-| `ADMIN_FETCH_CONN` | `{}` | Lấy danh sách thiết bị |
-| `APPROVED` | `{socket_id, room_id}` | Phê duyệt thiết bị |
-| `REJECTED` | `{socket_id, room_id}` | Từ chối thiết bị |
-| `DISCONNECT_CLIENT` | `{socket_id, room_id}` | Ngắt kết nối thiết bị |
-| `SEND_NOTIFICATION` | `{socket_id, message}` | Gửi thông báo |
+| `ADMIN_FETCH_CONN`    | `{}`                                  | Lấy danh sách thiết bị |
+| `APPROVED`            | `{socket_id, room_id}`                | Phê duyệt thiết bị     |
+| `REJECTED`            | `{socket_id, room_id}`                | Từ chối thiết bị       |
+| `DISCONNECT_CLIENT`   | `{socket_id, room_id}`                | Ngắt kết nối thiết bị  |
+| `SEND_NOTIFICATION`   | `{socket_id, message}`                | Gửi thông báo          |
 
 ### **2. Server → Admin Events**
 
-| Event | Payload | Mô tả |
-|-------|---------|-------|
+| Event            | Payload                | Mô tả                    |
+| ---------------- | ---------------------- | ------------------------ |
 | `RES_ROOM_ADMIN` | `{status, data, path}` | Response chung cho admin |
-| `RES_MSG` | `{status, message}` | Response message |
+| `RES_MSG`        | `{status, message}`    | Response message         |
 
 ---
 
-## 📊 Data Structure
+##  Data Structure
 
 ### **Device Connection Object**
 
@@ -173,13 +175,13 @@ export function emitSocketEvent(event, data) {
   device_ip: "192.168.1.100",         // IP thiết bị
   status: "active",                   // Trạng thái kết nối
   accepted: "approved",               // Trạng thái phê duyệt
-  
+
   // Thông tin socket
   socket_id: "abc123xyz",             // Socket ID
   room_id: "1AZJM9JL8D",             // Room ID
   permission: 9,                      // Permission level
   token: "jwt_token_here",            // Auth token
-  
+
   // Raw data từ server
   rawData: {
     device_name: "...",
@@ -215,6 +217,7 @@ export function emitSocketEvent(event, data) {
 ```
 
 **Flow:**
+
 1. User click nút "KH"
 2. Emit event `APPROVED` với socket_id và room_id
 3. Server phê duyệt thiết bị
@@ -231,16 +234,17 @@ export function emitSocketEvent(event, data) {
   titleModal: "Đăng ký giám định",
   color: "bg-[#FAD9D5]",
   callback: (row) => {
-    setOpenActions({ 
-      isOpen: true, 
-      key: Constants.ACTION_CONNECT_GD, 
-      row: row 
+    setOpenActions({
+      isOpen: true,
+      key: Constants.ACTION_CONNECT_GD,
+      row: row
     });
   }
 }
 ```
 
 **Flow:**
+
 1. User click nút "GD"
 2. Mở modal với QR code
 3. Mobile scan QR để đăng ký quyền giám định
@@ -257,22 +261,24 @@ export function emitSocketEvent(event, data) {
   titleModal: "Ngắt kết nối",
   color: "bg-[#B0E3E6]",
   callback: (row) => {
-    setOpenActions({ 
-      isOpen: true, 
-      key: Constants.ACTION_CONNECT_DIS, 
-      row: row 
+    setOpenActions({
+      isOpen: true,
+      key: Constants.ACTION_CONNECT_DIS,
+      row: row
     });
   }
 }
 ```
 
 **DisconnectForm Options:**
-- ✅ Tạm ngưng chấm điểm
-- ✅ Ngắt quyền giám định
-- ✅ Ngắt kết nối hệ thống
-- ✅ Huỷ kích hoạt thiết bị
+
+- Tạm ngưng chấm điểm
+- Ngắt quyền giám định
+- Ngắt kết nối hệ thống
+- Huỷ kích hoạt thiết bị
 
 **Flow:**
+
 1. User click nút "DIS"
 2. Mở modal DisconnectForm
 3. User chọn options và confirm
@@ -290,21 +296,23 @@ export function emitSocketEvent(event, data) {
   titleModal: "Gửi thông báo",
   color: "bg-[#50d71e]",
   callback: (row) => {
-    setOpenActions({ 
-      isOpen: true, 
-      key: Constants.ACTION_CONNECT_MSG, 
-      row: row 
+    setOpenActions({
+      isOpen: true,
+      key: Constants.ACTION_CONNECT_MSG,
+      row: row
     });
   }
 }
 ```
 
 **NotificationForm Fields:**
+
 - 📝 Message (textarea, max 250 chars)
-- ⚠️ Nhắc nhở (checkbox)
+- Nhắc nhở (checkbox)
 - 🚨 Cảnh cáo (checkbox)
 
 **Flow:**
+
 1. User click nút "MSG"
 2. Mở modal NotificationForm
 3. User nhập message và chọn type
@@ -336,7 +344,7 @@ useSocketEvent("RES_ROOM_ADMIN", (response) => {
     const deviceList = response.data.ls_conn || {};
     const devices = Object.values(deviceList).map((conn, index) => ({
       order: index + 1,
-      device_name: conn.device_name || `Thiết bị ${conn.socket_id?.substring(0, 8)}`,
+crypto-js
       judge_permission: conn.referrer ? `GD${conn.referrer}` : "Chưa gán",
       device_code: conn.device_id || conn.socket_id,
       device_ip: conn.client_ip || "N/A",
@@ -360,33 +368,33 @@ useSocketEvent("RES_ROOM_ADMIN", (response) => {
 
 ---
 
-## 📊 Status Mapping
+##  Status Mapping
 
 ### **Connection Status**
 
-| Server Code | UI Status | Label |
-|-------------|-----------|-------|
-| `CONNECTED` | `active` | Đang kết nối |
+| Server Code    | UI Status  | Label        |
+| -------------- | ---------- | ------------ |
+| `CONNECTED`    | `active`   | Đang kết nối |
 | `DISCONNECTED` | `inactive` | Ngắt kết nối |
 
 ### **Register Status**
 
-| Server Code | UI Status | Label |
-|-------------|-----------|-------|
-| `CONNECTED` | `approved` | Đã duyệt |
-| `PROCESSING` | `pending` | Chờ duyệt |
-| `ADMIN` | `admin` | Admin |
-| `REJECTED` | `rejected` | Từ chối |
+| Server Code  | UI Status  | Label     |
+| ------------ | ---------- | --------- |
+| `CONNECTED`  | `approved` | Đã duyệt  |
+| `PROCESSING` | `pending`  | Chờ duyệt |
+| `ADMIN`      | `admin`    | Admin     |
+| `REJECTED`   | `rejected` | Từ chối   |
 
 ### **Judge Permission**
 
-| Referrer | Permission | Label |
-|----------|------------|-------|
-| `1` | `GD1` | Giám định 1 |
-| `2` | `GD2` | Giám định 2 |
-| `3` | `GD3` | Giám định 3 |
-| `...` | `...` | ... |
-| `7` | `GD7` | Giám định 7 |
+| Referrer | Permission | Label       |
+| -------- | ---------- | ----------- |
+| `1`      | `GD1`      | Giám định 1 |
+| `2`      | `GD2`      | Giám định 2 |
+| `3`      | `GD3`      | Giám định 3 |
+| `...`    | `...`      | ...         |
+| `7`      | `GD7`      | Giám định 7 |
 
 ---
 
@@ -402,16 +410,17 @@ useSocketEvent("RES_ROOM_ADMIN", (response) => {
   page={page}
   onPageChange={setPage}
   onRowDoubleClick={(row) => {
-    setOpenActions({ 
-      isOpen: true, 
-      key: Constants.ACTION_UPDATE, 
-      row: row 
+    setOpenActions({
+      isOpen: true,
+      key: Constants.ACTION_UPDATE,
+      row: row,
     });
   }}
 />
 ```
 
 **Columns:**
+
 1. STT
 2. Tên thiết bị
 3. Quyền giám định
@@ -437,6 +446,7 @@ useSocketEvent("RES_ROOM_ADMIN", (response) => {
 ```
 
 **Modal Types:**
+
 - 📱 **KH** - QR Code kích hoạt
 - 👨‍⚖️ **GD** - QR Code đăng ký giám định
 - 🔌 **DIS** - DisconnectForm
@@ -445,19 +455,19 @@ useSocketEvent("RES_ROOM_ADMIN", (response) => {
 
 ---
 
-## 🔧 Utility Functions
+## Utility Functions
 
 ### **Utils.js**
 
 ```javascript
 // Lấy label quyền giám định
-Utils.getJudgePermissionLabel("GD1") // => "Giám định 1"
+Utils.getJudgePermissionLabel("GD1"); // => "Giám định 1"
 
 // Lấy label trạng thái
-Utils.getStatusLabel("active") // => "Đang kết nối"
+Utils.getStatusLabel("active"); // => "Đang kết nối"
 
 // Lấy label phê duyệt
-Utils.getApprovalStatusLabel("approved") // => "Đã duyệt"
+Utils.getApprovalStatusLabel("approved"); // => "Đã duyệt"
 ```
 
 ---
@@ -469,9 +479,9 @@ Utils.getApprovalStatusLabel("approved") // => "Đã duyệt"
 ```javascript
 const handleInitConnection = () => {
   emitSocketEvent("REGISTER_ROOM_ADMIN", {
-    room_id: "1AZJM9JL8D",        // Room ID (tự tạo hoặc từ DB)
-    uuid_desktop: "CO2GJ74NMD6M",  // UUID desktop (unique)
-    permission: 9,                 // Admin permission level
+    room_id: "1AZJM9JL8D", // Room ID (tự tạo hoặc từ DB)
+    uuid_desktop: "CO2GJ74NMD6M", // UUID desktop (unique)
+    permission: 9, // Admin permission level
   });
 };
 ```
@@ -490,7 +500,7 @@ const handleRefresh = () => {
 ```javascript
 emitSocketEvent("APPROVED", {
   socket_id: row.socket_id,
-  room_id: row.room_id
+  room_id: row.room_id,
 });
 ```
 
@@ -499,21 +509,21 @@ emitSocketEvent("APPROVED", {
 ```javascript
 emitSocketEvent("DISCONNECT_CLIENT", {
   socket_id: row.socket_id,
-  room_id: row.room_id
+  room_id: row.room_id,
 });
 ```
 
 ---
 
-## ⚠️ Lưu ý quan trọng
+## Lưu ý quan trọng
 
-1. ✅ **Socket connection** phải được init trước khi sử dụng
-2. ✅ **Room ID** phải unique cho mỗi phiên thi đấu
-3. ✅ **Socket ID** được server tự generate khi client connect
-4. ✅ **Cleanup** socket listeners khi component unmount
-5. ✅ **Error handling** cho các socket events
-6. ✅ **Loading states** khi emit events
-7. ✅ **Refresh** danh sách sau mỗi action
+1.  **Socket connection** phải được init trước khi sử dụng
+2.  **Room ID** phải unique cho mỗi phiên thi đấu
+3.  **Socket ID** được server tự generate khi client connect
+4.  **Cleanup** socket listeners khi component unmount
+5.  **Error handling** cho các socket events
+6.  **Loading states** khi emit events
+7.  **Refresh** danh sách sau mỗi action
 
 ---
 
@@ -551,7 +561,7 @@ console.log("Room ID:", row.room_id);
 // Check event emit
 emitSocketEvent("APPROVED", {
   socket_id: row.socket_id,
-  room_id: row.room_id
+  room_id: row.room_id,
 });
 ```
 
@@ -577,4 +587,3 @@ emitSocketEvent("APPROVED", {
 - Socket.IO Client: https://socket.io/docs/v4/client-api/
 - React Hooks: https://react.dev/reference/react
 - Custom Hooks: https://react.dev/learn/reusing-logic-with-custom-hooks
-

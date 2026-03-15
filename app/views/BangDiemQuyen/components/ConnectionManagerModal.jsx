@@ -1,0 +1,502 @@
+import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  LinkIcon,
+  PhoneIcon,
+  ClockIcon,
+  RefreshIcon,
+  PowerIcon,
+  CloseIcon,
+} from "../../../components/icons/ConnectionIcons";
+import IpMasker from "../../../common/IpMasker";
+
+/**
+ * ConnectionManagerModal Component
+ * Modal quản lý kết nối giám định khi nhấn F1
+ * Thiết kế giống ManagementConnectionSocket với table layout
+ * @param {boolean} isOpen - Show/hide modal
+ * @param {function} onClose - Close handler
+ * @param {Array} devices - Array of device objects [{referrer, device_name, device_code, device_ip, connected}, ...]
+ * @param {function} onReconnect - Reconnect handler (device) => {}
+ * @param {function} onDisconnect - Disconnect handler (device) => {}
+ * @param {function} onRefresh - Refresh handler () => {}
+ * @param {function} onInitSocket - Khởi tại lại socket () => {}
+ * @param {function} onGenegrateQR - Tạo QR kết nối () => {}
+ * @param {function} onSetPermissionRef - Chọn quyền giám định () => {}
+ */
+export default function ConnectionManagerModal({
+  isOpen = false,
+  onClose,
+  devices = [],
+  onReconnect,
+  onDisconnect,
+  onInitSocket,
+  onGenerateQR,
+  onRefresh,
+  onSetPermissionRef,
+  configSystem,
+  serverIpHash,
+}) {
+  const { t } = useTranslation();
+  const so_giam_dinh = configSystem.so_giam_dinh || 3;
+  const [testingJudge, setTestingJudge] = useState(null);
+  const [qrCodeUrl, setQrCodeUrl] = useState("");
+  const [isLoadingQR, setIsLoadingQR] = useState(false);
+
+  // Auto generate QR when modal opens
+  useEffect(() => {
+    if (isOpen && !qrCodeUrl) {
+      handleGenerateQR();
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  const handleReconnect = async (device) => {
+    if (onReconnect) {
+      await onReconnect(device);
+    }
+  };
+
+  const handleDisconnect = async (device) => {
+    if (onSetPermissionRef) {
+      const { socket_id, room_id } = device;
+      onSetPermissionRef({ referrer: 0, socket_id, room_id });
+    }
+  };
+
+  const handleReconnectAll = async () => {
+    if (onReconnect) {
+      for (const device of devices) {
+        if (!device.connected) {
+          await onReconnect(device);
+          await new Promise((resolve) => setTimeout(resolve, 200));
+        }
+      }
+    }
+  };
+
+  const handleRefresh = () => {
+    if (onRefresh) {
+      onRefresh();
+    }
+  };
+
+  const handleGenerateQR = async () => {
+    if (onGenerateQR) {
+      setIsLoadingQR(true);
+      try {
+        const base64 = await onGenerateQR();
+        if (base64) {
+          setQrCodeUrl(base64);
+        }
+      } catch (error) {
+        console.error("Error generating QR:", error);
+      } finally {
+        setIsLoadingQR(false);
+      }
+    }
+  };
+
+  const handleSetPermissionRef = (device, refNum) => {
+    if (onSetPermissionRef) {
+      const { socket_id, room_id } = device;
+      // kiểm tra trong list có giám định 2 thì thông báo bỏ qua
+      const check = devices.find(
+        (ele) => ele.referrer == refNum && ele.socket_id != device.socket_id,
+      );
+      if (check) {
+        alert(
+          t("scoreboard.connection_manager.referee_exists", { number: refNum }),
+        );
+        return;
+      }
+      onSetPermissionRef({ referrer: refNum, socket_id, room_id });
+    }
+  };
+
+  // Calculate statistics
+  const connectedCount = devices.filter((d) => d.connected).length;
+  const disconnectedCount = devices.filter((d) => !d.connected).length;
+  const setPermissionCount = devices.filter(
+    (d) => d.referrer != 0 && d.connected,
+  ).length;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+      <div className="relative max-w-[95vw] w-full mx-4 max-h-[95vh] overflow-auto">
+        {/* Main Card */}
+        <div className="bg-white dark:bg-gray-800 !rounded shadow-2xl p-6">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                  {t("scoreboard.connection_manager.title")}
+                </h2>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  {t("scoreboard.connection_manager.subtitle")}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="w-10 h-10 !rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-all flex items-center justify-center"
+            >
+              <CloseIcon className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Main Content - 2 Columns Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Column - QR Code Section */}
+            <div className="lg:col-span-1">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border-2 border-blue-200 dark:border-blue-700 !rounded p-6 sticky top-0">
+                <div className="text-center mb-4">
+                  <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 flex items-center justify-center gap-2">
+                    <LinkIcon className="w-6 h-6 text-blue-600" />
+                    {t("scoreboard.connection_manager.connect_device")}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
+                    {t("scoreboard.connection_manager.scan_qr")}
+                  </p>
+                </div>
+
+                {/* QR Code Display */}
+                <div className="flex justify-center mb-4">
+                  {isLoadingQR ? (
+                    <div className="w-64 h-64 bg-white dark:bg-gray-700 !rounded border-4 border-blue-300 dark:border-blue-600 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-3"></div>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm">
+                          {t("scoreboard.connection_manager.generating_qr")}
+                        </p>
+                      </div>
+                    </div>
+                  ) : qrCodeUrl ? (
+                    <div className="bg-white dark:bg-gray-700 p-3 !rounded border-4 border-blue-300 dark:border-blue-600 shadow-lg hover:shadow-xl transition-shadow">
+                      <img
+                        src={qrCodeUrl}
+                        alt="QR Code"
+                        className="w-64 h-64 object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-64 h-64 bg-white dark:bg-gray-700 !rounded border-4 border-gray-300 dark:border-gray-600 flex items-center justify-center">
+                      <p className="text-gray-400 dark:text-gray-500 text-sm">
+                        {t("scoreboard.connection_manager.no_qr")}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* QR Instructions */}
+                <div className="bg-white dark:bg-gray-700 border border-blue-200 dark:border-blue-700 !rounded p-4 mb-4">
+                  <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-3 flex items-center gap-2">
+                    <PhoneIcon className="w-5 h-5" />
+                    {t("scoreboard.connection_manager.instructions")}
+                  </h4>
+                  <ol className="text-sm text-gray-700 dark:text-gray-300 space-y-2 list-decimal list-inside">
+                    <li>{t("scoreboard.connection_manager.step_1")}</li>
+                    <li>{t("scoreboard.connection_manager.step_2")}</li>
+                    <li>{t("scoreboard.connection_manager.step_3")}</li>
+                    <li>{t("scoreboard.connection_manager.step_4")}</li>
+                  </ol>
+                </div>
+
+                {/* Refresh QR Button */}
+                <button
+                  onClick={handleGenerateQR}
+                  disabled={isLoadingQR}
+                  className="w-full px-4 py-3 bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white !rounded font-medium transition-all flex items-center justify-center gap-2"
+                >
+                  {isLoadingQR ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      {t("scoreboard.connection_manager.generating")}
+                    </>
+                  ) : (
+                    <>
+                      <RefreshIcon className="w-5 h-5" />
+                      {t("scoreboard.connection_manager.regenerate_qr")}
+                    </>
+                  )}
+                </button>
+
+                {/* QR Info */}
+                {qrCodeUrl && (
+                  <div className="mt-4 text-center">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1">
+                      <ClockIcon className="w-4 h-4" />
+                      {t("scoreboard.connection_manager.qr_expires")}{" "}
+                      <span className="font-bold text-red-600 dark:text-red-400">
+                        5 {t("scoreboard.connection_manager.minutes")}
+                      </span>
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Column - Devices Table */}
+            <div className="lg:col-span-2">
+              <div className="bg-white dark:bg-gray-800 !rounded">
+                {/* Connection Status Summary */}
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                  <div className="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 !rounded p-3">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                        {connectedCount}
+                      </div>
+                      <div className="text-xs text-green-700 dark:text-green-300 mt-1 font-medium">
+                        {t("scoreboard.connection_manager.connected")}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 !rounded p-3">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
+                        {setPermissionCount}
+                      </div>
+                      <div className="text-xs text-yellow-700 dark:text-yellow-300 mt-1 font-medium">
+                        {t("scoreboard.connection_manager.assigned")}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 !rounded p-3">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                        {devices.length}
+                      </div>
+                      <div className="text-xs text-blue-700 dark:text-blue-300 mt-1 font-medium">
+                        {t("scoreboard.connection_manager.total")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex gap-2 px-3 py-2 bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white !rounded font-medium text-sm transition-all items-center ">
+                    {t("scoreboard.connection_manager.server")}: {serverIpHash?.display}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={onInitSocket}
+                      className="px-3 py-2 bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white !rounded font-medium text-sm transition-all flex items-center gap-2"
+                    >
+                      <PowerIcon className="w-4 h-4" />
+                      {t("scoreboard.connection_manager.reset")}
+                    </button>
+                    <button
+                      onClick={handleRefresh}
+                      className="px-3 py-2 bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white !rounded font-medium text-sm transition-all flex items-center gap-2"
+                    >
+                      <RefreshIcon className="w-4 h-4" />
+                      {t("scoreboard.connection_manager.refresh")}
+                    </button>
+                    <button
+                      onClick={onClose}
+                      className="px-3 py-2 bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white !rounded font-medium text-sm transition-all flex items-center gap-2"
+                    >
+                      <CloseIcon className="w-4 h-4" />
+                      {t("scoreboard.connection_manager.close_f1")}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Table */}
+                <div className="border border-gray-200 dark:border-gray-700 !rounded overflow-hidden shadow-sm">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-b-2 border-gray-200 dark:border-gray-700">
+                        <tr>
+                          <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            {t("scoreboard.connection_manager.stt")}
+                          </th>
+                          <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            {t("scoreboard.connection_manager.device_name")}
+                          </th>
+                          <th className="px-3 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            {t("scoreboard.connection_manager.referee_short")}
+                          </th>
+                          <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            {t("scoreboard.connection_manager.device_code")}
+                          </th>
+                          <th className="px-3 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            {t("scoreboard.connection_manager.status")}
+                          </th>
+                          <th className="px-3 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            {t("scoreboard.connection_manager.referee_permission")}
+                          </th>
+                          <th className="px-3 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            {t("scoreboard.connection_manager.actions")}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        {devices.length === 0 ? (
+                          <tr>
+                            <td colSpan="8" className="px-4 py-12 text-center">
+                              <div className="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
+                                <svg
+                                  className="w-16 h-16 mb-3"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={1.5}
+                                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                  />
+                                </svg>
+                                <p className="text-lg font-medium">
+                                  {t("scoreboard.connection_manager.no_devices")}
+                                </p>
+                                <p className="text-sm mt-1">
+                                  {t("scoreboard.connection_manager.scan_qr_left")}
+                                </p>
+                              </div>
+                            </td>
+                          </tr>
+                        ) : (
+                          devices.map((device, index) => {
+                            const isTesting = testingJudge === device.referrer;
+                            const maskedIp = IpMasker.mask(
+                              device.device_ip,
+                              "hash",
+                              index,
+                              device.device_name,
+                            );
+
+                            return (
+                              <tr
+                                key={index}
+                                className="hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors"
+                              >
+                                <td className="px-3 py-3 text-sm text-gray-900 dark:text-gray-100 font-medium">
+                                  {index + 1}
+                                </td>
+                                <td className="px-3 py-3 text-sm text-gray-900 dark:text-gray-100 font-medium">
+                                  {device.device_name}
+                                </td>
+                                <td className="px-3 py-3 text-center">
+                                  <span className="inline-flex items-center justify-center w-8 h-8 !rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold text-sm">
+                                    {device.referrer}
+                                  </span>
+                                </td>
+                                <td
+                                  className="px-3 py-3 text-sm text-gray-600 dark:text-gray-400 font-mono"
+                                  title={maskedIp.tooltip}
+                                >
+                                  <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs font-semibold">
+                                    <svg
+                                      className="w-3 h-3"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                      />
+                                    </svg>
+                                    {maskedIp.display}
+                                  </span>
+                                </td>
+                                <td className="px-3 py-3 text-center">
+                                  {device.connected ? (
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-medium">
+                                      <span className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full animate-pulse"></span>
+                                      {t("scoreboard.connection_manager.online")}
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 text-xs font-medium">
+                                      <span className="w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full"></span>
+                                      {t("scoreboard.connection_manager.offline")}
+                                    </span>
+                                  )}
+                                </td>
+
+                                {/* Quyền Giám Định Dropdown */}
+                                <td className="px-3 py-3 text-center">
+                                  <div className="flex items-center justify-center gap-1">
+                                    {Array.from(
+                                      { length: so_giam_dinh },
+                                      (_, index) => {
+                                        const refNum = index + 1;
+                                        const isActive =
+                                          device.referrer == refNum;
+                                        let bgColor = isActive
+                                          ? "bg-red-500 dark:bg-red-600 text-white"
+                                          : "bg-blue-600 dark:bg-blue-700 text-white";
+
+                                        if (device.referrer == 0) {
+                                          bgColor =
+                                            "bg-blue-600 dark:bg-blue-700 text-white";
+                                        }
+                                        return (
+                                          <button
+                                            key={refNum}
+                                            onClick={() =>
+                                              handleSetPermissionRef(
+                                                device,
+                                                refNum,
+                                              )
+                                            }
+                                            className={`px-2 py-1 text-xs font-bold ${bgColor} hover:bg-yellow-500 dark:hover:bg-yellow-600 hover:text-white !rounded transition-all`}
+                                          >
+                                            {refNum}
+                                          </button>
+                                        );
+                                      },
+                                    )}
+                                  </div>
+                                </td>
+
+                                <td className="px-3 py-3">
+                                  <div className="flex items-center justify-center gap-2">
+                                    {/* Reconnect Button */}
+                                    {(!device.connected ||
+                                      device.referrer == 0) && (
+                                        <button
+                                          onClick={() => handleReconnect(device)}
+                                          className="px-3 py-1.5 rounded text-xs font-medium bg-amber-100 dark:bg-amber-900 hover:bg-amber-200 dark:hover:bg-amber-800 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-600 transition-all"
+                                        >
+                                          {t("scoreboard.connection_manager.grant_permission")}
+                                        </button>
+                                      )}
+
+                                    {/* Disconnect Button */}
+                                    {device.connected &&
+                                      device.referrer != 0 && (
+                                        <button
+                                          onClick={() =>
+                                            handleDisconnect(device)
+                                          }
+                                          className="px-3 py-1.5 rounded text-xs font-medium bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600 transition-all"
+                                        >
+                                          {t("scoreboard.connection_manager.revoke_permission")}
+                                        </button>
+                                      )}
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

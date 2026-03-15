@@ -1,132 +1,143 @@
 const { BetterSQLiteWrapper } = require('./db_better_sqlite3');
-const {DB_SCHEME, TABLE} = require('./constant_sql')
+const { DB_SCHEME, TABLE } = require('./constant_sql');
 
 class DBRefereeService {
     constructor() {
         this.db = new BetterSQLiteWrapper(DB_SCHEME);
         this.db.serialize(() => {
-            this.db.run(TABLE.CRE_CHP_REF);
+            this.db.run(TABLE.CRE_REF);
+            // Migration: Add new columns if missing
+            const columns = this.db.all("PRAGMA table_info(referees)");
+            const colNames = columns.map(c => c.name);
 
+            if (!colNames.includes('is_ref_machine')) {
+                try { this.db.run("ALTER TABLE referees ADD COLUMN is_ref_machine INTEGER DEFAULT 0"); } catch (e) { }
+            }
+            if (!colNames.includes('is_ref_court')) {
+                try { this.db.run("ALTER TABLE referees ADD COLUMN is_ref_court INTEGER DEFAULT 0"); } catch (e) { }
+            }
         });
     }
 
-    // Lấy tất cả trọng tài theo giải đấu
-    /** 
-     *  SELECT r.*, t.display_name as team_name 
-                FROM referee r
-                LEFT JOIN team t ON r.team_name = t.id
-                WHERE r.tournament_id = ?
-                ORDER BY r.id DESC
-    */
-    getAllReferees(tournament_id) {
-        return new Promise((resolve, reject) => {
-            this.db.all(`
-                SELECT r.*
-                FROM referee r
-                WHERE r.tournament_id = ?
-                ORDER BY r.id DESC
-            `, [tournament_id], (err, rows) => {
-                if (err) reject(err);
-                else resolve(rows);
-            });
+    // Lấy tất cả trọng tài
+    getAllReferees() {
+        const rows = this.db.all(`
+            SELECT r.*
+            FROM referees r
+            ORDER BY r.id DESC
+        `);
+        return rows.map(row => {
+            const r = { ...row };
+            const clean = (v) => Math.round(Number(v || 0));
+            for (let i = 1; i <= 7; i++) r[`r${i}`] = clean(r[`r${i}`]);
+            r.is_ref_machine = clean(r.is_ref_machine);
+            r.is_ref_court = clean(r.is_ref_court);
+            return r;
         });
     }
 
     // Thêm mới
     insertReferee(data) {
-        const { full_name, team_name, tournament_id, rank, position } = data;
-        return new Promise((resolve, reject) => {
-            this.db.run(`
-                INSERT INTO referee (full_name, team_name, tournament_id, rank, position) 
-                VALUES (?, ?, ?, ?, ?)
-            `, [full_name, team_name, tournament_id, rank, position], function(err) {
-                if (err) reject(err);
-                else {
-                    const id = this.lastID;
-                    const code = `R-${tournament_id}-${team_name || 0}-${id}`;
-                    // Update code ngay sau khi insert
-                    const db = new sqlite3.Database('./database.sqlite');
-                    db.run(`UPDATE referee SET code = ? WHERE id = ?`, [code, id]);
-                    db.close();
-                    resolve({ id, code, ...data });
+        const { full_name, unit, country, r1, r2, r3, r4, r5, r6, r7, is_ref_machine, is_ref_court } = data;
+        const toB = (v) => (v === true || v === 1 || v === "true" || v === "1" || v === "X") ? 1 : 0;
+        const result = this.db.run(`
+            INSERT INTO referees (full_name, unit, country, r1, r2, r3, r4, r5, r6, r7, is_ref_machine, is_ref_court) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+            full_name, unit, country,
+            toB(r1), toB(r2), toB(r3), toB(r4), toB(r5), toB(r6), toB(r7),
+            toB(is_ref_machine), toB(is_ref_court)
+        ]);
+        return { id: result.lastID, ...data };
+    }
+
+    // Bulk insert (Import từ Excel)
+    insertListReferee(list) {
+        try {
+            const insert = this.db.db.prepare(`
+                INSERT INTO referees (full_name, unit, country, r1, r2, r3, r4, r5, r6, r7, is_ref_machine, is_ref_court)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `);
+
+            const toB = (v) => (v === true || v === 1 || v === "true" || v === "1" || v === "X") ? 1 : 0;
+            const insertMany = this.db.db.transaction((items) => {
+                for (const item of items) {
+                    insert.run([
+                        item.full_name,
+                        item.unit,
+                        item.country,
+                        toB(item.r1),
+                        toB(item.r2),
+                        toB(item.r3),
+                        toB(item.r4),
+                        toB(item.r5),
+                        toB(item.r6),
+                        toB(item.r7),
+                        toB(item.is_ref_machine),
+                        toB(item.is_ref_court)
+                    ]);
                 }
             });
-        });
+
+            insertMany(list);
+            return true;
+        } catch (error) {
+            console.error('Error insertListReferee:', error);
+            throw error;
+        }
     }
 
     // Update
     updateReferee(id, data) {
-        const { full_name, team_name, tournament_id, rank, position } = data;
-        return new Promise((resolve, reject) => {
-            this.db.run(`
-                UPDATE referee SET 
-                    full_name = ?,
-                    team_name = ?,
-                    tournament_id = ?,
-                    rank = ?,
-                    position = ?,
-                    updated_at = datetime('now')
-                WHERE id = ?
-            `, [full_name, team_name, tournament_id, rank, position, id], function(err) {
-                if (err) reject(err);
-                else resolve({ id, ...data });
-            });
-        });
+        const { full_name, unit, country, r1, r2, r3, r4, r5, r6, r7, is_ref_machine, is_ref_court } = data;
+        const toB = (v) => (v === true || v === 1 || v === "true" || v === "1" || v === "X") ? 1 : 0;
+        this.db.run(`
+            UPDATE referees SET 
+                full_name = ?,
+                unit = ?,
+                country = ?,
+                r1 = ?, r2 = ?, r3 = ?, r4 = ?, r5 = ?, r6 = ?, r7 = ?,
+                is_ref_machine = ?, is_ref_court = ?,
+                updated_at = DATETIME('now')
+            WHERE id = ?
+        `, [
+            full_name, unit, country,
+            toB(r1), toB(r2), toB(r3), toB(r4), toB(r5), toB(r6), toB(r7),
+            toB(is_ref_machine), toB(is_ref_court),
+            id
+        ]);
+        return { id, ...data };
     }
 
     // Xoá
     deleteReferee(id) {
-        return new Promise((resolve, reject) => {
-            this.db.run(`DELETE FROM referee WHERE id = ?`, [id], function(err) {
-                if (err) reject(err);
-                else resolve({ id });
-            });
-        });
-    }
-    // Search trọng tài theo champion và tên
-    searchReferees(tournament_id, keyword) {
-        return new Promise((resolve, reject) => {
-            this.db.all(`
-                SELECT r.*
-                FROM referee r
-                WHERE r.tournament_id = ?
-                AND r.full_name LIKE ?
-                ORDER BY r.id DESC
-            `, [tournament_id, `%${keyword}%`], (err, rows) => {
-                if (err) reject(err);
-                else resolve(rows);
-            });
-        });
+        this.db.run(`DELETE FROM referees WHERE id = ?`, [id]);
+        return { id };
     }
 
-    // thêm dạng list
-    insertListReferee (list){
-        return new Promise((resolve, reject) => {
-            try {
-                const stmt = this.db.prepare(`
-                    INSERT INTO referee (full_name, team_name, tournament_id, rank, position )
-                    VALUES (?, ?, ?, ?, ?)
-                  `);
-                list.forEach((item) => { stmt.run(item); });      
-                stmt.finalize();
-                resolve(true)
-            } catch (error) {
-                console.log('error: ', error);
-                reject(false)
-            }
-        })
-    }   
-     // Xoá
-     deleteListReferees(tournament_id) {
-        return new Promise((resolve, reject) => {
-            this.db.run(`DELETE FROM referee WHERE tournament_id = ?`, [tournament_id], function(err) {
-                if (err) reject(err);
-                else resolve({ id });
-            });
-        });
+    // Xoá tất cả
+    deleteAllReferees() {
+        this.db.run(`DELETE FROM referees`);
+        return true;
     }
 
-    // 
+    // Search
+    searchReferees(keyword) {
+        const rows = this.db.all(`
+            SELECT r.*
+            FROM referees r
+            WHERE r.full_name LIKE ? OR r.unit LIKE ? OR r.country LIKE ?
+            ORDER BY r.id DESC
+        `, [`%${keyword}%`, `%${keyword}%`, `%${keyword}%`]);
+        return rows.map(row => {
+            const r = { ...row };
+            const clean = (v) => Math.round(Number(v || 0));
+            for (let i = 1; i <= 7; i++) r[`r${i}`] = clean(r[`r${i}`]);
+            r.is_ref_machine = clean(r.is_ref_machine);
+            r.is_ref_court = clean(r.is_ref_court);
+            return r;
+        });
+    }
 }
 
 const instance = new DBRefereeService();

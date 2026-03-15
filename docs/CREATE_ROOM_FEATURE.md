@@ -10,27 +10,27 @@ Tính năng tạo và quản lý Room Admin, thay thế việc hardcode `room_id
 
 ### **1. Tạo Room Mới**
 
-- ✅ Generate random Room ID (10 ký tự)
-- ✅ Generate random UUID Desktop (12 ký tự)
-- ✅ Tùy chỉnh Server URL
-- ✅ Generate QR Code tự động
-- ✅ Download QR Code
-- ✅ Copy Room ID / UUID Desktop
+- Generate random Room ID (10 ký tự)
+- Generate random UUID Desktop (12 ký tự)
+- Tùy chỉnh Server URL
+- Generate QR Code tự động
+- Download QR Code
+- Copy Room ID / UUID Desktop
 
 ### **2. Quản lý Room**
 
-- ✅ Lưu room vào localStorage
-- ✅ Auto-connect khi reload page
-- ✅ Edit room hiện tại
-- ✅ Delete room
-- ✅ Hiển thị thông tin room
+- Lưu room vào localStorage
+- Auto-connect khi reload page
+- Edit room hiện tại
+- Delete room
+- Hiển thị thông tin room
 
 ### **3. QR Code**
 
-- ✅ Generate QR code cho admin
-- ✅ Format: `{room_id, server_url, type: "admin"}`
-- ✅ Download QR code as PNG
-- ✅ Real-time preview
+- Generate QR code cho admin
+- Format: `{room_id, server_url, type: "admin"}`
+- Download QR code as PNG
+- Real-time preview
 
 ---
 
@@ -70,6 +70,7 @@ Hiển thị Room Info Bar
 ```
 
 **Hiển thị:**
+
 - Room ID (font-mono, bold, blue)
 - UUID Desktop (font-mono, bold, blue)
 - Server URL (font-mono, gray)
@@ -112,13 +113,13 @@ Hiển thị Room Info Bar
 │  │  Scan QR code này để kết nối admin panel             │ │
 │  └───────────────────────────────────────────────────────┘ │
 │                                                             │
-│  [✅ Tạo Room & Kết nối]  [❌ Hủy]                         │
+│  [ Tạo Room & Kết nối]  [ Hủy]                         │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📊 Data Structure
+##  Data Structure
 
 ### **Room Data (localStorage)**
 
@@ -144,7 +145,7 @@ Hiển thị Room Info Bar
 
 ---
 
-## 🔧 Implementation
+## Implementation
 
 ### **1. Generate Random ID**
 
@@ -170,7 +171,7 @@ const generateQRCode = async (roomId, serverUrl) => {
   const qrData = {
     room_id: roomId,
     server_url: serverUrl,
-    type: "admin"
+    type: "admin",
   };
 
   const url = await QRCode.toDataURL(JSON.stringify(qrData), {
@@ -178,8 +179,8 @@ const generateQRCode = async (roomId, serverUrl) => {
     margin: 2,
     color: {
       dark: "#000000",
-      light: "#FFFFFF"
-    }
+      light: "#FFFFFF",
+    },
   });
 
   return url; // data:image/png;base64,...
@@ -192,7 +193,7 @@ const generateQRCode = async (roomId, serverUrl) => {
 const handleCreateRoom = (roomData) => {
   // Save to localStorage
   localStorage.setItem("admin_room", JSON.stringify(roomData));
-  
+
   // Connect to room
   emitSocketEvent("REGISTER_ROOM_ADMIN", {
     room_id: roomData.room_id,
@@ -210,7 +211,7 @@ useEffect(() => {
   if (savedRoom) {
     const roomData = JSON.parse(savedRoom);
     setCurrentRoom(roomData);
-    
+
     // Auto connect
     emitSocketEvent("REGISTER_ROOM_ADMIN", {
       room_id: roomData.room_id,
@@ -261,19 +262,19 @@ ManagementConnectionSocket
 
 ### **New Files**
 
-- ✅ `app/views/Management/Connect/Forms/CreateRoomForm.jsx` - Create room form component
+- `app/views/Management/Connect/Forms/CreateRoomForm.jsx` - Create room form component
 
 ### **Modified Files**
 
-- ✅ `app/views/Management/Connect/index.jsx` - Main component
-  - Added `showCreateRoom` state
-  - Added `currentRoom` state
-  - Added `handleCreateRoom()` handler
-  - Added `handleOpenCreateRoom()` handler
-  - Added `handleDeleteRoom()` handler
-  - Added Room Info Bar UI
-  - Added Create Room Modal
-  - Updated `handleRecreateConnection()` to use `currentRoom`
+- `app/views/Management/Connect/index.jsx` - Main component
+- Added `showCreateRoom` state
+- Added `currentRoom` state
+- Added `handleCreateRoom()` handler
+- Added `handleOpenCreateRoom()` handler
+- Added `handleDeleteRoom()` handler
+- Added Room Info Bar UI
+- Added Create Room Modal
+- Updated `handleRecreateConnection()` to use `currentRoom`
 
 ---
 
@@ -286,7 +287,7 @@ ManagementConnectionSocket
 3. Click "🔄 Generate New Room ID & UUID"
 4. Review generated Room ID and UUID
 5. (Optional) Edit Server URL
-6. Click "✅ Tạo Room & Kết nối"
+6. Click " Tạo Room & Kết nối"
 7. Room is saved and socket connects
 
 ### **Edit Existing Room**
@@ -295,7 +296,7 @@ ManagementConnectionSocket
 2. Modal opens with current room data
 3. Edit Room ID / UUID / Server URL
 4. Click "🔄 Generate New Room ID & UUID" for new values
-5. Click "✅ Sử dụng Room này"
+5. Click " Sử dụng Room này"
 6. Room is updated and socket reconnects
 
 ### **Delete Room**
@@ -313,4 +314,3 @@ ManagementConnectionSocket
 - [SOCKET_QUICK_REFERENCE.md](./SOCKET_QUICK_REFERENCE.md)
 - [SOCKET_CONTROL_BUTTONS.md](./SOCKET_CONTROL_BUTTONS.md)
 - [MOBILE_CLIENT_PROTOCOL.md](./MOBILE_CLIENT_PROTOCOL.md)
-

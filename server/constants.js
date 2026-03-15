@@ -6,7 +6,7 @@ const CONSTANT = {
     REGISTER_ROOM_ADMIN: 'REGISTER_ROOM_ADMIN',
     REGISTER: 'REGISTER',
     ADMIN_FETCH_CONN: 'ADMIN_FETCH_CONN', // lấy danh sách đang kết nối
-    APPROVED: 'APPROVED',        
+    APPROVED: 'APPROVED',
     REJECTED: 'REJECTED',
     DISCONNECTED: 'DISCONNECTED',
     DISCONNECT_CLIENT: 'DISCONNECT_CLIENT',
@@ -19,6 +19,20 @@ const CONSTANT = {
     INFO_REF: 'INFO_REF', // gửi thông tin Giám định về cho các thiết bị khác trong cùng phòng thi đấu
     SET_PERMISSION_REF: 'SET_PERMISSION_REF',
     GET_CONFIG: 'GET_CONFIG', // lấy thông tin gửi all client
+    GET_INFO_DEVICE: 'GET_INFO_DEVICE', // nhận thông tin thiết bị gửi về cập nhât vào mapConn
+
+    // Data Sync Events
+    SYNC_REQUEST: 'SYNC_REQUEST',       // Yêu cầu đồng bộ dữ liệu
+    SYNC_OFFER: 'SYNC_OFFER',           // Thông báo có yêu cầu đồng bộ
+    SYNC_ACCEPT: 'SYNC_ACCEPT',         // Chấp nhận đồng bộ
+    SYNC_REJECT: 'SYNC_REJECT',         // Từ chối đồng bộ
+    SYNC_READY: 'SYNC_READY',           // Sẵn sàng đồng bộ
+    SYNC_REJECTED: 'SYNC_REJECTED',     // Đã bị từ chối
+    SYNC_DATA: 'SYNC_DATA',             // Gửi dữ liệu (chunks)
+    SYNC_PROGRESS: 'SYNC_PROGRESS',     // Cập nhật tiến trình
+    SYNC_COMPLETE: 'SYNC_COMPLETE',     // Hoàn thành đồng bộ
+    SYNC_ERROR: 'SYNC_ERROR',           // Lỗi đồng bộ
+    STAGING_DATA_RECEIVED: 'STAGING_DATA_RECEIVED', // Nhận dữ liệu staging từ máy khác
 }
 const DATABASE_JS = "database.json";
 

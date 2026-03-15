@@ -11,10 +11,18 @@ class DBCompetitionDKService {
                     sheet_name TEXT NOT NULL,
                     file_name TEXT,
                     data TEXT NOT NULL,
+                    referrers TEXT,
                     created_at TEXT DEFAULT (datetime('now')),
                     updated_at TEXT DEFAULT (datetime('now'))
                 )
             `);
+
+            // Migration: Add referrers column if missing
+            const columns = this.db.all("PRAGMA table_info(competition_dk)");
+            const colNames = columns.map(c => c.name);
+            if (!colNames.includes('referrers')) {
+                try { this.db.run("ALTER TABLE competition_dk ADD COLUMN referrers TEXT"); } catch (e) { }
+            }
         });
     }
 
@@ -26,10 +34,18 @@ class DBCompetitionDKService {
                     reject(err);
                 } else {
                     // Parse JSON data
-                    const parsedRows = rows.map(row => ({
-                        ...row,
-                        data: JSON.parse(row.data)
-                    }));
+                    const parsedRows = rows.map(row => {
+                        try {
+                            return {
+                                ...row,
+                                data: row.data ? JSON.parse(row.data) : {},
+                                referrers: row.referrers ? JSON.parse(row.referrers) : []
+                            };
+                        } catch (e) {
+                            console.error(`Lỗi parse dữ liệu JSON ở ID ${row.id}:`, e.message);
+                            return { ...row, data: {}, referrers: [] };
+                        }
+                    });
                     resolve(parsedRows);
                 }
             });
@@ -44,7 +60,14 @@ class DBCompetitionDKService {
                     reject(err);
                 } else {
                     if (row) {
-                        row.data = JSON.parse(row.data);
+                        try {
+                            row.data = row.data ? JSON.parse(row.data) : {};
+                            row.referrers = row.referrers ? JSON.parse(row.referrers) : [];
+                        } catch (e) {
+                            console.error(`Lỗi parse dữ liệu JSON ở ID ${row.id}:`, e.message);
+                            row.data = {};
+                            row.referrers = [];
+                        }
                     }
                     resolve(row);
                 }
@@ -54,17 +77,17 @@ class DBCompetitionDKService {
 
     // Thêm mới
     insertCompetitionDK(body) {
-        const { sheet_name, file_name, data } = body;
+        const { sheet_name, file_name, data, referrers } = body;
         return new Promise((resolve, reject) => {
             const query = `
-                INSERT INTO competition_dk (sheet_name, file_name, data)
-                VALUES (?, ?, ?)
+                INSERT INTO competition_dk (sheet_name, file_name, data, referrers)
+                VALUES (?, ?, ?, ?)
             `;
-            this.db.run(query, [sheet_name, file_name, JSON.stringify(data)], function (err) {
+            this.db.run(query, [sheet_name, file_name, JSON.stringify(data), JSON.stringify(referrers || [])], function (err) {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve({ id: this.lastID, sheet_name, file_name, data });
+                    resolve({ id: this.lastID, sheet_name, file_name, data, referrers: referrers || [] });
                 }
             });
         });
@@ -72,14 +95,14 @@ class DBCompetitionDKService {
 
     // Cập nhật
     updateCompetitionDK(id, body) {
-        const { sheet_name, file_name, data } = body;
+        const { sheet_name, file_name, data, referrers } = body;
         return new Promise((resolve, reject) => {
             const query = `
                 UPDATE competition_dk 
-                SET sheet_name = ?, file_name = ?, data = ?, updated_at = datetime('now')
+                SET sheet_name = ?, file_name = ?, data = ?, referrers = ?, updated_at = datetime('now')
                 WHERE id = ?
             `;
-            this.db.run(query, [sheet_name, file_name, JSON.stringify(data), id], function (err) {
+            this.db.run(query, [sheet_name, file_name, JSON.stringify(data), JSON.stringify(referrers || []), id], function (err) {
                 if (err) {
                     reject(err);
                 } else {
@@ -135,8 +158,15 @@ class DBCompetitionDKService {
                 if (err) {
                     reject(err);
                 } else {
-                    if (row && row.data) {
-                        row.data = JSON.parse(row.data);
+                    if (row) {
+                        try {
+                            row.data = row.data ? JSON.parse(row.data) : {};
+                            row.referrers = row.referrers ? JSON.parse(row.referrers) : [];
+                        } catch (e) {
+                            console.error(`Lỗi parse dữ liệu JSON ở sheet_name ${sheet_name}:`, e.message);
+                            row.data = {};
+                            row.referrers = [];
+                        }
                     }
                     resolve(row);
                 }

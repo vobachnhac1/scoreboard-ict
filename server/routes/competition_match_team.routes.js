@@ -13,6 +13,8 @@ router.post('/competition-match-team/:id/history', competitionMatchTeamControlle
 router.get('/competition-match-team/:id/history', competitionMatchTeamController.getHistory);
 router.delete('/competition-match-team/:id', competitionMatchTeamController.deleteTeam);
 router.delete('/competition-match-team/by-dk/:competition_dk_id', competitionMatchTeamController.deleteTeamsByCompetitionDKId);
+// thực hiện cập nhật điểm tay qua modal
+router.put('/competition-match-team/:id/scores', competitionMatchTeamController.updateScores);
 // thực hiện lưu kết quả thi đấu 
 router.post('/competition-match-team/save-score', competitionMatchTeamController.saveResultTeam);
 

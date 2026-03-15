@@ -5,10 +5,10 @@
 
 // const db = new sqlite3.Database(DB_PATH, (err) => {
 //   if (err) {
-//     console.error('❌ Lỗi kết nối database:', err.message);
+//     console.error(' Lỗi kết nối database:', err.message);
 //     process.exit(1);
 //   }
-//   console.log('✅ Đã kết nối database');
+//   console.log(' Đã kết nối database');
 // });
 
 // // Migration: Tạo bảng logos
@@ -18,13 +18,13 @@
 //   // Kiểm tra xem bảng đã tồn tại chưa
 //   db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='logos'", (err, row) => {
 //     if (err) {
-//       console.error('❌ Lỗi kiểm tra bảng:', err.message);
+//       console.error(' Lỗi kiểm tra bảng:', err.message);
 //       db.close();
 //       process.exit(1);
 //     }
 
 //     if (row) {
-//       console.log('⚠️  Bảng logos đã tồn tại, bỏ qua migration');
+//       console.log('  Bảng logos đã tồn tại, bỏ qua migration');
 //       db.close();
 //       process.exit(0);
 //     }
@@ -40,12 +40,12 @@
 //       )
 //     `, (err) => {
 //       if (err) {
-//         console.error('❌ Lỗi tạo bảng logos:', err.message);
+//         console.error(' Lỗi tạo bảng logos:', err.message);
 //         db.close();
 //         process.exit(1);
 //       }
 
-//       console.log('✅ Đã tạo bảng logos thành công');
+//       console.log(' Đã tạo bảng logos thành công');
 
 //       // Thêm một số logos mẫu
 //       const sampleLogos = [
@@ -62,17 +62,17 @@
 
 //       stmt.finalize((err) => {
 //         if (err) {
-//           console.error('❌ Lỗi thêm dữ liệu mẫu:', err.message);
+//           console.error(' Lỗi thêm dữ liệu mẫu:', err.message);
 //         } else {
-//           console.log('✅ Đã thêm dữ liệu mẫu thành công');
+//           console.log(' Đã thêm dữ liệu mẫu thành công');
 //         }
 
 //         db.close((err) => {
 //           if (err) {
-//             console.error('❌ Lỗi đóng database:', err.message);
+//             console.error(' Lỗi đóng database:', err.message);
 //             process.exit(1);
 //           }
-//           console.log('✅ Migration hoàn tất');
+//           console.log(' Migration hoàn tất');
 //           process.exit(0);
 //         });
 //       });

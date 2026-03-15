@@ -9,11 +9,15 @@ const CustomTable = ({
   page = 1,
   totalPages = 1,
   contentHeader = null,
-  rounded = "rounded-xl",
+  rounded = "rounded",
   onPageChange = (newPage) => {},
   onRowDoubleClick = (row) => {},
 }) => {
-  const visibleColumns = columnGroups ? columnGroups.flatMap((group) => group.children).filter((col) => !col.hidden) : columns.filter((col) => !col.hidden);
+  const visibleColumns = columnGroups
+    ? columnGroups
+        .flatMap((group) => group.children)
+        .filter((col) => !col.hidden)
+    : columns.filter((col) => !col.hidden);
   const [focusedRowIndex, setFocusedRowIndex] = useState(null);
 
   const handleRowClick = (idx) => {
@@ -32,17 +36,27 @@ const CustomTable = ({
   };
 
   return (
-    <div className={`border border-gray-300 overflow-hidden select-none ${rounded}`}>
+    <div
+      className={`border border-gray-300 dark:border-gray-600 overflow-hidden select-none ${rounded}`}
+    >
       {/* Hiển thị content nếu có */}
-      {contentHeader && <div className="px-4 py-3 border-b bg-primary text-sm text-white font-semibold text-center">{contentHeader}</div>}
+      {contentHeader && (
+        <div className="px-4 py-3 border-b dark:border-gray-600 bg-primary text-sm text-white font-semibold text-center">
+          {contentHeader}
+        </div>
+      )}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-700">
             {columnGroups ? (
               <>
                 <tr>
                   {columnGroups.map((group, idx) => (
-                    <th key={`group-${idx}`} colSpan={group.colSpan} className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                    <th
+                      key={`group-${idx}`}
+                      colSpan={group.colSpan}
+                      className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-b dark:border-gray-600"
+                    >
                       {group.title}
                     </th>
                   ))}
@@ -52,17 +66,23 @@ const CustomTable = ({
                     group.children
                       .filter((col) => !col.hidden)
                       .map((col) => (
-                        <th key={col.key} className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap ${getAlignmentClass(col.align)} ${col.className || ""}`}>
+                        <th
+                          key={col.key}
+                          className={`px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap ${getAlignmentClass(col.align)} ${col.className || ""}`}
+                        >
                           {col.title}
                         </th>
-                      ))
+                      )),
                   )}
                 </tr>
               </>
             ) : (
               <tr>
                 {visibleColumns.map((col) => (
-                  <th key={col.key} className={`px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap ${getAlignmentClass(col.align)} ${col.className || ""}`}>
+                  <th
+                    key={col.key}
+                    className={`px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap ${getAlignmentClass(col.align)} ${col.className || ""}`}
+                  >
                     {col.title}
                   </th>
                 ))}
@@ -70,22 +90,30 @@ const CustomTable = ({
             )}
           </thead>
 
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {loading ? (
               <tr>
-                <td colSpan={visibleColumns.length} className="px-4 py-3 text-center text-gray-500">
+                <td
+                  colSpan={visibleColumns.length}
+                  className="px-4 py-3 text-center text-gray-500 dark:text-gray-400"
+                >
                   <div className="flex flex-col items-center justify-center py-4">
-                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                    <p className="mt-2 text-gray-600">Đang tải dữ liệu...</p>
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 dark:border-blue-400"></div>
+                    <p className="mt-2 text-gray-600 dark:text-gray-300">
+                      Đang tải dữ liệu...
+                    </p>
                   </div>
                 </td>
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={visibleColumns.length} className="px-4 py-3 text-center">
-                  <div className="py-12 bg-gray-50">
+                <td
+                  colSpan={visibleColumns.length}
+                  className="px-4 py-3 text-center"
+                >
+                  <div className="py-12 bg-gray-50 dark:bg-gray-700">
                     <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
+                      className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -97,7 +125,9 @@ const CustomTable = ({
                         d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
                       />
                     </svg>
-                    <p className="mt-2 text-sm text-gray-600">Không có dữ liệu</p>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                      Không có dữ liệu
+                    </p>
                   </div>
                 </td>
               </tr>
@@ -105,17 +135,21 @@ const CustomTable = ({
               data.map((row, idx) => (
                 <tr
                   key={idx}
-                  className={`cursor-pointer hover:bg-gray-50 ${focusedRowIndex === idx ? "bg-blue-100" : ""}`}
+                  className={`cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 ${focusedRowIndex === idx ? "bg-blue-100 dark:bg-blue-900" : ""}`}
                   onClick={() => handleRowClick(idx)}
                   onDoubleClick={() => onRowDoubleClick(row)}
                 >
                   {visibleColumns.map((col) => (
                     <td
                       key={col.key}
-                      className={`px-4 py-3 whitespace-nowrap text-sm text-gray-900 ${getAlignmentClass(col.align)} ${col.className || ""}`}
+                      className={`px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 ${getAlignmentClass(col.align)} ${col.className || ""}`}
                       style={{ minWidth: col.width || 100 }}
                     >
-                      {col.render ? col.render(row) : col.key === "order" ? row[col.key] ?? idx + 1 : row[col.key]}
+                      {col.render
+                        ? col.render(row)
+                        : col.key === "order"
+                          ? (row[col.key] ?? idx + 1)
+                          : row[col.key]}
                     </td>
                   ))}
                 </tr>
@@ -127,15 +161,25 @@ const CustomTable = ({
 
       {/* Phân trang */}
       {page ? (
-        <div className="flex justify-between items-center px-4 py-3 bg-gray-50 border-t border-gray-200 text-sm text-gray-700">
+        <div className="flex justify-between items-center px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300">
           <span>
             Trang {page} / {totalPages}
           </span>
           <div className="space-x-2">
-            <Button variant="primary" disabled={page <= 1} onClick={() => onPageChange(page - 1)} className="!px-3 !py-1">
+            <Button
+              variant="primary"
+              disabled={page <= 1}
+              onClick={() => onPageChange(page - 1)}
+              className="!px-3 !py-1"
+            >
               Trước
             </Button>
-            <Button variant="primary" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)} className="!px-3 !py-1">
+            <Button
+              variant="primary"
+              disabled={page >= totalPages}
+              onClick={() => onPageChange(page + 1)}
+              className="!px-3 !py-1"
+            >
               Sau
             </Button>
           </div>

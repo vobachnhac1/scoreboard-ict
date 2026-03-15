@@ -1,9 +1,11 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Input from "../Input";
 import Button from "../Button";
 import Modal from "../Modal";
 
 export default function CheckActive({ checkActive }) {
+  const { t } = useTranslation();
   const [licenseKey, setLicenseKey] = React.useState("");
   const [loadingButton, setLoadingButton] = React.useState(false);
   const [isActive, setIsActive] = React.useState(false);
@@ -23,14 +25,13 @@ export default function CheckActive({ checkActive }) {
     <React.Fragment>
       <div className="h-screen bg-gray-100 p-6 overflow-auto">
         <div className="">
-          <h1 className="text-3xl">Chào mừng quý khách hàng,</h1>
+          <h1 className="text-3xl">{t("license.welcome_message")}</h1>
           <p className="text-base mt-2">
-            Đầu tiên phía công ty gửi lời cảm ơn chân thành đến quý khách hàng đã tin tưởng sử dụng dịch vụ của công ty. Trong suốt quá trình triển nghiệm dịch
-            vụ nếu gặp khó khăn xin đừng ngại hãy liên hệ đến bộ phận hỗ trợ khách hàng:
+            {t("license.thank_you_message")}
           </p>
-          <p className="text-base mt-2">- Bộ phận hỗ trợ kỹ thuật: 0902.336.837 (Võ Bách Nhạc).</p>
-          <p className="text-base mt-2">- Bộ phận kinh doanh: 0902.336.837 (Võ Bách Nhạc).</p>
-          <p className="text-base mt-2">Hoặc gửi thông tin đến hộp thư:</p>
+          <p className="text-base mt-2">- {t("license.technical_support")}: 0902.336.837 (Võ Bách Nhạc).</p>
+          <p className="text-base mt-2">- {t("license.business_department")}: 0902.336.837 (Võ Bách Nhạc).</p>
+          <p className="text-base mt-2">{t("license.or_send_to")}</p>
           <p className="text-base mt-2">- Email: vobachnhac@gmail.com</p>
           <p className="text-base mt-2 ">
             - Website:{" "}
@@ -40,7 +41,7 @@ export default function CheckActive({ checkActive }) {
           </p>
         </div>
         <div className="flex flex-col items-center justify-center w-full mt-10">
-          <div className="uppercase">Vui lòng kết nối Internet để tiếp tục</div>
+          <div className="uppercase">{t("license.please_connect_internet")}</div>
           <div className="flex items-center justify-center mt-4">
             <Input
               onChange={(e) => {
@@ -64,14 +65,14 @@ export default function CheckActive({ checkActive }) {
               variant="danger"
               className="!rounded-none border-red-600 border-2"
             >
-              Kích hoạt
+              {t("license.activate")}
             </Button>
           </div>
           <div className="mt-2">
             {isActive ? (
-              <div className="uppercase text-xs text-green-600 font-bold">Mã kích hoạt hợp lệ</div>
+              <div className="uppercase text-xs text-green-600 font-bold">{t("license.valid")}</div>
             ) : (
-              <div className="uppercase text-xs text-red-600 font-bold">Trạng thái chưa kết nối</div>
+              <div className="uppercase text-xs text-red-600 font-bold">{t("license.not_activated")}</div>
             )}
           </div>
         </div>

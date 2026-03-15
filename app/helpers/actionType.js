@@ -8,7 +8,13 @@
  * @param {string} type - Loại action
  * @returns {string} - Tên hiển thị
  */
-export const getActionTypeLabel = (type) => {
+export const getActionTypeLabel = (type, t) => {
+  if (t) {
+    const translationKey = `action_types.${type.toLowerCase()}`;
+    const translated = t(translationKey);
+    if (translated !== translationKey) return translated;
+  }
+
   const types = {
     score: "Ghi điểm",
     remind: "Nhắc nhở",

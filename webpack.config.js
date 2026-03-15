@@ -3,8 +3,13 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
-  watch: true, // Tắt watch mode mặc định, chỉ bật khi dùng --watch flag
+  mode: 'production',
+  watch: false, // Watch mode enabled
+  watchOptions: {
+    ignored: /node_modules/,
+    aggregateTimeout: 100, // Delay rebuild after first change (ms)
+    poll: 10000 // Check for changes every second
+  },
   entry: {
     app: './app/index.js'
   },
@@ -12,6 +17,10 @@ module.exports = {
     filename: 'app.bundle.js',
     path: path.resolve(__dirname, './public'),
     publicPath: '/'
+  },
+  cache: {
+    type: 'filesystem', // Enable filesystem caching for faster rebuilds
+    cacheDirectory: path.resolve(__dirname, '.webpack-cache')
   },
   module: {
     rules: [

@@ -157,7 +157,7 @@
 //                                   item.current
 //                                     ? 'bg-gray-50 text-sky-600'
 //                                     : 'text-gray-700 hover:text-sky-600 hover:bg-gray-50',
-//                                   'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+//                                   'group flex gap-x-3 rounded p-2 text-sm leading-6 font-semibold'
 //                                 )}
 //                                 onClick={() => handleLinkClick(item)}
 //                               >
@@ -177,7 +177,7 @@
 //                       <li className="mt-auto">
 //                         <Link
 //                           to="/"
-//                           className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-sky-600"
+//                           className="group -mx-2 flex gap-x-3 rounded p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-sky-600"
 //                         >
 //                           <Cog6ToothIcon
 //                             className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-sky-600"
@@ -202,7 +202,7 @@
 //           <div className="flex h-20 shrink-0 items-center justify-center border-b border-gray-200">
 //             <div className="text-center">
 //               <div className="flex items-center justify-center gap-3">
-//                 <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
+//                 <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded flex items-center justify-center shadow-lg">
 //                   <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 //                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
 //                   </svg>
@@ -228,7 +228,7 @@
 //                           item.current
 //                             ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg scale-105`
 //                             : 'text-gray-700 hover:bg-gray-100 hover:scale-102',
-//                           'group flex gap-x-3 rounded-xl p-3 text-sm leading-6 font-semibold transition-all duration-200 relative overflow-hidden'
+//                           'group flex gap-x-3 rounded p-3 text-sm leading-6 font-semibold transition-all duration-200 relative overflow-hidden'
 //                         )}
 //                       >
 //                         {/* Gradient overlay on hover */}
@@ -240,7 +240,7 @@
 //                           item.current
 //                             ? 'bg-white/20 text-white'
 //                             : 'bg-gray-100 text-gray-600 group-hover:bg-gray-200',
-//                           'w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 relative z-10'
+//                           'w-10 h-10 rounded flex items-center justify-center flex-shrink-0 transition-all duration-200 relative z-10'
 //                         )}>
 //                           <item.icon className="h-5 w-5" aria-hidden="true" />
 //                         </div>
@@ -285,7 +285,7 @@
 //                     leaveFrom="transform opacity-100 scale-100"
 //                     leaveTo="transform opacity-0 scale-95"
 //                   >
-//                     <Menu.Items className="absolute left-0 bottom-9 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+//                     <Menu.Items className="absolute left-0 bottom-9 z-10 mt-2.5 w-32 origin-top-right rounded bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
 //                       <Menu.Item>
 //                         <button
 //                           onClick={() => handleChangeLanguage()}
@@ -322,7 +322,7 @@
 //                     leaveFrom="transform opacity-100 scale-100"
 //                     leaveTo="transform opacity-0 scale-95"
 //                   >
-//                     <Menu.Items className="absolute right-0 bottom-9 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+//                     <Menu.Items className="absolute right-0 bottom-9 z-10 mt-2.5 w-32 origin-top-right rounded bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
 //                       {/* {userNavigation.map((item) => (
 //                         <Menu.Item key={item.name}>
 //                           {({ active }) => (

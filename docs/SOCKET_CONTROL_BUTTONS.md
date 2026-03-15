@@ -18,8 +18,8 @@ Button này cho phép admin ngắt kết nối **tất cả thiết bị** đang
 ### **UI**
 
 ```jsx
-<Button 
-  variant="danger" 
+<Button
+  variant="danger"
   className="min-w-32"
   onClick={handleTurnOffAll}
   disabled={loading || data.length === 0}
@@ -29,10 +29,11 @@ Button này cho phép admin ngắt kết nối **tất cả thiết bị** đang
 ```
 
 **Tính năng:**
-- ✅ Hiển thị số lượng thiết bị đang kết nối
-- ✅ Disabled khi không có thiết bị hoặc đang loading
-- ✅ Màu đỏ (danger) để cảnh báo
-- ✅ Confirm dialog trước khi thực hiện
+
+- Hiển thị số lượng thiết bị đang kết nối
+- Disabled khi không có thiết bị hoặc đang loading
+- Màu đỏ (danger) để cảnh báo
+- Confirm dialog trước khi thực hiện
 
 ---
 
@@ -58,7 +59,7 @@ Wait 1 second
   ↓
 handleRefresh() - Refresh device list
   ↓
-Console log: "✅ Đã ngắt kết nối X thiết bị"
+Console log: " Đã ngắt kết nối X thiết bị"
 ```
 
 ---
@@ -73,12 +74,12 @@ const handleTurnOffAll = () => {
   }
 
   const confirmDisconnect = window.confirm(
-    `Bạn có chắc chắn muốn ngắt kết nối tất cả ${data.length} thiết bị?`
+    `Bạn có chắc chắn muốn ngắt kết nối tất cả ${data.length} thiết bị?`,
   );
 
   if (confirmDisconnect) {
     setLoading(true);
-    
+
     // Ngắt kết nối từng thiết bị
     data.forEach((device) => {
       if (device.socket_id && device.room_id) {
@@ -94,7 +95,7 @@ const handleTurnOffAll = () => {
       handleRefresh();
     }, 1000);
 
-    console.log(`✅ Đã ngắt kết nối ${data.length} thiết bị`);
+    console.log(` Đã ngắt kết nối ${data.length} thiết bị`);
   }
 };
 ```
@@ -118,8 +119,8 @@ Button này cho phép admin **tạo lại kết nối socket** từ đầu mà k
 ### **UI**
 
 ```jsx
-<Button 
-  variant="warning" 
+<Button
+  variant="warning"
   className="min-w-32"
   onClick={handleRecreateConnection}
   disabled={isReconnecting || loading}
@@ -129,10 +130,11 @@ Button này cho phép admin **tạo lại kết nối socket** từ đầu mà k
 ```
 
 **Tính năng:**
-- ✅ Hiển thị trạng thái "Đang tạo lại..." khi đang reconnect
-- ✅ Disabled khi đang reconnect hoặc loading
-- ✅ Màu vàng (warning) để cảnh báo
-- ✅ Confirm dialog trước khi thực hiện
+
+- Hiển thị trạng thái "Đang tạo lại..." khi đang reconnect
+- Disabled khi đang reconnect hoặc loading
+- Màu vàng (warning) để cảnh báo
+- Confirm dialog trước khi thực hiện
 
 ---
 
@@ -180,7 +182,7 @@ setLoading(false)
 ```javascript
 const handleRecreateConnection = async () => {
   const confirmReconnect = window.confirm(
-    "Bạn có chắc chắn muốn tạo lại kết nối socket?\n\nSocket hiện tại sẽ bị ngắt và tạo lại kết nối mới."
+    "Bạn có chắc chắn muốn tạo lại kết nối socket?\n\nSocket hiện tại sẽ bị ngắt và tạo lại kết nối mới.",
   );
 
   if (confirmReconnect) {
@@ -197,7 +199,7 @@ const handleRecreateConnection = async () => {
 
       // Bước 2: Tạo kết nối mới
       console.log("2️⃣ Tạo kết nối socket mới...");
-      await dispatch(connectSocket('admin'));
+      await dispatch(connectSocket("admin"));
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Bước 3: Đăng ký lại admin vào room
@@ -213,11 +215,10 @@ const handleRecreateConnection = async () => {
       console.log("4️⃣ Refresh danh sách thiết bị...");
       emitSocketEvent("ADMIN_FETCH_CONN", {});
 
-      console.log("✅ Tạo lại kết nối socket thành công!");
+      console.log(" Tạo lại kết nối socket thành công!");
       alert("Tạo lại kết nối socket thành công!");
-
     } catch (error) {
-      console.error("❌ Lỗi khi tạo lại kết nối:", error);
+      console.error(" Lỗi khi tạo lại kết nối:", error);
       alert("Lỗi khi tạo lại kết nối socket. Vui lòng thử lại.");
     } finally {
       setIsReconnecting(false);
@@ -238,16 +239,16 @@ const handleRecreateConnection = async () => {
 
 ---
 
-## 📊 Console Logs
+##  Console Logs
 
 ### **Turn Off All**
 
 ```
-✅ Đã ngắt kết nối 5 thiết bị
-📤 Emit event: DISCONNECT_CLIENT { socket_id: 'abc123', room_id: '1AZJM9JL8D' }
-📤 Emit event: DISCONNECT_CLIENT { socket_id: 'def456', room_id: '1AZJM9JL8D' }
+ Đã ngắt kết nối 5 thiết bị
+ Emit event: DISCONNECT_CLIENT { socket_id: 'abc123', room_id: '1AZJM9JL8D' }
+ Emit event: DISCONNECT_CLIENT { socket_id: 'def456', room_id: '1AZJM9JL8D' }
 ...
-📤 Emit event: ADMIN_FETCH_CONN {}
+ Emit event: ADMIN_FETCH_CONN {}
 ```
 
 ### **Re-create Socket**
@@ -256,15 +257,15 @@ const handleRecreateConnection = async () => {
 🔄 Bắt đầu tạo lại kết nối socket...
 1️⃣ Ngắt kết nối socket hiện tại...
 🔌 Socket disconnected
-❌ Socket disconnected. Reason: client namespace disconnect
+ Socket disconnected. Reason: client namespace disconnect
 2️⃣ Tạo kết nối socket mới...
 Connecting socket with role: admin
-✅ Socket connected with role: admin, ID: xyz789
+ Socket connected with role: admin, ID: xyz789
 3️⃣ Đăng ký admin vào room...
-📤 Emit event: REGISTER_ROOM_ADMIN { room_id: '1AZJM9JL8D', uuid_desktop: 'CO2GJ74NMD6M', permission: 9 }
+ Emit event: REGISTER_ROOM_ADMIN { room_id: '1AZJM9JL8D', uuid_desktop: 'CO2GJ74NMD6M', permission: 9 }
 4️⃣ Refresh danh sách thiết bị...
-📤 Emit event: ADMIN_FETCH_CONN {}
-✅ Tạo lại kết nối socket thành công!
+ Emit event: ADMIN_FETCH_CONN {}
+ Tạo lại kết nối socket thành công!
 ```
 
 ---
@@ -273,7 +274,7 @@ Connecting socket with role: admin
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│  [🔴 Turn Off All (5)]  [🔄 Re-create Socket]  ✅ Socket Connected      │
+│  [🔴 Turn Off All (5)]  [🔄 Re-create Socket]   Socket Connected      │
 │                                                                         │
 │                                    [Cập nhật license]                   │
 │                                    [Mã kích hoạt điện thoại]            │
@@ -282,33 +283,35 @@ Connecting socket with role: admin
 ```
 
 **Left side:**
+
 - 🔴 Turn Off All button (danger)
 - 🔄 Re-create Socket button (warning)
 - Socket connection status indicator
 
 **Right side:**
+
 - Cập nhật license button
 - Mã kích hoạt điện thoại button
 - Tải lại button
 
 ---
 
-## ⚠️ Lưu ý quan trọng
+## Lưu ý quan trọng
 
 ### **Turn Off All**
 
-1. ✅ **Confirm trước khi thực hiện** - Tránh ngắt nhầm
-2. ✅ **Disabled khi không có thiết bị** - Tránh lỗi
-3. ✅ **Refresh sau khi ngắt** - Cập nhật UI
-4. ✅ **Timeout 1s** - Đợi server xử lý xong
+1.  **Confirm trước khi thực hiện** - Tránh ngắt nhầm
+2.  **Disabled khi không có thiết bị** - Tránh lỗi
+3.  **Refresh sau khi ngắt** - Cập nhật UI
+4.  **Timeout 1s** - Đợi server xử lý xong
 
 ### **Re-create Socket**
 
-1. ✅ **Async/await** - Đảm bảo thứ tự thực hiện
-2. ✅ **Timeout giữa các bước** - Đợi socket connect/disconnect
-3. ✅ **Try/catch** - Handle errors
-4. ✅ **Finally block** - Reset loading states
-5. ✅ **Redux actions** - Sử dụng Redux để quản lý socket
+1.  **Async/await** - Đảm bảo thứ tự thực hiện
+2.  **Timeout giữa các bước** - Đợi socket connect/disconnect
+3.  **Try/catch** - Handle errors
+4.  **Finally block** - Reset loading states
+5.  **Redux actions** - Sử dụng Redux để quản lý socket
 
 ---
 
@@ -334,7 +337,7 @@ const socket = useSelector((state) => state.socket);
 console.log("Socket state:", socket);
 
 // Check socket instance
-import { socketClient } from '../../../config/routes';
+import { socketClient } from "../../../config/routes";
 console.log("Socket connected:", socketClient.isConnected());
 console.log("Socket ID:", socketClient.getSocketId());
 ```
@@ -353,4 +356,3 @@ console.log("Socket ID:", socketClient.getSocketId());
 - [Socket.IO Client API](https://socket.io/docs/v4/client-api/)
 - [Redux Toolkit](https://redux-toolkit.js.org/)
 - [React Hooks](https://react.dev/reference/react)
-

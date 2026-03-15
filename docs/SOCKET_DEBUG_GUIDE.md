@@ -2,58 +2,61 @@
 
 ## 🎯 Common Issues & Solutions
 
-### **1. ⚠️ "Socket not initialized"**
+### **1. "Socket not initialized"**
 
 **Nguyên nhân:**
+
 - Socket chưa được `init()` trước khi `emit()`
 - Component mount trước khi socket connect
 
 **Giải pháp:**
 
 ```javascript
-// ✅ ĐÚNG: Đợi socket connect trước
+//  ĐÚNG: Đợi socket connect trước
 useEffect(() => {
   const initSocket = async () => {
     if (!socket.connected) {
-      await dispatch(connectSocket('admin'));
+      await dispatch(connectSocket("admin"));
     }
-    
+
     // Đợi socket sẵn sàng
     await new Promise((resolve) => setTimeout(resolve, 300));
-    
+
     // Bây giờ mới emit
     emitSocketEvent("EVENT_NAME", data);
   };
-  
+
   initSocket();
 }, []);
 
-// ❌ SAI: Emit ngay lập tức
+//  SAI: Emit ngay lập tức
 useEffect(() => {
   emitSocketEvent("EVENT_NAME", data); // Socket chưa init!
 }, []);
 ```
 
 **Check:**
+
 ```javascript
 // Console sẽ hiển thị:
 🔍 Checking socket status: false
 🔌 Khởi tạo socket connection...
 🔌 Redux: Connecting socket with role: admin
 this.socket: null
-✅ Socket connected with role: admin, ID: abc123
-✅ Redux: Socket connected
-✅ Redux state updated: connected = true
+ Socket connected with role: admin, ID: abc123
+ Redux: Socket connected
+ Redux state updated: connected = true
 📂 Loaded room from localStorage: {...}
-📤 Registering admin to room...
-📤 Emit event: REGISTER_ROOM_ADMIN {...}
+ Registering admin to room...
+ Emit event: REGISTER_ROOM_ADMIN {...}
 ```
 
 ---
 
-### **2. ❌ Redux state không tự động update khi socket disconnect**
+### **2. Redux state không tự động update khi socket disconnect**
 
 **Nguyên nhân:**
+
 - Redux state chỉ update khi dispatch action
 - Socket có thể disconnect do network mà không có action nào được dispatch
 - Không có event listeners để track socket connection changes
@@ -69,19 +72,23 @@ export const setupSocketListeners = (store) => {
 
   if (socket) {
     // Listen connect event
-    socket.on('connect', () => {
-      store.dispatch(setConnected({
-        connected: true,
-        socketId: socket.id
-      }));
+    socket.on("connect", () => {
+      store.dispatch(
+        setConnected({
+          connected: true,
+          socketId: socket.id,
+        }),
+      );
     });
 
     // Listen disconnect event
-    socket.on('disconnect', (reason) => {
-      store.dispatch(setConnected({
-        connected: false,
-        socketId: null
-      }));
+    socket.on("disconnect", (reason) => {
+      store.dispatch(
+        setConnected({
+          connected: false,
+          socketId: null,
+        }),
+      );
     });
   }
 };
@@ -90,7 +97,7 @@ export const setupSocketListeners = (store) => {
 useEffect(() => {
   const initSocket = async () => {
     if (!socket.connected) {
-      await dispatch(connectSocket('admin'));
+      await dispatch(connectSocket("admin"));
 
       // Setup listeners
       setupSocketListeners(store);
@@ -102,9 +109,10 @@ useEffect(() => {
 ```
 
 **Check:**
+
 ```javascript
 // Khi socket disconnect, console sẽ hiển thị:
-❌ Socket disconnected. Reason: transport close
+ Socket disconnected. Reason: transport close
 🔌 Socket disconnected event, updating Redux state. Reason: transport close
 🔄 Redux: Manual update connected = false socketId = null
 
@@ -122,6 +130,7 @@ useEffect(() => {
 ### **3. 🔄 Re-create Socket không hoạt động**
 
 **Nguyên nhân:**
+
 - Không có room
 - Socket đang reconnecting
 
@@ -133,14 +142,14 @@ const handleRecreateConnection = async () => {
     alert("Vui lòng tạo room trước!");
     return;
   }
-  
+
   // 4-step process
   await dispatch(disconnectSocket());
   await new Promise((resolve) => setTimeout(resolve, 500));
-  
-  await dispatch(connectSocket('admin'));
+
+  await dispatch(connectSocket("admin"));
   await new Promise((resolve) => setTimeout(resolve, 500));
-  
+
   emitSocketEvent("REGISTER_ROOM_ADMIN", {
     room_id: currentRoom.room_id,
     uuid_desktop: currentRoom.uuid_desktop,
@@ -154,6 +163,7 @@ const handleRecreateConnection = async () => {
 ### **4. 📂 localStorage không load**
 
 **Nguyên nhân:**
+
 - Data bị corrupt
 - JSON parse error
 
@@ -164,15 +174,16 @@ try {
   const savedRoom = localStorage.getItem("admin_room");
   if (savedRoom) {
     const roomData = JSON.parse(savedRoom);
-    console.log("✅ Loaded room:", roomData);
+    console.log(" Loaded room:", roomData);
   }
 } catch (error) {
-  console.error("❌ Error loading room:", error);
+  console.error(" Error loading room:", error);
   localStorage.removeItem("admin_room"); // Clear corrupt data
 }
 ```
 
 **Check localStorage:**
+
 ```javascript
 // Chrome DevTools > Application > Local Storage
 // Key: admin_room
@@ -187,12 +198,13 @@ try {
 
 ```javascript
 // Console
-console.log('Socket connected:', socket.connected);
-console.log('Socket ID:', socketClient.getSocketId());
-console.log('Socket role:', socketClient.getRole());
+console.log("Socket connected:", socket.connected);
+console.log("Socket ID:", socketClient.getSocketId());
+console.log("Socket role:", socketClient.getRole());
 ```
 
 **Expected:**
+
 ```
 Socket connected: true
 Socket ID: abc123xyz
@@ -205,10 +217,11 @@ Socket role: admin
 
 ```javascript
 // Console
-console.log('Redux socket state:', store.getState().socket);
+console.log("Redux socket state:", store.getState().socket);
 ```
 
 **Expected:**
+
 ```javascript
 {
   connected: true,
@@ -222,10 +235,11 @@ console.log('Redux socket state:', store.getState().socket);
 
 ```javascript
 // Console
-console.log('Saved room:', localStorage.getItem('admin_room'));
+console.log("Saved room:", localStorage.getItem("admin_room"));
 ```
 
 **Expected:**
+
 ```json
 {
   "room_id": "1AZJM9JL8D",
@@ -246,8 +260,9 @@ curl http://localhost:6789/socket.io/
 ```
 
 **Expected:**
+
 ```json
-{"code":0,"message":"Transport unknown"}
+{ "code": 0, "message": "Transport unknown" }
 ```
 
 ---
@@ -257,13 +272,14 @@ curl http://localhost:6789/socket.io/
 **Chrome DevTools > Network > WS (WebSocket)**
 
 **Expected:**
+
 - Status: 101 Switching Protocols
 - Type: websocket
 - Messages: REGISTER_ROOM_ADMIN, RES_ROOM_ADMIN, etc.
 
 ---
 
-## 📊 Console Log Flow
+##  Console Log Flow
 
 ### **Normal Flow:**
 
@@ -272,12 +288,12 @@ curl http://localhost:6789/socket.io/
 2. 🔌 Khởi tạo socket connection...
 3. 🔌 Redux: Connecting socket with role: admin
 4. this.socket: null
-5. ✅ Socket connected with role: admin, ID: abc123
-6. ✅ Redux: Socket connected
-7. ✅ Redux state updated: connected = true
+5.  Socket connected with role: admin, ID: abc123
+6.  Redux: Socket connected
+7.  Redux state updated: connected = true
 8. 📂 Loaded room from localStorage: {...}
-9. 📤 Registering admin to room...
-10. 📤 Emit event: REGISTER_ROOM_ADMIN {...}
+9.  Registering admin to room...
+10.  Emit event: REGISTER_ROOM_ADMIN {...}
 11. 📥 Received event: RES_ROOM_ADMIN {...}
 ```
 
@@ -288,8 +304,8 @@ curl http://localhost:6789/socket.io/
 2. 🔌 Khởi tạo socket connection...
 3. 🔌 Redux: Connecting socket with role: admin
 4. this.socket: null
-5. ❌ Socket connection error: Error: xhr poll error
-6. ⚠️ Socket not initialized. Call init() first.
+5.  Socket connection error: Error: xhr poll error
+6.  Socket not initialized. Call init() first.
 ```
 
 ---
@@ -326,12 +342,12 @@ this.socket.onAny((event, ...args) => {
 
 ---
 
-## 🔧 Quick Fixes
+## Quick Fixes
 
 ### **Fix 1: Clear localStorage**
 
 ```javascript
-localStorage.removeItem('admin_room');
+localStorage.removeItem("admin_room");
 location.reload();
 ```
 
@@ -339,14 +355,14 @@ location.reload();
 
 ```javascript
 await dispatch(disconnectSocket());
-await dispatch(connectSocket('admin'));
+await dispatch(connectSocket("admin"));
 ```
 
 ### **Fix 3: Reset Socket**
 
 ```javascript
 socketClient.disconnect();
-socketClient.init('admin').connect();
+socketClient.init("admin").connect();
 ```
 
 ---
@@ -375,16 +391,15 @@ emitSocketEvent("DISCONNECT_CLIENT", {
 
 ## 🚨 Error Messages
 
-| Error | Meaning | Solution |
-|-------|---------|----------|
-| `Socket not initialized` | Socket chưa init | Gọi `init()` trước |
-| `Socket disconnected` | Mất kết nối | Reconnect |
-| `Transport unknown` | Server không nhận WebSocket | Check server config |
-| `xhr poll error` | Network error | Check server running |
-| `Error loading room` | localStorage corrupt | Clear localStorage |
+| Error                    | Meaning                     | Solution             |
+| ------------------------ | --------------------------- | -------------------- |
+| `Socket not initialized` | Socket chưa init            | Gọi `init()` trước   |
+| `Socket disconnected`    | Mất kết nối                 | Reconnect            |
+| `Transport unknown`      | Server không nhận WebSocket | Check server config  |
+| `xhr poll error`         | Network error               | Check server running |
+| `Error loading room`     | localStorage corrupt        | Clear localStorage   |
 
 ---
 
 **Last Updated:** 2026-01-03  
 **Version:** 1.0.0
-

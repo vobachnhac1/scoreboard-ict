@@ -40,6 +40,8 @@ const DEFAULT_KEYMAP = {
     RED_SCORE_PLUS_1: "q",
     RED_SCORE_PLUS_2: "w",
     RED_SCORE_PLUS_3: "e",
+    RED_SCORE_PLUS_5: "5",
+    RED_SCORE_PLUS_10: "6",
     RED_SCORE_MINUS_1: "a",
     RED_SCORE_MINUS_2: "s",
     RED_SCORE_MINUS_3: "d",
@@ -58,6 +60,8 @@ const DEFAULT_KEYMAP = {
     BLUE_SCORE_PLUS_1: "p",
     BLUE_SCORE_PLUS_2: "o",
     BLUE_SCORE_PLUS_3: "i",
+    BLUE_SCORE_PLUS_5: "m",
+    BLUE_SCORE_PLUS_10: "y",
     BLUE_SCORE_MINUS_1: "l",
     BLUE_SCORE_MINUS_2: "k",
     BLUE_SCORE_MINUS_3: "j",
@@ -71,6 +75,13 @@ const DEFAULT_KEYMAP = {
     // --- Hành động XANH ---
     BLUE_WINNER: "y",
     BLUE_MEDICAL: "b",
+
+    // --- QUYỀN / VÕ NHẠC ---
+    TOGGLE_ACTION_BUTTONS: "v",
+    TOGGLE_ATHLETES: "b",
+    TOGGLE_REF_CONNECTION: "n",
+    TOGGLE_WAITING_OVERLAY: "F10",
+    CALCULATE_SCORE: "Enter",
 };
 
 // ========== CHẾ ĐỘ VOVINAM ==========
@@ -112,6 +123,9 @@ const VOVINAM_KEYMAP = {
     // --- Điểm số XANH ---
     BLUE_SCORE_PLUS_1: "i",
     BLUE_SCORE_PLUS_2: "o",
+    BLUE_SCORE_PLUS_3: "8",
+    BLUE_SCORE_PLUS_5: "9",
+    BLUE_SCORE_PLUS_10: "0",
     // BLUE_SCORE_PLUS_3: "i",
     BLUE_SCORE_MINUS_1: "ctrl+i",
     BLUE_SCORE_MINUS_2: "ctrl+o",
@@ -162,6 +176,8 @@ const PENCAK_KEYMAP = {
     RED_SCORE_PLUS_1: "q",
     RED_SCORE_PLUS_2: "w",
     RED_SCORE_PLUS_3: "e",
+    RED_SCORE_PLUS_5: "5",
+    RED_SCORE_PLUS_10: "6",
     RED_SCORE_MINUS_1: "a",
     RED_SCORE_MINUS_2: "s",
     RED_SCORE_MINUS_3: "d",
@@ -180,6 +196,8 @@ const PENCAK_KEYMAP = {
     BLUE_SCORE_PLUS_1: "p",
     BLUE_SCORE_PLUS_2: "o",
     BLUE_SCORE_PLUS_3: "i",
+    BLUE_SCORE_PLUS_5: "9",
+    BLUE_SCORE_PLUS_10: "0",
     BLUE_SCORE_MINUS_1: "l",
     BLUE_SCORE_MINUS_2: "k",
     BLUE_SCORE_MINUS_3: "j",
@@ -258,6 +276,8 @@ const CUSTOM_KEYMAP = {
     RED_SCORE_PLUS_1: "1",
     RED_SCORE_PLUS_2: "2",
     RED_SCORE_PLUS_3: "3",
+    RED_SCORE_PLUS_5: "5",
+    RED_SCORE_PLUS_10: "6",
     RED_SCORE_MINUS_1: "4",
     RED_SCORE_MINUS_2: "5",
     RED_SCORE_MINUS_3: "6",
@@ -913,6 +933,8 @@ export const ACTION_LABELS = {
     RED_SCORE_PLUS_1: "Đỏ +1 điểm",
     RED_SCORE_PLUS_2: "Đỏ +2 điểm",
     RED_SCORE_PLUS_3: "Đỏ +3 điểm",
+    RED_SCORE_PLUS_5: "Đỏ +5 điểm",
+    RED_SCORE_PLUS_10: "Đỏ +10 điểm",
     RED_SCORE_MINUS_1: "Đỏ -1 điểm",
     RED_SCORE_MINUS_2: "Đỏ -2 điểm",
     RED_SCORE_MINUS_3: "Đỏ -3 điểm",
@@ -926,6 +948,8 @@ export const ACTION_LABELS = {
     BLUE_SCORE_PLUS_1: "Xanh +1 điểm",
     BLUE_SCORE_PLUS_2: "Xanh +2 điểm",
     BLUE_SCORE_PLUS_3: "Xanh +3 điểm",
+    BLUE_SCORE_PLUS_5: "Xanh +5 điểm",
+    BLUE_SCORE_PLUS_10: "Xanh +10 điểm",
     BLUE_SCORE_MINUS_1: "Xanh -1 điểm",
     BLUE_SCORE_MINUS_2: "Xanh -2 điểm",
     BLUE_SCORE_MINUS_3: "Xanh -3 điểm",
@@ -935,6 +959,37 @@ export const ACTION_LABELS = {
     BLUE_WARN_MINUS: "Xanh Cảnh cáo -1",
     BLUE_WINNER: "Xanh Thắng",
     BLUE_MEDICAL: "Xanh Y tế",
+    BLUE_MEDICAL_MINUS: "Xanh Y tế -1",
+    RED_KICK: "Đỏ Đòn chân",
+    RED_KICK_MINUS: "Đỏ Đòn chân -1",
+    BLUE_KICK: "Xanh Đòn chân",
+    BLUE_KICK_MINUS: "Xanh Đòn chân -1",
+    RED_MEDICAL_MINUS: "Đỏ Y tế -1",
+    RED_SCORE_MINUS_5: "Đỏ -5 điểm",
+    RED_SCORE_MINUS_10: "Đỏ -10 điểm",
+    BLUE_SCORE_MINUS_5: "Xanh -5 điểm",
+    BLUE_SCORE_MINUS_10: "Xanh -10 điểm",
+
+    // --- QUYỀN / VÕ NHẠC Specific ---
+    TOGGLE_ACTION_BUTTONS: "Ẩn/Hiện nút hành động",
+    TOGGLE_ATHLETES: "Ẩn/Hiện thông tin VĐV",
+    TOGGLE_REF_CONNECTION: "Xem trạng thái kết nối giám định",
+    TOGGLE_WAITING_OVERLAY: "Bật/Tắt màn hình chờ điểm",
+    CALCULATE_SCORE: "Tính điểm trung bình",
+};
+
+// ========== SYSTEM LABELS ==========
+export const SYSTEM_LABELS = {
+    TOGGLE_CONNECTION_MODAL: "Kết nối thiết bị",
+    TOGGLE_SECONDARY_DISPLAY: "Màn hình phụ (F2)",
+    TOGGLE_CONFIG_MODAL: "Cấu hình nhanh",
+    TOGGLE_HISTORY_MODAL: "Lịch sử trận",
+    TOGGLE_CONTROL_BAR: "Thanh điều khiển",
+    TOGGLE_MATCH_LIST: "Danh sách trận đấu",
+    SWITCH_KEYBOARD_MODE: "Chuyển nhanh chế độ phím",
+    TOGGLE_SOUND: "Bật/Tắt âm thanh",
+    TOGGLE_FULLSCREEN: "Toàn màn hình",
+    GO_BACK: "Quay lại",
 };
 
 // ========== NHÓM ACTIONS (cho UI phân nhóm) ==========
@@ -943,50 +998,102 @@ export const ACTION_GROUPS = {
     "Điều hướng": ["PREVIOUS_MATCH", "NEXT_MATCH"],
     "Điểm số Đỏ": [
         "RED_SCORE_PLUS_1", "RED_SCORE_PLUS_2", "RED_SCORE_PLUS_3",
+        "RED_SCORE_PLUS_5", "RED_SCORE_PLUS_10",
         "RED_SCORE_MINUS_1", "RED_SCORE_MINUS_2", "RED_SCORE_MINUS_3",
+        "RED_SCORE_MINUS_5", "RED_SCORE_MINUS_10",
     ],
     "Nhắc nhở / Cảnh cáo Đỏ": [
         "RED_REMIND_PLUS", "RED_REMIND_MINUS",
         "RED_WARN_PLUS", "RED_WARN_MINUS",
     ],
-    "Hành động Đỏ": ["RED_WINNER", "RED_MEDICAL"],
+    "Hành động Đỏ": ["RED_WINNER", "RED_MEDICAL", "RED_MEDICAL_MINUS", "RED_KICK", "RED_KICK_MINUS"],
     "Điểm số Xanh": [
         "BLUE_SCORE_PLUS_1", "BLUE_SCORE_PLUS_2", "BLUE_SCORE_PLUS_3",
+        "BLUE_SCORE_PLUS_5", "BLUE_SCORE_PLUS_10",
         "BLUE_SCORE_MINUS_1", "BLUE_SCORE_MINUS_2", "BLUE_SCORE_MINUS_3",
+        "BLUE_SCORE_MINUS_5", "BLUE_SCORE_MINUS_10",
     ],
     "Nhắc nhở / Cảnh cáo Xanh": [
         "BLUE_REMIND_PLUS", "BLUE_REMIND_MINUS",
         "BLUE_WARN_PLUS", "BLUE_WARN_MINUS",
     ],
-    "Hành động Xanh": ["BLUE_WINNER", "BLUE_MEDICAL"],
+    "Hành động Xanh": ["BLUE_WINNER", "BLUE_MEDICAL", "BLUE_MEDICAL_MINUS", "BLUE_KICK", "BLUE_KICK_MINUS"],
+};
+
+export const ACTION_GROUPS_QUYEN = {
+    "Điều khiển chính": ["TOGGLE_TIMER", "RESET", "CALCULATE_SCORE"],
+    "Hiển thị": ["TOGGLE_ACTION_BUTTONS", "TOGGLE_ATHLETES", "TOGGLE_REF_CONNECTION"],
+    "Võ nhạc": ["TOGGLE_WAITING_OVERLAY"],
+    "Điều hướng": ["PREVIOUS_MATCH", "NEXT_MATCH"],
 };
 
 /**
  * Lấy keymap theo chế độ
- * @param {"default" | "custom"} mode
+ * @param {"default" | "custom" | "vovinam" | "pencak" | "vohiendai"} mode
  * @param {Object} onlineFeatures Tính năng online từ License Server
+ * @param {Object} localConfig Cấu hình từ config_system (DB)
  * @returns {Object} keymap
  */
-export function getKeymap(mode = "default", onlineFeatures = {}) {
-    const baseMap = KEYBOARD_MODES[mode]?.keymap || DEFAULT_KEYMAP;
-    const customOverrides = onlineFeatures?.custom_keymaps?.[mode];
-    if (customOverrides && typeof customOverrides === 'object') {
-        return { ...baseMap, ...customOverrides };
+export function getKeymap(mode = "default", onlineFeatures = {}, localConfig = {}) {
+    let baseMap = { ...(KEYBOARD_MODES[mode]?.keymap || DEFAULT_KEYMAP) };
+
+    // 1. Áp dụng custom keymaps từ server (nếu có)
+    const serverOverrides = onlineFeatures?.custom_keymaps?.[mode];
+    if (serverOverrides && typeof serverOverrides === 'object') {
+        baseMap = { ...baseMap, ...serverOverrides };
     }
+
+    // 2. Áp dụng local config (kb_ keys từ ConfigSystem)
+    // Ưu tiên cao nhất vì là do người dùng cấu hình trực tiếp
+    if (localConfig && typeof localConfig === 'object') {
+        Object.entries(localConfig).forEach(([key, value]) => {
+            if (key.startsWith("kb_")) {
+                const action = key.replace("kb_", "");
+                // Nếu người dùng chọn "KHÔNG GÁN" (__disabled__), xóa khỏi map để phím mặc định không chạy
+                if (value === "__disabled__") {
+                    delete baseMap[action];
+                } else if (value && !SYSTEM_LABELS[action]) {
+                    baseMap[action] = value;
+                }
+            }
+        });
+    }
+
     return baseMap;
 }
 
 /**
- * Lấy system keys có ghi đè từ server
+ * Lấy system keys có ghi đè từ server và local
  * @param {Object} onlineFeatures Tính năng online từ License Server
+ * @param {Object} localConfig Cấu hình từ config_system (DB)
  * @returns {Object} systemKeys
  */
-export function getSystemKeys(onlineFeatures = {}) {
-    const customOverrides = onlineFeatures?.custom_keymaps?.system;
-    if (customOverrides && typeof customOverrides === 'object') {
-        return { ...SYSTEM_KEYS, ...customOverrides };
+export function getSystemKeys(onlineFeatures = {}, localConfig = {}) {
+    let baseKeys = { ...SYSTEM_KEYS };
+
+    // 1. Server overrides
+    const serverOverrides = onlineFeatures?.custom_keymaps?.system;
+    if (serverOverrides && typeof serverOverrides === 'object') {
+        baseKeys = { ...baseKeys, ...serverOverrides };
     }
-    return SYSTEM_KEYS;
+
+    // 2. Local overrides
+    if (localConfig && typeof localConfig === 'object') {
+        Object.entries(localConfig).forEach(([key, value]) => {
+            if (key.startsWith("kb_")) {
+                const action = key.replace("kb_", "");
+                if (SYSTEM_LABELS[action]) {
+                    if (value === "__disabled__") {
+                        delete baseKeys[action];
+                    } else if (value) {
+                        baseKeys[action] = value;
+                    }
+                }
+            }
+        });
+    }
+
+    return baseKeys;
 }
 
 /**
@@ -997,7 +1104,9 @@ export function getSystemKeys(onlineFeatures = {}) {
 export function buildReverseKeymap(keymap) {
     const map = {};
     for (const [action, key] of Object.entries(keymap)) {
-        map[key] = action;
+        if (key && key !== "__disabled__") {
+            map[key] = action;
+        }
     }
     return map;
 }
@@ -1024,6 +1133,7 @@ export function buildReverseKeymap(keymap) {
 export function createKeyDownHandler({
     mode = "default",
     onlineFeatures = {},
+    localConfig = {}, // Thêm localConfig
     handlers,
     showConfirm,
     btnGoBack,
@@ -1038,8 +1148,14 @@ export function createKeyDownHandler({
     setShowMatchListModal,
     setIsSoundEnabled,
     setShowSecondaryDisplay,
+    // Bổ sung các setters cho Quyền/Võ nhạc
+    setShowAthletes,
+    setShowActionButtons,
+    setShowRefConnectionState,
+    setShowWaitingOverlay,
 }) {
-    const keymap = getKeymap(mode, onlineFeatures);
+    const keymap = getKeymap(mode, onlineFeatures, localConfig);
+    const systemKeys = getSystemKeys(onlineFeatures, localConfig);
     const reverseMap = buildReverseKeymap(keymap);
 
     return async (e) => {
@@ -1057,8 +1173,6 @@ export function createKeyDownHandler({
 
         const key = e.key.toLowerCase();
         const code = e.code?.toLowerCase();
-
-        const systemKeys = getSystemKeys(onlineFeatures);
 
         // ========== PHÍM HỆ THỐNG (Luôn hoạt động) ==========
         if (e.key === systemKeys.GO_BACK) { // Escape
@@ -1199,6 +1313,18 @@ export function createKeyDownHandler({
             case "RED_SCORE_MINUS_3":
                 h.handleScoreChange("red", -3);
                 break;
+            case "RED_SCORE_PLUS_5":
+                h.handleScoreChange("red", 5);
+                break;
+            case "RED_SCORE_MINUS_5":
+                h.handleScoreChange("red", -5);
+                break;
+            case "RED_SCORE_PLUS_10":
+                h.handleScoreChange("red", 10);
+                break;
+            case "RED_SCORE_MINUS_10":
+                h.handleScoreChange("red", -10);
+                break;
             case "RED_REMIND_PLUS":
                 h.handleRemind("red", 1);
                 break;
@@ -1246,6 +1372,18 @@ export function createKeyDownHandler({
             case "BLUE_SCORE_MINUS_3":
                 h.handleScoreChange("blue", -3);
                 break;
+            case "BLUE_SCORE_PLUS_5":
+                h.handleScoreChange("blue", 5);
+                break;
+            case "BLUE_SCORE_MINUS_5":
+                h.handleScoreChange("blue", -5);
+                break;
+            case "BLUE_SCORE_PLUS_10":
+                h.handleScoreChange("blue", 10);
+                break;
+            case "BLUE_SCORE_MINUS_10":
+                h.handleScoreChange("blue", -10);
+                break;
             case "BLUE_REMIND_PLUS":
                 h.handleRemind("blue", 1);
                 break;
@@ -1277,14 +1415,36 @@ export function createKeyDownHandler({
 
 
             case "RESET": {
-                const confirmed = await showConfirm(
-                    "Bạn có chắc chắn muốn bắt đầu lại trận đấu từ đầu không?",
-                    { title: "Thông báo" }
-                );
-                if (confirmed === false) return;
+                if (showConfirm) {
+                    const confirmed = await showConfirm(
+                        "Bạn có chắc chắn muốn bắt đầu lại trận đấu từ đầu không?",
+                        { title: "Thông báo" }
+                    );
+                    if (confirmed === false) return;
+                }
                 h.resetTimer();
                 break;
             }
+
+            // --- QUYỀN / VÕ NHẠC ---
+            case "TOGGLE_ACTION_BUTTONS":
+                if (setShowActionButtons) setShowActionButtons(prev => !prev);
+                break;
+            case "TOGGLE_ATHLETES":
+                if (setShowAthletes) setShowAthletes(prev => !prev);
+                break;
+            case "TOGGLE_REF_CONNECTION":
+                if (setShowRefConnectionState) setShowRefConnectionState(prev => !prev);
+                break;
+            case "TOGGLE_WAITING_OVERLAY":
+                if (setShowWaitingOverlay) {
+                    if (h.playBell) h.playBell();
+                    setShowWaitingOverlay(prev => !prev);
+                }
+                break;
+            case "CALCULATE_SCORE":
+                if (h.handleCaculator) h.handleCaculator();
+                break;
 
             default:
                 break;

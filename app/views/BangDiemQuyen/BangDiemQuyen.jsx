@@ -23,6 +23,7 @@ import {
 } from "../../config/redux/reducers/socket-reducer";
 import { initSocket as initSocketUtil } from "../../utils/socketUtils";
 import IpMasker from "../../common/IpMasker";
+import { createKeyDownHandler } from "../BangDiemDoiKhang/keyboardConfig";
 
 // Audio variables
 let bellAudio = null;
@@ -71,6 +72,7 @@ export default function BangDiemQuyen() {
     showSuccess,
   } = useConfirmModal();
   const socket = useSelector((state) => state.socket);
+  const { features } = useSelector((state) => state.license);
   const dispatch = useDispatch();
 
   // Audio play functions inside component to use t()
@@ -398,6 +400,54 @@ export default function BangDiemQuyen() {
     emitSocketEvent("ADMIN_FETCH_CONN", {});
   }, [matchDataRef.current.match_id]); // Chạy lại khi match_id thay đổi
 
+  // Ref để lưu các handlers (tránh stale closure)
+  const handlersRef = useRef({});
+
+  // Update handlers ref mỗi khi các function thay đổi
+  useEffect(() => {
+    handlersRef.current = {
+      toggleTimer: startTimer,
+      resetTimer: () => {
+        resetTimer();
+        clearScore();
+      },
+      handleCaculator: handleCaculator,
+      btnPreviousMatch: previousMatch,
+      btnNextMatch: nextMatch,
+      playBell: playBell,
+    };
+  });
+
+  // Hotkey handler - sử dụng keyboardConfig
+  useEffect(() => {
+    const handleKeyDown = createKeyDownHandler({
+      mode: configSystem.keyboard_mode || "vovinam",
+      onlineFeatures: features,
+      localConfig: configSystem,
+      handlers: handlersRef,
+      showConfirm,
+      btnGoBack: handleBack,
+      setShowConnectionModal,
+      setShowConfigModal: () => { },
+      setShowHistoryModal: () => { },
+      setShowControlBar: () => { },
+      onSwitchMode: null,
+      showConfigModal: false,
+      showHistoryModal: false,
+      showConnectionModal,
+      setShowMatchListModal,
+      setIsSoundEnabled: null,
+      setShowSecondaryDisplay,
+      setShowAthletes,
+      setShowActionButtons,
+      setShowRefConnectionState,
+      setShowWaitingOverlay: setShowWaiting,
+    });
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showConnectionModal, configSystem, features, showSecondaryDisplay]);
+
   // Khởi tạo room khi component mount
   useEffect(() => {
     const savedRoom = localStorage.getItem("admin_room");
@@ -405,43 +455,6 @@ export default function BangDiemQuyen() {
       const roomData = JSON.parse(savedRoom);
       setCurrentRoom(roomData);
     }
-
-    // F1: connect | F2: scores | F3: action buttons | F4: athletes | F5: reset 
-    // | F6: ref connection state | F7: fetch matches list | F8: fetch devices 
-    // | F2: open secondary display | F10: toggle waiting overlay
-
-    const handleKeyPress = (e) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        handleBack();
-      } else if (e.key === "F7") {
-        e.preventDefault();
-        fetchMatchesList();
-        setShowMatchListModal(true);
-      } else if (e.key === "F1") {
-        e.preventDefault();
-        setShowConnectionModal((prev) => !prev);
-      } else if (e.key === "F6") {
-        e.preventDefault();
-        setShowRefConnectionState((prev) => !prev);
-      } else if (e.key === "F5") {
-        e.preventDefault();
-        resetTimer();
-        clearScore();
-      } else if (e.key === "F4") {
-        e.preventDefault();
-        setShowAthletes((prev) => !prev);
-      } else if (e.key === "F3") {
-        e.preventDefault();
-        setShowActionButtons((prev) => !prev);
-      } else if (e.key === " ") {
-        e.preventDefault();
-        startTimer();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyPress);
-    return () => window.removeEventListener("keydown", handleKeyPress);
   }, []);
 
   useEffect(() => {

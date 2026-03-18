@@ -1,6 +1,13 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { getFlagImage, getDefaultFlag } from "../../utils/flagManager";
+import { formatMatchName } from "../../utils/nameFormatter";
+import CompetitionScoreboard from "../BangDiemDoiKhang/components/CompetitionScoreboard";
+import ScoreboardHeader from "../BangDiemDoiKhang/components/ScoreboardHeader";
+import JudgeScoreBlock from "../BangDiemDoiKhang/components/JudgeScoreBlock";
+import MedicalTimeOverlay from "../BangDiemDoiKhang/components/MedicalTimeOverlay";
+import BreakTimeOverlay from "../BangDiemDoiKhang/components/BreakTimeOverlay";
+import PauseMatchOverlay from "../BangDiemDoiKhang/components/PauseMatchOverlay";
 
 /**
  * DoiKhangDisplay - Hiển thị màn hình Đối kháng cho Secondary Display
@@ -33,16 +40,20 @@ export default function DoiKhangDisplay({
   buttonPermissions = {},
   configSystem,
   announcedWinner = null,
+  showRedKickIndicator = false,
+  showBlueKickIndicator = false,
 }) {
   const { t } = useTranslation();
-  // Use config from prop or from matchInfo
-  const currentConfig = configSystem || matchInfo?.config_system || {};
 
-  // Color values
-  const titleColor = currentConfig.header_title_color_doikhang || '#FBBF24';
-  const descColor = currentConfig.header_desc_color_doikhang || '#D1D5DB';
+  // Combine matchInfo with configSystem if necessary
+  const effectiveMatchInfo = {
+    ...matchInfo,
+    config_system: configSystem || matchInfo?.config_system || {}
+  };
 
-  // Format time helper
+  const uiTheme = effectiveMatchInfo.config_system?.ui_theme || 'default';
+
+  // Format time helper (Maintains object structure for component compatibility)
   const formatTime = (time) => {
     const totalSeconds = Math.floor(time / 10);
     const minutes = Math.floor(totalSeconds / 60);
@@ -56,8 +67,8 @@ export default function DoiKhangDisplay({
 
   // Generate GD data structure
   const generateGdData = () => {
-    const soGiamDinh = matchInfo?.so_giam_dinh || 3;
-    const heDiem = matchInfo?.he_diem || 2;
+    const soGiamDinh = effectiveMatchInfo.config_system?.so_giam_dinh || effectiveMatchInfo?.so_giam_dinh || 3;
+    const heDiem = effectiveMatchInfo.config_system?.he_diem || effectiveMatchInfo?.he_diem || 2;
     const gdData = [];
     for (let i = 0; i < heDiem; i++) {
       const row = [];
@@ -69,47 +80,29 @@ export default function DoiKhangDisplay({
     return gdData;
   };
 
-  // Render GD scores with flashing effect
-  const renderGDScores = (colors, team) => {
-    const teamFlashing = flashingRefs[team] || {};
-    const justifyClass = team === "red" ? "justify-start" : "justify-end";
+  // Render GD scores with flashing effect using JudgeScoreBlock
+  const renderGDScores = (colors, team, forceMode = null) => {
+    const displayMode = forceMode || effectiveMatchInfo.config_system?.gd_display_mode || "vertical";
+    const soGiamDinh = effectiveMatchInfo.config_system?.so_giam_dinh || effectiveMatchInfo?.so_giam_dinh || 3;
+    const heDiem = effectiveMatchInfo.config_system?.he_diem || effectiveMatchInfo?.he_diem || 2;
+    const uiTheme = effectiveMatchInfo.config_system?.ui_theme || 'default';
+
     return (
-      <div className="flex flex-col gap-1 mt-2 text-white text-center text-xs font-bold">
-        {colors.map((colorRow, rowIndex) => {
-          const displayRow =
-            team === "blue" ? [...colorRow].reverse() : colorRow;
-          return (
-            <div key={rowIndex} className={`flex gap-1 ${justifyClass}`}>
-              {displayRow.map((gd, i) => {
-                const actualIndex =
-                  team === "blue" ? colorRow.length - 1 - i : i;
-                const isFlashing = teamFlashing[actualIndex] === rowIndex;
-                let baseColor = "";
-                if (rowIndex === 0) {
-                  baseColor = !isFlashing ? "bg-yellow-800" : "bg-yellow-200";
-                } else if (rowIndex === 1) {
-                  baseColor = !isFlashing ? "bg-green-800" : "bg-green-200";
-                } else {
-                  baseColor = !isFlashing ? "bg-rose-800" : "bg-rose-200";
-                }
-                return (
-                  <div
-                    key={`${rowIndex}-${actualIndex}`}
-                    className={`w-8 h-8 flex items-center justify-center ${baseColor} rounded`}
-                  >
-                    {gd}
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
+      <JudgeScoreBlock
+        colors={colors}
+        team={team}
+        matchInfo={effectiveMatchInfo}
+        displayMode={displayMode}
+        soGiamDinh={soGiamDinh}
+        heDiem={heDiem}
+        uiTheme={uiTheme}
+        teamFlashing={flashingRefs[team] || {}}
+      />
     );
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col items-center">
       {/* CSS Animations cho hiệu ứng chiến thắng */}
       <style>{`
         @keyframes victoryPulse {
@@ -141,12 +134,8 @@ export default function DoiKhangDisplay({
         }
 
         @keyframes victoryShine {
-          0% {
-            background-position: -200% center;
-          }
-          100% {
-            background-position: 200% center;
-          }
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
         }
 
         @keyframes victoryBorder {
@@ -161,12 +150,8 @@ export default function DoiKhangDisplay({
         }
 
         @keyframes victoryOverlay {
-          0%, 100% {
-            opacity: 0.3;
-          }
-          50% {
-            opacity: 0.6;
-          }
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.6; }
         }
 
         .victory-animation {
@@ -217,429 +202,90 @@ export default function DoiKhangDisplay({
         }
       `}</style>
 
-      {/* Victory Overlay - Toàn màn hình khi có winner */}
+      {/* Victory Overlay */}
       {announcedWinner && <div className="victory-overlay"></div>}
 
-      {/* Logos */}
-      {lsLogo.length > 0 ? (
-        <div className="w-full max-w-7xl mx-auto mb-3 mt-3">
-          <div className="flex justify-center items-center gap-8 px-8">
-            {lsLogo.map((logo, index) => (
-              <div
-                key={logo.id || index}
-                className="flex justify-center items-center shadow-lg hover:shadow-xl transition-shadow rounded"
-                style={{ minWidth: "50px", maxWidth: "50px" }}
-              >
-                <img
-                  src={
-                    logo.url.startsWith("http")
-                      ? logo.url
-                      : `http://localhost:6789${logo.url}`
-                  }
-                  alt={`Logo ${index + 1}`}
-                  className="h-20 w-auto object-contain"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="w-full max-w-7xl mx-auto mb-6 mt-6" />
+      {/* Logos and Header */}
+      <ScoreboardHeader
+        matchInfo={effectiveMatchInfo}
+        matchData={null}
+        lsLogo={lsLogo}
+      />
+
+      {/* Main Scoreboard Section */}
+      <CompetitionScoreboard
+        matchInfo={effectiveMatchInfo}
+        redScore={redScore}
+        blueScore={blueScore}
+        announcedWinner={announcedWinner}
+        showRedKickIndicator={showRedKickIndicator}
+        showBlueKickIndicator={showBlueKickIndicator}
+        currentRound={currentRound}
+        isMedicalTime={isMedicalTime}
+        isBreakTime={isBreakTime}
+        isRunning={isRunning}
+        timeLeft={timeLeft}
+        breakTimeLeft={breakTimeLeft}
+        formatTime={formatTime}
+        buttonPermissions={buttonPermissions}
+        remindRed={remindRed}
+        remindBlue={remindBlue}
+        warnRed={warnRed}
+        warnBlue={warnBlue}
+        kickRed={kickRed}
+        kickBlue={kickBlue}
+        medicalRed={medicalRed}
+        medicalBlue={medicalBlue}
+        getFlagImage={getFlagImage}
+        getDefaultFlag={getDefaultFlag}
+        formatMatchName={formatMatchName}
+        renderGDScores={renderGDScores}
+        generateGdData={generateGdData}
+        t={t}
+      />
+
+      {/* Full-screen Overlays */}
+      {effectiveMatchInfo.config_system?.hien_thi_medical_time_overlay && (
+        <MedicalTimeOverlay
+          isMedicalTime={isMedicalTime}
+          medicalTeam={medicalTeam}
+          medicalTimeLeft={medicalTimeLeft}
+          currentRound={currentRound}
+          matchInfo={effectiveMatchInfo}
+          formatTime={formatTime}
+          t={t}
+          uiTheme={uiTheme}
+        />
       )}
 
-      <div className="text-center mb-8 max-w-7xl mx-auto">
-        <h1
-          className="text-4xl font-black leading-tight uppercase"
-          style={{
-            color: titleColor
-          }}
-        >
-          {matchInfo?.ten_giai_dau?.split("\n").map((word, index) => (
-            <React.Fragment key={index}>
-              {word}
-              {index <
-                (matchInfo?.ten_giai_dau?.split(" ").length || 0) - 1 && <br />}
-            </React.Fragment>
-          ))}
-        </h1>
-        <div
-          className="h-1 w-48 mx-auto my-4"
-          style={{
-            backgroundColor: titleColor
-          }}
-        ></div>
-        <p
-          className="text-3xl mt-3 font-bold uppercase tracking-wider"
-          style={{
-            color: descColor
-          }}
-        >
-          {matchInfo?.ten_mon_thi}
-        </p>
-      </div>
-
-      {/* Scoreboard - Optimized for 1920x1080 */}
-      <div className="flex w-full max-w-7xl mx-auto justify-between items-start px-4 gap-3">
-        {/* Đỏ */}
-        <div className="flex-1">
-          <div
-            className={`text-white p-6 rounded flex flex-col items-center shadow-2xl transition-all duration-500 overflow-hidden relative ${announcedWinner?.team === "red" ? "victory-animation" : ""
-              }`}
-            style={{
-              background: "linear-gradient(135deg, #FF0000 0%, #CC0000 100%)",
-              boxShadow:
-                "0 10px 40px rgba(255, 0, 0, 0.4), inset 0 -5px 20px rgba(0, 0, 0, 0.2)",
-            }}
-          >
-            {/* Glow effect background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded pointer-events-none"></div>
-
-            <div
-              className="text-[200px] font-black leading-none w-full text-center relative z-10"
-              style={{
-                lineHeight: "320px",
-                textShadow:
-                  "0 8px 16px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 255, 255, 0.3)",
-                fontFamily: "'Arial Black', sans-serif",
-                letterSpacing: "-0.02em",
-              }}
-            >
-              {redScore}
-            </div>
-            <div className="flex justify-between items-center w-full mt-4">
-              <div
-                className="h-20 w-20 mr-4 flex justify-center items-center overflow-hidden rounded shadow-lg relative z-10"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #FF0000 0%, #CC0000 100%)",
-                  border: "1px solid rgba(255, 255, 255, 1)",
-                }}
-              >
-                <img
-                  src={getFlagImage(matchInfo?.red?.country)}
-                  alt={matchInfo?.red?.country || "Vietnam"}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.src = getDefaultFlag();
-                  }}
-                />
-              </div>
-              <div className="flex-1 text-left text-white relative z-10">
-                <p
-                  className="text-xl font-black mb-1 uppercase tracking-wide"
-                  style={{
-                    textShadow:
-                      "0 4px 8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 255, 255, 0.2)",
-                    fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif",
-                    fontWeight: "900",
-                  }}
-                >
-                  {matchInfo?.red?.name || t("doikhang_display.red_athlete")}
-                </p>
-                <p
-                  className="text-lg font-semibold opacity-95"
-                  style={{
-                    textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
-                    fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif",
-                  }}
-                >
-                  {matchInfo?.red?.unit || ""}
-                </p>
-              </div>
-            </div>
-          </div>
-          {/* GD Scores for Red */}
-          {renderGDScores(generateGdData(), "red")}
-        </div>
-
-        {/* Giữa */}
-        <div
-          className="flex flex-col items-center justify-center space-y-4 px-4 flex-shrink-0"
-          style={{ minWidth: "300px" }}
-        >
-          <p className="font-bold text-2xl">
-            {t("doikhang_display.match_no")} {matchInfo?.match_no || "---"}
-          </p>
-          <p className="text-xl font-bold">{matchInfo?.match_type || "---"}</p>
-          <p className="text-xl font-bold">
-            {matchInfo?.match_weight || "---"}
-          </p>
-
-          {/* Timer display */}
-          <div className="bg-yellow-300 text-black font-bold text-2xl px-6 py-3 rounded shadow-lg min-w-[250px] text-center">
-            {currentRound > (matchInfo?.so_hiep || 3)
-              ? `${t("doikhang_display.extra_round")} ${currentRound - (matchInfo?.so_hiep || 3)}`
-              : `${t("doikhang_display.round")} ${currentRound}`}
-          </div>
-          <div
-            className={`font-bold px-10 py-4 rounded shadow-lg min-w-[300px] text-center ${!isRunning && !isBreakTime
-              ? "bg-green-500 text-white"
-              : "bg-white text-black"
-              }`}
-          >
-            {(() => {
-              const time = formatTime(timeLeft);
-              return (
-                <>
-                  <span className="text-6xl">{time.main}</span>
-                  <span className="text-3xl">{time.decimal}</span>
-                </>
-              );
-            })()}
-          </div>
-
-          {/* Information Display - Nhắc nhở, Cảnh cáo, Đòn chân, Y tế - Giữa màn hình */}
-          <div className="mt-6 space-y-2 w-full max-w-md">
-            {/* Nhắc nhở */}
-            {buttonPermissions.hien_thi_thong_tin_nhac_nho && (
-              <div className="flex items-center justify-between gap-3">
-                <div className="bg-red-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
-                  {remindRed}
-                </div>
-                <div className="text-yellow-400 font-bold text-base uppercase flex-1 text-center">
-                  {t("doikhang_display.reminder")}
-                </div>
-                <div className="bg-blue-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
-                  {remindBlue}
-                </div>
-              </div>
-            )}
-
-            {/* Cảnh cáo */}
-            {buttonPermissions.hien_thi_thong_tin_canh_cao && (
-              <div className="flex items-center justify-between gap-3">
-                <div className="bg-red-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
-                  {warnRed}
-                </div>
-                <div className="text-orange-400 font-bold text-base uppercase flex-1 text-center">
-                  {t("doikhang_display.warning")}
-                </div>
-                <div className="bg-blue-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
-                  {warnBlue}
-                </div>
-              </div>
-            )}
-
-            {/* Đòn chân */}
-            {buttonPermissions.hien_thi_thong_tin_don_chan && (
-              <div className="flex items-center justify-between gap-3">
-                <div className="bg-red-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
-                  {kickRed}
-                </div>
-                <div className="text-cyan-400 font-bold text-base uppercase flex-1 text-center">
-                  {t("doikhang_display.kick")}
-                </div>
-                <div className="bg-blue-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
-                  {kickBlue}
-                </div>
-              </div>
-            )}
-
-            {/* Y tế */}
-            {buttonPermissions.hien_thi_thong_tin_y_te && (
-              <div className="flex items-center justify-between gap-3">
-                <div className="bg-red-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
-                  {medicalRed}
-                </div>
-                <div className="text-red-400 font-bold text-base uppercase flex-1 text-center">
-                  {t("doikhang_display.medical")}
-                </div>
-                <div className="bg-blue-600 text-white font-bold px-4 py-2 rounded min-w-[60px] text-center text-lg">
-                  {medicalBlue}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Xanh */}
-        <div className="flex-1">
-          <div
-            className={`text-white p-6 rounded flex flex-col items-center shadow-2xl transition-all duration-500 overflow-hidden relative ${announcedWinner?.team === "blue" ? "victory-animation" : ""
-              }`}
-            style={{
-              background: "linear-gradient(135deg, #0000FF 0%, #0000CC 100%)",
-              boxShadow:
-                "0 10px 40px rgba(0, 0, 255, 0.4), inset 0 -5px 20px rgba(0, 0, 0, 0.2)",
-            }}
-          >
-            {/* Glow effect background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded pointer-events-none"></div>
-
-            <div
-              className="text-[200px] font-black leading-none w-full text-center relative z-10"
-              style={{
-                lineHeight: "320px",
-                textShadow:
-                  "0 8px 16px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 255, 255, 0.3)",
-                fontFamily: "'Arial Black', sans-serif",
-                letterSpacing: "-0.02em",
-              }}
-            >
-              {blueScore}
-            </div>
-            <div className="flex justify-between items-center w-full mt-4">
-              <div className="flex-1 text-right text-white relative z-10">
-                <p
-                  className="text-xl font-black mb-1 uppercase tracking-wide"
-                  style={{
-                    textShadow:
-                      "0 4px 8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 255, 255, 0.2)",
-                    fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif",
-                    fontWeight: "900",
-                  }}
-                >
-                  {matchInfo?.blue?.name || t("doikhang_display.blue_athlete")}
-                </p>
-                <p
-                  className="text-lg font-semibold opacity-95"
-                  style={{
-                    textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
-                    fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif",
-                  }}
-                >
-                  {matchInfo?.blue?.unit || ""}
-                </p>
-              </div>
-              <div
-                className="h-20 w-20 ml-4 flex justify-center items-center overflow-hidden rounded shadow-lg relative z-10"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #0000FF 0%, #0000CC 100%)",
-                  border: "1px solid rgba(255, 255, 255, 1)",
-                }}
-              >
-                <img
-                  src={getFlagImage(matchInfo?.blue?.country)}
-                  alt={matchInfo?.blue?.country || "Vietnam"}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.src = getDefaultFlag();
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-          {/* GD Scores for Blue */}
-          {renderGDScores(generateGdData(), "blue")}
-        </div>
-      </div>
-
-      {/* Medical Time Overlay */}
-      {isMedicalTime && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50">
-          <div className="text-center">
-            <div className="mb-3">
-              <div className="inline-block bg-white/20 backdrop-blur-sm px-6 py-1 rounded-full">
-                <p className="text-2xl font-bold">
-                  {currentRound > (matchInfo?.so_hiep || 3)
-                    ? `${t("doikhang_display.extra_round")} ${currentRound - (matchInfo?.so_hiep || 3)}`
-                    : `${t("doikhang_display.round")} ${currentRound}`}
-                </p>
-              </div>
-            </div>
-            <div className="mb-4">
-              <div className="inline-block bg-white/20 backdrop-blur-sm px-8 py-2 rounded-full">
-                <p className="text-3xl font-bold tracking-wider">
-                  {t("doikhang_display.medical_time")}
-                </p>
-              </div>
-            </div>
-            <div className="mb-4">
-              <div
-                className={`inline-block px-10 py-3 rounded ${medicalTeam === "red" ? "bg-red-700" : "bg-blue-700"} shadow-lg`}
-              >
-                <p className="text-4xl font-black">
-                  {medicalTeam === "red"
-                    ? matchInfo?.red?.name || t("doikhang_display.red_athlete")
-                    : matchInfo?.blue?.name || t("doikhang_display.blue_athlete")}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded px-12 py-6">
-              <span className="text-8xl font-black tabular-nums">
-                {formatTime(medicalTimeLeft).main}
-              </span>
-              <span className="text-5xl font-bold text-blue-200 tabular-nums">
-                {formatTime(medicalTimeLeft).decimal}
-              </span>
-            </div>
-          </div>
-        </div>
+      {effectiveMatchInfo.config_system?.hien_thi_break_time_overlay && (
+        <BreakTimeOverlay
+          isBreakTime={isBreakTime}
+          breakTimeLeft={breakTimeLeft}
+          currentRound={currentRound}
+          matchInfo={effectiveMatchInfo}
+          formatTime={formatTime}
+          t={t}
+          uiTheme={uiTheme}
+        />
       )}
 
-      {/* Break Time Overlay - Nghỉ giữa hiệp */}
-      {isBreakTime && !isMedicalTime && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50">
-          <div className="text-center">
-            <div className="mb-3">
-              <div className="inline-block bg-white/20 backdrop-blur-sm px-6 py-1 rounded-full">
-                <p className="text-2xl font-bold">
-                  {currentRound > (matchInfo?.so_hiep || 3)
-                    ? `${t("doikhang_display.extra_round")} ${currentRound - (matchInfo?.so_hiep || 3)}`
-                    : `${t("doikhang_display.round")} ${currentRound}`}
-                </p>
-              </div>
-            </div>
-            <div className="mb-4">
-              <div className="inline-block bg-white/20 backdrop-blur-sm px-8 py-2 rounded-full">
-                <p className="text-3xl font-bold tracking-wider">
-                  {t("doikhang_display.break_time")}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded px-12 py-6">
-              <span className="text-8xl font-black tabular-nums">
-                {formatTime(breakTimeLeft).main}
-              </span>
-              <span className="text-5xl font-bold text-blue-200 tabular-nums">
-                {formatTime(breakTimeLeft).decimal}
-              </span>
-            </div>
-          </div>
-        </div>
+      {effectiveMatchInfo.config_system?.hien_thi_pause_match_overlay && (
+        <PauseMatchOverlay
+          pauseMatch={pauseMatch}
+          isRunning={isRunning}
+          isBreakTime={isBreakTime}
+          isMedicalTime={isMedicalTime}
+          ready={ready}
+          currentRound={currentRound}
+          matchInfo={effectiveMatchInfo}
+          timeLeft={timeLeft}
+          formatTime={formatTime}
+          t={t}
+          uiTheme={uiTheme}
+          announcedWinner={announcedWinner}
+        />
       )}
-
-      {/* Banner tạm ngưng giữa trận - chỉ hiển thị trong hiệp thi đấu */}
-      {!pauseMatch &&
-        !isRunning &&
-        !isBreakTime &&
-        !isMedicalTime &&
-        !ready && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50">
-            <div className="relative bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 text-white px-16 py-10 rounded shadow-2xl border-4 border-yellow-300">
-              <div className="text-center">
-                <div className="mb-3">
-                  <div className="inline-block bg-white/20 backdrop-blur-sm px-6 py-1 rounded-full">
-                    <p className="text-2xl font-bold">
-                      {currentRound > (matchInfo?.so_hiep || 3)
-                        ? `${t("doikhang_display.extra_round")} ${currentRound - (matchInfo?.so_hiep || 3)}`
-                        : `${t("doikhang_display.round")} ${currentRound}`}
-                    </p>
-                  </div>
-                </div>
-                <div className="mb-4">
-                  <div className="inline-block bg-white/20 backdrop-blur-sm px-8 py-2 rounded-full">
-                    <p className="text-3xl font-bold tracking-wider">
-                      TẠM NGƯNG
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-baseline justify-center bg-black/20 backdrop-blur-sm rounded px-12 py-6">
-                  <span className="text-8xl font-black tabular-nums">
-                    {formatTime(timeLeft).main}
-                  </span>
-                  <span className="text-5xl font-bold text-blue-200 tabular-nums">
-                    {formatTime(timeLeft).decimal}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
     </div>
   );
 }

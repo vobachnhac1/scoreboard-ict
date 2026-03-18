@@ -356,7 +356,7 @@ if (!gotTheLock) {
     // }));
 
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     // Register shortcuts
     // mainWindow.webContents.on('before-input-event', (event, input) => {

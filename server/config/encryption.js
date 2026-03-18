@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const qrcode = require('qrcode');
 const { API_ENCRYPTION_KEY } = require('./config');
 
 const algorithm = 'aes-256-cbc';
@@ -93,6 +94,32 @@ class Encryption {
             return JSON.parse(decrypted);
         } catch (e) {
             return decrypted;
+        }
+    }
+
+    /**
+     * Generate QR code from data (encrypted)
+     * @param {Object} data 
+     * @returns {Promise<string>} Base64 QR code string
+     */
+    generateQR = async (data) => {
+        try {
+            // Encrypt data first
+            const encryptedData = this.encode(data);
+            // Generate QR code from encrypted string
+            const base64QR = await qrcode.toDataURL(encryptedData, {
+                errorCorrectionLevel: 'H',
+                margin: 1,
+                width: 512,
+                color: {
+                    dark: '#000000',
+                    light: '#ffffff'
+                }
+            });
+            return base64QR;
+        } catch (error) {
+            console.error('QR Generation failed:', error);
+            throw error;
         }
     }
 }
